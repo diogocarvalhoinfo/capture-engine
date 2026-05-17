@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evidence Collector · v1.0</title>
+<style>
+/* ══════════════════════════════════════════════════════
+   DESIGN TOKENS — herança do Service Desk Engine V4.6
+   ══════════════════════════════════════════════════════ */
+:root {
+  --bg:              #f4f3f0;
+  --surface:         #ffffff;
+  --border:          #dddcd8;
+  --border-strong:   #b5b3ae;
+  --text:            #1a1917;
+  --text-muted:      #6b6a66;
+  --accent:          #0ea5e9;
+  --accent-hover:    #0284c7;
+  --accent-fg:       #ffffff;
+  --success-bg:      #eaf3de;
+  --success-border:  #639922;
+  --success-text:    #27500a;
+  --error-bg:        #fcebeb;
+  --error-border:    #a32d2d;
+  --error-text:      #501313;
+  --warn-bg:         #faeeda;
+  --warn-border:     #ba7517;
+  --warn-text:       #412402;
+  --font:            'Segoe UI', Arial, sans-serif;
+  --radius-xxs:      3px;
+  --radius-xs:       4px;
+  --radius-sm:       6px;
+  --radius-md:       8px;
+  --radius-lg:       12px;
+  --color-green:     #22c55e;
+  --color-red:       #ef4444;
+  --color-yellow:    #eab308;
+  /* Evidence Collector specifics */
+  --sb-collapsed:    52px;
+  --sb-expanded:     224px;
+  --thumb-size:      90px;
+  --removed-dim:     0.45;
+}
+body.dark {
+  --bg:              #121212;
+  --surface:         #1e1e1e;
+  --border:          #333333;
+  --border-strong:   #555555;
+  --text:            #e4e4e4;
+  --text-muted:      #9a9a9a;
+  --success-bg:      rgba(34,197,94,.08);
+  --success-border:  #4d7a18;
+  --success-text:    #86d84f;
+  --error-bg:        rgba(239,68,68,.08);
+  --error-border:    #8a2424;
+  --error-text:      #ff8c8c;
+  --warn-bg:         rgba(234,179,8,.08);
+  --warn-border:     #9c6214;
+  --warn-text:       #ecc680;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESET + BASE
+   ══════════════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+* { scrollbar-width:thin; scrollbar-color:var(--border-strong) transparent; }
+*::-webkit-scrollbar { width:5px; height:5px; }
+*::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:var(--radius-md); }
+html,body { height:100%; overflow:hidden; }
+body { font-family:var(--font); font-size:14px; background:var(--bg); color:var(--text); display:flex; flex-direction:column; }
+button { font-family:var(--font); cursor:pointer; border:none; background:none; }
+input  { font-family:var(--font); }
+::selection { background:var(--accent); color:var(--accent-fg); }
+*:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* ══════════════════════════════════════════════════════
+   TOP BAR
+   ══════════════════════════════════════════════════════ */
+#top-bar {
+  display:flex; align-items:center; gap:16px;
+  padding:0 16px; height:56px;
+  background:var(--surface); border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#tb-brand { display:flex; align-items:center; gap:8px; user-select:none; }
+#tb-brand-icon { width:28px; height:28px; background:var(--accent); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+#tb-brand-icon svg { width:15px; height:15px; fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+#tb-brand-name { font-size:14px; font-weight:600; letter-spacing:-0.2px; white-space:nowrap; }
+#tb-brand-name span { color:var(--accent); }
+#tb-sep { width:1px; height:24px; background:var(--border); flex-shrink:0; }
+#tb-session { display:flex; flex-direction:column; gap:2px; min-width:0; }
+#tb-session-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); }
+#session-name {
+  height:30px; border:1px solid transparent; border-radius:var(--radius-sm);
+  background:var(--bg); color:var(--text); font-size:13px;
+  padding:0 10px; width:210px; outline:none;
+  transition:border-color .15s, background .15s;
+}
+#session-name:focus { border-color:var(--accent) !important; background:var(--surface) !important; box-shadow:0 0 0 1px var(--accent); }
+#session-name::placeholder { color:var(--border-strong); }
+#filename-preview { font-size:10px; color:var(--text-muted); font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px; }
+#tb-actions { display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+
+.btn-exp {
+  display:flex; align-items:center; gap:6px;
+  height:34px; padding:0 14px; border-radius:var(--radius-sm);
+  background:var(--accent); color:var(--accent-fg);
+  font-size:12px; font-weight:600; letter-spacing:.2px;
+  transition:opacity .15s, transform .1s, background .2s;
+  white-space:nowrap; flex-shrink:0;
+}
+.btn-exp:hover:not(:disabled) { opacity:.9; }
+.btn-exp:active:not(:disabled) { transform:scale(.98); }
+.btn-exp:disabled { background:var(--border-strong); color:#fff; cursor:not-allowed; }
+.btn-exp svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.btn-exp.st-success { background:var(--color-green) !important; pointer-events:none; }
+.btn-exp.st-error   { background:var(--color-red)   !important; pointer-events:none; }
+
+.act-btn {
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-muted); transition:color .15s, background .15s, transform .1s;
+}
+.act-btn:hover { color:var(--text); background:rgba(0,0,0,.06); }
+body.dark .act-btn:hover { background:rgba(255,255,255,.08); }
+.act-btn:active { transform:scale(.9); }
+.act-btn svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+body.dark #icon-moon { display:none; }
+body.dark #icon-sun  { display:block !important; }
+
+/* ══════════════════════════════════════════════════════
+   MAIN LAYOUT
+   ══════════════════════════════════════════════════════ */
+#main-layout { display:flex; flex:1; overflow:hidden; min-height:0; }
+
+/* ══════════════════════════════════════════════════════
+   EVIDENCE BLOCKS
+   ══════════════════════════════════════════════════════ */
+.ev-block { display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+#block-imgs { flex:1.5; border-right:1px solid var(--border); }
+#block-docs { flex:1; }
+
+.blk-hdr {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 14px; background:var(--surface);
+  border-bottom:1px solid var(--border); flex-shrink:0; min-height:38px;
+}
+.blk-hdr svg { width:14px; height:14px; fill:none; stroke:var(--text-muted); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.blk-hdr-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); }
+.badge {
+  margin-left:auto; min-width:20px; height:18px; padding:0 5px;
+  background:var(--accent); color:#fff;
+  border-radius:9px; font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s;
+}
+.badge.zero { background:var(--border-strong); }
+
+/* ══════════════════════════════════════════════════════
+   DROP ZONES
+   ══════════════════════════════════════════════════════ */
+.drop-zone { flex:1; overflow:hidden; display:flex; flex-direction:column; position:relative; min-height:0; }
+.drop-zone.drag-over { background:rgba(14,165,233,.05); }
+.drop-zone.drag-over::after { content:''; position:absolute; inset:4px; border:2px dashed var(--accent); border-radius:var(--radius-md); pointer-events:none; animation:dashedPulse .8s ease-in-out infinite alternate; }
+@keyframes dashedPulse { from { opacity:.6; } to { opacity:1; } }
+
+/* ══════════════════════════════════════════════════════
+   EMPTY STATES
+   ══════════════════════════════════════════════════════ */
+.empty-st {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px;
+  pointer-events:none; user-select:none; padding:20px;
+}
+.empty-st svg { width:38px; height:38px; stroke:var(--border); fill:none; stroke-width:1.4; stroke-linecap:round; }
+.empty-st-title { font-size:13px; font-weight:500; color:var(--text-muted); }
+.empty-st-hint  { font-size:12px; color:var(--border-strong); text-align:center; }
+.pick-btn { pointer-events:auto; background:none; color:var(--accent); font-size:12px; cursor:pointer; text-decoration:underline; font-family:var(--font); }
+.pick-btn:hover { color:var(--accent-hover); }
+
+/* ══════════════════════════════════════════════════════
+   THUMBNAIL GRID
+   ══════════════════════════════════════════════════════ */
+#thumb-grid {
+  display:flex; flex-wrap:wrap; gap:8px;
+  padding:12px; overflow-y:auto; flex:1; align-content:flex-start;
+  min-height:0;
+}
+.t-item {
+  position:relative; width:var(--thumb-size); flex-shrink:0;
+  border-radius:var(--radius-md); overflow:hidden;
+  border:1px solid var(--border);
+  display:flex; flex-direction:column;
+  animation:fadeIn .2s ease-out;
+  background:var(--surface);
+}
+.t-wrap { width:100%; height:var(--thumb-size); overflow:hidden; position:relative; flex-shrink:0; }
+.t-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+.t-overlay {
+  position:absolute; inset:0; background:rgba(0,0,0,.52);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .15s;
+}
+.t-item:hover .t-overlay { opacity:1; }
+.t-eye {
+  width:32px; height:32px; background:rgba(255,255,255,.14); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; transition:background .12s;
+}
+.t-eye:hover { background:rgba(255,255,255,.28); }
+.t-eye svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+.t-del {
+  position:absolute; top:3px; right:3px;
+  width:20px; height:20px; background:var(--color-red); color:#fff;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .15s; z-index:2;
+}
+.t-item:hover .t-del { opacity:1; }
+.t-del:hover { background:#c0392b; }
+.t-del svg { width:9px; height:9px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; }
+.t-label {
+  width:100%; border:none; border-top:1px solid var(--border);
+  background:var(--surface); color:var(--text);
+  font-size:10px; padding:3px 6px; outline:none; text-align:center;
+  font-family:var(--font); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.t-label::placeholder { color:var(--border-strong); }
+.t-label:focus { border-top-color:var(--accent); background:var(--bg); }
+
+/* ══════════════════════════════════════════════════════
+   REMOVED STRIP
+   ══════════════════════════════════════════════════════ */
+#removed-strip {
+  border-top:1px solid var(--border); background:var(--surface);
+  padding:6px 12px 8px; flex-shrink:0; display:none;
+}
+#removed-strip.vis { display:block; }
+.rem-hdr { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); margin-bottom:5px; }
+#removed-thumbs { display:flex; gap:5px; overflow-x:auto; padding-bottom:1px; }
+.r-item {
+  width:52px; height:52px; flex-shrink:0;
+  border-radius:var(--radius-sm); overflow:hidden;
+  border:1px solid var(--border); cursor:pointer;
+  opacity:.45; filter:grayscale(.6);
+  transition:opacity .15s, filter .15s;
+}
+.r-item:hover { opacity:.85; filter:grayscale(0); }
+.r-item img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* ══════════════════════════════════════════════════════
+   DOC LIST
+   ══════════════════════════════════════════════════════ */
+#doc-list { overflow-y:auto; flex:1; padding:8px; display:flex; flex-direction:column; gap:4px; min-height:0; }
+.d-item {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 10px; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  font-size:12px; color:var(--text); animation:fadeIn .2s ease-out; flex-shrink:0;
+}
+.d-item svg { width:13px; height:13px; fill:none; stroke:var(--text-muted); stroke-width:2; stroke-linecap:round; flex-shrink:0; }
+.d-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.d-size { font-size:10px; color:var(--text-muted); white-space:nowrap; flex-shrink:0; }
+.d-del { color:var(--text-muted); padding:2px; border-radius:var(--radius-xxs); display:flex; flex-shrink:0; }
+.d-del:hover { color:var(--color-red); background:var(--bg); }
+.d-del svg { width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; }
+
+/* ══════════════════════════════════════════════════════
+   SIDEBAR
+   ══════════════════════════════════════════════════════ */
+#sidebar {
+  width:var(--sb-collapsed); background:var(--surface);
+  border-left:1px solid var(--border); flex-shrink:0;
+  display:flex; overflow:hidden;
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+}
+#sidebar.exp { width:var(--sb-expanded); }
+#sb-rail {
+  width:var(--sb-collapsed); min-width:var(--sb-collapsed); flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 0; gap:2px;
+}
+.sb-btn {
+  position:relative; width:36px; height:36px; border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-muted); transition:color .15s, background .15s;
+}
+.sb-btn:hover { color:var(--text); background:var(--bg); }
+.sb-btn svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+#sb-chevron { transition:transform .25s ease; }
+#sidebar.exp #sb-chevron { transform:rotate(180deg); }
+.sb-badge {
+  position:absolute; top:2px; right:2px;
+  min-width:14px; height:14px; padding:0 3px;
+  background:var(--color-red); color:#fff;
+  border-radius:7px; font-size:9px; font-weight:700;
+  display:none; align-items:center; justify-content:center;
+}
+.sb-badge.vis { display:flex; }
+#sb-content {
+  flex:1; opacity:0; pointer-events:none;
+  transition:opacity .15s ease; overflow:hidden;
+  display:flex; flex-direction:column; min-width:0;
+  padding:6px 6px 6px 0;
+}
+#sidebar.exp #sb-content { opacity:1; pointer-events:auto; }
+.sb-sec-title {
+  font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.7px; color:var(--text-muted);
+  padding:6px 8px 4px; flex-shrink:0;
+}
+.sb-divider { height:1px; background:var(--border); margin:4px 6px; flex-shrink:0; }
+.sb-rem-list    { overflow-y:auto; max-height:155px; display:flex; flex-direction:column; gap:2px; padding:0 2px; }
+.sb-sess-list   { overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:2px; padding:0 2px; }
+.sb-empty       { font-size:11px; color:var(--border-strong); padding:3px 8px; font-style:italic; }
+.sb-rem-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:4px 6px; border-radius:var(--radius-xs);
+  color:var(--text-muted); font-size:11px; text-align:left;
+  transition:background .12s; width:100%;
+}
+.sb-rem-btn:hover { background:var(--bg); color:var(--text); }
+.sb-rem-btn img { width:26px; height:26px; object-fit:cover; border-radius:var(--radius-xxs); border:1px solid var(--border); flex-shrink:0; filter:grayscale(.5); opacity:.6; }
+.sb-rem-btn span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-sess-btn {
+  display:flex; flex-direction:column; gap:1px;
+  padding:5px 6px; border-radius:var(--radius-xs);
+  text-align:left; transition:background .12s; width:100%;
+}
+.sb-sess-btn:hover { background:var(--bg); }
+.sb-sess-name { font-size:11px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-sess-date { font-size:10px; color:var(--text-muted); }
+
+/* ══════════════════════════════════════════════════════
+   IMAGE MODAL
+   ══════════════════════════════════════════════════════ */
+#modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.72);
+  z-index:9999; display:none; align-items:center; justify-content:center; padding:20px;
+}
+#modal-overlay.open { display:flex; }
+#modal-box {
+  background:var(--surface); border-radius:var(--radius-lg);
+  max-width:90vw; max-height:90vh;
+  display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.45);
+  animation:modalIn .2s ease-out;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+#modal-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 16px; border-bottom:1px solid var(--border); flex-shrink:0;
+}
+#modal-title { font-size:13px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:360px; }
+#modal-close {
+  width:28px; height:28px; border-radius:var(--radius-xs);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-muted); transition:color .12s, background .12s; flex-shrink:0;
+}
+#modal-close:hover { color:var(--text); background:var(--bg); }
+#modal-close svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; }
+#modal-body { overflow:auto; display:flex; align-items:center; justify-content:center; flex:1; padding:16px; min-height:0; }
+#modal-img { max-width:100%; max-height:calc(90vh - 120px); object-fit:contain; display:block; border-radius:var(--radius-sm); }
+#modal-ftr {
+  padding:9px 16px; border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+#modal-restore {
+  display:none; height:30px; padding:0 14px;
+  background:var(--color-green); color:#fff;
+  border-radius:var(--radius-xs); font-size:12px; font-weight:500;
+  transition:opacity .15s;
+}
+#modal-restore:hover { opacity:.88; }
+#modal-dims { font-size:11px; color:var(--text-muted); margin-left:auto; }
+
+/* ══════════════════════════════════════════════════════
+   RESTORE BANNER
+   ══════════════════════════════════════════════════════ */
+#restore-banner {
+  display:none; align-items:center; gap:10px;
+  position:fixed; top:64px; left:50%; transform:translateX(-50%);
+  background:var(--surface); border:1px solid var(--accent);
+  border-radius:var(--radius-md); padding:8px 14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+  font-size:12px; z-index:1000; white-space:nowrap;
+  animation:slideDown .25s ease;
+}
+#restore-banner.vis { display:flex; }
+@keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+.bnr-lbl  { color:var(--text-muted); }
+.bnr-name { font-weight:600; color:var(--text); }
+.bnr-yes  { height:24px; padding:0 11px; background:var(--accent); color:#fff; border-radius:var(--radius-xs); font-size:11px; cursor:pointer; }
+.bnr-yes:hover { background:var(--accent-hover); }
+.bnr-no   { height:24px; padding:0 9px; border:1px solid var(--border); border-radius:var(--radius-xs); font-size:11px; cursor:pointer; color:var(--text-muted); }
+.bnr-no:hover { background:var(--bg); }
+
+/* ══════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════ */
+@keyframes fadeIn  { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+@keyframes spin    { to { transform:rotate(360deg); } }
+@keyframes pulse   { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+.spinner { width:13px; height:13px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .65s linear infinite; }
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════ */
+@media (max-width:680px) {
+  #main-layout { flex-direction:column; overflow-y:auto; }
+  #block-imgs  { border-right:none; border-bottom:1px solid var(--border); min-height:320px; }
+  #sidebar     { width:100%; border-left:none; border-top:1px solid var(--border); flex-direction:row; height:48px; }
+  #sb-rail     { flex-direction:row; width:auto; padding:0 8px; height:48px; }
+  #sb-content  { display:none; }
+  .btn-exp span.label { display:none; }
+}
+@media (max-height:700px) { body { font-size:13px; } .blk-hdr { min-height:32px; } #top-bar { height:50px; } }
+</style>
+</head>
+<body>
+
+<script id="sys-logger">
+const SysLogger={
+  info: m=>console.log('%c[EC]%c '+m,'color:#22c55e;font-weight:bold','color:inherit'),
+  warn: m=>console.log('%c[EC]%c '+m,'color:#eab308;font-weight:bold','color:inherit'),
+  error:m=>console.log('%c[EC]%c '+m,'color:#ef4444;font-weight:bold','color:inherit')
+};
+</script>
+
+<!-- ═══ TOP BAR ═══ -->
+<div id="top-bar">
+  <div id="tb-brand">
+    <div id="tb-brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4"/><path d="M9 3h6"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/><rect x="2" y="9" width="20" height="13" rx="2"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+    </div>
+    <div id="tb-brand-name">Evidence <span>Collector</span></div>
+  </div>
+  <div id="tb-sep"></div>
+  <div id="tb-session">
+    <div id="tb-session-label">Sessão</div>
+    <input type="text" id="session-name" placeholder="utilizador-computador" autocomplete="off" spellcheck="false" maxlength="60">
+    <div id="filename-preview"></div>
+  </div>
+  <div id="tb-actions">
+    <button class="btn-exp" id="btn-pdf" disabled title="Exportar imagens como PDF">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      <span class="label">PDF</span>
+    </button>
+    <button class="btn-exp" id="btn-zip" disabled title="Exportar tudo como ZIP">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="label">ZIP</span>
+    </button>
+    <button class="act-btn" id="theme-btn" title="Modo noturno">
+      <svg id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ MAIN LAYOUT ═══ -->
+<div id="main-layout">
+
+  <!-- IMAGES BLOCK -->
+  <div class="ev-block" id="block-imgs">
+    <div class="blk-hdr">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span class="blk-hdr-title">Imagens</span>
+      <span class="badge zero" id="img-badge">0</span>
+    </div>
+    <div class="drop-zone" id="img-zone">
+      <div class="empty-st" id="img-empty">
+        <svg viewBox="0 0 24 24"><path d="M15 8h.01"/><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 15 5-5c.928-.893 2.072-.893 3 0l4 4"/><path d="m14 14 1-1c.928-.893 2.072-.893 3 0l2 2"/></svg>
+        <div class="empty-st-title">Ctrl+V para capturar screenshot</div>
+        <div class="empty-st-hint">ou <button class="pick-btn" id="btn-img-pick">escolher imagem</button></div>
+      </div>
+      <div id="thumb-grid"></div>
+      <input type="file" id="file-img" accept="image/*" multiple style="display:none">
+    </div>
+    <div id="removed-strip">
+      <div class="rem-hdr">Removidos ↩</div>
+      <div id="removed-thumbs"></div>
+    </div>
+  </div>
+
+  <!-- DOCS BLOCK -->
+  <div class="ev-block" id="block-docs">
+    <div class="blk-hdr">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="blk-hdr-title">Documentos &amp; Logs</span>
+      <span class="badge zero" id="doc-badge">0</span>
+    </div>
+    <div class="drop-zone" id="doc-zone">
+      <div class="empty-st" id="doc-empty">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <div class="empty-st-title">Ctrl+V · arrastar ficheiro</div>
+        <div class="empty-st-hint">logs, textos ou <button class="pick-btn" id="btn-doc-pick">escolher ficheiro</button></div>
+      </div>
+      <div id="doc-list"></div>
+      <input type="file" id="file-doc" multiple style="display:none">
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar" aria-label="Painel lateral">
+    <div id="sb-rail">
+      <button class="sb-btn" id="sb-chevron" title="Expandir painel" onclick="window.toggleSidebar()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <button class="sb-btn" title="Itens removidos" onclick="window.toggleSidebar()">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        <span class="sb-badge" id="sb-rem-badge">0</span>
+      </button>
+      <button class="sb-btn" title="Sessões anteriores" onclick="window.toggleSidebar()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </button>
+    </div>
+    <div id="sb-content">
+      <div class="sb-sec-title">Removidos</div>
+      <div class="sb-rem-list" id="sb-rem-list">
+        <span class="sb-empty" id="sb-rem-empty">Nenhum item removido</span>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-sec-title">Sessões anteriores</div>
+      <div class="sb-sess-list" id="sb-sess-list">
+        <span class="sb-empty" id="sb-sess-empty">Sem sessões anteriores</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-layout -->
+
+<!-- IMAGE MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-hdr">
+      <span id="modal-title">Visualizar imagem</span>
+      <button id="modal-close" title="Fechar (Esc)">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-body"><img id="modal-img" src="" alt="Pré-visualização"></div>
+    <div id="modal-ftr">
+      <button id="modal-restore">↩ Restaurar</button>
+      <span id="modal-dims"></span>
+    </div>
+  </div>
+</div>
+
+<!-- RESTORE BANNER -->
+<div id="restore-banner">
+  <span class="bnr-lbl">Sessão anterior:</span>
+  <span class="bnr-name" id="bnr-name"></span>
+  <button class="bnr-yes" id="bnr-yes">Retomar</button>
+  <button class="bnr-no"  id="bnr-no">Ignorar</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ════════════════════════════════════════════════════════════
+// § 1  UTILITIES
+// ════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+function escapeHTML(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                  .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#x60;');
+}
+function genId(p){ return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); }
+function fmtSize(b){ return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'; }
+function concatU8(arrs){
+  const t=arrs.reduce((s,a)=>s+a.length,0), o=new Uint8Array(t); let p=0;
+  for(const a of arrs){ o.set(a,p); p+=a.length; } return o;
+}
+function dlBlob(blob,name){
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u; a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+const ENC = new TextEncoder();
+const MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+// ════════════════════════════════════════════════════════════
+// § 2  STATE
+// ════════════════════════════════════════════════════════════
+let _db       = null;
+let sessId    = null;
+let sessObj   = null;
+let images    = [];   // {id,sessionId,blob,label,order,width,height,createdAt}
+let docs      = [];   // {id,sessionId,blob,name,size,type,order,createdAt}
+let removed   = [];   // images + removedAt
+let isDirty   = false;
+let sbExp     = false;
+let sbTimer   = null;
+
+// ════════════════════════════════════════════════════════════
+// § 3  INDEXEDDB
+// ════════════════════════════════════════════════════════════
+function idbPut(store,data){
+  return new Promise((res,rej)=>{
+    const tx=_db.transaction(store,'readwrite');
+    const r=tx.objectStore(store).put(data);
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+function idbGet(store,id){
+  return new Promise((res,rej)=>{
+    const tx=_db.transaction(store,'readonly');
+    const r=tx.objectStore(store).get(id);
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+function idbAll(store){
+  return new Promise((res,rej)=>{
+    const tx=_db.transaction(store,'readonly');
+    const r=tx.objectStore(store).getAll();
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+function idbIdx(store,idx,val){
+  return new Promise((res,rej)=>{
+    const tx=_db.transaction(store,'readonly');
+    const r=tx.objectStore(store).index(idx).getAll(val);
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+function idbDel(store,id){
+  return new Promise((res,rej)=>{
+    const tx=_db.transaction(store,'readwrite');
+    const r=tx.objectStore(store).delete(id);
+    r.onsuccess=()=>res(); r.onerror=()=>rej(r.error);
+  });
+}
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('EvidenceCollectorDB',1);
+    req.onupgradeneeded=e=>{
+      const db=e.target.result;
+      const s1=db.createObjectStore('sessions',  {keyPath:'id'}); s1.createIndex('createdAt','createdAt');
+      const s2=db.createObjectStore('images',    {keyPath:'id'}); s2.createIndex('sessionId','sessionId'); s2.createIndex('order','order');
+      const s3=db.createObjectStore('documents', {keyPath:'id'}); s3.createIndex('sessionId','sessionId'); s3.createIndex('order','order');
+      const s4=db.createObjectStore('removed_images',{keyPath:'id'}); s4.createIndex('sessionId','sessionId');
+    };
+    req.onsuccess=e=>{ _db=e.target.result; res(); };
+    req.onerror  =()=>rej(req.error);
+  });
+}
+
+async function purgeExpired(){
+  const cutoff=Date.now()-48*3600*1000;
+  const all=await idbAll('sessions');
+  for(const s of all){
+    if(s.createdAt<cutoff){
+      for(const i of await idbIdx('images','sessionId',s.id))         await idbDel('images',i.id);
+      for(const d of await idbIdx('documents','sessionId',s.id))      await idbDel('documents',d.id);
+      for(const r of await idbIdx('removed_images','sessionId',s.id)) await idbDel('removed_images',r.id);
+      await idbDel('sessions',s.id);
+      SysLogger.info('Sessão expirada: '+s.id);
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// § 4  FILENAME ENGINE  (herança do Service Desk Engine V4.6)
+// ════════════════════════════════════════════════════════════
+function buildFilename(ext){
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mn=String(now.getMinutes()).padStart(2,'0');
+  const dd=String(now.getDate()).padStart(2,'0');
+  const mmm=MONTHS[now.getMonth()];
+  const yyyy=now.getFullYear();
+  const raw=$('session-name').value.trim();
+  const base=raw
+    ? raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\s\-]/g,'')
+         .trim().replace(/\s+/g,'-').replace(/-+/g,'-').toUpperCase()
+    : 'SESSAO-SEM-TITULO';
+  return `${base}-${hh}h${mn}m-${dd}-${mmm}-${yyyy}.${ext}`;
+}
+
+$('session-name').addEventListener('input',()=>{
+  $('filename-preview').textContent=buildFilename('pdf').replace(/\.[^.]+$/,'');
+});
+
+// ════════════════════════════════════════════════════════════
+// § 5  CRC-32 + ZIP WRITER (store, flat)
+// ════════════════════════════════════════════════════════════
+const CRC32_TABLE=(()=>{
+  const t=new Uint32Array(256);
+  for(let i=0;i<256;i++){ let c=i; for(let j=0;j<8;j++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[i]=c; }
+  return t;
+})();
+
+function crc32(data){
+  let c=0xFFFFFFFF;
+  for(let i=0;i<data.length;i++) c=(c>>>8)^CRC32_TABLE[(c^data[i])&0xFF];
+  return (c^0xFFFFFFFF)>>>0;
+}
+
+function buildZIP(entries){
+  const locals=[],central=[];
+  let off=0;
+  for(const e of entries){
+    const nm=ENC.encode(e.name), crc=crc32(e.data), sz=e.data.length;
+    const lh=new Uint8Array(30+nm.length+sz); const dv=new DataView(lh.buffer);
+    dv.setUint32(0,0x504B0304,true); dv.setUint16(4,20,true); dv.setUint16(6,0,true);
+    dv.setUint16(8,0,true); dv.setUint16(10,0,true); dv.setUint16(12,0,true);
+    dv.setUint32(14,crc,true); dv.setUint32(18,sz,true); dv.setUint32(22,sz,true);
+    dv.setUint16(26,nm.length,true); dv.setUint16(28,0,true);
+    lh.set(nm,30); lh.set(e.data,30+nm.length); locals.push(lh);
+
+    const cd=new Uint8Array(46+nm.length); const cdv=new DataView(cd.buffer);
+    cdv.setUint32(0,0x504B0102,true); cdv.setUint16(4,20,true); cdv.setUint16(6,20,true);
+    cdv.setUint16(8,0,true); cdv.setUint16(10,0,true); cdv.setUint16(12,0,true); cdv.setUint16(14,0,true);
+    cdv.setUint32(16,crc,true); cdv.setUint32(20,sz,true); cdv.setUint32(24,sz,true);
+    cdv.setUint16(28,nm.length,true); cdv.setUint16(30,0,true); cdv.setUint16(32,0,true);
+    cdv.setUint16(34,0,true); cdv.setUint16(36,0,true); cdv.setUint32(38,0,true);
+    cdv.setUint32(42,off,true); cd.set(nm,46); central.push(cd); off+=lh.length;
+  }
+  const cdSz=central.reduce((s,c)=>s+c.length,0);
+  const eocd=new Uint8Array(22); const edv=new DataView(eocd.buffer);
+  edv.setUint32(0,0x504B0506,true); edv.setUint16(4,0,true); edv.setUint16(6,0,true);
+  edv.setUint16(8,entries.length,true); edv.setUint16(10,entries.length,true);
+  edv.setUint32(12,cdSz,true); edv.setUint32(16,off,true); edv.setUint16(20,0,true);
+  return concatU8([...locals,...central,eocd]);
+}
+
+// ════════════════════════════════════════════════════════════
+// § 6  DEFLATE-STORE (zlib válido, ~35 linhas, lossless)
+// ════════════════════════════════════════════════════════════
+function deflateStore(u8){
+  let s1=1,s2=0;
+  for(let i=0;i<u8.length;i++){ s1=(s1+u8[i])%65521; s2=(s2+s1)%65521; }
+  const adler=(s2<<16)|s1;
+  const parts=[new Uint8Array([0x78,0x01])];
+  const BMAX=65535;
+  for(let o=0;o<u8.length;o+=BMAX){
+    const ch=u8.subarray(o,o+BMAX), fin=(o+BMAX>=u8.length)?1:0;
+    const ln=ch.length, nl=(~ln)&0xFFFF;
+    parts.push(new Uint8Array([fin,ln&0xFF,(ln>>8)&0xFF,nl&0xFF,(nl>>8)&0xFF]));
+    parts.push(ch);
+  }
+  parts.push(new Uint8Array([(adler>>>24)&0xFF,(adler>>>16)&0xFF,(adler>>>8)&0xFF,adler&0xFF]));
+  return concatU8(parts);
+}
+
+// ════════════════════════════════════════════════════════════
+// § 7  PDF WRITER — lossless, página adapta à imagem
+// ════════════════════════════════════════════════════════════
+function imgToRGB(blob){
+  return new Promise(res=>{
+    const url=URL.createObjectURL(blob);
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth; c.height=img.naturalHeight;
+      const ctx=c.getContext('2d');
+      // composição sobre branco para transparência
+      ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,c.width,c.height);
+      ctx.drawImage(img,0,0);
+      const rgba=ctx.getImageData(0,0,c.width,c.height).data;
+      const rgb=new Uint8Array((rgba.length/4)*3);
+      for(let i=0,j=0;i<rgba.length;i+=4,j+=3){ rgb[j]=rgba[i]; rgb[j+1]=rgba[i+1]; rgb[j+2]=rgba[i+2]; }
+      URL.revokeObjectURL(url);
+      res({rgb,w:img.naturalWidth,h:img.naturalHeight});
+    };
+    img.src=url;
+  });
+}
+
+function pdfStr(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+          .replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)')
+          .replace(/[^\x20-\x7E]/g,'?');
+}
+
+async function generatePDF(imgObjs){
+  const parts=[]; const offsets={}; let pos=0; let objN=2;
+  function w(d){ const b=typeof d==='string'?ENC.encode(d):d; parts.push(b); pos+=b.length; }
+  function startObj(id){ offsets[id]=pos; w(id+' 0 obj\n'); }
+  function endObj(){ w('endobj\n'); }
+
+  w('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+
+  const pageIds=[];
+
+  for(const o of imgObjs){
+    const {rgb,w:iw,h:ih}=await imgToRGB(o.blob);
+    const cmp=deflateStore(rgb);
+
+    // Image XObject
+    const xid=++objN; startObj(xid);
+    w(`<< /Type /XObject /Subtype /Image /Width ${iw} /Height ${ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode /Length ${cmp.length} >>\nstream\n`);
+    w(cmp); w('\nendstream\n'); endObj();
+
+    // Label and page geometry
+    const LBL_H = o.label ? 28 : 0;
+    const pgW=iw, pgH=ih+LBL_H;
+
+    // Content stream
+    let cs = `q ${iw} 0 0 ${ih} 0 ${LBL_H} cm /Im Do Q\n`;
+    if(o.label) cs+=`BT /F1 10 Tf 6 8 Td (${pdfStr(o.label)}) Tj ET\n`;
+    const csBytes=ENC.encode(cs);
+    const cid=++objN; startObj(cid);
+    w(`<< /Length ${csBytes.length} >>\nstream\n`); w(cs); w('\nendstream\n'); endObj();
+
+    // Page
+    const pid=++objN; startObj(pid);
+    const fontRes=o.label?`/Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >>`:'';
+    w(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pgW} ${pgH}] /Contents ${cid} 0 R /Resources << /XObject << /Im ${xid} 0 R >> ${fontRes}>> >>\n`);
+    endObj(); pageIds.push(pid);
+  }
+
+  // Obj 2: Pages
+  startObj(2);
+  w(`<< /Type /Pages /Kids [${pageIds.map(p=>p+' 0 R').join(' ')}] /Count ${pageIds.length} >>\n`);
+  endObj();
+
+  // Obj 1: Catalog
+  startObj(1);
+  w(`<< /Type /Catalog /Pages 2 0 R >>\n`);
+  endObj();
+
+  // XRef + Trailer
+  const xrefOff=pos;
+  w(`xref\n0 ${objN+1}\n0000000000 65535 f \n`);
+  for(let i=1;i<=objN;i++) w(String(offsets[i]||0).padStart(10,'0')+' 00000 n \n');
+  w(`trailer\n<< /Size ${objN+1} /Root 1 0 R >>\nstartxref\n${xrefOff}\n%%EOF\n`);
+
+  return new Blob([concatU8(parts)],{type:'application/pdf'});
+}
+
+// ════════════════════════════════════════════════════════════
+// § 8  IMAGE CAPTURE
+// ════════════════════════════════════════════════════════════
+function getDims(blob){
+  return new Promise(res=>{
+    const u=URL.createObjectURL(blob),img=new Image();
+    img.onload=()=>{ res({w:img.naturalWidth,h:img.naturalHeight}); URL.revokeObjectURL(u); };
+    img.src=u;
+  });
+}
+function toPNG(blob){
+  if(blob.type==='image/png') return Promise.resolve(blob);
+  return new Promise(res=>{
+    const u=URL.createObjectURL(blob),img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth; c.height=img.naturalHeight;
+      c.getContext('2d').drawImage(img,0,0);
+      c.toBlob(res,'image/png'); URL.revokeObjectURL(u);
+    }; img.src=u;
+  });
+}
+
+async function captureImg(blob){
+  try{
+    const png=await toPNG(blob);
+    const {w,h}=await getDims(png);
+    const obj={id:genId('img'),sessionId:sessId,blob:png,label:'',order:images.length,width:w,height:h,createdAt:Date.now()};
+    await idbPut('images',obj);
+    images.push(obj); isDirty=true;
+    renderThumb(obj); updateCounters(); updateBtns();
+    await saveSession();
+    SysLogger.info(`Imagem ${w}×${h} capturada`);
+  }catch(e){ SysLogger.error('captureImg: '+e.message); }
+}
+
+// ════════════════════════════════════════════════════════════
+// § 9  DOC CAPTURE
+// ════════════════════════════════════════════════════════════
+async function captureDoc(blob,name,type){
+  try{
+    const obj={id:genId('doc'),sessionId:sessId,blob,name,size:blob.size,type:type||blob.type,order:docs.length,createdAt:Date.now()};
+    await idbPut('documents',obj);
+    docs.push(obj); isDirty=true;
+    renderDoc(obj); updateCounters(); updateBtns();
+    await saveSession();
+    SysLogger.info('Doc: '+name);
+  }catch(e){ SysLogger.error('captureDoc: '+e.message); }
+}
+
+async function captureText(text){
+  const now=new Date();
+  const name=`texto-colado-${String(now.getHours()).padStart(2,'0')}h${String(now.getMinutes()).padStart(2,'0')}m.txt`;
+  await captureDoc(new Blob([text],{type:'text/plain;charset=utf-8'}),name,'text/plain');
+}
+
+// ════════════════════════════════════════════════════════════
+// § 10 CLIPBOARD  (detecção automática, global)
+// ════════════════════════════════════════════════════════════
+function initClipboard(){
+  document.addEventListener('paste',async e=>{
+    const tag=e.target.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA') return;
+    e.preventDefault();
+    const items=Array.from(e.clipboardData.items||[]);
+    const files=Array.from(e.clipboardData.files||[]);
+
+    const imgItem=items.find(i=>i.type.startsWith('image/'));
+    if(imgItem){ const b=imgItem.getAsFile(); if(b){ await captureImg(b); return; } }
+
+    if(files.length>0){
+      for(const f of files) f.type.startsWith('image/')?await captureImg(f):await captureDoc(f,f.name,f.type);
+      return;
+    }
+
+    const txt=items.find(i=>i.type==='text/plain');
+    if(txt) txt.getAsString(async t=>{ if(t&&t.trim()) await captureText(t); });
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// § 11 RENDER
+// ════════════════════════════════════════════════════════════
+function renderThumb(o){
+  $('img-empty').style.display='none';
+  const url=URL.createObjectURL(o.blob);
+  const el=document.createElement('div');
+  el.className='t-item'; el.dataset.id=o.id;
+  el.innerHTML=`
+    <div class="t-wrap">
+      <img alt="">
+      <div class="t-overlay">
+        <button class="t-eye" title="Ver imagem" onclick="window.openModal('${escapeHTML(o.id)}',false)">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <button class="t-del" title="Remover" onclick="window.delImg('${escapeHTML(o.id)}')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input class="t-label" type="text" placeholder="sem título" value="${escapeHTML(o.label)}"
+           onchange="window.setLabel('${escapeHTML(o.id)}',this.value)" onclick="event.stopPropagation()">
+  `;
+  const img=el.querySelector('img');
+  img.src=url; img.onload=()=>URL.revokeObjectURL(url);
+  $('thumb-grid').appendChild(el);
+}
+
+function renderRemoved(o){
+  $('removed-strip').classList.add('vis');
+  const url=URL.createObjectURL(o.blob);
+  const el=document.createElement('div');
+  el.className='r-item'; el.dataset.id=o.id; el.title=o.label||'sem título';
+  el.onclick=()=>window.openModal(o.id,true);
+  const img=document.createElement('img');
+  img.src=url; img.onload=()=>URL.revokeObjectURL(url);
+  el.appendChild(img); $('removed-thumbs').appendChild(el);
+  updateRemBadge();
+}
+
+function renderDoc(o){
+  $('doc-empty').style.display='none';
+  const el=document.createElement('div');
+  el.className='d-item'; el.dataset.id=o.id;
+  el.innerHTML=`
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span class="d-name" title="${escapeHTML(o.name)}">${escapeHTML(o.name)}</span>
+    <span class="d-size">${fmtSize(o.size)}</span>
+    <button class="d-del" title="Remover" onclick="window.delDoc('${escapeHTML(o.id)}')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  `;
+  $('doc-list').appendChild(el);
+}
+
+function updateCounters(){
+  const ib=$('img-badge'); ib.textContent=images.length; ib.className='badge'+(images.length?'':' zero');
+  const db=$('doc-badge'); db.textContent=docs.length;   db.className='badge'+(docs.length?'':' zero');
+}
+
+function updateBtns(){
+  const hi=images.length>0, hd=docs.length>0;
+  $('btn-pdf').disabled=!(hi&&!hd);
+  $('btn-zip').disabled=!(hi||hd);
+  $('btn-pdf').title=!hi?'Sem imagens':hd?'PDF indisponível com documentos — use ZIP':'Exportar como PDF';
+}
+
+function updateRemBadge(){
+  const b=$('sb-rem-badge');
+  if(removed.length>0){ b.textContent=removed.length; b.classList.add('vis'); }
+  else b.classList.remove('vis');
+}
+
+// ════════════════════════════════════════════════════════════
+// § 12 IMAGE MANAGEMENT  (window.* para onclick)
+// ════════════════════════════════════════════════════════════
+window.delImg = async function(id){
+  const i=images.findIndex(x=>x.id===id); if(i<0) return;
+  const o=images.splice(i,1)[0]; o.removedAt=Date.now();
+  await idbDel('images',id); await idbPut('removed_images',o);
+  removed.push(o);
+  const el=$('thumb-grid').querySelector(`[data-id="${escapeHTML(id)}"]`);
+  if(el) el.remove();
+  if(!images.length) $('img-empty').style.display='';
+  renderRemoved(o); renderSbRemoved();
+  updateCounters(); updateBtns(); await saveSession();
+};
+
+window.restoreImg = async function(id){
+  const i=removed.findIndex(x=>x.id===id); if(i<0) return;
+  const o=removed.splice(i,1)[0]; delete o.removedAt; o.order=images.length;
+  await idbDel('removed_images',id); await idbPut('images',o);
+  images.push(o); isDirty=true;
+  const el=$('removed-thumbs').querySelector(`[data-id="${escapeHTML(id)}"]`);
+  if(el) el.remove();
+  if(!removed.length) $('removed-strip').classList.remove('vis');
+  renderThumb(o); renderSbRemoved(); updateRemBadge();
+  updateCounters(); updateBtns(); await saveSession();
+};
+
+window.setLabel = async function(id,lbl){
+  const o=images.find(x=>x.id===id); if(!o) return;
+  o.label=lbl; await idbPut('images',o);
+};
+
+window.delDoc = async function(id){
+  const i=docs.findIndex(x=>x.id===id); if(i<0) return;
+  docs.splice(i,1); await idbDel('documents',id);
+  const el=$('doc-list').querySelector(`[data-id="${escapeHTML(id)}"]`);
+  if(el) el.remove();
+  if(!docs.length) $('doc-empty').style.display='';
+  updateCounters(); updateBtns(); await saveSession();
+};
+
+// ════════════════════════════════════════════════════════════
+// § 13 IMAGE MODAL
+// ════════════════════════════════════════════════════════════
+window.openModal = function(id,isRem){
+  const col=isRem?removed:images;
+  const o=col.find(x=>x.id===id); if(!o) return;
+  const url=URL.createObjectURL(o.blob);
+  const mi=$('modal-img'); mi.src=url;
+  mi.onload=()=>{ URL.revokeObjectURL(url); $('modal-dims').textContent=`${o.width}×${o.height}px`; };
+  $('modal-title').textContent=o.label||'sem título';
+  const rb=$('modal-restore');
+  rb.style.display=isRem?'block':'none';
+  if(isRem) rb.onclick=()=>{ window.restoreImg(id); closeModal(); };
+  $('modal-overlay').classList.add('open');
+};
+
+function closeModal(){ $('modal-overlay').classList.remove('open'); $('modal-img').src=''; }
+$('modal-close').addEventListener('click',closeModal);
+$('modal-overlay').addEventListener('click',e=>{ if(e.target===$('modal-overlay')) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+// ════════════════════════════════════════════════════════════
+// § 14 SIDEBAR
+// ════════════════════════════════════════════════════════════
+window.toggleSidebar = function(){ sbExp?collapseSb():expandSb(); };
+
+function expandSb(){
+  sbExp=true; $('sidebar').classList.add('exp');
+  renderSbRemoved(); renderSbSessions();
+}
+function collapseSb(){ sbExp=false; $('sidebar').classList.remove('exp'); }
+
+function initSidebar(){
+  const sb=$('sidebar');
+  sb.addEventListener('mouseenter',()=>{ sbTimer=setTimeout(()=>{ if(!sbExp) expandSb(); },200); });
+  sb.addEventListener('mouseleave',()=>{ clearTimeout(sbTimer); if(sbExp) collapseSb(); });
+}
+
+function renderSbRemoved(){
+  const list=$('sb-rem-list'), empty=$('sb-rem-empty');
+  Array.from(list.querySelectorAll('.sb-rem-btn')).forEach(e=>e.remove());
+  if(!removed.length){ empty.style.display=''; return; }
+  empty.style.display='none';
+  for(const r of removed){
+    const url=URL.createObjectURL(r.blob);
+    const btn=document.createElement('button');
+    btn.className='sb-rem-btn'; btn.onclick=()=>window.openModal(r.id,true);
+    const img=document.createElement('img'); img.src=url; img.onload=()=>URL.revokeObjectURL(url);
+    const sp=document.createElement('span'); sp.textContent=r.label||'sem título';
+    btn.appendChild(img); btn.appendChild(sp); list.appendChild(btn);
+  }
+}
+
+function renderSbSessions(){
+  const list=$('sb-sess-list'), empty=$('sb-sess-empty');
+  Array.from(list.querySelectorAll('.sb-sess-btn')).forEach(e=>e.remove());
+  idbAll('sessions').then(all=>{
+    const others=all.filter(s=>s.id!==sessId).sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,8);
+    if(!others.length){ empty.style.display=''; return; }
+    empty.style.display='none';
+    for(const s of others){
+      const d=new Date(s.updatedAt||s.createdAt);
+      const ds=`${String(d.getDate()).padStart(2,'0')}-${MONTHS[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}h${String(d.getMinutes()).padStart(2,'0')}`;
+      const btn=document.createElement('button'); btn.className='sb-sess-btn';
+      btn.onclick=()=>window.openSession(s.id);
+      btn.innerHTML=`<span class="sb-sess-name">${escapeHTML(s.name||'Sessão sem título')}</span><span class="sb-sess-date">${escapeHTML(ds)}</span>`;
+      list.appendChild(btn);
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// § 15 SESSION MANAGER
+// ════════════════════════════════════════════════════════════
+async function createSession(){
+  const s={id:genId('sess'),name:'',createdAt:Date.now(),updatedAt:Date.now(),exported:false};
+  await idbPut('sessions',s); sessId=s.id; sessObj=s;
+  SysLogger.info('Sessão criada: '+sessId);
+}
+
+async function saveSession(){
+  if(!sessObj) return;
+  sessObj.updatedAt=Date.now(); sessObj.name=$('session-name').value.trim();
+  await idbPut('sessions',sessObj);
+}
+$('session-name').addEventListener('change',saveSession);
+
+async function loadSession(id){
+  const s=await idbGet('sessions',id); if(!s) return;
+  sessId=s.id; sessObj=s;
+  if(s.name){ $('session-name').value=s.name; $('session-name').dispatchEvent(new Event('input')); }
+  const imgs=await idbIdx('images','sessionId',id);
+  const dcs =await idbIdx('documents','sessionId',id);
+  const rems=await idbIdx('removed_images','sessionId',id);
+  images=[...imgs].sort((a,b)=>a.order-b.order);
+  docs  =[...dcs].sort((a,b)=>a.order-b.order);
+  removed=[...rems].sort((a,b)=>(a.removedAt||0)-(b.removedAt||0));
+  $('thumb-grid').innerHTML=''; $('doc-list').innerHTML=''; $('removed-thumbs').innerHTML='';
+  $('img-empty').style.display=images.length?'none':'';
+  $('doc-empty').style.display=docs.length?'none':'';
+  for(const i of images)  renderThumb(i);
+  for(const d of docs)    renderDoc(d);
+  for(const r of removed) renderRemoved(r);
+  if(removed.length) $('removed-strip').classList.add('vis');
+  updateCounters(); updateBtns(); updateRemBadge(); isDirty=true;
+  SysLogger.info('Sessão carregada: '+id);
+}
+
+window.openSession = function(id){
+  localStorage.setItem('ec_pending_session',id);
+  window.open(location.href,'_blank');
+};
+
+async function findRecentSession(){
+  const all=await idbAll('sessions');
+  const cut=Date.now()-48*3600*1000;
+  return all.filter(s=>s.id!==sessId&&s.createdAt>cut&&!s.exported).sort((a,b)=>b.updatedAt-a.updatedAt)[0]||null;
+}
+
+// ════════════════════════════════════════════════════════════
+// § 16 EXPORT
+// ════════════════════════════════════════════════════════════
+function btnReset(btnId,label,svgPath){
+  const btn=$(btnId);
+  btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg><span class="label">${label}</span>`;
+  btn.classList.remove('st-success','st-error');
+  updateBtns();
+}
+const SVG_PDF=`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>`;
+const SVG_ZIP=`<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>`;
+
+$('btn-pdf').addEventListener('click',async()=>{
+  const btn=$('btn-pdf'); btn.innerHTML='<span class="spinner"></span> PDF'; btn.disabled=true;
+  try{
+    const blob=await generatePDF(images);
+    dlBlob(blob,buildFilename('pdf'));
+    isDirty=false; if(sessObj){ sessObj.exported=true; await idbPut('sessions',sessObj); }
+    btn.classList.add('st-success'); btn.innerHTML='✓ PDF';
+    setTimeout(()=>btnReset('btn-pdf','PDF',SVG_PDF),2500);
+  }catch(e){
+    SysLogger.error('PDF: '+e.message);
+    btn.classList.add('st-error'); btn.innerHTML='✗ Erro';
+    setTimeout(()=>btnReset('btn-pdf','PDF',SVG_PDF),2500);
+  }
+});
+
+$('btn-zip').addEventListener('click',async()=>{
+  const btn=$('btn-zip'); btn.innerHTML='<span class="spinner"></span> ZIP'; btn.disabled=true;
+  try{
+    const entries=[];
+    for(let i=0;i<images.length;i++){
+      const o=images[i];
+      const lbl=o.label?o.label.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]/g,'-').replace(/-+/g,'-').toLowerCase():'sem-titulo';
+      entries.push({name:`${String(i+1).padStart(3,'0')}-${lbl}.png`,data:new Uint8Array(await o.blob.arrayBuffer())});
+    }
+    for(const d of docs) entries.push({name:d.name,data:new Uint8Array(await d.blob.arrayBuffer())});
+    const zip=buildZIP(entries);
+    dlBlob(new Blob([zip],{type:'application/zip'}),buildFilename('zip'));
+    isDirty=false; if(sessObj){ sessObj.exported=true; await idbPut('sessions',sessObj); }
+    btn.classList.add('st-success'); btn.innerHTML='✓ ZIP';
+    setTimeout(()=>btnReset('btn-zip','ZIP',SVG_ZIP),2500);
+  }catch(e){
+    SysLogger.error('ZIP: '+e.message);
+    btn.classList.add('st-error'); btn.innerHTML='✗ Erro';
+    setTimeout(()=>btnReset('btn-zip','ZIP',SVG_ZIP),2500);
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// § 17 DRAG & DROP
+// ════════════════════════════════════════════════════════════
+function initDragDrop(){
+  for(const [zid,isImg] of [['img-zone',true],['doc-zone',false]]){
+    const z=$(zid);
+    z.addEventListener('dragover', e=>{ e.preventDefault(); z.classList.add('drag-over'); });
+    z.addEventListener('dragleave',  ()=>z.classList.remove('drag-over'));
+    z.addEventListener('dragend',    ()=>z.classList.remove('drag-over'));
+    z.addEventListener('drop',async e=>{
+      e.preventDefault(); z.classList.remove('drag-over');
+      for(const f of Array.from(e.dataTransfer.files))
+        (isImg||f.type.startsWith('image/'))?await captureImg(f):await captureDoc(f,f.name,f.type);
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// § 18 FILE PICKERS
+// ════════════════════════════════════════════════════════════
+function initPickers(){
+  $('btn-img-pick').addEventListener('click',()=>$('file-img').click());
+  $('file-img').addEventListener('change',async e=>{ for(const f of e.target.files) await captureImg(f); e.target.value=''; });
+  $('btn-doc-pick').addEventListener('click',()=>$('file-doc').click());
+  $('file-doc').addEventListener('change',async e=>{ for(const f of e.target.files) f.type.startsWith('image/')?await captureImg(f):await captureDoc(f,f.name,f.type); e.target.value=''; });
+}
+
+// ════════════════════════════════════════════════════════════
+// § 19 DARK MODE  (herança do engine)
+// ════════════════════════════════════════════════════════════
+function initTheme(){
+  if(localStorage.getItem('ec_theme')==='dark') document.body.classList.add('dark');
+  $('theme-btn').addEventListener('click',()=>{
+    document.body.classList.toggle('dark');
+    localStorage.setItem('ec_theme',document.body.classList.contains('dark')?'dark':'light');
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// § 20 BEFOREUNLOAD
+// ════════════════════════════════════════════════════════════
+function initBeforeUnload(){
+  window.addEventListener('beforeunload',e=>{ if(isDirty){ e.preventDefault(); e.returnValue=''; } });
+}
+
+// ════════════════════════════════════════════════════════════
+// § 21 INIT
+// ════════════════════════════════════════════════════════════
+async function init(){
+  try{
+    await openDB(); SysLogger.info('IndexedDB OK');
+    await purgeExpired();
+    await createSession();
+
+    // Sessão pendente (aberta da sidebar em nova aba)
+    const pending=localStorage.getItem('ec_pending_session');
+    if(pending){
+      localStorage.removeItem('ec_pending_session');
+      const ex=await idbGet('sessions',pending);
+      if(ex){ await loadSession(pending); boot(); return; }
+    }
+
+    // Sessão recente não exportada → banner
+    const rec=await findRecentSession();
+    if(rec){
+      const d=new Date(rec.updatedAt||rec.createdAt);
+      const ds=`${String(d.getDate()).padStart(2,'0')}-${MONTHS[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}h${String(d.getMinutes()).padStart(2,'0')}`;
+      $('bnr-name').textContent=(rec.name||'Sessão sem título')+' · '+ds;
+      $('restore-banner').classList.add('vis');
+      $('bnr-yes').onclick=async()=>{ $('restore-banner').classList.remove('vis'); await loadSession(rec.id); };
+      $('bnr-no').onclick=()=>$('restore-banner').classList.remove('vis');
+    }
+
+    boot();
+    SysLogger.info('Evidence Collector v1.0 pronto ✓');
+  }catch(e){ SysLogger.error('Init: '+e.message); }
+}
+
+function boot(){
+  initClipboard(); initDragDrop(); initSidebar();
+  initPickers(); initTheme(); initBeforeUnload();
+  updateCounters(); updateBtns();
+  $('session-name').dispatchEvent(new Event('input'));
+}
+
+init();
+
+})();
+</script>
+</body>
+</html>
