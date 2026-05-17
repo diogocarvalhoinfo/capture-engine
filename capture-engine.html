@@ -122,7 +122,8 @@ body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 .d-del{color:var(--text-muted);padding:2px;border-radius:var(--radius-xxs);display:flex;flex-shrink:0;cursor:pointer;background:none;border:none}
 .d-del:hover{color:var(--color-red);background:var(--bg)}
 .d-del svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
-/* ═══ SIDEBAR ═══ */
+/* ═══ SIDEBARS ═══ */
+#left-sidebar{width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;padding:12px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.02);gap:16px}
 #sidebar{width:52px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);flex-shrink:0;display:flex;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:0 2px 8px rgba(0,0,0,0.02)}
 #sidebar.expanded{width:280px}
 #sb-rail{width:52px;min-width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 0;gap:2px;cursor:pointer}
@@ -230,7 +231,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 #ann-size{width:50px;height:4px;cursor:pointer;accent-color:var(--accent)}
 .ann-spacer{flex:1}
 /* ═══ RESPONSIVE ═══ */
-@media(max-width:900px){#main-layout{flex-direction:column;padding:8px;gap:8px}#block-imgs{min-height:200px}#sidebar{width:auto;height:48px}#sb-rail{flex-direction:row;width:100%;height:48px;padding:0 8px;justify-content:center}#sb-content{display:none}#trash-bar{margin:0 8px 8px 8px}#top-bar{padding:0 12px}#tb-brand, #tb-actions{flex:none}#tb-session{justify-content:flex-end}}
+@media(max-width:900px){#main-layout{flex-direction:column;padding:8px;gap:8px}#left-sidebar{width:auto}#block-imgs{min-height:200px}#sidebar{width:auto;height:48px}#sb-rail{flex-direction:row;width:100%;height:48px;padding:0 8px;justify-content:center}#sb-content{display:none}#trash-bar{margin:0 8px 8px 8px}#top-bar{padding:0 12px}#tb-brand, #tb-actions{flex:none}#tb-session{justify-content:flex-end}}
 </style>
 </head>
 <body>
@@ -243,20 +244,10 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     </div>
     <div id="tb-brand-name">Capture <span>Engine</span></div>
   </div>
-  <div id="tb-session">
-    <input type="text" id="session-user" class="sess-input" placeholder="utilizador" autocomplete="off" spellcheck="false" maxlength="30">
-    <input type="text" id="session-pc" class="sess-input" placeholder="computador" autocomplete="off" spellcheck="false" maxlength="30">
+  <div id="tb-session" style="display:none;">
     <input type="hidden" id="session-name" value="">
   </div>
   <div id="tb-actions">
-    <button class="btn-send" id="btn-pdf" disabled>
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-      PDF
-    </button>
-    <button class="btn-send" id="btn-zip" disabled>
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      ZIP
-    </button>
     <!-- ADMIN_BUTTONS_START -->
     <button class="action-btn" id="btn-admin-config" style="display:none" title="Visual Builder" onclick="openSettingsModal()">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -274,6 +265,54 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 
 <!-- ═══ MAIN LAYOUT ═══ -->
 <div id="main-layout">
+
+  <!-- ─── LEFT SIDEBAR (CONFIG/EXPORT) ─── -->
+  <div id="left-sidebar">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="sb-section-title" style="padding:0 0 4px 0">Identificação</div>
+      <input type="text" id="session-user" class="sess-input" style="width:100%; background:transparent; border:1px solid var(--border); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-strong)';" onmouseout="this.style.borderColor='var(--border)';" placeholder="Utilizador" autocomplete="off" spellcheck="false" maxlength="30">
+      <input type="text" id="session-pc" class="sess-input" style="width:100%; background:transparent; border:1px solid var(--border); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-strong)';" onmouseout="this.style.borderColor='var(--border)';" placeholder="Equipamento" autocomplete="off" spellcheck="false" maxlength="30">
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="sb-section-title" style="padding:0 0 4px 0">Captura</div>
+      <button class="btn-send" style="width:100%; justify-content:flex-start; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-weight:500;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.color='var(--text)';" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-muted)';" onclick="document.getElementById('file-img-input').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Adicionar Imagem
+      </button>
+      <button class="btn-send" style="width:100%; justify-content:flex-start; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-weight:500;" onmouseover="this.style.borderColor='var(--border-strong)'; this.style.color='var(--text)';" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-muted)';" onclick="document.getElementById('file-doc-input').click()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Adicionar Documento
+      </button>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="sb-section-title" style="padding:0 0 4px 0">Layout PDF</div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <label style="font-size:12px; color:var(--text); display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="radio" name="pdf-layout" value="auto" checked style="accent-color:var(--accent); cursor:pointer;"> Auto
+        </label>
+        <label style="font-size:12px; color:var(--text); display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="radio" name="pdf-layout" value="horizontal" style="accent-color:var(--accent); cursor:pointer;"> Horizontal
+        </label>
+        <label style="font-size:12px; color:var(--text); display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="radio" name="pdf-layout" value="vertical" style="accent-color:var(--accent); cursor:pointer;"> Vertical
+        </label>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="sb-section-title" style="padding:0 0 4px 0">Exportar</div>
+      <button class="btn-send" id="btn-pdf" disabled style="width:100%; justify-content:flex-start;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        PDF
+      </button>
+      <button class="btn-send" id="btn-zip" disabled style="width:100%; justify-content:flex-start;">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        ZIP
+      </button>
+    </div>
+  </div>
 
   <!-- ─── BLOCO IMAGENS ─── -->
   <div class="ev-block" id="block-imgs">
@@ -311,7 +350,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     <input type="file" id="file-doc-input" multiple style="display:none">
   </div>
 
-  <!-- ─── SIDEBAR ─── -->
+  <!-- ─── RIGHT SIDEBAR (HISTORY) ─── -->
   <div id="sidebar">
     <div id="sb-rail">
       <button class="sb-icon-btn" id="sb-btn-toggle" title="Sessões anteriores">
@@ -389,28 +428,6 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   </div>
 </div>
 
-<!-- ═══ MODAL: Formato PDF ═══ -->
-<div class="modal-overlay" id="pdf-fmt-overlay">
-  <div class="modal-box" style="max-width:320px;padding:20px">
-    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px">Formato de página</div>
-    <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;border-bottom:1px solid var(--border)">
-      <input type="radio" name="pdf-fmt" value="exact" checked style="margin-top:2px;cursor:pointer">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text)">Tamanho exacto</div><div style="font-size:11px;color:var(--text-muted)">Página ajusta à imagem</div></div>
-    </label>
-    <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;border-bottom:1px solid var(--border)">
-      <input type="radio" name="pdf-fmt" value="a4v" style="margin-top:2px;cursor:pointer">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text)">A4 Vertical (Portrait)</div><div style="font-size:11px;color:var(--text-muted)">210 × 297 mm, imagem centrada</div></div>
-    </label>
-    <label style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer">
-      <input type="radio" name="pdf-fmt" value="a4h" style="margin-top:2px;cursor:pointer">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text)">A4 Horizontal (Landscape)</div><div style="font-size:11px;color:var(--text-muted)">297 × 210 mm, imagem centrada</div></div>
-    </label>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
-      <button id="pdf-fmt-cancel" style="height:32px;padding:0 14px;border:none;border-radius:var(--radius-xs);font-size:12px;color:var(--text-muted);background:var(--bg);cursor:pointer">Cancelar</button>
-      <button id="pdf-fmt-confirm" class="btn-send">Exportar PDF</button>
-    </div>
-  </div>
-</div>
 
 <!-- ═══ MODAL: Confirmar ação ═══ -->
 <div class="sb-overlay" id="confirm-overlay">
@@ -665,7 +682,7 @@ function initVbSync(){$('cfg-cor-principal').oninput=function(){$('cfg-cor-hex')
 function applyTokens(){if(!TOKEN_SHOW_SESSION_USER)$('session-user').style.display='none';if(!TOKEN_SHOW_SESSION_PC)$('session-pc').style.display='none';if(TOKEN_MAIN_COLOR!=='#0ea5e9'){document.documentElement.style.setProperty('--accent',TOKEN_MAIN_COLOR);$('tb-brand-icon').style.background=TOKEN_MAIN_COLOR}}
 
 /* ═══ PDF FORMAT MODAL ═══ */
-function initPdfModal(){$('btn-pdf').onclick=function(){if(!images.length)return;$('pdf-fmt-overlay').classList.add('open')};$('pdf-fmt-cancel').onclick=function(){$('pdf-fmt-overlay').classList.remove('open')};$('pdf-fmt-overlay').onclick=function(e){if(e.target===this)$('pdf-fmt-overlay').classList.remove('open')};$('pdf-fmt-confirm').onclick=async function(){const sel=document.querySelector('input[name="pdf-fmt"]:checked');pdfFmt=sel?sel.value:'exact';$('pdf-fmt-overlay').classList.remove('open');await generatePDF()}}
+function initPdfModal(){$('btn-pdf').onclick=async function(){if(!images.length)return;const sel=document.querySelector('input[name="pdf-layout"]:checked');pdfFmt=sel?sel.value:'auto';if(pdfFmt==='vertical')pdfFmt='a4v';else if(pdfFmt==='horizontal')pdfFmt='a4h';else if(pdfFmt==='auto')pdfFmt='auto';await generatePDF()}}
 
 
 
@@ -677,7 +694,7 @@ function initSessionSync(){function up(){const u=$('session-user').value.trim(),
 
 
 /* ═══ PDF ENGINE (JPEG COMPRESSED) ═══ */
-async function generatePDF(){const btn=$('btn-pdf');btn.innerHTML='<div class="spinner"></div> A gerar...';btn.disabled=true;try{await new Promise(r=>setTimeout(r,50));const quality=TOKEN_JPEG_QUALITY;const jpegBlobs=[];for(const img of images){const b=await imgToJPEG(img.blob,quality);jpegBlobs.push({jpeg:b,label:img.label})}const A4W=595.28,A4H=841.89;let objs=[],xrefs=[];let ofs=0;const w=s=>{const b=ENC.encode(s);objs.push(b);ofs+=b.length;return b};w('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');const pageObjNums=[];const imgObjNums=[];const N=jpegBlobs.length;for(let i=0;i<N;i++){imgObjNums.push(3+i*2);pageObjNums.push(4+i*2)}const catalogNum=1,pagesNum=2;xrefs.push(ofs);w(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);xrefs.push(ofs);const kidStr=pageObjNums.map(n=>n+' 0 R').join(' ');w(`2 0 obj\n<< /Type /Pages /Kids [${kidStr}] /Count ${N} >>\nendobj\n`);for(let i=0;i<N;i++){const jData=jpegBlobs[i].jpeg;const u8=new Uint8Array(await jData.arrayBuffer());const dim=getJPEGDims(u8);const iw=dim.w,ih=dim.h;let pw,ph,dx,dy,dw,dh;if(pdfFmt==='exact'){pw=iw*0.75;ph=ih*0.75;dx=0;dy=0;dw=pw;dh=ph}else if(pdfFmt==='a4v'){pw=A4W;ph=A4H;const sc=Math.min((pw-40)/iw,(ph-40)/ih,1);dw=iw*sc;dh=ih*sc;dx=(pw-dw)/2;dy=(ph-dh)/2}else{pw=A4H;ph=A4W;const sc=Math.min((pw-40)/iw,(ph-40)/ih,1);dw=iw*sc;dh=ih*sc;dx=(pw-dw)/2;dy=(ph-dh)/2}const imgObjNum=imgObjNums[i];const pageObjNum=pageObjNums[i];const contObjNum=2+N*2+1+i;const stream=`q ${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${dx.toFixed(2)} ${dy.toFixed(2)} cm /Im${i} Do Q`;xrefs.push(ofs);w(`${imgObjNum} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${iw} /Height ${ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${u8.length} >>\nstream\n`);const imgBytes=u8;objs.push(imgBytes);ofs+=imgBytes.length;w('\nendstream\nendobj\n');xrefs.push(ofs);w(`${pageObjNum} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw.toFixed(2)} ${ph.toFixed(2)}] /Contents ${contObjNum} 0 R /Resources << /XObject << /Im${i} ${imgObjNum} 0 R >> >> >>\nendobj\n`);xrefs.push(ofs);const sEnc=ENC.encode(stream);w(`${contObjNum} 0 obj\n<< /Length ${sEnc.length} >>\nstream\n`);objs.push(sEnc);ofs+=sEnc.length;w('\nendstream\nendobj\n')}const xrefOfs=ofs;const totalObjs=xrefs.length+1;let xrefStr='xref\n0 '+totalObjs+'\n0000000000 65535 f \n';for(const x of xrefs)xrefStr+=String(x).padStart(10,'0')+' 00000 n \n';xrefStr+=`trailer\n<< /Size ${totalObjs} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`;w(xrefStr);const blob=new Blob(objs,{type:'application/pdf'});dlBlob(blob,buildFilename('pdf'));btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído';btn.classList.add('st-success');setTimeout(()=>{btn.classList.remove('st-success');btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF';btn.disabled=false;updateBtns()},2500);SysLogger.info('PDF gerado: '+fmtSize(blob.size))}catch(e){SysLogger.error('PDF: '+e.message);btn.classList.add('st-error');btn.textContent='Erro';setTimeout(()=>{btn.classList.remove('st-error');btn.innerHTML='PDF';btn.disabled=false;updateBtns()},2500)}}
+async function generatePDF(){const btn=$('btn-pdf');btn.innerHTML='<div class="spinner"></div> A gerar...';btn.disabled=true;try{await new Promise(r=>setTimeout(r,50));const quality=TOKEN_JPEG_QUALITY;const jpegBlobs=[];for(const img of images){const b=await imgToJPEG(img.blob,quality);jpegBlobs.push({jpeg:b,label:img.label})}const A4W=595.28,A4H=841.89;let objs=[],xrefs=[];let ofs=0;const w=s=>{const b=ENC.encode(s);objs.push(b);ofs+=b.length;return b};w('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');const pageObjNums=[];const imgObjNums=[];const N=jpegBlobs.length;for(let i=0;i<N;i++){imgObjNums.push(3+i*2);pageObjNums.push(4+i*2)}const catalogNum=1,pagesNum=2;xrefs.push(ofs);w(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);xrefs.push(ofs);const kidStr=pageObjNums.map(n=>n+' 0 R').join(' ');w(`2 0 obj\n<< /Type /Pages /Kids [${kidStr}] /Count ${N} >>\nendobj\n`);for(let i=0;i<N;i++){const jData=jpegBlobs[i].jpeg;const u8=new Uint8Array(await jData.arrayBuffer());const dim=getJPEGDims(u8);const iw=dim.w,ih=dim.h;let pw,ph,dx,dy,dw,dh;let cFmt=pdfFmt;if(cFmt==='auto')cFmt=(iw>=ih)?'a4h':'a4v';if(cFmt==='exact'){pw=iw*0.75;ph=ih*0.75;dx=0;dy=0;dw=pw;dh=ph}else if(cFmt==='a4v'){pw=A4W;ph=A4H;const sc=Math.min(pw/iw,ph/ih);dw=iw*sc;dh=ih*sc;dx=(pw-dw)/2;dy=(ph-dh)/2}else{pw=A4H;ph=A4W;const sc=Math.min(pw/iw,ph/ih);dw=iw*sc;dh=ih*sc;dx=(pw-dw)/2;dy=(ph-dh)/2}const imgObjNum=imgObjNums[i];const pageObjNum=pageObjNums[i];const contObjNum=2+N*2+1+i;const stream=`q ${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${dx.toFixed(2)} ${dy.toFixed(2)} cm /Im${i} Do Q`;xrefs.push(ofs);w(`${imgObjNum} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${iw} /Height ${ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${u8.length} >>\nstream\n`);const imgBytes=u8;objs.push(imgBytes);ofs+=imgBytes.length;w('\nendstream\nendobj\n');xrefs.push(ofs);w(`${pageObjNum} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw.toFixed(2)} ${ph.toFixed(2)}] /Contents ${contObjNum} 0 R /Resources << /XObject << /Im${i} ${imgObjNum} 0 R >> >> >>\nendobj\n`);xrefs.push(ofs);const sEnc=ENC.encode(stream);w(`${contObjNum} 0 obj\n<< /Length ${sEnc.length} >>\nstream\n`);objs.push(sEnc);ofs+=sEnc.length;w('\nendstream\nendobj\n')}const xrefOfs=ofs;const totalObjs=xrefs.length+1;let xrefStr='xref\n0 '+totalObjs+'\n0000000000 65535 f \n';for(const x of xrefs)xrefStr+=String(x).padStart(10,'0')+' 00000 n \n';xrefStr+=`trailer\n<< /Size ${totalObjs} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`;w(xrefStr);const blob=new Blob(objs,{type:'application/pdf'});dlBlob(blob,buildFilename('pdf'));btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído';btn.classList.add('st-success');setTimeout(()=>{btn.classList.remove('st-success');btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF';btn.disabled=false;updateBtns()},2500);SysLogger.info('PDF gerado: '+fmtSize(blob.size))}catch(e){SysLogger.error('PDF: '+e.message);btn.classList.add('st-error');btn.textContent='Erro';setTimeout(()=>{btn.classList.remove('st-error');btn.innerHTML='PDF';btn.disabled=false;updateBtns()},2500)}}
 function imgToJPEG(blob,quality){return new Promise((res,rej)=>{const img=new Image();img.onload=function(){const maxD=TOKEN_MAX_IMG_DIMENSION;let w=img.naturalWidth,h=img.naturalHeight;if(maxD>0&&(w>maxD||h>maxD)){const sc=Math.min(maxD/w,maxD/h);w=Math.round(w*sc);h=Math.round(h*sc)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>{URL.revokeObjectURL(img.src);if(b)res(b);else rej(new Error('toBlob failed'))},'image/jpeg',quality)};img.onerror=()=>rej(new Error('img load failed'));img.src=URL.createObjectURL(blob)})}
 function getJPEGDims(u8){let i=0;if(u8[0]!==0xFF||u8[1]!==0xD8)return{w:800,h:600};i=2;while(i<u8.length-1){if(u8[i]!==0xFF){i++;continue}const m=u8[i+1];if(m>=0xC0&&m<=0xCF&&m!==0xC4&&m!==0xC8&&m!==0xCC){return{w:(u8[i+7]<<8)|u8[i+8],h:(u8[i+5]<<8)|u8[i+6]}}const len=(u8[i+2]<<8)|u8[i+3];i+=2+len}return{w:800,h:600}}
 
