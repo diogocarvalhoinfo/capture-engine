@@ -1,4 +1,4 @@
-# Capture Engine · v1.0
+# Capture Engine · v2.0
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -29,8 +29,8 @@ capture-engine.html    ← Arquivo único (Quine Engine)
     ├── Capture        ← Ctrl+V (clipboard), drag-drop, file picker com auto-sequenciamento
     ├── Reorder        ← Drag-and-drop nativo para reordenação
     ├── Annotation     ← Canvas overlay (círculo, retângulo, seta, desenho livre, texto)
-    ├── Text Preview   ← Visualizar documento com cópia e restauro direto
-    ├── PDF Engine     ← Gerador PDF raw (JPEG via Canvas, formato exato/A4)
+    ├── Text Preview   ← Visualizar texto com deteção de binários e cópia
+    ├── PDF Engine     ← Gerador PDF raw (JPEG via Canvas, Auto/A4V/A4H)
     ├── ZIP Engine     ← Gerador ZIP raw (CRC32, armazenamento de documentos limpos e únicos)
     ├── Visual Builder ← Modal de configuração com 4 abas
     ├── Quine Engine   ← Auto-mutação HTML com strip markers
@@ -54,7 +54,6 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 | `TOKEN_JPEG_QUALITY` | float | `0.92` | Qualidade JPEG no export PDF (0.70–0.95) |
 | `TOKEN_MAX_IMG_DIMENSION` | int | `0` | Dimensão máxima de redimensionamento (0=original) |
 | `TOKEN_AUTO_PURGE_HOURS` | int | `48` | Horas para purge automático de sessões |
-
 ---
 
 ## Perfis de Exportação (Quine)
@@ -96,30 +95,34 @@ capture-engine.html    ← Arquivo único (Quine Engine)
   - Renomeações manuais redundantes são resolvidas de forma idêntica.
 
 ### Organização & Visual Estético
+- **Gold Standard Convergence:** Tipografia, ícones e componentes alinhados com o SDE V48 Gold Standard — botões `36px`, ícones `14-16px`, modais com título `16px` e close `32px` circular.
 - **Design System Premium Borderless:** Painéis e cards de documentos utilizam margens transparentes livres de bordas rígidas, flutuando de forma orgânica no fundo.
 - **Geometria Técnica de Imagens:** Bordas quadradas (`border-radius: 0`) e ausência de divisórias rígidas nas legendas, aplicadas exclusivamente aos cartões de imagens.
 - **Drag-and-drop reorder** — Reordenação nativa e intuitiva de elementos.
-- **Removidos (Trash Bar)** — Itens excluídos são enviados para a barra inferior, permitindo restauro rápido ou eliminação definitiva.
+- **Removidos (Trash Bar)** — Ícones SVG inline semânticos (16px). Itens excluídos são enviados para a barra inferior, permitindo restauro rápido ou eliminação definitiva.
+- **Left Sidebar Scrollável** — Scroll invisível (`scrollbar-width: none`) sem compressão de conteúdo. Chips de layout ocupam sempre uma única linha.
 
 ### Visualizador de Texto Integrado
 - **Modal View (`#text-modal-overlay`):** Ao clicar num card de texto (ativo ou removido), abre um visualizador com fonte monoespaçada (`Consolas`, `Monaco`).
+- **Deteção de Binários:** Documentos não-textuais (PDF, DOCX, etc.) mostram ícone SVG com extensão e mensagem informativa centrada, em vez de conteúdo corrompido.
 - **Ações Rápidas:**
   - **Copiar Texto:** Envia o conteúdo do texto para o clipboard com feedback de botão animado de sucesso.
-  - **Download:** Descarrega o documento de texto bruto diretamente.
+  - **Download:** Disponível tanto para documentos ativos como removidos.
   - **Restaurar:** Botão disponível quando o texto está nos removidos, movendo-o imediatamente de volta para a lista principal.
 
 ### Anotação de Imagens
 - **5 ferramentas**: Círculo, Retângulo, Seta, Desenho Livre e Texto.
 - **Personalização:** Color picker e seletor de espessura de traço.
 - **Confirmar:** Salva as anotações achatando-as diretamente sobre o screenshot original de forma vetorial em PNG lossless.
+- **Download na Lixeira:** O botão Download está disponível tanto para imagens ativas como removidas.
 
 ### Exportação Otimizada
-- **PDF** — Imagens compactadas em JPEG (qualidade configurável). Suporta formatos A4 Vertical, A4 Horizontal e tamanho Exato do screenshot.
-- **ZIP** — Empacota screenshots e documentos brutos. Os screenshots usam os nomes das legendas limpos (ex: `imagem-1.png`, `imagem-2.jpg`) sem os prefixos numéricos `001-` obsoletos, prevenindo erros de extração nos sistemas operacionais.
+- **PDF** — Imagens compactadas em JPEG (qualidade configurável). Suporta formatos Auto (misto), A4 Vertical e A4 Horizontal.
+- **ZIP** — Empacota screenshots e documentos brutos com extensões correctas por tipo MIME (PNG, JPG, WEBP, GIF, AVIF, BMP). Os screenshots usam os nomes das legendas limpos (ex: `imagem-1.png`, `imagem-2.webp`) sem prefixos numéricos `001-`, prevenindo erros de extração nos sistemas operacionais.
 
 ### Sessões
 - **Auto-save** a cada 5 segundos no IndexedDB.
-- **Restore banner** ao abrir para recuperação rápida.
+- **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
 - **Sessões Anteriores Cronológicas:** Sessões sem título agora são nomeadas cronologicamente como `Sessão-1`, `Sessão-2`, etc., facilitando a navegação na barra lateral esquerda.
 - **Purge automático** de sessões expiradas ao iniciar.
 
@@ -146,7 +149,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-EV/V3/
+V8/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── agents.md             ← Regras operacionais para agentes IA
@@ -155,4 +158,4 @@ EV/V3/
 
 ---
 
-*Capture Engine v1.0 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine v2.0 · Design de Excelência FAANG · Air-gapped ready*

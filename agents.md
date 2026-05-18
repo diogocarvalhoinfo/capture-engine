@@ -1,4 +1,4 @@
-# Agents · Capture Engine v1.0
+# Agents · Capture Engine v2.0
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V7 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`).
+- **Labels de UI** em português neutro harmonizado padrão V8 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -41,12 +41,25 @@
 - Z-index: modais em `9999`, banners em `1000`.
 - Dark mode via classe `body.dark` (nunca `prefers-color-scheme`).
 
-### 2.3 Estética e Design Geométrico
-- Cartões de documentos (`.d-item`) e badges de tamanho (`.d-size`) devem permanecer **sem bordas visíveis** (transparentes/removidas).
-- Legendas de imagens (`.t-label`) e inputs de documentos (`.d-input`) devem ter tamanho `11px`, peso de fonte normal (`font-weight: 400`), e a linha divisória sobre as legendas das imagens deve ser omitida.
-- Imagens, wrappings de imagem e legendas de imagem devem possuir **bordas perfeitamente quadradas** (`border-radius: 0`). Cartões textuais e botões retêm cantos arredondados (`--radius-sm`, `--radius-md`).
+### 2.3 Gold Standard — Escala e Proporção
+- **Botões (`.btn-send`)**: `height:36px`, `font-size:13px`, `padding:0 18px`, SVG interno `14px`, `stroke-width:2`.
+- **Spinner**: `14px`.
+- **Inputs de sessão (`.sess-input`)**: `border: 1px solid transparent` por defeito. Borda visível apenas no focus com `box-shadow`.
+- **Ícones de cabeçalho (`.blk-hdr svg`)**: `16px`.
+- **Modais**: Título `16px` / Close `32px` circular com `background:var(--bg)` / SVG `16px` `stroke-width:2`.
+- **Badges**: `.count-badge` a `11px`, `#trash-badge` a `10px`.
+- **Sidebar sessions**: Nomes `12px`, datas `11px`, empty `12px`.
+- **Empty states**: Título `14px`, pick-link `13px`.
+- **Chips**: `flex-wrap:nowrap`, `flex:1 1 0` — sempre numa única linha, encolhem em vez de quebrar.
 
-### 2.4 JavaScript
+### 2.4 Estética e Design Geométrico
+- Cartões de documentos (`.d-item`) e badges de tamanho (`.d-size`) devem permanecer **sem bordas visíveis** (transparentes/removidas).
+- Legendas de imagens (`.t-label`) devem ter tamanho `11px` e inputs de documentos (`.d-input`) devem ter tamanho `13px`, ambos com peso de fonte normal (`font-weight: 400`), e a linha divisória sobre as legendas das imagens deve ser omitida.
+- Imagens, wrappings de imagem e legendas de imagem devem possuir **bordas perfeitamente quadradas** (`border-radius: 0`). Cartões textuais e botões retêm cantos arredondados (`--radius-sm`, `--radius-md`).
+- **Left sidebar**: `overflow-y:auto` com scrollbar invisível. Filhos com `flex-shrink:0` — scroll em vez de compressão.
+- **Trash bar**: Ícones SVG inline `16px` (sem wrappers `sb-icon-btn`).
+
+### 2.5 JavaScript
 - IIFE obrigatório: `(function(){'use strict'; ... })();`
 - SysLogger para logging (nunca `console.log` directo em código de produção).
 - Funções expostas ao DOM via `window.funcName = ...`.
@@ -127,4 +140,4 @@ Antes de declarar uma tarefa completa:
 
 ---
 
-*Capture Engine v1.0 · Agents Operational Rules · FAANG Standards*
+*Capture Engine v2.0 · Agents Operational Rules · FAANG Standards*

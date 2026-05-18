@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine v1.0
+# Design Tokens · Capture Engine v2.0
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -72,7 +72,7 @@
 | `--radius-md` | `8px` | Cantos médios (painéis e caixas internas) |
 | `--radius-lg` | `12px` | Grandes cantos (diálogos, modais principais) |
 | `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho |
-| `--thumb-size` | `96px` | Tamanho da caixa de thumbnail de imagem |
+| `--thumb-size` | `140px` | Tamanho da caixa de thumbnail de imagem |
 
 > [!IMPORTANT]
 > **Cantos das Imagens**: Imagens têm uma regra geométrica técnica contrastante.
@@ -86,7 +86,7 @@
 |---|---|---|
 | Base | `0` | Grelha de conteúdos, listas de thumbs e painéis |
 | Banner | `1000` | Barra de aviso para restaurar sessões antigas |
-| Modal overlay | `9999` | `#img-modal-overlay`, `#text-modal-overlay` e `#confirm-overlay` |
+| Modal overlay | `9999` | `#img-modal-overlay`, `#text-modal-overlay` |
 
 ---
 
@@ -94,11 +94,10 @@
 
 | Nome da Animação | Efeito e Uso |
 |---|---|
+| `spin` | Indicador giratório em botões de exportação pendentes (PDF/ZIP) |
 | `fadeIn` | Entrada suave de novos thumbnails e documentos colados |
 | `modalIn` | Escalonamento e opacidade suaves ao abrir modais (scale `0.96` para `1`) |
-| `slideDown` | Aparição descendente do banner de restauro superior |
 | `fadeInTab` | Transição rápida entre abas do painel Visual Builder |
-| `spin` | Indicador giratório em botões de exportação pendentes (PDF/ZIP) |
 
 ---
 
@@ -119,7 +118,6 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | Captura |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | Manutenção |
-| `TOKEN_FOOTER_TEXT` | `string` | `''` | — |
 
 ---
 
@@ -127,19 +125,23 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 
 ### Top Bar
 ```
-[icon][Capture Engine]   [User][Equipamento]   [PDF][ZIP][⚙][💾][🌙]
-  ↑ tb-brand             ↑ tb-session          ↑ tb-actions
+[icon][Capture Engine]                              [⚙][💾][🌙]
+  ↑ tb-brand                                        ↑ tb-actions
 ```
 
 ### Layout Principal (Borderless & Geometric Panels)
 ```
-┌──────────────────────────────┬──────────────────┬────┐
-│  IMAGENS (Quadradas)          │  DOCUMENTOS      │ SB │
-│  [blk-hdr]                   │  [blk-hdr]       │ ☰  │
-│  ┌──────────────────────┐    │  ┌────────────┐  │    │
-│  │ drop-zone / grid     │    │  │ doc-list   │  │    │
-│  └──────────────────────┘    │  └────────────┘  │    │
-└──────────────────────────────┴──────────────────┴────┘
+┌────────────┬──────────────────────────┬──────────────────┬────┐
+│ LEFT       │  IMAGENS (Quadradas)      │  DOCUMENTOS      │ SB │
+│ SIDEBAR    │  [blk-hdr]                │  [blk-hdr]       │ ☰  │
+│ ┌────────┐ │  ┌────────────────────┐   │  ┌────────────┐  │    │
+│ │ User   │ │  │ drop-zone / grid   │   │  │ doc-list   │  │    │
+│ │ Equip. │ │  └────────────────────┘   │  └────────────┘  │    │
+│ │ Layout │ │                           │                  │    │
+│ │ PDF    │ │                           │                  │    │
+│ │ ZIP    │ │                           │                  │    │
+│ └────────┘ │                           │                  │    │
+└────────────┴──────────────────────────┴──────────────────┴────┘
 ```
 
 ### Visualizar documento (`#text-modal-overlay`)
@@ -148,13 +150,31 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 │  Visualizar documento - [Título]                 [X]  │
 ├──────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────┐  │
-│  │ Console Area (Consolas, Monaco, Courier)       │  │
-│  │                                                │  │
+│  │ Texto: Console Area (Consolas, Monaco)         │  │
+│  │ Binário: SVG icon + .EXT + mensagem centrada   │  │
 │  └────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────┤
 │    [Restaurar]     [Copiar Texto]      [Download]     │
 └──────────────────────────────────────────────────────┘
 ```
+
+> [!NOTE]
+> **Modo Binário**: Para documentos não-textuais, o textarea e o botão "Copiar Texto" são ocultados.
+> É exibido um ícone SVG de documento, a extensão em uppercase e uma mensagem informativa centrada.
+
+### Left Sidebar (Flexível)
+
+> [!IMPORTANT]
+> A left sidebar utiliza `overflow-y: auto` com scrollbar invisível (`scrollbar-width: none`),
+> garantindo que todo o conteúdo é acessível em qualquer altura de viewport.
+> Os filhos usam `flex-shrink: 0` para manter o tamanho natural e forçar scroll em vez de compressão.
+> Chips de layout (`chips-group`) usam `flex-wrap: nowrap` com `flex: 1 1 0` para ocupar sempre uma única linha.
+
+### Trash Bar (Semântica Inline)
+
+> [!NOTE]
+> A trash bar utiliza ícones SVG inline (16px) em vez de `sb-icon-btn` wrappers,
+> mantendo o alinhamento direto com o texto "Removidos" e o badge de contagem.
 
 ---
 
@@ -162,23 +182,51 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 
 | Elemento / Classe | Tamanho (Font-size) | Peso (Font-weight) | Notas |
 |---|---|---|---|
-| Brand name | `15px` | `600` | Logo superior principal |
+| Brand name | `20px` | `600` | Logo superior principal |
 | Section titles | `11px` | `600` | Caixa alta com `letter-spacing: 0.6px` |
 | Body text | `14px` | `400` | Texto geral |
-| Document Inputs (`.d-input`) | `11px` | `400` (Normal) | Títulos de documentos sem negrito |
+| `.btn-send` | `13px` | `600` | Botões de ação. Altura `36px`, padding `0 18px` |
+| `.btn-send svg` | `14px` | — | Ícones internos de botões |
+| Document Inputs (`.d-input`) | `13px` | `400` (Normal) | Títulos de documentos sem negrito |
 | Image Labels (`.t-label`) | `11px` | `400` (Normal) | Legendas de imagens sem negrito |
-| Micro labels / Badges | `10-11px` | `400` a `600` | Badges de tamanho e estado |
-| Modal title | `20px` | `600` | Título nos cabeçalhos de modais |
+| `.blk-hdr svg` | `16px` | — | Ícones de cabeçalho de bloco |
+| `.blk-hdr-title` | `11px` | `600` | Títulos de bloco uppercase |
+| `.count-badge` | `11px` | `700` | Badges de contagem accent |
+| `#trash-badge` | `10px` | `700` | Badge de contagem no trash bar |
+| `.sb-sess-name` | `12px` | `500` | Nomes de sessão na sidebar |
+| `.sb-sess-date` | `11px` | `400` | Datas de sessão na sidebar |
+| `.empty-st-title` | `14px` | `500` | Títulos de estados vazios |
+| `.pick-link` | `13px` | `400` | Links de acção nos estados vazios |
+| `.modal-title` | `16px` | `600` | Título nos cabeçalhos de modais |
+| `.modal-close` | `32px` (circle) | — | Botão fechar circular com `var(--bg)` |
 
 ---
 
-## 9. Responsividade
+## 9. Padrão de Botões em Modais
 
-Breakpoint único de adaptação móvel: `max-width: 900px`
+| Ação | Estilo | Cor |
+|---|---|---|
+| **Restaurar** | Accent fill (`.btn-send` default) | `var(--accent)` + `#fff` |
+| **Copiar Texto** | Accent fill | `var(--accent)` + `#fff` |
+| **Download** | Outline | `var(--surface)` + `var(--text)` + `border: var(--border)` |
+| **Confirmar** (anotação) | Green fill | `var(--color-green)` |
+| **Cancelar** (anotação) | Outline | `var(--surface)` + `var(--text)` + `border: var(--border)` |
+
+> [!IMPORTANT]
+> O botão Download está **sempre visível** em todos os modais, tanto para itens ativos como removidos (lixeira).
+
+---
+
+## 10. Responsividade
+
+Dois breakpoints de adaptação móvel:
+- **`max-width: 900px`** — Layout vertical, sidebar oculta, blocos empilhados
+- **`max-width: 480px`** — Padding e margens compactos para telas pequenas
+
 - Grelhas horizontais convertem-se em fluxos verticais fluidos.
-- Barra lateral recolhida migra para o rodapé.
+- Barra lateral direita (sessões) é ocultada em mobile.
 - Zonas de drop ajustam-se para toques diretos de dedo.
 
 ---
 
-*Capture Engine v1.0 · Design Tokens Specification · FAANG Standards*
+*Capture Engine v2.0 · Design Tokens Specification · FAANG Standards*
