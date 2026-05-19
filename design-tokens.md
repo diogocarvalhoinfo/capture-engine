@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine v2.0
+# Design Tokens · Capture Engine V9
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -38,6 +38,8 @@
 > **Estética Borderless**:
 > - Elementos `.d-item` (cards de documentos) têm bordas definidas como `1px solid transparent` para flutuar organicamente sobre o fundo.
 > - Badges de tamanho `.d-size` não possuem linhas limítrofes, exibindo apenas as dimensões de forma leve.
+> **Carregamento Síncrono (Anti-Flicker)**:
+> - O script inline localizado imediatamente após `<body>` aplica a classe `.dark` antes de qualquer pintura do DOM, prevenindo FOUC (Flash of Unstyled Content) ou flash branco em refreshes noturnos.
 
 ---
 
@@ -110,7 +112,7 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `TOKEN_TITLE_START` | `string` | `'Capture'` | Interface |
 | `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | Interface |
 | `TOKEN_TITLE_END` | `string` | `''` | — |
-| `TOKEN_SUBTITLE` | `string` | `''` | Interface |
+| `TOKEN_SUBTITLE` | `string` | `''` | — (Obsoleto no visualizador, preservado para Quine) |
 | `TOKEN_MAIN_COLOR` | `hex` | `'#0ea5e9'` | Interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `hex` | `''` | Interface |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Sessão |
@@ -169,12 +171,18 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 > garantindo que todo o conteúdo é acessível em qualquer altura de viewport.
 > Os filhos usam `flex-shrink: 0` para manter o tamanho natural e forçar scroll em vez de compressão.
 > Chips de layout (`chips-group`) usam `flex-wrap: nowrap` com `flex: 1 1 0` para ocupar sempre uma única linha.
+> A navegação de sessões suporta estado `.active` destacado com cor harmónica suave e transição de opacidade, com botão de deleção fixo invisível por padrão (evitando pulos de layout ao transitar).
 
 ### Trash Bar (Semântica Inline)
 
 > [!NOTE]
 > A trash bar utiliza ícones SVG inline (16px) em vez de `sb-icon-btn` wrappers,
 > mantendo o alinhamento direto com o texto "Removidos" e o badge de contagem.
+
+### Rodapé de Créditos (`#footer-credits`)
+
+> [!NOTE]
+> O rodapé de créditos institucional (`© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM`) é posicionado de forma síncrona a 50% de opacidade (`opacity: 0.5`) no espaço de margem do trash bar de modo a não colapsar ou ocupar espaço extra na tela. Possui `pointer-events: none` para máxima invisibilidade operacional.
 
 ---
 
@@ -197,8 +205,8 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `.sb-sess-date` | `11px` | `400` | Datas de sessão na sidebar |
 | `.empty-st-title` | `14px` | `500` | Títulos de estados vazios |
 | `.pick-link` | `13px` | `400` | Links de acção nos estados vazios |
-| `.modal-title` | `16px` | `600` | Título nos cabeçalhos de modais |
-| `.modal-close` | `32px` (circle) | — | Botão fechar circular com `var(--bg)` |
+| `.modal-title` | `16px` | `600` | Título centralizado horizontalmente por padrão |
+| `.modal-close` | `32px` (circle) | — | Botão fechar circular com `var(--bg)` posicionado absolutamente à direita |
 
 ---
 
@@ -229,4 +237,4 @@ Dois breakpoints de adaptação móvel:
 
 ---
 
-*Capture Engine v2.0 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V9 · Design Tokens Specification · FAANG Standards*

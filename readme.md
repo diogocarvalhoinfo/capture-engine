@@ -1,4 +1,4 @@
-# Capture Engine · v2.0
+# Capture Engine · V9
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -101,6 +101,8 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 - **Drag-and-drop reorder** — Reordenação nativa e intuitiva de elementos.
 - **Removidos (Trash Bar)** — Ícones SVG inline semânticos (16px). Itens excluídos são enviados para a barra inferior, permitindo restauro rápido ou eliminação definitiva.
 - **Left Sidebar Scrollável** — Scroll invisível (`scrollbar-width: none`) sem compressão de conteúdo. Chips de layout ocupam sempre uma única linha.
+- **Prevenção de FOUC (Anti-Flicker):** Carregamento síncrono do Dark Mode logo após a tag body, eliminando completamente a cintilação ou "flash branco" indesejado ao iniciar à noite.
+- **Créditos Integrados (Gold Standard):** Rodapé de rodagem institucional (`© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM`) incorporado à base da interface a 50% de opacidade sem prejudicar a área útil.
 
 ### Visualizador de Texto Integrado
 - **Modal View (`#text-modal-overlay`):** Ao clicar num card de texto (ativo ou removido), abre um visualizador com fonte monoespaçada (`Consolas`, `Monaco`).
@@ -123,7 +125,9 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ### Sessões
 - **Auto-save** a cada 5 segundos no IndexedDB.
 - **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
+- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V9).
 - **Sessões Anteriores Cronológicas:** Sessões sem título agora são nomeadas cronologicamente como `Sessão-1`, `Sessão-2`, etc., facilitando a navegação na barra lateral esquerda.
+- **Segurança de Deleção:** Eliminar a sessão atualmente ativa aciona um recarregamento limpo automático da interface para manter o IndexedDB perfeitamente íntegro.
 - **Purge automático** de sessões expiradas ao iniciar.
 
 ---
@@ -149,7 +153,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-V8/
+V9/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── agents.md             ← Regras operacionais para agentes IA
@@ -158,4 +162,4 @@ V8/
 
 ---
 
-*Capture Engine v2.0 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V9 · Design de Excelência FAANG · Air-gapped ready*

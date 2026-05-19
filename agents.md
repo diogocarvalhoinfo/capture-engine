@@ -1,4 +1,4 @@
-# Agents · Capture Engine v2.0
+# Agents · Capture Engine V9
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V8 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
+- **Labels de UI** em português neutro harmonizado padrão V9 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -140,4 +140,4 @@ Antes de declarar uma tarefa completa:
 
 ---
 
-*Capture Engine v2.0 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V9 · Agents Operational Rules · FAANG Standards*
