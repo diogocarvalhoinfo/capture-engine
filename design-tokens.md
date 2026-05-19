@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V9
+# Design Tokens · Capture Engine V10
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -120,6 +120,7 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | Captura |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | Manutenção |
+| `TOKEN_DEBUG_MODE` | `bool` | `true` | — (Controle de console em build de produção) |
 
 ---
 
@@ -237,4 +238,4 @@ Dois breakpoints de adaptação móvel:
 
 ---
 
-*Capture Engine V9 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V10 · Design Tokens Specification · FAANG Standards*

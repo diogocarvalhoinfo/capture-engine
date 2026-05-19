@@ -2,6 +2,7 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Capture Engine</title>
 <style>
@@ -572,6 +573,18 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   </div>
 </div>
 
+<!-- ═══ MINI-MODAL: Texto de anotação ═══ -->
+<div id="ann-text-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:var(--radius-lg);padding:20px;width:320px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.25)">
+    <span style="font-size:16px;font-weight:600;color:var(--text)">Texto da anotação</span>
+    <input id="ann-text-input" type="text" class="text-input-sm" placeholder="Escreve o texto aqui..." style="width:100%;box-sizing:border-box">
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-send" id="ann-text-cancel" style="background:var(--surface);color:var(--text);border:1px solid var(--border)">Cancelar</button>
+      <button class="btn-send" id="ann-text-confirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ MODAL: Visualizar documento/texto ═══ -->
 <div class="modal-overlay" id="text-modal-overlay">
   <div class="modal-box" style="max-width:85vw; width:650px; height:80vh">
@@ -602,7 +615,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 </div>
 
 
-<!-- VISUAL BUILDER MODAL (V9) -->
+<!-- VISUAL BUILDER MODAL (V10) -->
 <!-- ADMIN_EDIT_START -->
 <div class="sb-overlay" id="vb-overlay">
   <div class="sb-modal" style="max-width:520px">
@@ -610,7 +623,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     <div class="sb-header">
       <div class="sb-title">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Visual Builder <span style="font-size:11px;background:var(--border);padding:2px 6px;border-radius:4px;margin-left:6px">V9</span>
+        Visual Builder <span style="font-size:11px;background:var(--border);padding:2px 6px;border-radius:4px;margin-left:6px">V10</span>
       </div>
       <p class="sb-subtitle">Preferências da interface</p>
     </div>
@@ -711,9 +724,9 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 <script>
 /* ═══ SYSLOGGER ═══ */
 const SysLogger={
-  info:m=>console.log('%c[CE]%c '+m,'color:#22c55e;font-weight:bold;','color:inherit;'),
-  warn:m=>console.log('%c[CE]%c '+m,'color:#eab308;font-weight:bold;','color:inherit;'),
-  error:m=>console.log('%c[CE]%c '+m,'color:#ef4444;font-weight:bold;','color:inherit;')
+  info:m=>{if(typeof TOKEN_DEBUG_MODE!=='undefined'&&TOKEN_DEBUG_MODE)console.log('%c[CE]%c '+m,'color:#22c55e;font-weight:bold;','color:inherit;')},
+  warn:m=>{if(typeof TOKEN_DEBUG_MODE!=='undefined'&&TOKEN_DEBUG_MODE)console.log('%c[CE]%c '+m,'color:#eab308;font-weight:bold;','color:inherit;')},
+  error:m=>console.error('%c[CE]%c '+m,'color:#ef4444;font-weight:bold;','color:inherit;')
 };
 
 (function(){'use strict';
@@ -730,6 +743,7 @@ const TOKEN_SHOW_SESSION_PC=true;
 const TOKEN_JPEG_QUALITY=0.92;
 const TOKEN_MAX_IMG_DIMENSION=0;
 const TOKEN_AUTO_PURGE_HOURS=48;
+const TOKEN_DEBUG_MODE=true;
 
 /* ═══ UTILITIES ═══ */
 const $=id=>document.getElementById(id);
@@ -757,12 +771,6 @@ function updateStatusBar(){
   let totalBytes=0;
   images.forEach(i=>totalBytes+=i.blob.size);
   docs.forEach(d=>totalBytes+=d.size||d.blob?.size||0);
-  let parts=[];
-  if(ni||nd){
-    if(ni)parts.push(`<span>${ni}</span> img`+(ni>1?'s':''));
-    if(nd)parts.push(`<span>${nd}</span> doc`+(nd>1?'s':''));
-    parts.push(`<span>${fmtSize(totalBytes)}</span>`);
-  }
   let timeStr='';
   if(lastSaveAt){
     const ago=Math.round((Date.now()-lastSaveAt)/1000);
@@ -770,8 +778,14 @@ function updateStatusBar(){
     else timeStr='Gravado h\u00e1 '+Math.floor(ago/60)+'m';
   }else{timeStr='Pronto'}
   elT.textContent=timeStr;
-  if(parts.length){
-    elD.innerHTML=parts.join(' &middot; ');
+  elD.innerHTML='';
+  if(ni||nd){
+    function mkPart(val,label){const s=document.createElement('span');s.textContent=val;const f=document.createTextNode('\u00a0'+label);const wrap=document.createElement('span');wrap.appendChild(s);wrap.appendChild(f);return wrap}
+    const parts=[];
+    if(ni)parts.push(mkPart(ni,'img'+(ni>1?'s':'')));
+    if(nd)parts.push(mkPart(nd,'doc'+(nd>1?'s':'')));
+    parts.push(mkPart(fmtSize(totalBytes),''));
+    parts.forEach((p,i)=>{elD.appendChild(p);if(i<parts.length-1){const dot=document.createTextNode(' \u00b7 ');elD.appendChild(dot)}});
     elD.classList.add('vis');
   }else{
     elD.classList.remove('vis');
@@ -780,7 +794,7 @@ function updateStatusBar(){
 async function triggerSave(){if(isDirty){await saveSession();lastSaveAt=Date.now();isDirty=false;updateStatusBar()}}
 
 /* ═══ INDEXEDDB ═══ */
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('CaptureEngineDB',2);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains('sessions')){const s=db.createObjectStore('sessions',{keyPath:'id'});s.createIndex('createdAt','createdAt',{unique:false})}if(!db.objectStoreNames.contains('images')){const s=db.createObjectStore('images',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false});s.createIndex('order','order',{unique:false})}if(!db.objectStoreNames.contains('documents')){const s=db.createObjectStore('documents',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false});s.createIndex('order','order',{unique:false})}if(!db.objectStoreNames.contains('removed_images')){const s=db.createObjectStore('removed_images',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false})}if(!db.objectStoreNames.contains('removed_documents')){const s=db.createObjectStore('removed_documents',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false})}};r.onsuccess=e=>{_db=e.target.result;res()};r.onerror=()=>rej(r.error)})}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('CaptureEngineDB',2);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains('sessions')){const s=db.createObjectStore('sessions',{keyPath:'id'});s.createIndex('createdAt','createdAt',{unique:false})}if(!db.objectStoreNames.contains('images')){const s=db.createObjectStore('images',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false});s.createIndex('order','order',{unique:false})}if(!db.objectStoreNames.contains('documents')){const s=db.createObjectStore('documents',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false});s.createIndex('order','order',{unique:false})}if(!db.objectStoreNames.contains('removed_images')){const s=db.createObjectStore('removed_images',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false})}if(!db.objectStoreNames.contains('removed_documents')){const s=db.createObjectStore('removed_documents',{keyPath:'id'});s.createIndex('sessionId','sessionId',{unique:false})}};r.onsuccess=e=>{_db=e.target.result;res()};r.onerror=()=>rej(r.error);r.onblocked=()=>{SysLogger.warn('IDB bloqueado \u2014 fecha outras abas com o Capture Engine');alert('O Capture Engine est\u00e1 aberto noutras abas. Fecha-as e recarrega esta p\u00e1gina.')}})}
 function idbTx(store,mode,fn){return new Promise((res,rej)=>{const tx=_db.transaction(store,mode),st=tx.objectStore(store),r=fn(st);tx.onabort=()=>rej(tx.error||new Error('Transaction aborted'));r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 const idbPut=(s,d)=>idbTx(s,'readwrite',st=>st.put(d));
 const idbGet=(s,id)=>idbTx(s,'readonly',st=>st.get(id));
@@ -979,10 +993,26 @@ $('ann-save').onclick=async()=>{if(!annHistory.length){annDeactivate();return}co
 $('ann-undo').onclick=()=>{if(annHistory.length){annHistory.pop();annRedraw()}};
 document.querySelectorAll('.ann-btn[data-tool]').forEach(b=>{b.onclick=()=>annSetTool(b.dataset.tool)});
 const cv=$('ann-canvas');
-cv.addEventListener('mousedown',e=>{if(!annActive)return;const p=annCanvasXY(e);annDrawing=true;annStart=p;annPath=[p];if(annTool==='text'){annDrawing=false;const txt=prompt('Texto da anotação:');if(txt){annHistory.push({type:'text',x1:p.x,y1:p.y,txt,color:annColor(),lw:annLineW()});annRedraw()}}});
+cv.addEventListener('mousedown',e=>{if(!annActive)return;const p=annCanvasXY(e);annDrawing=true;annStart=p;annPath=[p];if(annTool==='text'){annDrawing=false;openAnnTextModal(p.x,p.y)}});
 cv.addEventListener('mousemove',e=>{if(!annDrawing||!annActive)return;const p=annCanvasXY(e);const ctx=annGetCtx();annRedraw();ctx.strokeStyle=annColor();ctx.lineWidth=annLineW();ctx.lineCap='round';ctx.lineJoin='round';if(annTool==='circle'){const rx=Math.abs(p.x-annStart.x)/2,ry=Math.abs(p.y-annStart.y)/2,cx=Math.min(annStart.x,p.x)+rx,cy=Math.min(annStart.y,p.y)+ry;ctx.beginPath();ctx.ellipse(cx,cy,rx||1,ry||1,0,0,Math.PI*2);ctx.stroke()}else if(annTool==='rect'){ctx.strokeRect(Math.min(annStart.x,p.x),Math.min(annStart.y,p.y),Math.abs(p.x-annStart.x),Math.abs(p.y-annStart.y))}else if(annTool==='arrow'){ctx.beginPath();ctx.moveTo(annStart.x,annStart.y);ctx.lineTo(p.x,p.y);ctx.stroke();const a=Math.atan2(p.y-annStart.y,p.x-annStart.x),hl=12+annLineW()*2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-hl*Math.cos(a-0.4),p.y-hl*Math.sin(a-0.4));ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-hl*Math.cos(a+0.4),p.y-hl*Math.sin(a+0.4));ctx.stroke()}else if(annTool==='free'){annPath.push(p);ctx.beginPath();ctx.moveTo(annPath[0].x,annPath[0].y);for(let i=1;i<annPath.length;i++)ctx.lineTo(annPath[i].x,annPath[i].y);ctx.stroke()}});
 cv.addEventListener('mouseup',e=>{if(!annDrawing||!annActive)return;annDrawing=false;const p=annCanvasXY(e);if(annTool==='free'){annHistory.push({type:'free',pts:[...annPath],color:annColor(),lw:annLineW()})}else if(annTool!=='text'){annHistory.push({type:annTool,x1:annStart.x,y1:annStart.y,x2:p.x,y2:p.y,color:annColor(),lw:annLineW()})}annRedraw()});
 cv.addEventListener('mouseleave',()=>{if(annDrawing){annDrawing=false;annRedraw()}});
+}
+function openAnnTextModal(px,py){
+  const overlay=$('ann-text-overlay');
+  const inp=$('ann-text-input');
+  inp.value='';
+  overlay.style.display='flex';
+  setTimeout(()=>inp.focus(),50);
+  function confirm(){
+    const txt=inp.value.trim();
+    overlay.style.display='none';
+    if(txt){annHistory.push({type:'text',x1:px,y1:py,txt,color:annColor(),lw:annLineW()});annRedraw()}
+  }
+  function cancel(){overlay.style.display='none'}
+  $('ann-text-confirm').onclick=confirm;
+  $('ann-text-cancel').onclick=cancel;
+  inp.onkeydown=e=>{if(e.key==='Enter')confirm();if(e.key==='Escape')cancel()};
 }
 
 /* ═══ CLIPBOARD HANDLER ═══ */
@@ -1255,15 +1285,16 @@ function imgToJPEG(blob,quality){return new Promise((res,rej)=>{const img=new Im
 function getJPEGDims(u8){let i=0;if(u8[0]!==0xFF||u8[1]!==0xD8)return{w:800,h:600};i=2;while(i<u8.length-1){if(u8[i]!==0xFF){i++;continue}const m=u8[i+1];if(m>=0xC0&&m<=0xCF&&m!==0xC4&&m!==0xC8&&m!==0xCC){return{w:(u8[i+7]<<8)|u8[i+8],h:(u8[i+5]<<8)|u8[i+6]}}const len=(u8[i+2]<<8)|u8[i+3];i+=2+len}return{w:800,h:600}}
 
 /* ═══ ZIP ENGINE ═══ */
-async function generateZIP(){const btn=$('btn-zip');btn.innerHTML='<div class="spinner"></div> Processando...';btn.disabled=true;try{await new Promise(r=>setTimeout(r,50));const files=[];for(const img of images){const u8=new Uint8Array(await img.blob.arrayBuffer());const extMap={'image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif','image/bmp':'bmp'};const ext=extMap[img.blob.type]||'jpg';const cleanLabel=(img.label||'imagem').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-');const name=`${cleanLabel}.${ext}`;files.push({name,data:u8})}for(const dc of docs){const u8=new Uint8Array(await dc.blob.arrayBuffer());files.push({name:dc.name,data:u8})}const zipBlob=buildZIP(files);dlBlob(zipBlob,buildFilename('zip'));btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído';btn.classList.add('st-success');setTimeout(()=>{btn.classList.remove('st-success');btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> ZIP';btn.disabled=false;updateBtns()},2500);SysLogger.info('ZIP gerado: '+fmtSize(zipBlob.size))}catch(e){SysLogger.error('ZIP: '+e.message);btn.classList.add('st-error');btn.textContent='Erro';setTimeout(()=>{btn.classList.remove('st-error');btn.innerHTML='ZIP';btn.disabled=false;updateBtns()},2500)}}
+async function generateZIP(){const btn=$('btn-zip');btn.innerHTML='<div class="spinner"></div> Processando...';btn.disabled=true;try{await new Promise(r=>setTimeout(r,50));const usedZipNames=new Set();function dedupeZipName(name){if(!usedZipNames.has(name)){usedZipNames.add(name);return name}const dot=name.lastIndexOf('.');const base=dot>0?name.slice(0,dot):name;const ext=dot>0?name.slice(dot):'';let n=1,candidate;do{candidate=base+'-'+(++n)+ext}while(usedZipNames.has(candidate));usedZipNames.add(candidate);return candidate}const files=[];for(const img of images){const u8=new Uint8Array(await img.blob.arrayBuffer());const extMap={'image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif','image/bmp':'bmp'};const ext=extMap[img.blob.type]||'jpg';const cleanLabel=(img.label||'imagem').replace(/[^a-zA-Z0-9\-_ ]/g,'').trim().replace(/\s+/g,'-');const name=`${cleanLabel}.${ext}`;files.push({name:dedupeZipName(name),data:u8})}for(const dc of docs){const u8=new Uint8Array(await dc.blob.arrayBuffer());const safeDocName=dc.name.replace(/[/\\]/g,'_').replace(/\.\.\//g,'').replace(/^\.*\//g,'').replace(/^\.+/,'')||'documento';files.push({name:dedupeZipName(safeDocName),data:u8})}const zipBlob=buildZIP(files);dlBlob(zipBlob,buildFilename('zip'));btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído';btn.classList.add('st-success');setTimeout(()=>{btn.classList.remove('st-success');btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> ZIP';btn.disabled=false;updateBtns()},2500);SysLogger.info('ZIP gerado: '+fmtSize(zipBlob.size))}catch(e){SysLogger.error('ZIP: '+e.message);btn.classList.add('st-error');btn.textContent='Erro';setTimeout(()=>{btn.classList.remove('st-error');btn.innerHTML='ZIP';btn.disabled=false;updateBtns()},2500)}}
 function buildZIP(files){const crc32Tab=(function(){const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[i]=c}return t})();function crc32(buf){let c=0xFFFFFFFF;for(let i=0;i<buf.length;i++)c=crc32Tab[(c^buf[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0}function u16(v){return[v&0xFF,(v>>8)&0xFF]}function u32(v){return[v&0xFF,(v>>8)&0xFF,(v>>16)&0xFF,(v>>24)&0xFF]}const localParts=[],centralParts=[];let localOfs=0;for(const f of files){const nameU8=ENC.encode(f.name);const crc=crc32(f.data);const now=new Date();const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;const dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;const local=new Uint8Array([0x50,0x4B,0x03,0x04,20,0,0,0,0,0,...u16(dosTime),...u16(dosDate),...u32(crc),...u32(f.data.length),...u32(f.data.length),...u16(nameU8.length),0,0,...nameU8]);const central=new Uint8Array([0x50,0x4B,0x01,0x02,20,0,20,0,0,0,0,0,...u16(dosTime),...u16(dosDate),...u32(crc),...u32(f.data.length),...u32(f.data.length),...u16(nameU8.length),0,0,0,0,0,0,0,0,0,0,0,0,...u32(localOfs),...nameU8]);localParts.push(local,f.data);centralParts.push(central);localOfs+=local.length+f.data.length}const centralOfs=localOfs;let centralSize=0;centralParts.forEach(p=>centralSize+=p.length);const eocd=new Uint8Array([0x50,0x4B,0x05,0x06,0,0,0,0,...u16(files.length),...u16(files.length),...u32(centralSize),...u32(centralOfs),0,0]);return new Blob([...localParts,...centralParts,eocd],{type:'application/zip'})}
 
 /* ═══ QUINE ENGINE ═══ */
 /* ADMIN_JS_START */
 let PRISTINE_HTML=null;
-async function capturePristine(){try{const r=await fetch(location.href);if(r.ok)PRISTINE_HTML=await r.text();else throw new Error('fetch fail')}catch(e){PRISTINE_HTML=document.documentElement.outerHTML;SysLogger.warn('Quine fallback: outerHTML')}}
+const BOOT_HTML=document.documentElement.outerHTML;
+async function capturePristine(){try{const r=await fetch(location.href);if(r.ok)PRISTINE_HTML=await r.text();else throw new Error('fetch fail')}catch(e){PRISTINE_HTML=BOOT_HTML;SysLogger.warn('Quine fallback: BOOT_HTML')}}
 function sanitizeForQuine(s){return String(s).replace(/ADMIN_BUTTONS_START/g,'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g,'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g,'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g,'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g,'ADM​IN_JS_START').replace(/ADMIN_JS_END/g,'ADM​IN_JS_END')}
-window.exportFile=async function(isUser){closeExportModal();if(!PRISTINE_HTML){SysLogger.error('PRISTINE_HTML not available');return}let html=PRISTINE_HTML;const cor=sanitizeForQuine(sysColors.main);const fg=sysColors.fg?sanitizeForQuine(sysColors.fg):'';const ts=sanitizeForQuine($('cfg-title-start').value);const ta=sanitizeForQuine($('cfg-title-accent').value);const sub=sanitizeForQuine(TOKEN_SUBTITLE);const showU=$('cfg-show-user').checked;const showP=$('cfg-show-pc').checked;const jq=parseInt($('cfg-jpeg-quality').value)/100;const maxD=document.querySelector('input[name="cfg-max-dim"]:checked')?.value||'0';const purge=document.querySelector('input[name="cfg-purge"]:checked')?.value||'48';html=html.replace(/const TOKEN_MAIN_COLOR='[^']*'/,"const TOKEN_MAIN_COLOR='"+cor+"'");html=html.replace(/const TOKEN_ACCENT_FG_OVERRIDE='[^']*'/,"const TOKEN_ACCENT_FG_OVERRIDE='"+fg+"'");html=html.replace(/const TOKEN_TITLE_START='[^']*'/,"const TOKEN_TITLE_START='"+ts+"'");html=html.replace(/const TOKEN_TITLE_ACCENT='[^']*'/,"const TOKEN_TITLE_ACCENT='"+ta+"'");html=html.replace(/const TOKEN_SUBTITLE='[^']*'/,"const TOKEN_SUBTITLE='"+sub+"'");html=html.replace(/const TOKEN_SHOW_SESSION_USER=[^;]+/,'const TOKEN_SHOW_SESSION_USER='+showU);html=html.replace(/const TOKEN_SHOW_SESSION_PC=[^;]+/,'const TOKEN_SHOW_SESSION_PC='+showP);html=html.replace(/const TOKEN_JPEG_QUALITY=[^;]+/,'const TOKEN_JPEG_QUALITY='+jq);html=html.replace(/const TOKEN_MAX_IMG_DIMENSION=[^;]+/,'const TOKEN_MAX_IMG_DIMENSION='+maxD);html=html.replace(/const TOKEN_AUTO_PURGE_HOURS=[^;]+/,'const TOKEN_AUTO_PURGE_HOURS='+purge);if(isUser){html=html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html'));SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
+window.exportFile=async function(isUser){closeExportModal();if(!PRISTINE_HTML){SysLogger.error('PRISTINE_HTML not available');return}let html=PRISTINE_HTML;const cor=sanitizeForQuine(sysColors.main);const fg=sysColors.fg?sanitizeForQuine(sysColors.fg):'';const ts=sanitizeForQuine($('cfg-title-start').value);const ta=sanitizeForQuine($('cfg-title-accent').value);const sub=sanitizeForQuine(TOKEN_SUBTITLE);const showU=$('cfg-show-user').checked;const showP=$('cfg-show-pc').checked;const rawJq=parseFloat($('cfg-jpeg-quality')?.value??'92');const jq=isFinite(rawJq)?Math.min(0.95,Math.max(0.70,rawJq/100)):0.92;const maxD=document.querySelector('input[name="cfg-max-dim"]:checked')?.value||'0';const purge=document.querySelector('input[name="cfg-purge"]:checked')?.value||'48';html=html.replace(/const TOKEN_MAIN_COLOR='[^']*'/,()=>"const TOKEN_MAIN_COLOR='"+cor+"'");html=html.replace(/const TOKEN_ACCENT_FG_OVERRIDE='[^']*'/,()=>"const TOKEN_ACCENT_FG_OVERRIDE='"+fg+"'");html=html.replace(/const TOKEN_TITLE_START='[^']*'/,()=>"const TOKEN_TITLE_START='"+ts+"'");html=html.replace(/const TOKEN_TITLE_ACCENT='[^']*'/,()=>"const TOKEN_TITLE_ACCENT='"+ta+"'");html=html.replace(/const TOKEN_SUBTITLE='[^']*'/,()=>"const TOKEN_SUBTITLE='"+sub+"'");html=html.replace(/const TOKEN_SHOW_SESSION_USER=[^;]+/,'const TOKEN_SHOW_SESSION_USER='+showU);html=html.replace(/const TOKEN_SHOW_SESSION_PC=[^;]+/,'const TOKEN_SHOW_SESSION_PC='+showP);html=html.replace(/const TOKEN_JPEG_QUALITY=[^;]+/,'const TOKEN_JPEG_QUALITY='+jq);html=html.replace(/const TOKEN_MAX_IMG_DIMENSION=[^;]+/,'const TOKEN_MAX_IMG_DIMENSION='+maxD);html=html.replace(/const TOKEN_AUTO_PURGE_HOURS=[^;]+/,'const TOKEN_AUTO_PURGE_HOURS='+purge);html=html.replace(/const TOKEN_DEBUG_MODE=[^;]+/,()=>'const TOKEN_DEBUG_MODE='+(isUser?'false':'true'));if(isUser){html=html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html'));SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
 /* ADMIN_JS_END */
 
 /* ═══ INIT + BOOT ═══ */

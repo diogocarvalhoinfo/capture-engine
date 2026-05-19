@@ -1,4 +1,4 @@
-# Capture Engine · V9
+# Capture Engine · V10
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -54,6 +54,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 | `TOKEN_JPEG_QUALITY` | float | `0.92` | Qualidade JPEG no export PDF (0.70–0.95) |
 | `TOKEN_MAX_IMG_DIMENSION` | int | `0` | Dimensão máxima de redimensionamento (0=original) |
 | `TOKEN_AUTO_PURGE_HOURS` | int | `48` | Horas para purge automático de sessões |
+| `TOKEN_DEBUG_MODE` | bool | `true` | Ativa console logs de desenvolvimento (removido em exports do usuário) |
 ---
 
 ## Perfis de Exportação (Quine)
@@ -125,7 +126,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ### Sessões
 - **Auto-save** a cada 5 segundos no IndexedDB.
 - **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
-- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V9).
+- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V10).
 - **Sessões Anteriores Cronológicas:** Sessões sem título agora são nomeadas cronologicamente como `Sessão-1`, `Sessão-2`, etc., facilitando a navegação na barra lateral esquerda.
 - **Segurança de Deleção:** Eliminar a sessão atualmente ativa aciona um recarregamento limpo automático da interface para manter o IndexedDB perfeitamente íntegro.
 - **Purge automático** de sessões expiradas ao iniciar.
@@ -153,7 +154,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-V9/
+V10/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── agents.md             ← Regras operacionais para agentes IA
@@ -162,4 +163,4 @@ V9/
 
 ---
 
-*Capture Engine V9 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V10 · Design de Excelência FAANG · Air-gapped ready*

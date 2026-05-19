@@ -4,6 +4,22 @@
 
 ---
 
+## [V10] — 2026-05-19
+
+### Adicionado
+- **Content Security Policy Metatag:** Hardening local robusto no head restringindo injeções de script/estilo no motor SPA offline.
+- **Mini-Modal de Texto Inline para Anotador:** Substituição da função bloqueante `prompt()` nativa por um mini-modal `#ann-text-overlay` estilizado com focagem automática rápida e atalhos de teclado Enter/Escape.
+- **Controlo de Consola por Token:** Introdução de `TOKEN_DEBUG_MODE` para controlo de outputs operacionais, o qual é desativado de forma automática em exports de utilizador para purgar logs informativos em produção.
+
+### Corrigido
+- **Mitigação de Path Traversal e Colisão (ZIP):** Sanitização estrita de delimitadores de diretórios (`/`, `\`, `../`) em ficheiros exportados e algoritmo de deduplicação cross-lista para evitar sobrescritas silenciosas em sistemas operativos durante extração.
+- **Resolução de Callback de Regex (Quine):** Substituição de strings simples por funções callback de substituição nos métodos `.replace` do Quine, neutralizando injeções acidentais de caracteres especiais (`$`) que corrompam o HTML gerado.
+- **Estabilização de Pristine Fallback:** Uso da constante estática `BOOT_HTML` no fallback do Quine caso o fetch local falhe (e.g. sob protocolo `file://`), impedindo exportação de DOMs mutados em runtime.
+- **Proteção do StatusBar contra innerHTML:** Isolamento de injeção dinâmica no status bar utilizando criação explícita e concatenação programática de nós de texto em vez de interpolações perigosas em `innerHTML`.
+- **Prevenção de Downgrade de IDB e NaN em JPEG:** Inclusão de tratamentos `onblocked` no IndexedDB e sanitizações de coerência com `isFinite()` na qualidade do exportador JPEG.
+
+---
+
 ## [V9] — 2026-05-19
 
 ### Adicionado
