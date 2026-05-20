@@ -1,4 +1,4 @@
-# Agents · Capture Engine V10
+# Agents · Capture Engine V11
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V10 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
+- **Labels de UI** em português neutro harmonizado padrão V11 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -140,4 +140,29 @@ Antes de declarar uma tarefa completa:
 
 ---
 
-*Capture Engine V10 · Agents Operational Rules · FAANG Standards*
+## 9. Protocolo de Versionamento (Version Bump)
+
+> **Regra Absoluta Zero Trust**: O processo de *bump* de versão NÃO termina no `changelog.md`. Exige a varredura e substituição do número da versão antiga para a nova em **5 ficheiros vitais**. Nenhuma IA ou Junior pode declarar o bump concluído sem validar todos estes pontos:
+
+1. **`capture-engine.html`** (A maior armadilha)
+   - Comment tag do Visual Builder: `<!-- VISUAL BUILDER MODAL (VXX) -->`
+   - **Badge visual hardcoded** no header do modal de configurações: `<span ...>VXX</span>`
+2. **`changelog.md`**
+   - Criar entrada principal no topo: `## [VXX] — YYYY-MM-DD`
+3. **`readme.md`**
+   - Título principal (`# Capture Engine · VXX`)
+   - Textos de referência a "padrão VXX" e árvore de exemplos (`VXX/`)
+   - Rodapé de créditos FAANG do ficheiro
+4. **`design-tokens.md`**
+   - Título principal
+   - Rodapé de créditos FAANG do ficheiro
+5. **`agents.md`** (Este ficheiro)
+   - Título principal
+   - Referências nas regras de UI a "padrão VXX"
+   - Rodapé de créditos FAANG do ficheiro
+
+*Ação obrigatória antes do ZIP*: Usar a ferramenta de pesquisa global (`grep_search` ou `findstr /I`) à procura da versão anterior exata em todos os `.html` e `.md` para caçar fantasmas. Nunca assumir sucesso às cegas.
+
+---
+
+*Capture Engine V11 · Agents Operational Rules · FAANG Standards*

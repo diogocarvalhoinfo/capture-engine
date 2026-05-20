@@ -4,6 +4,20 @@
 
 ---
 
+## [V11] — 2026-05-20
+
+### Adicionado
+- **Isolamento Estrutural da Sidebar:** Refatoração arquitetural (colocando o Trash Bar numa coluna direita), permitindo à barra lateral esquerda expandir a 100% da altura da janela, eliminando cortes em ecrãs verticais curtos.
+- **Compressão Fluida Vertical:** Implementação de `flex-shrink: 1` e cálculos fluidos (`clamp` com `vh`) nas media queries para colapso elástico ultra-suave. A interface absorve a redução drástica da janela sem ativar scrolls prematuramente.
+- **Harmonização Flex FAANG:** Spacing dinâmico estendido para garantir que a interface respire muito mais em resoluções com espaço abundante de altura, mantendo-se perfeitamente ancorada ao topo.
+
+### Corrigido
+- **Vazamento de Dados de Sessão:** Resolução na função `loadSession()`. Valores em memória vazavam para campos não preenchidos de sessões antigas, corrigido com atribuição incondicional via falback nulo.
+- **Congelamento Visual de Datas:** A barra de histórico exibia todas as sessões com a mesma hora (hora de último auto-save). Substituído logicamente e de forma restrita para exibição do `createdAt` puro.
+- **Inconsistência Tipográfica do Histórico:** Aplicada lógica de espelhamento DOM in-stream em `toUpperCase()`. Isto impede que nomes de sessões que apareciam visualmente maiúsculas via CSS fossem guardados internamente e exibidos lateralmente com capitalização quebrada, alinhando simultaneamente o fallback padrão (`SESSÃO-N`).
+
+---
+
 ## [V10] — 2026-05-19
 
 ### Adicionado

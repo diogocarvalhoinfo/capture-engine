@@ -32,6 +32,7 @@ body.dark {
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes modalIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
 @keyframes fadeInTab{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
 /* ═══ RESET ═══ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
@@ -61,6 +62,8 @@ body.dark #icon-sun{display:block !important}
 body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 .action-btn:active{transform:scale(0.92)}
 .action-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#btn-admin-save.admin-active{background:var(--color-green)!important;color:#fff!important;animation:pulse 1.2s ease-in-out infinite!important}
+#btn-admin-save.admin-active:hover{background:#16a34a!important;color:#fff!important}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0}
 /* ═══ TOP BAR ═══ */
 #top-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:28px 64px 10px 64px;height:auto;min-height:var(--top-bar-h);background:transparent;border-bottom:none}
@@ -75,7 +78,9 @@ body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 .sess-input::placeholder{color:var(--text-muted)}
 #tb-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-shrink:0;flex:1}
 /* ═══ MAIN LAYOUT ═══ */
-#main-layout{display:flex;flex:1;overflow:hidden;min-height:0;gap:16px;padding:8px 58px 16px 58px}
+#main-layout{display:flex;flex:1;overflow:hidden;min-height:0;gap:16px;padding:8px 58px 58px 58px}
+#right-col{display:flex;flex-direction:column;flex:1;min-width:0;gap:16px}
+#center-row{display:flex;flex:1;min-height:0;gap:16px}
 /* ═══ EV BLOCKS ═══ */
 .ev-block{display:flex;flex-direction:column;overflow:hidden;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 2px 8px rgba(0,0,0,0.02)}
 #block-imgs{flex:1.6}
@@ -121,13 +126,17 @@ body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 .d-del:hover{color:var(--color-red);background:var(--bg)}
 .d-del svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
 /* ═══ SIDEBARS ═══ */
-#left-sidebar{width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;padding:clamp(6px,1.2vh,12px) 10px;box-shadow:0 2px 8px rgba(0,0,0,0.02);gap:clamp(6px,1.5vh,16px);scrollbar-width:none;-ms-overflow-style:none}
+#left-sidebar{width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;padding:clamp(12px,2vh,20px) 12px;box-shadow:0 2px 8px rgba(0,0,0,0.02);gap:clamp(12px,3vh,32px);scrollbar-width:none;-ms-overflow-style:none}
 #left-sidebar::-webkit-scrollbar{display:none}
-#left-sidebar>div{flex-shrink:0;gap:clamp(4px,0.8vh,8px) !important}
+#left-sidebar>div{flex-shrink:1;min-height:0;gap:clamp(6px,1.2vh,12px) !important}
 #left-sidebar .sess-input,#left-sidebar .btn-send{height:auto;min-height:24px;flex:0 1 34px}
 #left-sidebar .sb-section-title{flex-shrink:0}
 #sidebar{width:52px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);flex-shrink:0;display:flex;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:0 2px 8px rgba(0,0,0,0.02)}
 #sidebar.expanded{width:280px}
+#btn-history{display:none}
+#sb-mobile-overlay{display:none}
+#sb-mobile-close{display:none;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px}
+#sb-mobile-close svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 #sb-rail{width:52px;min-width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 0;gap:2px;cursor:pointer}
 .sb-icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:color 0.15s;border:none;cursor:pointer;background:none}
 .sb-icon-btn:hover{color:var(--text)}
@@ -148,10 +157,10 @@ body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 #sb-chevron{transition:transform 0.25s}
 #sidebar.expanded #sb-chevron{transform:rotate(180deg)}
 /* ═══ TRASH BAR ═══ */
-#trash-bar{margin:0 58px 58px 58px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);flex-shrink:0;height:48px;overflow:hidden;transition:height 0.3s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 2px 8px rgba(0,0,0,0.02)}
+#trash-bar{border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);flex-shrink:0;height:auto;min-height:44px;max-height:44px;overflow:hidden;transition:max-height 0.35s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 2px 8px rgba(0,0,0,0.02);display:flex;flex-direction:column}
 #footer-credits{text-align:center;font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:0.8px;text-transform:uppercase;flex-shrink:0;opacity:0.5;height:58px;display:flex;align-items:center;justify-content:center;margin-top:-58px;pointer-events:none}
-#trash-bar.expanded{height:180px}
-#trash-hdr{height:48px;display:flex;align-items:center;padding:0 16px;cursor:pointer;user-select:none;gap:8px}
+#trash-bar.expanded{max-height:360px}
+#trash-hdr{height:44px;flex-shrink:0;display:flex;align-items:center;padding:0 16px;cursor:pointer;user-select:none;gap:8px}
 #trash-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted)}
 /* ═══ STATUS BAR ═══ */
 #status-bar{display:flex;flex-direction:column;gap:4px;padding:8px 8px 0;flex-shrink:0;user-select:none;cursor:default}
@@ -165,7 +174,7 @@ body.dark .action-btn:hover{background:rgba(255,255,255,0.06)}
 #trash-badge.vis{display:flex}
 #trash-chevron{transition:transform 0.3s}
 #trash-bar.expanded #trash-chevron{transform:rotate(180deg)}
-#trash-grid{display:flex;flex-wrap:wrap;gap:8px;padding:8px 16px;overflow-y:auto;flex:1}
+#trash-grid{display:flex;flex-wrap:wrap;gap:12px;padding:16px;overflow-y:auto;flex:1}
 #trash-grid .t-item{width:96px;height:118px;flex-shrink:0}
 #trash-grid .t-wrap{width:96px;height:96px}
 /* ═══ IMAGE MODAL ═══ */
@@ -260,25 +269,69 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   #tb-session{justify-content:flex-end}
 
   /* Main layout: stack vertically, sidebar on top, no overflow:hidden */
-  #main-layout{flex-direction:column;padding:8px 16px 0 16px;gap:12px;overflow:visible;min-height:auto}
+  #main-layout{flex-direction:column;padding:16px;gap:16px;overflow:visible;min-height:auto}
+  #right-col{display:flex;flex-direction:column;gap:16px;overflow:visible;min-height:auto}
+  #center-row{display:flex;flex-direction:column;gap:16px;overflow:visible;min-height:auto}
 
-  /* Left sidebar: full width */
-  #left-sidebar{width:100%;flex-direction:column;padding:12px;gap:12px;overflow:visible}
+  /* Left sidebar: full width, fixed native breathing room instead of vh clamps */
+  #left-sidebar{width:100%;flex-direction:column;padding:24px 20px;gap:24px;overflow:visible;height:auto}
+  #left-sidebar>div{gap:12px !important}
+  #left-sidebar .sess-input{height:44px;min-height:44px;flex:none;font-size:14px}
+  #left-sidebar .btn-send{height:44px;min-height:44px;flex:none;font-size:14px}
+  .sb-section-title{padding:0 0 6px 0 !important;font-size:12px}
 
-  /* Image/doc blocks get a fixed height so they don't collapse */
-  #block-imgs{min-height:260px;height:260px}
-  #block-docs{min-height:180px;height:180px}
+  /* Image/doc blocks get a flexible but tall min-height */
+  #block-imgs{min-height:300px;height:auto;flex:none}
+  #block-docs{min-height:220px;height:auto;flex:none}
 
-  /* Right sidebar (sessions): hide on mobile */
-  #sidebar{display:none}
+  /* Mobile Session History Modal */
+  #btn-history{display:flex}
+  #sidebar{position:fixed;top:50%;left:50%;transform:translate(-50%, -45%);width:90vw;max-width:360px;height:70vh;z-index:2000;transition:all 0.25s cubic-bezier(0.2,0.8,0.2,1);margin:0;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 12px 48px rgba(0,0,0,0.3);background:var(--surface);opacity:0;pointer-events:none}
+  #sidebar.mobile-open{transform:translate(-50%, -50%);opacity:1;pointer-events:auto}
+  #sb-mobile-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(3px)}
+  #sb-mobile-overlay.mobile-open{opacity:1;pointer-events:auto}
+  #sidebar #sb-content{opacity:1;pointer-events:auto;padding:24px}
+  #sidebar #sb-rail{display:none}
+  #sidebar .sb-section-title{font-size:14px;font-weight:600;color:var(--text);padding:0 0 16px 0;letter-spacing:0}
+  #sidebar .sb-sess-item{padding:14px;margin-bottom:6px;background:var(--bg);border:1px solid transparent}
+  #sidebar .sb-sess-item.active{border-color:var(--accent)}
+  #sidebar .sb-sess-name{font-size:14px}
+  #sidebar .sb-sess-date{font-size:12px}
+  #sidebar .sb-sess-del{font-size:16px;padding:4px 8px}
+  #sb-mobile-close{display:flex !important}
+  #sidebar #sb-sess-list{scrollbar-width:none;-ms-overflow-style:none;overflow-y:auto}
+  #sidebar #sb-sess-list::-webkit-scrollbar{display:none}
 
   /* Trash bar flows naturally below content */
-  #trash-bar{margin:12px 16px 24px 16px;position:static}
+  #trash-bar{margin:0;position:static;min-height:56px;max-height:56px}
+  #trash-hdr{height:56px}
+
+  /* Fix Footer Overlap */
+  #footer-credits{margin-top:16px;height:auto;padding-bottom:32px;opacity:0.4}
 
   /* Chips wrap naturally on small screens */
   .chips-group{flex-wrap:wrap}
+  .chip-label{padding:10px 14px;font-size:13px}
 }
 
+/* ═══ RESPONSIVE HEIGHT (Small Laptops) ═══ */
+@media(max-height:800px) and (min-width:901px){
+  #top-bar{padding:12px 64px 4px 64px;min-height:48px}
+  #tb-brand-icon{width:32px;height:32px}
+  #tb-brand-icon svg{width:18px;height:18px}
+  #tb-brand-name{font-size:18px}
+  #main-layout{padding:4px 58px 12px 58px;gap:12px}
+  #right-col{gap:12px}
+  #center-row{gap:12px}
+  #left-sidebar{gap:clamp(4px,1.5vh,8px);padding:clamp(4px,1vh,8px) 10px}
+  #left-sidebar>div{gap:clamp(2px,1vh,4px) !important}
+  #left-sidebar .sess-input{height:clamp(24px,4vh,32px);min-height:24px}
+  #left-sidebar .btn-send{height:clamp(24px,4vh,32px);min-height:24px;font-size:clamp(11px,1.5vh,12px);padding:0 12px}
+  .sb-section-title{padding:0 !important;font-size:clamp(9px,1.2vh,11px)}
+  #trash-bar{min-height:40px;max-height:40px}
+  #trash-hdr{height:40px}
+  #footer-credits{height:12px;margin-top:-12px;opacity:0.3}
+}
 
 /* Image Modal Dark/Transparent Theme (FAANG Standard) */
 #img-modal-overlay {
@@ -360,7 +413,6 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   #tb-brand-icon{width:30px;height:30px}
   #tb-brand-icon svg{width:16px;height:16px}
   #main-layout{padding:6px 12px 0 12px;gap:10px}
-  #trash-bar{margin:10px 12px 20px 12px}
   .blk-hdr{padding:0 12px}
   #thumb-grid{padding:8px}
   #doc-list{padding:6px}
@@ -392,6 +444,9 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     <!-- ADMIN_BUTTONS_END -->
     <button class="action-btn" id="btn-refresh" title="Atualizar">
       <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    </button>
+    <button class="action-btn" id="btn-history" title="Histórico">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     </button>
     <button class="action-btn" id="btn-new-sess" title="Nova Sessão">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -462,7 +517,10 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   </div>
 
   <!-- ─── BLOCO IMAGENS ─── -->
-  <div class="ev-block" id="block-imgs">
+  <div id="right-col">
+    <div id="center-row">
+
+      <div class="ev-block" id="block-imgs">
     <div class="blk-hdr">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       <span class="blk-hdr-title">Imagens</span>
@@ -498,9 +556,10 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   </div>
 
   <!-- ─── RIGHT SIDEBAR (HISTORY) ─── -->
+  <div id="sb-mobile-overlay" onclick="closeMobileSidebar()"></div>
   <div id="sidebar">
     <div id="sb-rail">
-      <button class="sb-icon-btn" id="sb-btn-toggle" title="Sessões anteriores">
+      <button class="sb-icon-btn" id="sb-btn-toggle" title="Histórico">
         <svg id="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <button class="sb-icon-btn" title="Histórico">
@@ -508,23 +567,30 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
       </button>
     </div>
     <div id="sb-content">
-      <div class="sb-section-title">Sessões anteriores</div>
+      <div class="sb-section-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Histórico</span>
+        <button id="sb-mobile-close" onclick="closeMobileSidebar()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
       <div id="sb-sess-list"></div>
     </div>
   </div>
 
-</div><!-- /main-layout -->
+    </div><!-- /center-row -->
 
-<!-- ═══ TRASH BAR ═══ -->
-<div id="trash-bar">
-  <div id="trash-hdr">
-    <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--text-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-    <span id="trash-title">Removidos</span>
-    <span id="trash-badge">0</span>
-    <svg id="trash-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:auto;flex-shrink:0;color:var(--text-muted);transition:transform 0.3s"><polyline points="18 15 12 9 6 15"/></svg>
-  </div>
-  <div id="trash-grid"></div>
-</div>
+    <!-- ═══ TRASH BAR ═══ -->
+    <div id="trash-bar">
+      <div id="trash-hdr">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--text-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span id="trash-title">Removidos</span>
+        <span id="trash-badge">0</span>
+        <svg id="trash-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:auto;flex-shrink:0;color:var(--text-muted);transition:transform 0.3s"><polyline points="18 15 12 9 6 15"/></svg>
+      </div>
+      <div id="trash-grid"></div>
+    </div>
+
+  </div><!-- /right-col -->
+
+</div><!-- /main-layout -->
 
 <div id="footer-credits">© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM</div>
 
@@ -615,7 +681,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 </div>
 
 
-<!-- VISUAL BUILDER MODAL (V10) -->
+<!-- VISUAL BUILDER MODAL (V11) -->
 <!-- ADMIN_EDIT_START -->
 <div class="sb-overlay" id="vb-overlay">
   <div class="sb-modal" style="max-width:520px">
@@ -623,13 +689,13 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     <div class="sb-header">
       <div class="sb-title">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Visual Builder <span style="font-size:11px;background:var(--border);padding:2px 6px;border-radius:4px;margin-left:6px">V10</span>
+        Visual Builder <span style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V11</span>
       </div>
       <p class="sb-subtitle">Preferências da interface</p>
     </div>
     <div class="sb-tabs">
       <div class="sb-tab active" onclick="switchVbTab(0)">Interface</div>
-      <div class="sb-tab" onclick="switchVbTab(1)">Sessão</div>
+      <div class="sb-tab" onclick="switchVbTab(1)">Histórico</div>
       <div class="sb-tab" onclick="switchVbTab(2)">Captura</div>
       <div class="sb-tab" onclick="switchVbTab(3)">Manutenção</div>
     </div>
@@ -666,10 +732,12 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
       </div>
     </div>
 
-    <!-- TAB 1: Sessão -->
+    <!-- TAB 1: Histórico -->
     <div class="sb-content-tab" id="vb-tab-1">
-      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Campo User</div><div class="sb-row-desc">Mostrar campo de nome do user na barra superior</div></div><label class="toggle-switch"><input type="checkbox" id="cfg-show-user" checked><span class="toggle-slider"></span></label></div>
-      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Campo Equipamento</div><div class="sb-row-desc">Mostrar campo de nome do equipamento na barra superior</div></div><label class="toggle-switch"><input type="checkbox" id="cfg-show-pc" checked><span class="toggle-slider"></span></label></div>
+      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Campo User</div><div class="sb-row-desc">Mostrar campo User na barra lateral</div></div><label class="toggle-switch"><input type="checkbox" id="cfg-show-user" checked><span class="toggle-slider"></span></label></div>
+      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Etiqueta do Campo User</div><div class="sb-row-desc">Texto/placeholder do campo (Ex: Advogado, Cliente)</div></div><input type="text" class="text-input-sm" id="cfg-user-label" placeholder="User"></div>
+      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Campo Equipamento</div><div class="sb-row-desc">Mostrar campo Equipamento na barra lateral</div></div><label class="toggle-switch"><input type="checkbox" id="cfg-show-pc" checked><span class="toggle-slider"></span></label></div>
+      <div class="sb-row"><div class="sb-info"><div class="sb-row-title">Etiqueta do Campo Equipamento</div><div class="sb-row-desc">Texto/placeholder do campo (Ex: Caso, Processo)</div></div><input type="text" class="text-input-sm" id="cfg-equip-label" placeholder="Equipamento"></div>
     </div>
 
     <!-- TAB 2: Captura -->
@@ -740,6 +808,8 @@ const TOKEN_MAIN_COLOR='#0ea5e9';
 const TOKEN_ACCENT_FG_OVERRIDE='';
 const TOKEN_SHOW_SESSION_USER=true;
 const TOKEN_SHOW_SESSION_PC=true;
+const TOKEN_USER_LABEL='User';
+const TOKEN_EQUIP_LABEL='Equipamento';
 const TOKEN_JPEG_QUALITY=0.92;
 const TOKEN_MAX_IMG_DIMENSION=0;
 const TOKEN_AUTO_PURGE_HOURS=48;
@@ -806,7 +876,7 @@ async function purgeExpired(){const cut=Date.now()-TOKEN_AUTO_PURGE_HOURS*3600*1
 /* ═══ SESSION MANAGER ═══ */
 async function createSession(){const s={id:genId('sess'),name:'',createdAt:Date.now(),updatedAt:Date.now(),exported:false};await idbPut('sessions',s);sessId=s.id;sessObj=s;SysLogger.info('Sessão criada: '+sessId)}
 async function saveSession(){if(!sessObj)return;sessObj.updatedAt=Date.now();sessObj.name=$('session-name').value.trim();sessObj.user=$('session-user').value.trim();sessObj.pc=$('session-pc').value.trim();await idbPut('sessions',sessObj)}
-async function loadSession(id){const s=await idbGet('sessions',id);if(!s)return;sessId=s.id;sessObj=s;if(s.name){$('session-name').value=s.name}if(s.user)$('session-user').value=s.user;if(s.pc)$('session-pc').value=s.pc;const imgs=await idbIdx('images','sessionId',id),dcs=await idbIdx('documents','sessionId',id),rems=await idbIdx('removed_images','sessionId',id);let remDocs=[];try{remDocs=await idbIdx('removed_documents','sessionId',id)}catch(e){}images=[...imgs].sort((a,b)=>a.order-b.order);docs=[...dcs].sort((a,b)=>a.order-b.order);removed=[...rems].sort((a,b)=>(a.removedAt||0)-(b.removedAt||0));removedDocs=[...remDocs].sort((a,b)=>(a.removedAt||0)-(b.removedAt||0));$('thumb-grid').innerHTML='';$('doc-list').innerHTML='';$('img-empty').style.display=images.length?'none':'';$('doc-empty').style.display=docs.length?'none':'';for(const i of images)renderThumb(i);for(const d of docs)renderDoc(d);renderTrash();updateCounters();updateBtns();isDirty=true;triggerSave();SysLogger.info('Sessão carregada: '+id)}
+async function loadSession(id){const s=await idbGet('sessions',id);if(!s)return;sessId=s.id;sessObj=s;$('session-name').value=s.name||'';$('session-user').value=s.user||'';$('session-pc').value=s.pc||'';const imgs=await idbIdx('images','sessionId',id),dcs=await idbIdx('documents','sessionId',id),rems=await idbIdx('removed_images','sessionId',id);let remDocs=[];try{remDocs=await idbIdx('removed_documents','sessionId',id)}catch(e){}images=[...imgs].sort((a,b)=>a.order-b.order);docs=[...dcs].sort((a,b)=>a.order-b.order);removed=[...rems].sort((a,b)=>(a.removedAt||0)-(b.removedAt||0));removedDocs=[...remDocs].sort((a,b)=>(a.removedAt||0)-(b.removedAt||0));$('thumb-grid').innerHTML='';$('doc-list').innerHTML='';$('img-empty').style.display=images.length?'none':'';$('doc-empty').style.display=docs.length?'none':'';for(const i of images)renderThumb(i);for(const d of docs)renderDoc(d);renderTrash();updateCounters();updateBtns();isDirty=true;triggerSave();SysLogger.info('Sessão carregada: '+id)}
 
 /* ═══ COUNTERS & BUTTONS ═══ */
 function updateCounters(){const ib=$('img-badge');ib.textContent=images.length;ib.className='count-badge'+(images.length?'':' zero');const db=$('doc-badge');db.textContent=docs.length;db.className='count-badge'+(docs.length?'':' zero');updateStatusBar()}
@@ -1025,9 +1095,8 @@ function initDragDrop(){['img-zone','doc-zone'].forEach(zId=>{const z=$(zId);z.a
 function initReorder(){const tg=$('thumb-grid'),dl=$('doc-list');[tg,dl].forEach(container=>{container.addEventListener('dragover',e=>{e.preventDefault();const drag=container.querySelector('.dragging');if(!drag)return;const ox=parseFloat(drag.dataset.ox)||0;const oy=parseFloat(drag.dataset.oy)||0;const rect=drag.getBoundingClientRect();const ghostX=e.clientX-ox+rect.width/2;const ghostY=e.clientY-oy+rect.height/2;const after=getDragAfterEl(container,ghostY,ghostX,drag);if(!after){if(container.lastElementChild!==drag)container.appendChild(drag)}else{if(drag.nextElementSibling!==after)container.insertBefore(drag,after)}});container.addEventListener('drop',async e=>{const drag=container.querySelector('.dragging');if(!drag)return;e.stopPropagation();const isImg=container===tg;const items=container.querySelectorAll(isImg?'.t-item':'.d-item');const arr=isImg?images:docs;const store=isImg?'images':'documents';const ordered=[];items.forEach((el,i)=>{const id=el.dataset.id;const obj=arr.find(x=>x.id===id);if(obj){obj.order=i;ordered.push(obj)}});if(isImg)images=ordered;else docs=ordered;for(const o of ordered)await idbPut(store,o);isDirty=true;triggerSave()})});function getDragAfterEl(container,y,x,drag){const els=[...container.querySelectorAll('.t-item:not(.dragging),.d-item:not(.dragging)')];if(!els.length)return null;const isList=container===dl;let closest=null;let minDist=Infinity;for(const el of els){const box=el.getBoundingClientRect();const cx=box.left+box.width/2;const cy=box.top+box.height/2;const dist=Math.sqrt(Math.pow(x-cx,2)+Math.pow(y-cy,2));if(dist<minDist){minDist=dist;closest=el}}if(!closest)return null;const box=closest.getBoundingClientRect();const dragIsBefore=!!(drag.compareDocumentPosition(closest)&Node.DOCUMENT_POSITION_FOLLOWING);let isBefore;if(isList){const cy=box.top+box.height/2;const offset=box.height*0.1;const threshold=dragIsBefore?cy-offset:cy+offset;isBefore=y<threshold}else{const isSameRow=y>=box.top&&y<=box.bottom;if(!isSameRow){const cy=box.top+box.height/2;const offset=box.height*0.1;const threshold=dragIsBefore?cy-offset:cy+offset;isBefore=y<threshold}else{const cx=box.left+box.width/2;const offset=box.width*0.1;const threshold=dragIsBefore?cx-offset:cx+offset;isBefore=x<threshold}}let afterNode;if(isBefore){afterNode=closest}else{afterNode=closest.nextElementSibling;if(afterNode===drag){afterNode=drag.nextElementSibling}}return afterNode}}
 
 /* ═══ SIDEBAR ═══ */
-async function renderSbSessions(){const list=$('sb-sess-list');const all=(await idbAll('sessions')).sort((a,b)=>b.createdAt-a.createdAt);list.innerHTML='';if(!all.length){return;}const sortedOldest=[...all].sort((a,b)=>a.createdAt-b.createdAt);all.forEach(s=>{const d=new Date(s.updatedAt||s.createdAt),ds=String(d.getDate()).padStart(2,'0')+'-'+MONTHS[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');const idx=sortedOldest.findIndex(x=>x.id===s.id);const sessionNum=idx+1;const sessionName=s.name||`Sessão-${sessionNum}`;const el=document.createElement('div');el.className='sb-sess-item'+(s.id===sessId?' active':'');const delBtn=`<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`;el.innerHTML=`<span class="sb-sess-name">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`;el.onclick=()=>window.openSession(s.id);list.appendChild(el)})}
-function initSidebar(){$('sb-rail').onclick=function(){sbExp=!sbExp;$('sidebar').classList.toggle('expanded',sbExp);if(sbExp)renderSbSessions()}}
-window.openSession=async function(id){if(isDirty)await triggerSave();await loadSession(id);renderSbSessions()};
+async function renderSbSessions(){const list=$('sb-sess-list');const all=(await idbAll('sessions')).sort((a,b)=>b.createdAt-a.createdAt);list.innerHTML='';if(!all.length){return;}const sortedOldest=[...all].sort((a,b)=>a.createdAt-b.createdAt);all.forEach(s=>{const d=new Date(s.createdAt),ds=String(d.getDate()).padStart(2,'0')+'-'+MONTHS[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');const idx=sortedOldest.findIndex(x=>x.id===s.id);const sessionNum=idx+1;const fallback=`#${String(sessionNum).padStart(4,'0')}`;const sessionName=s.name||fallback;const el=document.createElement('div');el.className='sb-sess-item'+(s.id===sessId?' active':'');const delBtn=`<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`;el.innerHTML=`<span class="sb-sess-name" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`;el.onclick=()=>window.openSession(s.id);list.appendChild(el)})}function initSidebar(){$('sb-rail').onclick=function(){sbExp=!sbExp;$('sidebar').classList.toggle('expanded',sbExp);if(sbExp)renderSbSessions()};$('btn-history').onclick=function(){$('sidebar').classList.add('mobile-open');$('sb-mobile-overlay').classList.add('mobile-open');document.body.style.overflow='hidden';renderSbSessions()};window.closeMobileSidebar=function(){$('sidebar').classList.remove('mobile-open');$('sb-mobile-overlay').classList.remove('mobile-open');document.body.style.overflow=''}}
+window.openSession=async function(id){if(isDirty)await triggerSave();await loadSession(id);renderSbSessions();if(window.closeMobileSidebar)window.closeMobileSidebar()};
 window.deleteSessionId=async function(id){for(const i of await idbIdx('images','sessionId',id))await idbDel('images',i.id);for(const d of await idbIdx('documents','sessionId',id))await idbDel('documents',d.id);try{for(const r of await idbIdx('removed_images','sessionId',id))await idbDel('removed_images',r.id);for(const r of await idbIdx('removed_documents','sessionId',id))await idbDel('removed_documents',r.id)}catch(e){}await idbDel('sessions',id);if(id===sessId){location.reload()}else{renderSbSessions()}};
 
 /* ═══ FILE PICKERS ═══ */
@@ -1205,8 +1274,16 @@ function initVbSync(){
     $('session-user').style.display = e.target.checked ? '' : 'none';
     isDirty = true;
   });
+  $('cfg-user-label').addEventListener('input', (e) => {
+    $('session-user').placeholder = e.target.value || 'User';
+    isDirty = true;
+  });
   $('cfg-show-pc').addEventListener('change', (e) => {
     $('session-pc').style.display = e.target.checked ? '' : 'none';
+    isDirty = true;
+  });
+  $('cfg-equip-label').addEventListener('input', (e) => {
+    $('session-pc').placeholder = e.target.value || 'Equipamento';
     isDirty = true;
   });
 
@@ -1248,6 +1325,10 @@ function applyTokens(){
   
   $('cfg-show-user').checked = TOKEN_SHOW_SESSION_USER;
   $('cfg-show-pc').checked = TOKEN_SHOW_SESSION_PC;
+  $('cfg-user-label').value = TOKEN_USER_LABEL || 'User';
+  $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
+  $('session-user').placeholder = TOKEN_USER_LABEL || 'User';
+  $('session-pc').placeholder = TOKEN_EQUIP_LABEL || 'Equipamento';
   
   $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
   $('cfg-jpeg-label').textContent = Math.round(TOKEN_JPEG_QUALITY * 100) + '%';
@@ -1273,10 +1354,10 @@ function initPdfModal(){$('btn-pdf').onclick=async function(){if(!images.length)
 
 
 /* ═══ ADMIN GATE ═══ */
-function initAdminGate(){let clicks=[],adminOn=false;$('tb-brand').addEventListener('click',()=>{const now=Date.now();clicks.push(now);clicks=clicks.filter(c=>now-c<3000);if(!adminOn&&clicks.length>=6){adminOn=true;clicks=[];$('btn-admin-config').style.display='';$('btn-admin-save').style.display='';SysLogger.info('Admin Gate: ON')}else if(adminOn){const recent=clicks.filter(c=>now-c<1000);if(recent.length>=3){adminOn=false;clicks=[];$('btn-admin-config').style.display='none';$('btn-admin-save').style.display='none';SysLogger.info('Admin Gate: OFF')}}});$('btn-admin-save').onclick=function(){$('export-overlay').classList.add('open')}}
+function initAdminGate(){let clicks=[],adminOn=false;$('tb-brand').addEventListener('click',()=>{const now=Date.now();clicks.push(now);clicks=clicks.filter(c=>now-c<3000);if(!adminOn&&clicks.length>=6){adminOn=true;clicks=[];$('btn-admin-config').style.display='';$('btn-admin-save').style.display='';$('btn-admin-save').classList.add('admin-active');SysLogger.info('Admin Gate: ON')}else if(adminOn){const recent=clicks.filter(c=>now-c<1000);if(recent.length>=3){adminOn=false;clicks=[];$('btn-admin-config').style.display='none';$('btn-admin-save').style.display='none';$('btn-admin-save').classList.remove('admin-active');SysLogger.info('Admin Gate: OFF')}}});$('btn-admin-save').onclick=function(){$('export-overlay').classList.add('open')}}
 
 /* ═══ SESSION INPUT SYNC ═══ */
-function initSessionSync(){function up(){const u=$('session-user').value.trim(),p=$('session-pc').value.trim();$('session-name').value=(u||p)?(u+(p?'-'+p:'')):'';updateBtnTitles();isDirty=true}$('session-user').oninput=up;$('session-pc').oninput=up}
+function initSessionSync(){function up(){const u=$('session-user').value.trim().toUpperCase(),p=$('session-pc').value.trim().toUpperCase();const name=(u||p)?(u+(p?'-'+p:'')):'';$('session-name').value=name;updateBtnTitles();isDirty=true;const ae=document.querySelector('.sb-sess-item.active .sb-sess-name');if(ae)ae.textContent=name||ae.dataset.fallback||ae.textContent}$('session-user').oninput=up;$('session-pc').oninput=up}
 
 
 /* ═══ PDF ENGINE (JPEG COMPRESSED) ═══ */
@@ -1294,7 +1375,7 @@ let PRISTINE_HTML=null;
 const BOOT_HTML=document.documentElement.outerHTML;
 async function capturePristine(){try{const r=await fetch(location.href);if(r.ok)PRISTINE_HTML=await r.text();else throw new Error('fetch fail')}catch(e){PRISTINE_HTML=BOOT_HTML;SysLogger.warn('Quine fallback: BOOT_HTML')}}
 function sanitizeForQuine(s){return String(s).replace(/ADMIN_BUTTONS_START/g,'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g,'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g,'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g,'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g,'ADM​IN_JS_START').replace(/ADMIN_JS_END/g,'ADM​IN_JS_END')}
-window.exportFile=async function(isUser){closeExportModal();if(!PRISTINE_HTML){SysLogger.error('PRISTINE_HTML not available');return}let html=PRISTINE_HTML;const cor=sanitizeForQuine(sysColors.main);const fg=sysColors.fg?sanitizeForQuine(sysColors.fg):'';const ts=sanitizeForQuine($('cfg-title-start').value);const ta=sanitizeForQuine($('cfg-title-accent').value);const sub=sanitizeForQuine(TOKEN_SUBTITLE);const showU=$('cfg-show-user').checked;const showP=$('cfg-show-pc').checked;const rawJq=parseFloat($('cfg-jpeg-quality')?.value??'92');const jq=isFinite(rawJq)?Math.min(0.95,Math.max(0.70,rawJq/100)):0.92;const maxD=document.querySelector('input[name="cfg-max-dim"]:checked')?.value||'0';const purge=document.querySelector('input[name="cfg-purge"]:checked')?.value||'48';html=html.replace(/const TOKEN_MAIN_COLOR='[^']*'/,()=>"const TOKEN_MAIN_COLOR='"+cor+"'");html=html.replace(/const TOKEN_ACCENT_FG_OVERRIDE='[^']*'/,()=>"const TOKEN_ACCENT_FG_OVERRIDE='"+fg+"'");html=html.replace(/const TOKEN_TITLE_START='[^']*'/,()=>"const TOKEN_TITLE_START='"+ts+"'");html=html.replace(/const TOKEN_TITLE_ACCENT='[^']*'/,()=>"const TOKEN_TITLE_ACCENT='"+ta+"'");html=html.replace(/const TOKEN_SUBTITLE='[^']*'/,()=>"const TOKEN_SUBTITLE='"+sub+"'");html=html.replace(/const TOKEN_SHOW_SESSION_USER=[^;]+/,'const TOKEN_SHOW_SESSION_USER='+showU);html=html.replace(/const TOKEN_SHOW_SESSION_PC=[^;]+/,'const TOKEN_SHOW_SESSION_PC='+showP);html=html.replace(/const TOKEN_JPEG_QUALITY=[^;]+/,'const TOKEN_JPEG_QUALITY='+jq);html=html.replace(/const TOKEN_MAX_IMG_DIMENSION=[^;]+/,'const TOKEN_MAX_IMG_DIMENSION='+maxD);html=html.replace(/const TOKEN_AUTO_PURGE_HOURS=[^;]+/,'const TOKEN_AUTO_PURGE_HOURS='+purge);html=html.replace(/const TOKEN_DEBUG_MODE=[^;]+/,()=>'const TOKEN_DEBUG_MODE='+(isUser?'false':'true'));if(isUser){html=html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html'));SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
+window.exportFile=async function(isUser){closeExportModal();if(!PRISTINE_HTML){SysLogger.error('PRISTINE_HTML not available');return}let html=PRISTINE_HTML;const cor=sanitizeForQuine(sysColors.main);const fg=sysColors.fg?sanitizeForQuine(sysColors.fg):'';const ts=sanitizeForQuine($('cfg-title-start').value);const ta=sanitizeForQuine($('cfg-title-accent').value);const sub=sanitizeForQuine(TOKEN_SUBTITLE);const showU=$('cfg-show-user').checked;const showP=$('cfg-show-pc').checked;const uLbl=sanitizeForQuine($('cfg-user-label').value);const eLbl=sanitizeForQuine($('cfg-equip-label').value);const rawJq=parseFloat($('cfg-jpeg-quality')?.value??'92');const jq=isFinite(rawJq)?Math.min(0.95,Math.max(0.70,rawJq/100)):0.92;const maxD=document.querySelector('input[name="cfg-max-dim"]:checked')?.value||'0';const purge=document.querySelector('input[name="cfg-purge"]:checked')?.value||'48';html=html.replace(/const TOKEN_MAIN_COLOR='[^']*'/,()=>"const TOKEN_MAIN_COLOR='"+cor+"'");html=html.replace(/const TOKEN_ACCENT_FG_OVERRIDE='[^']*'/,()=>"const TOKEN_ACCENT_FG_OVERRIDE='"+fg+"'");html=html.replace(/const TOKEN_TITLE_START='[^']*'/,()=>"const TOKEN_TITLE_START='"+ts+"'");html=html.replace(/const TOKEN_TITLE_ACCENT='[^']*'/,()=>"const TOKEN_TITLE_ACCENT='"+ta+"'");html=html.replace(/const TOKEN_SUBTITLE='[^']*'/,()=>"const TOKEN_SUBTITLE='"+sub+"'");html=html.replace(/const TOKEN_SHOW_SESSION_USER=[^;]+/,'const TOKEN_SHOW_SESSION_USER='+showU);html=html.replace(/const TOKEN_SHOW_SESSION_PC=[^;]+/,'const TOKEN_SHOW_SESSION_PC='+showP);html=html.replace(/const TOKEN_USER_LABEL='[^']*'/,()=>"const TOKEN_USER_LABEL='"+uLbl+"'");html=html.replace(/const TOKEN_EQUIP_LABEL='[^']*'/,()=>"const TOKEN_EQUIP_LABEL='"+eLbl+"'");html=html.replace(/const TOKEN_JPEG_QUALITY=[^;]+/,'const TOKEN_JPEG_QUALITY='+jq);html=html.replace(/const TOKEN_MAX_IMG_DIMENSION=[^;]+/,'const TOKEN_MAX_IMG_DIMENSION='+maxD);html=html.replace(/const TOKEN_AUTO_PURGE_HOURS=[^;]+/,'const TOKEN_AUTO_PURGE_HOURS='+purge);html=html.replace(/const TOKEN_DEBUG_MODE=[^;]+/,()=>'const TOKEN_DEBUG_MODE='+(isUser?'false':'true'));if(isUser){html=html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html'));SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
 /* ADMIN_JS_END */
 
 /* ═══ INIT + BOOT ═══ */

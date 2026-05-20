@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V10
+# Design Tokens · Capture Engine V11
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -238,4 +238,4 @@ Dois breakpoints de adaptação móvel:
 
 ---
 
-*Capture Engine V10 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V11 · Design Tokens Specification · FAANG Standards*

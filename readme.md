@@ -1,4 +1,4 @@
-# Capture Engine · V10
+# Capture Engine · V11
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -126,7 +126,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ### Sessões
 - **Auto-save** a cada 5 segundos no IndexedDB.
 - **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
-- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V10).
+- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V11).
 - **Sessões Anteriores Cronológicas:** Sessões sem título agora são nomeadas cronologicamente como `Sessão-1`, `Sessão-2`, etc., facilitando a navegação na barra lateral esquerda.
 - **Segurança de Deleção:** Eliminar a sessão atualmente ativa aciona um recarregamento limpo automático da interface para manter o IndexedDB perfeitamente íntegro.
 - **Purge automático** de sessões expiradas ao iniciar.
@@ -154,7 +154,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-V10/
+V11/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── agents.md             ← Regras operacionais para agentes IA
@@ -163,4 +163,4 @@ V10/
 
 ---
 
-*Capture Engine V10 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V11 · Design de Excelência FAANG · Air-gapped ready*
