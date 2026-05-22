@@ -1,4 +1,4 @@
-# Agents · Capture Engine V12
+# Agents · Capture Engine V13
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V12 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
+- **Labels de UI** em português neutro harmonizado padrão V13 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -47,16 +47,17 @@
 - **Inputs de sessão (`.sess-input`)**: `border: 1px solid transparent` por defeito. Borda visível apenas no focus com `box-shadow`.
 - **Ícones de cabeçalho (`.blk-hdr svg`)**: `16px`.
 - **Modais**: Título `16px` / Close `32px` circular com `background:var(--bg)` / SVG `16px` `stroke-width:2`.
-- **Badges**: `.count-badge` a `11px`, `#trash-badge` a `10px`.
+- **Badges**: `.count-badge` a `11px`, `#trash-badge` a `11px`.
 - **Sidebar sessions**: Nomes `12px`, datas `11px`, empty `12px`.
 - **Empty states**: Título `14px`, pick-link `13px`.
 - **Chips**: `flex-wrap:nowrap`, `flex:1 1 0` — sempre numa única linha, encolhem em vez de quebrar.
+- **Glassmorphism UI**: Elementos flutuantes na imagem (como controlos de zoom) utilizam fundo translúcido (`rgba(25,25,25,0.7)`), filtro de desfoque (`backdrop-filter: blur(10px)`) e botões ícone com `16px`.
 
 ### 2.4 Estética e Design Geométrico
 - Cartões de documentos (`.d-item`) e badges de tamanho (`.d-size`) devem permanecer **sem bordas visíveis** (transparentes/removidas).
 - Legendas de imagens (`.t-label`) devem ter tamanho `11px` e inputs de documentos (`.d-input`) devem ter tamanho `13px`, ambos com peso de fonte normal (`font-weight: 400`), e a linha divisória sobre as legendas das imagens deve ser omitida.
 - Imagens, wrappings de imagem e legendas de imagem devem possuir **bordas perfeitamente quadradas** (`border-radius: 0`). Cartões textuais e botões retêm cantos arredondados (`--radius-sm`, `--radius-md`).
-- **Left sidebar**: `overflow-y:auto` com scrollbar invisível. Filhos com `flex-shrink:0` — scroll em vez de compressão.
+- **Left sidebar**: `overflow-y:auto` com scrollbar invisível. Filhos com `flex-shrink:1` — mantém itens visíveis com compressão suave antes do scroll.
 - **Trash bar**: Ícones SVG inline `16px` (sem wrappers `sb-icon-btn`).
 
 ### 2.5 JavaScript
@@ -136,13 +137,14 @@ Antes de declarar uma tarefa completa:
 - [ ] Sem duplicados de nomes em screenshots ou documentos.
 - [ ] Visualizador de texto modal (`#text-modal-overlay`) validado e funcional nos Removidos.
 - [ ] Estética borderless e simetria de cantos testados nos cards.
+- [ ] Mecânica de Navegação de Imagens (Zoom/Pan e Scroll de rato) rigorosamente isolada do modo de Anotação.
 - [ ] Arquivo abre sem erros na console do browser.
 
 ---
 
 ## 9. Protocolo de Versionamento (Version Bump)
 
-> **Regra Absoluta Zero Trust**: O processo de *bump* de versão NÃO termina no `changelog.md`. Exige a varredura e substituição do número da versão antiga para a nova em **5 ficheiros vitais**. Nenhuma IA ou Junior pode declarar o bump concluído sem validar todos estes pontos:
+> **Regra Absoluta Zero Trust**: O processo de *bump* de versão NÃO termina no `changelog.md`. Exige a varredura e substituição do número da versão antiga para a nova em **5 arquivos vitais**. Nenhuma IA ou Junior pode declarar o bump concluído sem validar todos estes pontos:
 
 1. **`capture-engine.html`** (A maior armadilha)
    - Comment tag do Visual Builder: `<!-- VISUAL BUILDER MODAL (VXX) -->`
@@ -152,17 +154,17 @@ Antes de declarar uma tarefa completa:
 3. **`readme.md`**
    - Título principal (`# Capture Engine · VXX`)
    - Textos de referência a "padrão VXX" e árvore de exemplos (`VXX/`)
-   - Rodapé de créditos FAANG do ficheiro
+   - Rodapé de créditos FAANG do arquivo
 4. **`design-tokens.md`**
    - Título principal
-   - Rodapé de créditos FAANG do ficheiro
-5. **`agents.md`** (Este ficheiro)
+   - Rodapé de créditos FAANG do arquivo
+5. **`agents.md`** (Este arquivo)
    - Título principal
    - Referências nas regras de UI a "padrão VXX"
-   - Rodapé de créditos FAANG do ficheiro
+   - Rodapé de créditos FAANG do arquivo
 
 *Ação obrigatória antes do ZIP*: Usar a ferramenta de pesquisa global (`grep_search` ou `findstr /I`) à procura da versão anterior exata em todos os `.html` e `.md` para caçar fantasmas. Nunca assumir sucesso às cegas.
 
 ---
 
-*Capture Engine V12 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V13 · Agents Operational Rules · FAANG Standards*

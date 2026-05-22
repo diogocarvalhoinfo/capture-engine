@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V12
+# Design Tokens · Capture Engine V13
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -34,7 +34,7 @@
 | `--text` | `#e4e4e4` | Texto principal em modo noturno |
 | `--text-muted` | `#9a9a9a` | Texto secundário em modo noturno |
 
-> **Regra Absoluta**: O modo escuro ativa-se única e exclusivamente através da classe CSS `body.dark`. Nunca utilizar media queries `prefers-color-scheme`.
+> **Regra Absoluta**: O modo escuro ativa-se única e exclusivamente através da classe CSS `body.dark`. Nunca usar media queries `prefers-color-scheme`.
 > **Estética Borderless**:
 > - Elementos `.d-item` (cards de documentos) têm bordas definidas como `1px solid transparent` para flutuar organicamente sobre o fundo.
 > - Badges de tamanho `.d-size` não possuem linhas limítrofes, exibindo apenas as dimensões de forma leve.
@@ -78,7 +78,7 @@
 
 > [!IMPORTANT]
 > **Cantos das Imagens**: Imagens têm uma regra geométrica técnica contrastante.
-> Os seletores `.t-item`, `.t-wrap`, e `.t-label` têm `border-radius: 0` aplicado de forma estrita, garantindo cantos perfeitamente retos (quadrados) exclusivamente para evidências visuais. Os botões e cartões textuais preservam suas curvas arredondadas.
+> Os seletores `.t-item`, `.t-wrap`, and `.t-label` têm `border-radius: 0` aplicado de forma estrita, garantindo cantos perfeitamente retos (quadrados) exclusivamente para evidências visuais. Os botões e cartões textuais preservam suas curvas arredondadas.
 
 ---
 
@@ -111,14 +111,11 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 |---|---|---|---|
 | `TOKEN_TITLE_START` | `string` | `'Capture'` | Interface |
 | `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | Interface |
-| `TOKEN_TITLE_END` | `string` | `''` | — |
-| `TOKEN_SUBTITLE` | `string` | `''` | — (Obsoleto no visualizador, preservado para Quine) |
-| `TOKEN_MAIN_COLOR` | `hex` | `'#0ea5e9'` | Interface |
-| `TOKEN_ACCENT_FG_OVERRIDE` | `hex` | `''` | Interface |
-| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Histórico |
-| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Histórico |
-| `TOKEN_USER_LABEL` | `string` | `''` | Histórico |
-| `TOKEN_EQUIP_LABEL` | `string` | `''` | Histórico |
+| `TOKEN_TITLE_END` | `''` | (Obsoleto) Guardado para integridade Quine |
+| `TOKEN_USER_LABEL` | `'User'` | Label padrão do campo de nome de utilizador |
+| `TOKEN_EQUIP_LABEL` | `'Equipamento'` | Label padrão do campo de equipamento |
+| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Visibilidade do campo User (Oculta secção se ambos false) |
+| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Visibilidade do campo Equipamento (Oculta secção se ambos false) |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | Captura |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | Manutenção |
@@ -167,12 +164,33 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 > **Modo Binário**: Para documentos não-textuais, o textarea e o botão "Copiar Texto" são ocultados.
 > É exibido um ícone SVG de documento, a extensão em uppercase e uma mensagem informativa centrada.
 
+### Visualizar imagem (`#img-modal-overlay`)
+```
+┌──────────────────────────────────────────────────────┐
+│  Visualizar imagem - [Título]                    [X]  │
+├──────────────────────────────────────────────────────┤
+│  ┌────────────────────────────────────────────────┐  │
+│  │ ┌────────────────────────────────────────────┐ │  │
+│  │ │                                            │ │  │
+│  │ │                  [Imagem]                  │ │  │
+│  │ │                                            │ │  │
+│  │ │                           [ - ] 100% [ + ] │ │  │
+│  │ └─────────────────────────── ↑ zoom-ui ──────┘ │  │
+│  └────────────────────────────────────────────────┘  │
+├──────────────────────────────────────────────────────┤
+│ [Restaurar] [Download]             Dims/Size info    │
+└──────────────────────────────────────────────────────┘
+```
+
+> [!TIP]
+> **Glassmorphism Zoom UI**: O painel `#zoom-ui` está ancorado à base-direita. Flutua apenas se o zoom da imagem estiver ativo. Adota estilos translúcidos com `--radius-md` e texto/ícones unicamente brancos `#fff` para máximo contraste sobre fundos fotográficos dinâmicos.
+
 ### Left Sidebar (Flexível)
 
 > [!IMPORTANT]
-> A left sidebar utiliza `overflow-y: auto` com scrollbar invisível (`scrollbar-width: none`),
-> garantindo que todo o conteúdo é acessível em qualquer altura de viewport.
-> Os filhos usam `flex-shrink: 0` para manter o tamanho natural e forçar scroll em vez de compressão.
+> A left sidebar utiliza `overflow-y: auto` com `scrollbar-width: none` (esconde scrollbar visualmente).
+> - Os filhos usam `flex-shrink: 1` para manter visibilidade com compressão elástica.
+> - A secção de título usa `flex-shrink: 0` para manter o tamanho natural e forçar scroll em vez de compressão.
 > Chips de layout (`chips-group`) usam `flex-wrap: nowrap` com `flex: 1 1 0` para ocupar sempre uma única linha.
 > A navegação de sessões suporta estado `.active` destacado com cor harmónica suave e transição de opacidade, com botão de deleção fixo invisível por padrão (evitando pulos de layout ao transitar).
 
@@ -203,10 +221,9 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `.blk-hdr svg` | `16px` | — | Ícones de cabeçalho de bloco |
 | `.blk-hdr-title` | `11px` | `600` | Títulos de bloco uppercase |
 | `.count-badge` | `11px` | `700` | Badges de contagem accent |
-| `#trash-badge` | `10px` | `700` | Badge de contagem no trash bar |
-| `.sb-sess-name` | `12px` | `500` | Nomes de sessão na sidebar |
-| `.sb-sess-date` | `11px` | `400` | Datas de sessão na sidebar |
-| `.empty-st-title` | `14px` | `500` | Títulos de estados vazios |
+| `#trash-badge` | `11px` | `700` | Badge de contador flutuante na Trash Bar `11px` Bold, bg `--color-red`, radius `99px` |
+| `.sb-sess-item` | Item do histórico | padding `6px 12px`, radius `--radius-sm` |
+| `.empty-st-sub` | Subtítulo do empty state | `12px`, `--border-strong` (Ocultado ou removido) |
 | `.pick-link` | `13px` | `400` | Links de acção nos estados vazios |
 | `.modal-title` | `16px` | `600` | Título centralizado horizontalmente por padrão |
 | `.modal-close` | `32px` (circle) | — | Botão fechar circular com `var(--bg)` posicionado absolutamente à direita |
@@ -240,4 +257,4 @@ Dois breakpoints de adaptação móvel:
 
 ---
 
-*Capture Engine V12 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V13 · Design Tokens Specification · FAANG Standards*
