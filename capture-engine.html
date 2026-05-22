@@ -290,7 +290,8 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
   #sidebar.mobile-open{transform:translate(-50%, -50%);opacity:1;pointer-events:auto}
   #sb-mobile-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(3px)}
   #sb-mobile-overlay.mobile-open{opacity:1;pointer-events:auto}
-  #sidebar #sb-content{opacity:1;pointer-events:auto;padding:24px}
+  #sidebar #sb-content{opacity:1;pointer-events:none;padding:24px}
+  #sidebar.mobile-open #sb-content{pointer-events:auto}
   #sidebar #sb-rail{display:none}
   #sidebar .sb-section-title{font-size:14px;font-weight:600;color:var(--text);padding:0 0 16px 0;letter-spacing:0}
   #sidebar .sb-sess-item{padding:14px;margin-bottom:6px;background:var(--bg);border:1px solid transparent}
@@ -681,7 +682,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
 </div>
 
 
-<!-- VISUAL BUILDER MODAL (V11) -->
+<!-- VISUAL BUILDER MODAL (V12) -->
 <!-- ADMIN_EDIT_START -->
 <div class="sb-overlay" id="vb-overlay">
   <div class="sb-modal" style="max-width:520px">
@@ -689,7 +690,7 @@ input:checked+.toggle-slider:before{transform:translateX(20px)}
     <div class="sb-header">
       <div class="sb-title">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Visual Builder <span style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V11</span>
+        Visual Builder <span style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V12</span>
       </div>
       <p class="sb-subtitle">Preferências da interface</p>
     </div>

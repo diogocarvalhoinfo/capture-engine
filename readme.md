@@ -1,4 +1,4 @@
-# Capture Engine · V11
+# Capture Engine · V12
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -51,6 +51,8 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 | `TOKEN_ACCENT_FG_OVERRIDE` | hex | `''` | Override da cor de texto sobre destaque |
 | `TOKEN_SHOW_SESSION_USER` | bool | `true` | Mostrar campo User |
 | `TOKEN_SHOW_SESSION_PC` | bool | `true` | Mostrar campo Equipamento |
+| `TOKEN_USER_LABEL` | string | `''` | Customização do rótulo/placeholder para o campo User |
+| `TOKEN_EQUIP_LABEL` | string | `''` | Customização do rótulo/placeholder para o campo Equipamento |
 | `TOKEN_JPEG_QUALITY` | float | `0.92` | Qualidade JPEG no export PDF (0.70–0.95) |
 | `TOKEN_MAX_IMG_DIMENSION` | int | `0` | Dimensão máxima de redimensionamento (0=original) |
 | `TOKEN_AUTO_PURGE_HOURS` | int | `48` | Horas para purge automático de sessões |
@@ -126,8 +128,8 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ### Sessões
 - **Auto-save** a cada 5 segundos no IndexedDB.
 - **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
-- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V11).
-- **Sessões Anteriores Cronológicas:** Sessões sem título agora são nomeadas cronologicamente como `Sessão-1`, `Sessão-2`, etc., facilitando a navegação na barra lateral esquerda.
+- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V12).
+- **Sessões Anteriores (Histórico):** Históricos sem título agora são nomeados cronologicamente com zeros à esquerda (`#0001`, `#0002`, etc.), garantindo uma identificação clara e neutra.
 - **Segurança de Deleção:** Eliminar a sessão atualmente ativa aciona um recarregamento limpo automático da interface para manter o IndexedDB perfeitamente íntegro.
 - **Purge automático** de sessões expiradas ao iniciar.
 
@@ -154,7 +156,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-V11/
+V12/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── agents.md             ← Regras operacionais para agentes IA
@@ -163,4 +165,4 @@ V11/
 
 ---
 
-*Capture Engine V11 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V12 · Design de Excelência FAANG · Air-gapped ready*

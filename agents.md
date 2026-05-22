@@ -1,4 +1,4 @@
-# Agents · Capture Engine V11
+# Agents · Capture Engine V12
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V11 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`.
+- **Labels de UI** em português neutro harmonizado padrão V12 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -83,8 +83,8 @@ Para prevenir colisões de arquivos que bloqueiem extrações de arquivos ZIP em
 - Aplicar o mesmo validador inteligente para legendas redefinidas em `window.setLabel`.
 - **ZIP Export:** Ao exportar arquivos para ZIP, omitir prefixos de indexação numéricos adicionais (`001-`). Utilizar diretamente as legendas das imagens limpas (`imagem-1.png`, `imagem-2.jpg`), garantindo que a sua unicidade natural preserva a estrutura.
 
-### 3.3 Histórico de Sessões
-- Sessões sem título explícito na barra lateral esquerda ("SESSÕES ANTERIORES") devem ser nomeadas dinamicamente com base na sua ordem cronológica de criação: `Sessão-1`, `Sessão-2`, `Sessão-3`, etc., em vez do termo `"Sem título"`.
+### 3.3 Histórico
+- Históricos sem título explícito devem ser nomeados dinamicamente com base na sua ordem cronológica de criação, utilizando um formato cardinal preenchido com zeros: `#0001`, `#0002`, `#0003`, etc., em vez do termo genérico `"Sessão-X"`.
 
 ---
 
@@ -165,4 +165,4 @@ Antes de declarar uma tarefa completa:
 
 ---
 
-*Capture Engine V11 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V12 · Agents Operational Rules · FAANG Standards*

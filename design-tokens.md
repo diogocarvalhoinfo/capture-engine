@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V11
+# Design Tokens · Capture Engine V12
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -115,8 +115,10 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 | `TOKEN_SUBTITLE` | `string` | `''` | — (Obsoleto no visualizador, preservado para Quine) |
 | `TOKEN_MAIN_COLOR` | `hex` | `'#0ea5e9'` | Interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `hex` | `''` | Interface |
-| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Sessão |
-| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Sessão |
+| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Histórico |
+| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Histórico |
+| `TOKEN_USER_LABEL` | `string` | `''` | Histórico |
+| `TOKEN_EQUIP_LABEL` | `string` | `''` | Histórico |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | Captura |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | Manutenção |
@@ -233,9 +235,9 @@ Dois breakpoints de adaptação móvel:
 - **`max-width: 480px`** — Padding e margens compactos para telas pequenas
 
 - Grelhas horizontais convertem-se em fluxos verticais fluidos.
-- Barra lateral direita (sessões) é ocultada em mobile.
+- Barra lateral direita (sessões) converte-se num **Modal de Histórico** centralizado de luxo (flutuante com overlay escuro e pointer-events precisos).
 - Zonas de drop ajustam-se para toques diretos de dedo.
 
 ---
 
-*Capture Engine V11 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V12 · Design Tokens Specification · FAANG Standards*

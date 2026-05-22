@@ -4,6 +4,21 @@
 
 ---
 
+## [V12] — 2026-05-22
+
+### Adicionado
+- **Modal Mobile Centralizado de Histórico:** Transformação estrutural da gaveta (drawer) lateral da versão móvel num Modal de Alta Densidade posicionado centralmente (`fixed` + `transform: translate`), aumentando os *touch targets* e harmonizando a escala visual.
+- **Isolamento de Estado (Body Scroll Lock):** Inserção de bloqueio dinâmico do `document.body.style.overflow` quando o Modal de Histórico está ativo, impedindo a rolagem indesejada do conteúdo base.
+- **Configuração de Etiquetas Customizáveis:** Ampliação do *Visual Builder* para permitir alteração em tempo real das etiquetas e *placeholders* "User" e "Equipamento", materializada com dois novos tokens SSOT no *Quine Engine* (`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL`).
+- **Nomenclatura Cronológica com Preenchimento Lógico:** Modificada a mecânica de nomeação por *fallback* para históricos não identificados. Substituição de `Sessão-X` pelo formato rígido padronizado com zeros à esquerda (`#0001`, `#0002`).
+
+### Corrigido
+- **Mitigação Crítica de Eventos Fantasma (Pointer-Events):** Resolução cirúrgica (1 linha) num vazamento de eventos de toque no CSS Mobile. O bloco `#sb-content` invisível estava configurado forçadamente com `pointer-events: auto`, provocando a interceção de cliques do ecrã e alterando sessões invisivelmente. Modificado para reagir apenas quando o modal está aberto (`.mobile-open`).
+- **Normalização Semântica:** Substituição transversal da terminologia nativa `Sessões/Sessão` para `Histórico` em toda a aplicação (Visual Builder, labels SVG nativos e textos de cabeçalho).
+- **Consistência de Ícones em Telas Pequenas:** Troca do SVG da barra lateral em smartphones pelo ícone de "Relógio", uniformizando-o com o botão principal do desktop.
+
+---
+
 ## [V11] — 2026-05-20
 
 ### Adicionado
