@@ -6,13 +6,15 @@
 
 ## Em linguagem simples — o que isto faz?
 
-Quando abre um arquivo `.html` com duplo clique, o Windows abre-o como uma página web normal: com a barra de endereço, os botões de voltar/avançar, as abas, e possivelmente um tela de boas-vindas do Edge.
+Quando abre um arquivo `.html` com duplo clique, o Windows abre-o como uma página web normal: com a barra de endereço, os botões de voltar/avançar, as abas, e possivelmente um ecrã de boas-vindas do Edge.
 
 O launcher elimina tudo isso. Ao fazer duplo clique em `CaptureEngineApp.vbs`, o Capture Engine abre em modo de aplicação — uma janela limpa, maximizada, sem interface de browser visível. Parece uma aplicação instalada, não uma página web.
 
 **Para quem é:** Utilizadores que querem uma experiência de aplicação profissional, especialmente em ambientes corporativos onde a janela limpa é importante.
 
 **Para quem não é necessário:** Quem prefere abrir o arquivo `.html` diretamente no browser — isso funciona perfeitamente bem também.
+
+**Nota:** O launcher é exclusivo do Windows. Em macOS e Linux, abra diretamente o `capture-engine.html` no browser.
 
 ---
 
@@ -24,6 +26,7 @@ O launcher elimina tudo isso. Ao fazer duplo clique em `CaptureEngineApp.vbs`, o
 | Compatibilidade | Microsoft Edge (Chromium 109+) |
 | Requisitos | Windows, Edge instalado no caminho padrão |
 | Permissões necessárias | Nenhuma — corre como utilizador normal, sem admin |
+| Linguagem | VBScript — nativo no Windows, sem instalação necessária |
 
 ---
 
@@ -35,19 +38,25 @@ Antes de fazer qualquer coisa, o script verifica:
 - O Edge está instalado no caminho padrão? (`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`)
 - O `capture-engine.html` está na mesma pasta que o script?
 
-Se qualquer um falhar, aparece uma mensagem de erro clara (em vez de falhar silenciosamente).
+Se qualquer um falhar, aparece uma mensagem de erro clara com instruções (em vez de falhar silenciosamente).
 
 ### 2. Converte o caminho em URI válida
 
 O Windows usa caminhos com barras invertidas (`C:\Pasta\arquivo.html`). O browser precisa de URIs com barras normais e encoding de caracteres especiais (`file:///C:/Pasta/arquivo.html`).
 
-O script converte o caminho automaticamente. **A partir de V15**, esta conversão suporta corretamente pastas com nomes acentuados em português (`Área de Trabalho`, `Documentação`, etc.) — caracteres como `ã`, `ç`, `é` são codificados em `%HH` para que o Edge os interprete corretamente.
+O script converte o caminho automaticamente. A função `SecureURLEncode` codifica em `%HH` qualquer caractere com código ASCII > 127, incluindo caracteres portugueses acentuados (`ã`, `ç`, `é`, `ô`, etc.).
+
+**Exemplo:**
+```
+C:\Área de Trabalho\CE\capture-engine.html
+→ file:///C:/\u00c1rea%20de%20Trabalho/CE/capture-engine.html
+```
 
 ### 3. Cria uma pasta de perfil isolada
 
-O script cria uma pasta de sessão em `%TEMP%\CE`. Isto serve para:
-- **Isolar completamente** os dados do Capture Engine dos dados pessoais do browser do utilizador (histórico, passwords, cookies)
-- **Evitar telas de boas-vindas** do Edge que aparecem em perfis novos (o script injeta um arquivo de Preferências que simula um perfil já configurado)
+O script cria uma pasta em `%TEMP%\CE` (normalmente `C:\Users\[utilizador]\AppData\Local\Temp\CE`). Isto serve para:
+- **Isolar completamente** os dados do Capture Engine dos dados pessoais do browser (histórico, passwords, cookies)
+- **Evitar ecrãs de boas-vindas** do Edge — o script injeta um arquivo de Preferências que simula um perfil já configurado
 - **Limpar o cache** automaticamente a cada abertura, evitando que a pasta cresça indefinidamente
 
 Nada disto afeta o perfil normal do Edge — são pastas completamente separadas.
@@ -74,8 +83,8 @@ msedge.exe --app=file:///...  --user-data-dir=%TEMP%\CE
 | `--app=file:///...` | Abre em modo App — sem barra de endereço, sem abas |
 | `--user-data-dir` | Usa a pasta de perfil isolada em `%TEMP%\CE` |
 | `--app-id` | Agrupa a janela como app separada na barra de tarefas |
-| `--start-maximized` | Abre maximizado (best-effort — pode ser ignorado por GPO em ambientes restritos) |
-| `--disable-first-run-ui` | Suprime telas de boas-vindas |
+| `--start-maximized` | Abre maximizado (pode ser ignorado por GPO em ambientes restritos) |
+| `--disable-first-run-ui` | Suprime ecrãs de boas-vindas |
 | `--no-default-browser-check` | Suprime o diálogo "Queres que o Edge seja o browser padrão?" |
 | `--disable-translate` | Suprime a barra de tradução automática |
 
@@ -111,10 +120,16 @@ O `capture-engine.html` foi movido ou renomeado. O script e o HTML têm de estar
 4. Arraste o novo atalho da Área de Trabalho para a barra de tarefas
 
 ### A janela não abre maximizada
-Em alguns ambientes corporativos com políticas de GPO que controlam o estado de janelas, a flag `--start-maximized` pode ser ignorada. A aplicação abre na mesma — apenas em tamanho de janela normal em vez de maximizada. Maximize manualmente se necessário.
+Em alguns ambientes corporativos com políticas de GPO que controlam o estado de janelas, a flag `--start-maximized` pode ser ignorada. A aplicação abre na mesma — apenas em tamanho de janela normal. Maximize manualmente se necessário.
 
 ### Pasta com acentos no caminho (ex: "Área de Trabalho")
 Resolvido na versão 1.1.0 — o launcher codifica corretamente caracteres como `ã`, `ç`, `é` no caminho da URI.
+
+### "O Edge não foi encontrado" mas o Edge está instalado
+O script verifica o caminho padrão `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`. Se o Edge foi instalado noutro local (instalação personalizada ou ambientes enterprise), o caminho pode ser diferente. Contacte o departamento de TI para verificar o caminho de instalação do Edge.
+
+### A aplicação abre mas mostra página em branco
+Pode ser um problema de permissão para abrir arquivos locais no Edge. Verifique as definições de segurança do Edge ou contacte o departamento de TI.
 
 ---
 
@@ -135,8 +150,16 @@ Resolvido na versão 1.1.0 — o launcher codifica corretamente caracteres como 
 - ✅ Cria/verifica atalho em `%USERPROFILE%\Desktop\` via `WScript.CreateObject("WScript.Shell")`
 - ✅ Lança `msedge.exe` com os argumentos documentados acima, modo assíncrono (`WshShell.Run ... 0, False`)
 
+### Dados em disco criados pelo launcher
+
+| Localização | O que é | Persiste? |
+|---|---|---|
+| `%TEMP%\CE\Default\Preferences` | Preferências do perfil Edge isolado | Sim (reescrito a cada abertura) |
+| `%TEMP%\CE\Default\Cache\` | Cache do browser | Limpo a cada abertura |
+| `%USERPROFILE%\Desktop\CaptureEngine.lnk` | Atalho na Área de Trabalho | Sim (criado uma vez, não sobrescrito) |
+
 ### Nota sobre `--disable-features=RendererCodeIntegrity`
-Esta flag foi **removida** na versão 1.1.0. Foi descontinuada pelo Chromium e a sua presença em versões modernas do Edge pode gerar alertas em sistemas EDR (Endpoint Detection and Response) modernos. A remoção foi proativa para evitar falsos positivos em auditorias de segurança.
+Esta flag foi **removida** na versão 1.1.0. Foi descontinuada pelo Chromium e a sua presença em versões modernas do Edge pode gerar alertas em sistemas EDR (Endpoint Detection and Response). A remoção foi proativa para evitar falsos positivos em auditorias de segurança.
 
 ---
 

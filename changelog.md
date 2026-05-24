@@ -5,6 +5,24 @@
 
 ---
 
+## [V16] — 2026-05-24
+
+### Modificado
+
+**Documentação completamente reescrita — impacto: onboarding sem dependência de conhecimento verbal**
+
+Toda a documentação foi auditada, reorganizada e expandida seguindo padrões de grandes empresas de tecnologia (Google, Stripe, Notion, Apple, Microsoft). As principais mudanças:
+
+- `readme.md` — Expandido de guia funcional para documentação completa com glossário de termos técnicos, perfis de utilizador (utilizador final / administrador / desenvolvedor), fluxos reais, limitações conhecidas, FAQ, e schema da base de dados. Qualquer pessoa sem contexto prévio consegue entender o sistema sem perguntar aos criadores.
+
+- `agents.md` — Expandido com schema completo do IndexedDB (campos, tipos, obrigatoriedade, índices), documentação de `ec_pending_session`, `BOOT_HTML`, `_ensurePromise`, `isDirty`, `_vbLabelDirty`, e `sysColors`. Adicionados fluxos de comportamento em diagrama (captura de imagem, Export User, apagar sessão ativa). Adicionada tabela de referência rápida de funções críticas. Adicionada documentação de variáveis de estado global.
+
+- `design-tokens.md` — Adicionada explicação sobre como o motor decide entre modo texto e modo binário no modal de documento. Adicionadas notas detalhadas sobre `TOKEN_TITLE_END` (obsoleto mas preservado), `TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático), e `TOKEN_USER_LABEL`/`TOKEN_EQUIP_LABEL` (vazio = padrão visual).
+
+- `CaptureEngineApp.vbs.md` — Adicionada tabela de dados em disco criados pelo launcher, nota sobre suporte exclusivo Windows, e resolução de problema de Edge instalado em caminho não-padrão.
+
+---
+
 ## [V15] — 2026-05-24
 
 ### Corrigido
