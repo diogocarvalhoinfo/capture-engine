@@ -94,5 +94,17 @@ Function SecureURLEncode(ByVal s)
     s = Replace(s, "%", "%25"): s = Replace(s, " ", "%20"): s = Replace(s, "#", "%23")
     s = Replace(s, "&", "%26"): s = Replace(s, "+", "%2B"): s = Replace(s, "=", "%3D")
     s = Replace(s, "[", "%5B"): s = Replace(s, "]", "%5D"): s = Replace(s, "'", "%27")
-    SecureURLEncode = s
+    ' Encode non-ASCII characters (e.g. Portuguese accented folder names)
+    Dim i, c, b
+    Dim result: result = ""
+    For i = 1 To Len(s)
+        c = Mid(s, i, 1)
+        b = Asc(c)
+        If b > 127 Or b < 0 Then
+            result = result & "%" & Right("0" & Hex(b And 255), 2)
+        Else
+            result = result & c
+        End If
+    Next
+    SecureURLEncode = result
 End Function

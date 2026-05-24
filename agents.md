@@ -1,189 +1,398 @@
-# Agents · Capture Engine V14
+# Agents · Capture Engine V15
 
-> Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
+> Guia operacional para agentes de IA que lêem, editam ou estendem o Capture Engine.
+> **Leia a Secção 0 antes de qualquer outra coisa.**
+
+---
+
+## 0. Modelo Mental — Antes das Regras
+
+Antes de ler as regras, é necessário perceber *por que* elas existem. As regras não são arbitrárias — cada uma protege um dos três contratos fundamentais do motor:
+
+### Contrato 1: O arquivo é a aplicação inteira
+
+O `capture-engine.html` não é uma página que carrega recursos externos. É uma aplicação completa encapsulada num único arquivo. Isso significa:
+
+- **Sem CDN.** Se colocar um `<script src="https://...">` qualquer, o arquivo deixa de funcionar em ambientes offline (bancos, hospitais, governo). O utilizador final não terá internet.
+- **Sem npm, sem bundler.** O arquivo tem de abrir com duplo clique num Windows XP sem internet e funcionar. Toda a lógica está inline.
+
+*Consequência de violar:* A aplicação falha silenciosamente em qualquer ambiente sem internet. O utilizador nunca saberá porquê.
+
+### Contrato 2: O arquivo consegue copiar-se a si próprio
+
+O motor tem uma funcionalidade chamada **Quine** — consegue exportar uma cópia de si próprio com configurações personalizadas. Para isso funcionar, o código-fonte original tem de estar recuperável e os marcadores de secção têm de estar intactos.
+
+*Consequência de violar:* O Export Admin/User produz um arquivo corrompido ou incompleto que não abre corretamente no browser.
+
+### Contrato 3: Os dados do utilizador nunca chegam ao DOM sem sanitização
+
+Qualquer texto que o utilizador escreva (nome de sessão, legenda de imagem, nome de documento) pode conter caracteres especiais HTML como `<`, `>`, `"`. Se esses caracteres forem inseridos diretamente no DOM via `innerHTML`, um utilizador malicioso pode injetar HTML ou JavaScript arbitrário — um ataque chamado XSS.
+
+*Consequência de violar:* Vulnerabilidade de segurança em produção num ambiente onde o arquivo pode estar a correr com dados sensíveis (evidências jurídicas, dados de clientes).
 
 ---
 
 ## 1. Regras Absolutas
 
-### 1.1 Zero-Dependency
-- **CDN PROIBIDO.** Nenhuma tag `<script src>` ou `<link href>` externa é permitida.
-- Toda a lógica deve existir dentro do arquivo `capture-engine.html`.
-- Nenhuma dependência npm, nenhuma biblioteca, nenhum framework.
+### 1.1 Zero-Dependency — Sem dependências externas
 
-### 1.2 Single-File Quine
-- O arquivo é um **Quine auto-mutável**. Qualquer alteração deve preservar:
-  - A capacidade do arquivo de se re-exportar via `window.exportFile()`
-  - Todos os comment markers (`ADMIN_BUTTONS_START/END`, `ADMIN_EDIT_START/END`, `ADMIN_JS_START/END`, `EXPORT MODAL/FIM EXPORT MODAL`)
-  - A função `capturePristine()` que captura o HTML original via `fetch(location.href)`
+**O que não fazer:**
+```html
+<!-- PROIBIDO — quebra o modo offline -->
+<script src="https://cdn.jsdelivr.net/..."></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/...">
+```
 
-### 1.3 XSS Prevention
-- Todo input do usuário deve passar por `escapeHTML()` antes de ser inserido no DOM via innerHTML.
-- `sanitizeForQuine()` deve ser aplicado a qualquer valor antes de injeção no HTML durante export.
-- Nunca usar `eval()`, `Function()`, ou `document.write()`.
+**Por quê:** O Capture Engine destina-se a ambientes *air-gapped* (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega. Se o CDN mudar, a app quebra. Se o CDN for comprometido, há um vetor de ataque.
 
-### 1.4 Air-Gapped Environment
-- O motor deve funcionar 100% offline, sem acesso à internet.
-- Nenhum `fetch()` para URLs externas (apenas `fetch(location.href)` para Quine).
-- LocalStorage e IndexedDB são os únicos mecanismos de persistência.
+**Regra:** Toda a lógica, todo o CSS, todos os ícones SVG, devem estar inline dentro do `capture-engine.html`. Sem exceções.
+
+---
+
+### 1.2 Single-File Quine — O arquivo que se auto-reproduce
+
+**O que é um Quine:** Um programa capaz de produzir uma cópia de si próprio como output. O Capture Engine, ao fazer Export, lê o seu próprio código-fonte e gera um novo arquivo com os tokens de configuração substituídos.
+
+**Como funciona tecnicamente:**
+1. `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo
+2. `exportFile()` substitui os valores dos tokens via regex
+3. Para exports de User, remove os blocos marcados com comentários especiais
+4. Faz download do HTML resultante
+
+**O que nunca alterar:**
+
+| O quê | Onde | Porquê |
+|---|---|---|
+| `window.exportFile()` | `ADMIN_JS_START/END` | Ponto de entrada do Export |
+| `capturePristine()` | `ADMIN_JS_START/END` | Lê o código-fonte original |
+| `sanitizeForQuine()` | `ADMIN_JS_START/END` | Protege os marcadores de serem corrompidos pelo próprio conteúdo |
+| Todos os comment markers | Ver tabela Secção 5 | Definem o que é removido em exports de User |
+
+**Regra:** Qualquer alteração ao arquivo deve preservar todos os comment markers intactos e todas as funções Quine funcionais.
+
+---
+
+### 1.3 XSS Prevention — Sanitização de inputs
+
+**O problema:** O browser interpreta HTML dentro de strings. Se um utilizador escrever `<img src=x onerror=alert(1)>` como legenda de uma imagem e esse texto for inserido diretamente via `innerHTML`, o JavaScript `alert(1)` executa.
+
+**A solução:** Antes de qualquer `innerHTML` com dados do utilizador, chamar `escapeHTML()`:
+```js
+// ERRADO — vulnerável
+element.innerHTML = `<span>${userInput}</span>`;
+
+// CORRETO — seguro
+element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
+```
+
+**Para o Quine especificamente:** Usar `sanitizeForQuine()` antes de injetar valores de tokens no HTML exportado. Esta função também protege os comment markers de serem acidentalmente incluídos em valores de tokens (o que corromperia o arquivo exportado).
+
+**Nunca usar:**
+- `eval()` — executa código arbitrário
+- `Function()` — equivalente a eval
+- `document.write()` — sobrescreve o DOM inteiro
+
+---
+
+### 1.4 Air-Gapped Environment — Funcionar sem internet
+
+**O que significa air-gapped:** O computador onde a app corre não tem (ou não deve ter) acesso à internet. É a realidade de muitos ambientes corporativos (banca, saúde, governo).
+
+**Regras práticas:**
+- Nenhum `fetch()` para URLs externas (apenas `fetch(location.href)` para o Quine é permitido)
+- Nenhuma fonte de ícones externa (todos os ícones são SVG inline)
+- Nenhuma chamada a APIs externas de qualquer tipo
+- Persistência apenas em `localStorage` e `IndexedDB` (mecanismos do browser, sem servidor)
 
 ---
 
 ## 2. Convenções de Código
 
-### 2.1 Linguagem
-- **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V14 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
+### 2.1 Língua — Onde usar inglês e onde usar português
 
-### 2.2 CSS
-- Todas as variáveis CSS definidas em `:root` e `body.dark`.
-- Unidades em `px` (nunca `rem` ou `em`).
-- Z-index: modais em `9999`, banners em `1000`.
-- Dark mode via classe `body.dark` (nunca `prefers-color-scheme`).
-
-### 2.3 Gold Standard — Escala e Proporção
-- **Botões (`.btn-send`)**: `height:36px`, `font-size:13px`, `padding:0 18px`, SVG interno `14px`, `stroke-width:2`.
-- **Spinner**: `14px`.
-- **Inputs de sessão (`.sess-input`)**: `border: 1px solid transparent` por defeito. Borda visível apenas no focus com `box-shadow`.
-- **Ícones de cabeçalho (`.blk-hdr svg`)**: `16px`.
-- **Modais**: Título `16px` / Close `32px` circular com `background:var(--bg)` / SVG `16px` `stroke-width:2`.
-- **Badges**: `.count-badge` a `11px`, `#trash-badge` a `11px`.
-- **Sidebar sessions**: Nomes `12px`, datas `11px`, empty `12px`.
-- **Empty states**: Título `14px`, pick-link `13px`.
-- **Chips**: `flex-wrap:nowrap`, `flex:1 1 0` — sempre numa única linha, encolhem em vez de quebrar.
-- **Glassmorphism UI**: Elementos flutuantes na imagem (como controlos de zoom) utilizam fundo translúcido (`rgba(25,25,25,0.7)`), filtro de desfoque (`backdrop-filter: blur(10px)`) e botões ícone com `16px`.
-
-### 2.4 Estética e Design Geométrico
-- Cartões de documentos (`.d-item`) e badges de tamanho (`.d-size`) devem permanecer **sem bordas visíveis** (transparentes/removidas).
-- Legendas de imagens (`.t-label`) devem ter tamanho `11px` e inputs de documentos (`.d-input`) devem ter tamanho `13px`, ambos com peso de fonte normal (`font-weight: 400`), e a linha divisória sobre as legendas das imagens deve ser omitida.
-- Imagens, wrappings de imagem e legendas de imagem devem possuir **bordas perfeitamente quadradas** (`border-radius: 0`). Cartões textuais e botões retêm cantos arredondados (`--radius-sm`, `--radius-md`).
-- **Left sidebar**: `overflow-y:auto` com scrollbar invisível. Filhos com `flex-shrink:1` — mantém itens visíveis com compressão suave antes do scroll.
-- **Trash bar**: Ícones SVG inline `16px` (sem wrappers `sb-icon-btn`).
-
-### 2.5 JavaScript
-- IIFE obrigatório: `(function(){'use strict'; ... })();`
-- SysLogger para logging (nunca `console.log` directo em código de produção).
-- Funções expostas ao DOM via `window.funcName = ...`.
-- `const $=id=>document.getElementById(id)` como selector padrão.
-
----
-
-## 3. Políticas de Unicidade e Sequenciamento de Documentos (Militar)
-
-Para prevenir colisões de arquivos que bloqueiem extrações de arquivos ZIP em sistemas operacionais, os agentes devem respeitar as seguintes políticas estritas:
-
-### 3.1 Documentos Colados/Importados
-- Documentos de texto colados do clipboard devem ser nomeados inicialmente como `texto-1.txt`.
-- Se o nome já existir na lista de documentos ativos (`docs`), o motor deve decompor o sufixo numérico `-(\d+)`, incrementá-lo em uma unidade (ex: `texto-1` ➔ `texto-2` ➔ `texto-3`) e atualizar o nome. 
-- **Nunca** acumular números secundários como `texto-1-1.txt`.
-- Aplicar o mesmo validador inteligente durante renomeações manuais efetuadas pelo User via `window.setDocName`.
-
-### 3.2 Screenshots Capturados
-- Screenshots colados/capturados devem ser etiquetadas inicialmente como `imagem-1`.
-- Se a etiqueta já estiver em uso, deve ser incrementada sequencialmente (`imagem-2`, `imagem-3`).
-- Aplicar o mesmo validador inteligente para legendas redefinidas em `window.setLabel`.
-- **ZIP Export:** Ao exportar arquivos para ZIP, omitir prefixos de indexação numéricos adicionais (`001-`). Utilizar diretamente as legendas das imagens limpas (`imagem-1.png`, `imagem-2.jpg`), garantindo que a sua unicidade natural preserva a estrutura.
-
-### 3.3 Histórico
-- Históricos sem título explícito devem ser nomeados dinamicamente com base na sua ordem cronológica de criação, utilizando um formato cardinal preenchido com zeros: `#0001`, `#0002`, `#0003`, etc., em vez do termo genérico `"Sessão-X"`.
-
-### 3.4 Ciclo de Vida da Sessão (Session Lifecycle — Regras Absolutas V14)
-
-> **CRÍTICO:** Qualquer agente que edite lógica de sessão DEVE respeitar este contrato integralmente.
-
-| Evento | Comportamento Obrigatório |
-|---|---|
-| **Abertura da aplicação** | `init()` chama `createSession()` directamente. Nunca reutilizar sessões existentes. Excepção: `ec_pending_session` válido no `localStorage` (botão Nova Sessão). |
-| **Primeira interação do utilizador** | `ensureSession()` já criou a sessão em `init()`. O `renderSbSessions()` é chamado após `createSession()` em `ensureSession()` para reflectir on-demand. |
-| **Digitação nos campos User/PC** | `initSessionSync` → `up()` → `isDirty=true` → `triggerSave()` **imediato** (não diferido). |
-| **Apagar sessão NÃO activa** | Apenas `renderSbSessions()`. Sessão activa e DOM intactos. |
-| **Apagar sessão ACTIVA com vizinha** | Capturar `neighbor` (`allBefore[idx+1] \|\| allBefore[idx-1]`) **antes** da deleção. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
-| **Apagar sessão ACTIVA sem vizinha** | Estado pristine: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos `session-name/user/pc` zerados, `updateCounters/Btns/BtnTitles()`, `renderTrash()`, `renderSbSessions()`. **Não** criar nova sessão neste momento. |
-| **`createSession()` chamado directamente** | Apenas em `init()` e `ensureSession()`. Nunca chamar em `deleteSessionId` ou em handlers de evento. |
-
----
-
-## 4. Tokens (SSOT)
-
-- Todos os tokens começam com `TOKEN_` e são declarados como `const` no topo do IIFE.
-- Tokens são a **Single Source of Truth** — o Visual Builder lê e escreve neles via Quine.
-
----
-
-## 5. Comment Markers
-
-| Marker | Propósito | Stripped em User export? |
+| Contexto | Língua | Exemplo |
 |---|---|---|
-| `ADMIN_BUTTONS_START/END` | Botões admin na top bar | ✅ Sim |
-| `ADMIN_EDIT_START/END` | Visual Builder modal | ✅ Sim |
-| `ADMIN_JS_START/END` | Lógica Quine + Pristine | ✅ Sim |
-| `EXPORT MODAL/FIM EXPORT MODAL` | Modal de exportação | ✅ Sim |
+| Nomes de variáveis, funções, comentários técnicos | Inglês | `captureImg()`, `sessId`, `isDirty` |
+| Labels visíveis para o utilizador na UI | Português neutro | `"Histórico"`, `"Removidos"`, `"Processando..."` |
+
+**Português neutro — glossário aprovado V15:**
+
+| ✅ Usar | ❌ Evitar | Razão |
+|---|---|---|
+| `"Arquivo"` | `"Arquivo"` | Regionalismo PT-PT |
+| `"Histórico"` | `"Sessões"` | Mais claro para utilizadores não-técnicos |
+| `"Download"` | `"Descarregar"` | Termo universal |
+| `"Equipamento"` | `"Máquina"` | Mais formal e neutro |
+| `"Ecrã"` → Não usar | `"Ecrã"` | Usar contexto ou reformular |
 
 ---
 
-## 6. IndexedDB
+### 2.2 CSS — Unidades e Modo Escuro
 
-- Database: `CaptureEngineDB` (versão 2)
-- Stores: `sessions`, `images`, `documents`, `removed_images`, `removed_documents`.
-- Auto-save a cada 5 segundos via `setInterval` no `boot()`.
-- Purge automático na inicialização (`purgeExpired()`).
+**Usar `px`, nunca `rem` ou `em`**
 
----
+Porquê: `rem` depende do `font-size` do elemento `<html>`. Em ambientes corporativos com configurações de acessibilidade que alteram o tamanho de fonte do browser, `rem` produz layouts quebrados imprevisíveis. `px` é determinístico — 36px é sempre 36px.
 
-## 7. Workflow de Desenvolvimento
+**Dark mode via `body.dark`, nunca via media query CSS**
 
-1. **Nunca** sobrescrever o arquivo inteiro — usar edições incrementais.
-2. **Nunca** abrir o browser para testar — o humano testa.
-3. Após cada alteração significativa, atualizar:
-   - `readme.md` (se nova funcionalidade)
-   - `design-tokens.md` (se novo token CSS ou JS)
-   - `task.md` (marcar progresso)
-4. Manter codificação UTF-8 sem BOM.
+Porquê: O utilizador pode ter o sistema em modo escuro mas querer a app em modo claro, ou vice-versa. A class `body.dark` é controlada por JavaScript e persiste a preferência do utilizador em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
 
----
+```css
+/* CORRETO — controlável pelo utilizador */
+body.dark { --bg: #121212; }
 
-## 8. Checklist de Validação
+/* PROIBIDO — não permite override manual */
+@media (prefers-color-scheme: dark) { --bg: #121212; }
+```
 
-Antes de declarar uma tarefa completa:
+> **Exceção:** O script anti-FOUC e o `initTheme()` em JavaScript *podem* usar `window.matchMedia('prefers-color-scheme')` como fallback na primeira abertura (antes de o utilizador ter definido preferência). O JS lê a preferência do OS, aplica a classe, e a partir daí o CSS faz o resto.
 
-- [ ] `escapeHTML()` aplicado a todos os inputs interpolados em innerHTML.
-- [ ] Comment markers intactos e funcionais.
-- [ ] Sem duplicados de nomes em screenshots ou documentos.
-- [ ] Visualizador de texto modal (`#text-modal-overlay`) validado e funcional nos Removidos.
-- [ ] Estética borderless e simetria de cantos testados nos cards.
-- [ ] Mecânica de Navegação de Imagens (Zoom/Pan e Scroll de rato) rigorosamente isolada do modo de Anotação.
-- [ ] Arquivo abre sem erros na console do browser.
-- [ ] **Ciclo de vida de sessão validado:** abrir o ficheiro → painel limpo, campos vazios, histórico vazio.
-- [ ] **Autosave no keystroke:** digitar uma letra no campo User → estado "Gravado" aparece sem aguardar 5s.
-- [ ] **Delete com vizinha:** apagar sessão activa com histórico existente → navega automaticamente para sessão adjacente.
-- [ ] **Delete sem vizinha:** apagar última sessão activa → campos limpos, histórico vazio, painel pristine.
-- [ ] **Nunca** chamar `createSession()` directamente em `deleteSessionId` ou handlers de evento.
+**Z-index stack:**
+- `9999` → Modais (imagem, texto, anotação)
+- `1000` → Banners (restaurar sessão)
+- `0` → Conteúdo base
 
 ---
 
-## 9. Protocolo de Versionamento (Version Bump)
+### 2.3 Gold Standard — Tamanhos e Proporções
 
-> **Regra Absoluta Zero Trust**: O processo de *bump* de versão NÃO termina no `changelog.md`. Exige a varredura e substituição do número da versão antiga para a nova em **5 arquivos vitais**. Nenhuma IA ou Junior pode declarar o bump concluído sem validar todos estes pontos:
+Estes valores foram calibrados para simetria visual com o SDE V48. Alterá-los quebra a harmonia visual entre os dois motores.
 
-1. **`capture-engine.html`** (A maior armadilha)
-   - Comment tag do Visual Builder: `<!-- VISUAL BUILDER MODAL (VXX) -->`
-   - **Badge visual hardcoded** no header do modal de configurações: `<span ...>VXX</span>`
-2. **`changelog.md`**
-   - Criar entrada principal no topo: `## [VXX] — YYYY-MM-DD`
-3. **`readme.md`**
-   - Título principal (`# Capture Engine · VXX`)
-   - Textos de referência a "padrão VXX" e árvore de exemplos (`VXX/`)
-   - Rodapé de créditos FAANG do arquivo
-4. **`design-tokens.md`**
-   - Título principal
-   - Rodapé de créditos FAANG do arquivo
-5. **`agents.md`** (Este arquivo)
-   - Título principal
-   - Referências nas regras de UI a "padrão VXX"
-   - Rodapé de créditos FAANG do arquivo
-
-*Ação obrigatória antes do ZIP*: Usar a ferramenta de pesquisa global (`grep_search` ou `findstr /I`) à procura da versão anterior exata em todos os `.html` e `.md` para caçar fantasmas. Nunca assumir sucesso às cegas.
+| Elemento | Tamanho |
+|---|---|
+| Botões principais `.btn-send` | `height: 36px`, `font-size: 13px`, `padding: 0 18px` |
+| Ícones dentro de botões | `14px`, `stroke-width: 2` |
+| Ícones de cabeçalho de bloco `.blk-hdr svg` | `16px` |
+| Spinner de loading | `14px` |
+| Título de modal `.modal-title` | `16px`, centrado |
+| Botão fechar modal `.modal-close` | `32px` circular, `background: var(--bg)` |
+| Badges de contagem | `11px`, bold |
+| Nomes na sidebar | `12px` |
+| Datas na sidebar | `11px` |
+| Legendas de imagem `.t-label` | `11px`, `font-weight: 400` (sem negrito) |
+| Inputs de documento `.d-input` | `13px`, `font-weight: 400` (sem negrito) |
 
 ---
 
-*Capture Engine V14 · Agents Operational Rules · FAANG Standards*
+### 2.4 Estética Geométrica — Bordas e Cantos
+
+**A lógica dos cantos:**
+
+Existe uma distinção visual intencional entre elementos de texto e elementos de imagem:
+
+| Tipo de elemento | `border-radius` | Porquê |
+|---|---|---|
+| Botões, cards de texto, modais | `--radius-sm` a `--radius-lg` | Orgânicos, amigáveis |
+| Imagens, wrappers de imagem, legendas `.t-item`, `.t-wrap`, `.t-label` | `0` (quadrado perfeito) | Técnico, preciso — as imagens são evidências, não decoração |
+
+**Cards de documento sem bordas visíveis:**
+
+Os `.d-item` têm `border: 1px solid transparent`. A borda existe no DOM (evitando layout shift), mas é invisível. Isto faz os documentos "flutuarem" sobre o fundo sem criar uma grelha rígida.
+
+---
+
+### 2.5 JavaScript — Estrutura do Código
+
+**IIFE obrigatório:**
+```js
+(function() {
+  'use strict';
+  // Todo o código aqui dentro
+})();
+```
+Porquê: Isola completamente todas as variáveis do scope global da página. Previne que nomes de funções internas colidam com APIs do browser ou com scripts injetados.
+
+**Selector padrão:**
+```js
+const $ = id => document.getElementById(id);
+// Uso: $('btn-pdf') em vez de document.getElementById('btn-pdf')
+```
+
+**Logging — nunca `console.log` direto:**
+```js
+// ERRADO
+console.log('imagem capturada');
+
+// CORRETO
+SysLogger.info('Imagem capturada: ' + label);
+```
+Porquê: `SysLogger` respeita `TOKEN_DEBUG_MODE`. Em exports de User, este token é `false` — os logs desaparecem automaticamente. `console.log` direto ficaria visível para sempre.
+
+**Funções expostas ao DOM:**
+```js
+// Para que onclick="window.delImg(id)" funcione
+window.delImg = async function(id) { ... };
+```
+O IIFE isola o scope — funções chamadas por atributos HTML inline (como `onclick="..."`) precisam de estar em `window` para serem acessíveis.
+
+---
+
+## 3. Unicidade de Nomes — Prevenção de Colisões no ZIP
+
+**O problema:** Se dois arquivos no ZIP tiverem o mesmo nome, alguns sistemas operativos (Windows Explorer, macOS Archive Utility) comportam-se de forma imprevisível: podem sobrescrever um com o outro, ou recusar a extração.
+
+**A solução — algoritmo de incremento inteligente:**
+
+1. Nome inicial: `imagem-1` ou `texto-1.txt`
+2. Se já existe, decompor o sufixo `-N`: `imagem-1` → extrair `1`
+3. Incrementar: `imagem-2`, `imagem-3`, etc.
+4. **Nunca** criar `imagem-1-1` — sempre incrementar o número existente
+
+```
+imagem-1 → imagem-2 → imagem-3   ✅
+imagem-1 → imagem-1-1            ❌
+```
+
+**Verificação cross-list:** A unicidade é verificada contra *ambas* as listas simultaneamente — itens ativos E itens na lixeira. Assim, um item restaurado da lixeira nunca colide com um ativo.
+
+**ZIP Export:** Os nomes dos arquivos no ZIP usam diretamente as legendas limpas (`imagem-1.png`, `relatorio.pdf`), sem prefixos numéricos adicionais (`001-imagem-1.png` seria redundante e desnecessário).
+
+### 3.3 Nomes de Sessões sem Título
+
+Sessões sem nome digitado pelo utilizador recebem um identificador cronológico com zeros à esquerda: `#0001`, `#0002`, etc. (nunca `Sessão-1`). O número reflete a ordem de criação — não a posição atual na lista.
+
+---
+
+## 4. Ciclo de Vida da Sessão
+
+Este é o comportamento mais complexo do motor. Qualquer agente que edite código relacionado com sessões deve compreender este fluxo completamente.
+
+### O modelo mental
+
+Pense nas sessões como arquivos num sistema de arquivos:
+- **Sessão ativa** = o arquivo aberto agora
+- **Histórico** = os outros arquivos guardados
+- **Pristine** = estado de "arquivo novo" — sem nada
+
+Ao abrir a aplicação, começa sempre com um arquivo novo (sessão nova em branco). O histórico de sessões anteriores fica acessível, mas a sessão ativa é sempre nova. Sessões só aparecem no histórico depois da primeira interação real (digitação, captura, ou drag-drop).
+
+### Fluxo de estados
+
+```
+Abrir arquivo
+      │
+      ▼
+createSession() cria sessão em branco
+      │
+      ├─── Sem interação ──────────────► Sessão não aparece no histórico
+      │
+      └─── Primeira interação ─────────► ensureSession() confirma sessão
+                                               │
+                                               ▼
+                                        renderSbSessions() → aparece no histórico
+```
+
+### Tabela de eventos obrigatórios
+
+| Evento | Comportamento obrigatório |
+|---|---|
+| **Abrir a aplicação** | `init()` → `createSession()` diretamente. Nunca reutilizar sessão existente. Excepção: `ec_pending_session` válido em `localStorage` (vem do botão Nova Sessão). |
+| **Primeira interação** | `ensureSession()` confirma e regista a sessão; `renderSbSessions()` faz-a aparecer no histórico. |
+| **Digitar em User/Equipamento** | `initSessionSync` → `up()` → `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
+| **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
+| **Apagar sessão ATIVA com vizinha** | Capturar `neighbor` *antes* da deleção: `allBefore[idx+1] \|\| allBefore[idx-1]`. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
+| **Apagar sessão ATIVA sem vizinha** | Reset completo: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos zerrados. **Não criar nova sessão.** |
+| **`createSession()` diretamente** | Apenas em `init()` e `ensureSession()`. Nunca chamar em `deleteSessionId()` ou handlers de evento. |
+
+> **Porquê nunca criar sessão em `deleteSessionId`?** Porque o utilizador que apaga a última sessão está a decidir ter um interface vazia. Criar uma sessão automática seria tratar o utilizador como se não soubesse o que quer — e causaria um loop onde apagar sempre gerava uma sessão nova no histórico.
+
+---
+
+## 5. Comment Markers — Blocos de Código Removíveis
+
+Os markers são comentários especiais que o Quine Engine usa para identificar e remover blocos inteiros no export de User.
+
+| Marker | Conteúdo que protege | Removido em Export User? |
+|---|---|---|
+| `<!-- ADMIN_BUTTONS_START -->` ... `<!-- ADMIN_BUTTONS_END -->` | Botões ⚙️ e 💾 na barra de topo | ✅ Sim |
+| `<!-- ADMIN_EDIT_START -->` ... `<!-- ADMIN_EDIT_END -->` | Modal do Visual Builder completo | ✅ Sim |
+| `/* ADMIN_JS_START */` ... `/* ADMIN_JS_END */` | Funções `capturePristine()`, `exportFile()`, `sanitizeForQuine()` | ✅ Sim |
+| `<!-- EXPORT MODAL -->` ... `<!-- FIM EXPORT MODAL -->` | Modal de escolha Admin/User export | ✅ Sim |
+
+**Regra crítica:** Nunca mover código para dentro ou fora destes blocos sem perceber as consequências. Código dentro de `ADMIN_JS_START/END` desaparece nos exports de User — se a funcionalidade for necessária para utilizadores normais, não pode estar nesse bloco.
+
+**Proteção do Quine:** A função `sanitizeForQuine()` substitui estes marcadores nos *valores de tokens* com versões com zero-width space (caractere invisível). Isto evita que, por exemplo, um token com o texto `ADMIN_JS_START` corrompa o regex de strip. Esta proteção aplica-se também a `EXPORT MODAL` e `FIM EXPORT MODAL`.
+
+---
+
+## 6. IndexedDB — Base de Dados Local
+
+| Propriedade | Valor |
+|---|---|
+| Nome da base de dados | `CaptureEngineDB` |
+| Versão do schema | `2` |
+| Tabelas (object stores) | `sessions`, `images`, `documents`, `removed_images`, `removed_documents` |
+
+**Auto-save:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`.
+
+**Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os items associados (imagens, documentos, removidos).
+
+---
+
+## 7. Workflow de Desenvolvimento para Agentes
+
+1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas
+2. **Nunca abrir o browser para testar** — o humano testa, o agente edita
+3. **Após cada alteração significativa, atualizar:**
+   - `readme.md` — se for nova funcionalidade visível ao utilizador
+   - `design-tokens.md` — se for novo token CSS ou JS
+   - `changelog.md` — sempre, com entrada na versão atual
+4. **Codificação:** UTF-8 sem BOM
+
+---
+
+## 8. Checklist de Validação — Antes de Declarar Completo
+
+Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
+
+**Segurança:**
+- [ ] `escapeHTML()` aplicado a todos os dados do utilizador inseridos via `innerHTML`
+- [ ] `sanitizeForQuine()` aplicado antes de tokens serem injetados no HTML exportado
+- [ ] Sem `eval()`, `Function()`, ou `document.write()`
+
+**Integridade do Quine:**
+- [ ] Todos os comment markers estão intactos (verificar com `grep`)
+- [ ] `window.exportFile()`, `capturePristine()` e `sanitizeForQuine()` não foram movidos ou alterados
+
+**Unicidade:**
+- [ ] Sem nomes duplicados possíveis em screenshots ou documentos
+- [ ] A deduplicação verifica contra listas ativas E removidos
+
+**Ciclo de vida de sessão (testar manualmente):**
+- [ ] Abrir o arquivo → interface limpa, campos vazios, histórico vazio
+- [ ] Digitar no campo User → estado "Gravado" aparece sem aguardar 5 segundos
+- [ ] Capturar uma imagem → sessão aparece no histórico
+- [ ] Apagar sessão ativa com histórico existente → navegação automática para sessão adjacente
+- [ ] Apagar última sessão ativa → interface volta ao estado limpo inicial
+
+**Visual:**
+- [ ] Imagens têm `border-radius: 0`, botões e cards de texto têm `border-radius` arredondado
+- [ ] Arquivo abre sem erros na consola do browser
+
+---
+
+## 9. Protocolo de Version Bump
+
+Ao passar para uma nova versão (ex: V15 → V16), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**. Esquecer qualquer um cria inconsistências que confundem futuros agentes.
+
+**Os 5 locais obrigatórios:**
+
+1. **`capture-engine.html`** — Dois locais dentro do arquivo:
+   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V16) -->`
+   - Badge visual no header do modal de configurações: `<span ...>V16</span>`
+
+2. **`changelog.md`** — Nova entrada no topo: `## [V16] — YYYY-MM-DD`
+
+3. **`readme.md`** — Título principal e referências ao "padrão V16"
+
+4. **`design-tokens.md`** — Título principal
+
+5. **`agents.md`** — Este arquivo: título e referências ao "padrão V16"
+
+> **`CaptureEngineApp.vbs.md`** é revisto no bump mas não requer substituição de versão CE — o launcher tem versionamento próprio (`1.x.x`). Verificar apenas se há referências de contexto ao número de versão CE.
+
+**Ação obrigatória antes de fechar:** Correr `grep -r "V15" *.html *.md` para caçar referências fantasma. Nunca assumir que as substituições foram completas sem verificar.
+
+---
+
+*Capture Engine V15 · Agents Operational Rules · FAANG Standards*

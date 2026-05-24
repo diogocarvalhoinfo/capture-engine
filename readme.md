@@ -1,178 +1,215 @@
-# Capture Engine · V14
+# Capture Engine · V15
 
-> Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
-
----
-
-## Visão Geral
-
-O **Capture Engine (CE)** é uma aplicação irmã do *Service Desk Engine*, desenhada para capturar, organizar e exportar screenshots e documentos como **PDF** ou **ZIP** — sem dependências externas, sem CDN, sem backend.
-
-Casos de uso:
-- **Service Desk** — Coleta de evidências para chamados/tickets (screenshots, logs, configurações)
-- **Jurídico** — Compilação de documentos antes do envio
-- **Uso pessoal** — Juntar screenshots/documentos para upload em portais ou chamados técnicos
+> Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
 ---
 
-## Arquitetura
+## O que é o Capture Engine?
+
+Imagine uma pasta inteligente que vive dentro de um único arquivo HTML. Você abre esse arquivo no browser, cola screenshots e documentos, organiza tudo, e exporta como PDF ou ZIP — sem nunca precisar de internet ou de instalar programas.
+
+**Para que serve, na prática:**
+
+| Situação | Como o CE ajuda |
+|---|---|
+| Suporte técnico / Service Desk | Junta screenshots de erros, logs e configurações num único PDF para o ticket |
+| Área jurídica | Compila documentos e evidências antes de os enviar ao advogado |
+| Uso pessoal | Agrupa prints para subir num portal, chamado ou formulário |
+| Ambiente restrito (banco, governo) | Funciona sem internet, sem CDN, sem registo de dados externos |
+
+---
+
+## Como funciona em termos simples?
+
+O Capture Engine é **um único arquivo HTML** que contém tudo dentro de si: o visual, a lógica, e a capacidade de se guardar e de se re-exportar. Não depende de nenhum servidor, nenhuma biblioteca externa, nenhuma ligação à internet.
+
+Os seus dados ficam guardados localmente no browser (numa base de dados chamada IndexedDB — o mesmo lugar onde o browser guarda dados offline de sites). Nada sai do seu computador.
+
+Quando exporta, o motor gera o PDF ou o ZIP diretamente no browser, em memória — sem enviar nenhum byte para qualquer servidor.
+
+---
+
+## Primeiros passos
+
+1. **Abrir** — Faça duplo clique em `capture-engine.html` (ou use o `CaptureEngineApp.vbs` no Windows para uma experiência em janela isolada)
+2. **Identificar a sessão** *(opcional)* — Escreva o nome do utilizador e do equipamento nos campos do lado esquerdo
+3. **Capturar** — Cole screenshots com `Ctrl+V`, arraste arquivos para a zona de drop, ou clique em "Adicionar Imagem" / "Adicionar Documento"
+4. **Organizar** — Arraste os itens para reordenar; clique num item para o ver ou anotar
+5. **Exportar** — Clique em **PDF** (só imagens, numa página por imagem) ou **ZIP** (imagens + documentos juntos)
+
+> **Dica:** Cada vez que abre o arquivo começa uma sessão nova em branco. As sessões anteriores ficam guardadas e acessíveis na barra lateral direita (ícone de relógio).
+
+---
+
+## Arquitetura — O que está dentro do arquivo
 
 ```
-capture-engine.html    ← Arquivo único (Quine Engine)
-├── <style>            ← CSS Design System (variáveis, dark mode, componentes borderless)
-├── <body>             ← HTML Skeleton (top bar, painéis, sidebar, modais)
-└── <script>           ← JavaScript Engine (IIFE isolado)
-    ├── SysLogger      ← Logging estruturado para console
-    ├── TOKENS         ← Configuração injetável via Quine
-    ├── IndexedDB      ← 5 object stores (sessions, images, documents, removed_*)
-    ├── Session Mgr    ← CRUD de sessões com auto-save a cada 5s
-    ├── Capture        ← Ctrl+V (clipboard), drag-drop, file picker com auto-sequenciamento
-    ├── Reorder        ← Drag-and-drop nativo para reordenação
-    ├── Annotation     ← Canvas overlay (círculo, retângulo, seta, desenho livre, texto)
-    ├── Text Preview   ← Visualizar texto com deteção de binários e cópia
-    ├── PDF Engine     ← Gerador PDF raw (JPEG via Canvas, Auto/A4V/A4H)
-    ├── ZIP Engine     ← Gerador ZIP raw (CRC32, armazenamento de documentos limpos e únicos)
-    ├── Visual Builder ← Modal de configuração com 4 abas
-    ├── Quine Engine   ← Auto-mutação HTML com strip markers
-    └── Admin Gate     ← 6 cliques no logo = modo admin
+capture-engine.html  ← O arquivo único que é tudo
+│
+├── <style>          ← Visual: cores, tamanhos, dark mode, animações
+│
+├── <body>           ← Estrutura: barra de topo, painéis, sidebar, modais
+│
+└── <script>         ← Lógica (isolada, sem poluir o espaço global)
+    │
+    ├── SysLogger    ← Regista eventos na consola do browser (apenas em modo debug)
+    ├── TOKENS       ← Configurações personalizáveis (cor, título, rodapé, etc.)
+    ├── IndexedDB    ← Base de dados local do browser (5 tabelas)
+    ├── Session Mgr  ← Cria, guarda e apaga sessões de trabalho
+    ├── Capture      ← Recebe imagens e documentos (clipboard, drag-drop, picker)
+    ├── Reorder      ← Drag-and-drop para reorganizar a ordem dos itens
+    ├── Annotation   ← Desenha círculos, setas e texto diretamente nas imagens
+    ├── Text Viewer  ← Abre e mostra documentos de texto dentro da app
+    ├── PDF Engine   ← Gera PDFs sem bibliotecas externas, em puro JavaScript
+    ├── ZIP Engine   ← Gera ZIPs sem bibliotecas externas, em puro JavaScript
+    ├── Visual Builder ← Painel de configuração do administrador (oculto por defeito)
+    ├── Quine Engine ← Permite ao arquivo re-exportar uma cópia de si próprio
+    └── Admin Gate   ← Ativa o modo administrador (6 cliques no logo)
 ```
 
----
+### O conceito de Quine — porque o arquivo se exporta a si próprio
 
-## Tokens de Configuração (SSOT)
+Um **Quine** é um programa capaz de produzir uma cópia exata de si próprio como output. O Capture Engine usa este conceito para permitir que o administrador exporte versões personalizadas da ferramenta:
 
-| Token | Tipo | Default | Descrição |
-|---|---|---|---|
-| `TOKEN_TITLE_START` | string | `'Capture'` | Parte inicial do título |
-| `TOKEN_TITLE_ACCENT` | string | `'Engine'` | Parte em destaque do título |
-| `TOKEN_TITLE_END` | string | `''` | Sufixo opcional |
-| `TOKEN_SUBTITLE` | string | `''` | Subtítulo abaixo do logo |
-| `TOKEN_MAIN_COLOR` | hex | `'#0ea5e9'` | Cor principal da interface |
-| `TOKEN_ACCENT_FG_OVERRIDE` | hex | `''` | Override da cor de texto sobre destaque |
-| `TOKEN_FOOTER_TEXT` | string | `'© {YEAR} • CAPTURE ENGINE'` | Texto do rodapé institucional (`{YEAR}` é substituído dinamicamente) |
-| `TOKEN_SHOW_SESSION_USER` | bool | `true` | Mostrar campo User |
-| `TOKEN_SHOW_SESSION_PC` | bool | `true` | Mostrar campo Equipamento |
-| `TOKEN_USER_LABEL` | string | `''` | Rótulo/placeholder do campo User (vazio = usa "User" como fallback visual) |
-| `TOKEN_EQUIP_LABEL` | string | `''` | Rótulo/placeholder do campo Equipamento (vazio = usa "Equipamento" como fallback visual) |
-| `TOKEN_JPEG_QUALITY` | float | `0.92` | Qualidade JPEG no export PDF (0.70–0.95) |
-| `TOKEN_MAX_IMG_DIMENSION` | int | `0` | Dimensão máxima de redimensionamento (0=original) |
-| `TOKEN_AUTO_PURGE_HOURS` | int | `48` | Horas para purge automático de sessões |
-| `TOKEN_DEBUG_MODE` | bool | `true` | Ativa console logs de desenvolvimento (removido em exports do usuário) |
----
+- **Export Admin** → Cópia idêntica com o Visual Builder incluído. O admin pode continuar a reconfigurar e re-exportar.
+- **Export User** → Cópia limpa, sem painel de administração, sem opção de re-exportar. Ideal para distribuir a utilizadores finais.
 
-## Perfis de Exportação (Quine)
-
-### Administrador
-- Mantém Visual Builder, Admin Gate e Export Modal
-- Permite re-exportar e reconfigurar tokens
-- Markers preservados: `ADMIN_BUTTONS`, `ADMIN_EDIT`, `ADMIN_JS`, `EXPORT MODAL`
-
-### User
-- Interface limpa, sem opções de administração
-- Markers stripped: todos os blocos `ADMIN_*` e `EXPORT MODAL` removidos
-- Arquivo resultante é read-only (sem capacidade de re-exportar)
+O arquivo lê o seu próprio código-fonte via `fetch(location.href)`, substitui os tokens de configuração com os valores atuais, e faz o download do resultado — tudo sem servidor.
 
 ---
 
-## IndexedDB Schema
+## Tokens de Configuração
 
-| Store | Key | Indexes | Descrição |
-|---|---|---|---|
-| `sessions` | `id` | `createdAt` | Metadados da sessão |
-| `images` | `id` | `sessionId`, `order` | Screenshots capturados (blob PNG/JPEG) |
-| `documents` | `id` | `sessionId`, `order` | Documentos/logs (blob genérico) |
-| `removed_images` | `id` | `sessionId` | Imagens movidas para removidos |
-| `removed_documents` | `id` | `sessionId` | Documentos movidos para removidos |
+Os **tokens** são as variáveis de personalização da ferramenta. O administrador pode alterá-los pelo Visual Builder (6 cliques no logo → ⚙️). As alterações só ficam permanentes quando se faz um **Export Admin/User**.
+
+| Token | Valor por defeito | O que controla |
+|---|---|---|
+| `TOKEN_TITLE_START` | `Capture` | Primeira parte do nome no topo |
+| `TOKEN_TITLE_ACCENT` | `Engine` | Segunda parte (em destaque colorido) |
+| `TOKEN_SUBTITLE` | *(vazio)* | Subtítulo abaixo do nome |
+| `TOKEN_MAIN_COLOR` | `#0ea5e9` | Cor principal de destaque |
+| `TOKEN_ACCENT_FG_OVERRIDE` | *(vazio)* | Cor do texto sobre o destaque (auto se vazio) |
+| `TOKEN_FOOTER_TEXT` | `© {YEAR} • CAPTURE ENGINE` | Rodapé institucional (`{YEAR}` é substituído pelo ano atual) |
+| `TOKEN_SHOW_SESSION_USER` | `true` | Mostra/oculta o campo "User" na sessão |
+| `TOKEN_SHOW_SESSION_PC` | `true` | Mostra/oculta o campo "Equipamento" na sessão |
+| `TOKEN_USER_LABEL` | *(vazio → "User")* | Rótulo personalizado do campo User |
+| `TOKEN_EQUIP_LABEL` | *(vazio → "Equipamento")* | Rótulo personalizado do campo Equipamento |
+| `TOKEN_JPEG_QUALITY` | `0.92` | Qualidade das imagens no export PDF (0.70 a 0.95) |
+| `TOKEN_MAX_IMG_DIMENSION` | `0` | Redimensiona imagens antes do export (0 = sem limite) |
+| `TOKEN_AUTO_PURGE_HOURS` | `48` | Horas até uma sessão inativa ser apagada automaticamente |
+| `TOKEN_DEBUG_MODE` | `true` | Liga logs detalhados na consola (desativado em exports de User) |
 
 ---
 
-## Funcionalidades
+## Perfis de Export
 
-### Captura Inteligente & Sequencial (Prevenção de Colisões)
-- **Ctrl+V** — Cola screenshots ou textos do clipboard.
-- **Drag & Drop** — Arrasta documentos ou screenshots diretamente para as respectivas zonas.
-- **File Picker** — Seleção de documentos ou screenshots locais.
-- **Unicidade de Documentos:**
-  - Textos colados são nomeados automaticamente como `texto-1.txt`, `texto-2.txt`, etc.
-  - Screenshots colados/capturados são nomeados e etiquetados como `imagem-1`, `imagem-2`, etc.
-  - O motor detecta e incrementa automaticamente os números finais (evitando padrões duplicados como `texto-1-1.txt` ou loops de substituição no ZIP).
-  - Renomeações manuais redundantes são resolvidas de forma idêntica.
-- **Mobile Paste FAB:** Botão flutuante exclusivo para dispositivos móveis (tom verde) que utiliza a `Clipboard API` nativa para colar textos ou imagens da área de transferência quando não há acesso a atalhos de teclado.
-- **Leitura Blindada de Clipboard:** Conversão de segurança `Zero-Trust` (Array vs Iterable) em inputs de clipboard, garantindo colagem perfeita (`Ctrl+V`) mesmo em motores legacy que silenciam erros de leitura de `DataTransferItemList`.
+### Export Admin
+Mantém todos os controles de administração. O arquivo resultante pode ser reconfigurado e re-exportado novamente. Use para distribuir a outros admins ou para fazer backup da configuração atual.
 
-### Motor de Navegação de Imagens (FAANG)
-- **Zoom-to-Pointer com Roda do Rato:** O visualizador de imagens suporta ampliação fluida focada diretamente na coordenada do rato, desde 20% a 1000%, emulando perfeitamente mapas digitais. Ausência completa de delay e física sem inércia não intencional.
-- **Glassmorphism UI:** Quando o zoom está ativo, uma barra translúcida elegante surge na zona inferior com controlos rápidos de escala, utilizando desfoque nativo do sistema e bordas premium.
-- **Bloqueio de Fuga:** Ampliar uma imagem tranca temporariamente a saída via clique no cenário (`backdrop`), protegendo contra fechos não intencionais durante o arrastamento (*panning*).
+### Export User
+Remove o painel de administração, o Visual Builder e a capacidade de re-exportar. O utilizador final recebe uma ferramenta limpa, focada apenas em capturar e exportar evidências. Não tem como alterar configurações ou saber que existe um modo admin.
 
-### Organização & Visual Estético
-- **Gold Standard Convergence:** Tipografia, ícones e componentes alinhados com o SDE V48 Gold Standard — botões `36px`, ícones `14-16px`, modais com título `16px` e close `32px` circular.
-- **Design System Premium Borderless:** Painéis e cards de documentos utilizam margens transparentes livres de bordas rígidas, flutuando de forma orgânica no fundo.
-- **Geometria Técnica de Imagens:** Bordas quadradas (`border-radius: 0`) e ausência de divisórias rígidas nas legendas, aplicadas exclusivamente aos cartões de imagens.
-- **Drag-and-drop reorder** — Reordenação nativa e intuitiva de elementos.
-- **Removidos (Trash Bar)** — Ícones SVG inline semânticos (16px). Itens excluídos são enviados para a barra inferior, permitindo restauro rápido ou eliminação definitiva.
-- **Left Sidebar Scrollável** — Scroll invisível (`scrollbar-width: none`) sem compressão de conteúdo. Chips de layout ocupam sempre uma única linha.
-- **Prevenção de FOUC (Anti-Flicker):** Carregamento síncrono do Dark Mode logo após a tag body, eliminando completamente a cintilação ou "flash branco" indesejado ao iniciar à noite.
-- **Créditos Integrados (Gold Standard):** Rodapé de rodagem institucional (`© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM`) incorporado à base da interface a 50% de opacidade sem prejudicar a área útil.
+---
 
-### Visualizador de Texto Integrado
-- **Modal View (`#text-modal-overlay`):** Ao clicar num card de texto (ativo ou removido), abre um visualizador com fonte monoespaçada (`Consolas`, `Monaco`).
-- **Deteção de Binários:** Documentos não-textuais (PDF, DOCX, etc.) mostram ícone SVG com extensão e mensagem informativa centrada, em vez de conteúdo corrompido.
-- **Ações Rápidas:**
-  - **Copiar Texto:** Envia o conteúdo do texto para o clipboard com feedback de botão animado de sucesso.
-  - **Download:** Disponível tanto para documentos ativos como removidos.
-  - **Restaurar:** Botão disponível quando o texto está nos removidos, movendo-o imediatamente de volta para a lista principal.
+## Base de Dados Local (IndexedDB)
+
+O browser guarda tudo automaticamente em 5 tabelas separadas:
+
+| Tabela | O que guarda |
+|---|---|
+| `sessions` | Metadados de cada sessão (nome, user, equipamento, datas) |
+| `images` | Screenshots capturados (arquivos PNG/JPEG/WEBP em binário) |
+| `documents` | Documentos e textos capturados |
+| `removed_images` | Imagens movidas para a lixeira (antes de apagar definitivamente) |
+| `removed_documents` | Documentos movidos para a lixeira |
+
+**Auto-save:** A app grava automaticamente a cada 5 segundos se houver alterações. Qualquer digitação nos campos User ou Equipamento grava imediatamente (sem esperar os 5 segundos).
+
+**Purge automático:** Ao abrir a aplicação, sessões com mais de 48 horas sem atividade são apagadas automaticamente (configurável via `TOKEN_AUTO_PURGE_HOURS`).
+
+---
+
+## Funcionalidades em Detalhe
+
+### Captura Inteligente
+
+A app aceita conteúdo de três formas:
+- **Ctrl+V** — Cola o que estiver no clipboard (imagem ou texto)
+- **Drag & Drop** — Arrasta qualquer arquivo para a zona de drop correspondente
+- **Picker** — Botões "Adicionar Imagem" / "Adicionar Documento" abrem o seletor de arquivos
+
+**Nomeação automática sem colisões:** Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automaticamente `imagem-2`, `imagem-3`, etc. O mesmo para documentos de texto: `texto-1.txt`, `texto-2.txt`. Renomeações manuais seguem a mesma lógica — nunca geram nomes duplicados nem padrões esquisitos como `imagem-1-1`.
+
+### Visualizador de Imagens (Zoom & Pan)
+
+Ao clicar numa imagem, abre um visualizador com:
+- **Zoom com roda do rato** centrado na posição do cursor (20% a 1000%), sem delay
+- **Pan** (arrastar) quando a imagem está ampliada
+- **Barra de controlo flutuante** que aparece apenas quando o zoom está ativo, com botões +/−/Reset
 
 ### Anotação de Imagens
-- **5 ferramentas**: Círculo, Retângulo, Seta, Desenho Livre e Texto.
-- **Personalização:** Color picker e seletor de espessura de traço.
-- **Confirmar:** Salva as anotações achatando-as diretamente sobre o screenshot original de forma vetorial em PNG lossless.
-- **Download na Lixeira:** O botão Download está disponível tanto para imagens ativas como removidas.
 
-### Exportação Otimizada
-- **PDF** — Imagens compactadas em JPEG (qualidade configurável). Suporta formatos Auto (misto), A4 Vertical e A4 Horizontal. **Nota:** O botão PDF é desativado automaticamente quando existem documentos presentes na sessão — o motor PDF processa apenas imagens. Para exportar uma sessão mista (imagens + documentos), utilize o ZIP.
-- **ZIP** — Empacota screenshots e documentos brutos com extensões correctas por tipo MIME (PNG, JPG, WEBP, GIF, AVIF, BMP). Os screenshots usam os nomes das legendas limpos (ex: `imagem-1.png`, `imagem-2.webp`) sem prefixos numéricos `001-`, prevenindo erros de extração nos sistemas operacionais.
+O botão de anotação abre um canvas transparente sobre a imagem. Ferramentas disponíveis:
+- Círculo, Retângulo, Seta, Desenho Livre, Texto
+- Color picker e seletor de espessura de traço
+- **Confirmar** achata as anotações diretamente na imagem original (PNG sem perdas)
 
-### Sessões
-- **Sessão Sempre Nova ao Abrir:** Cada abertura do ficheiro cria e regista uma nova sessão em branco no IndexedDB — os campos User, Equipamento e o painel ficam sempre limpos. A sessão aparece no Histórico da sidebar imediatamente após a primeira interação real (digitação, colagem, drag-drop ou picker); sessões abertas sem qualquer interação não geram entradas visíveis.
-- **Auto-save imediato no primeiro keystroke:** Qualquer digitação nos campos User ou Equipamento dispara `triggerSave()` de imediato, sem aguardar o intervalo de 5 segundos.
-- **Auto-save periódico** a cada 5 segundos para toda a restante actividade (capturas, reordenação, anotações).
-- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V14).
-- **Sessões Anteriores (Histórico):** Históricos sem título são nomeados cronologicamente com zeros à esquerda (`#0001`, `#0002`, etc.), garantindo uma identificação clara e neutra.
-- **Navegação Automática ao Apagar:** Eliminar a sessão activa navega automaticamente para a sessão adjacente (abaixo primeiro, acima como fallback). Se não existir nenhuma sessão restante, o ecrã regressa ao estado pristine (campos limpos, painel vazio, histórico vazio).
-- **Purge automático** de sessões expiradas ao iniciar.
+### Lixeira (Trash Bar)
+
+Itens removidos não são apagados imediatamente — vão para a lixeira na barra inferior. Pode restaurá-los ou apagá-los definitivamente. Útil para recuperar screenshots removidos por engano.
+
+### Export PDF
+
+Comprime todas as imagens da sessão em JPEG (qualidade configurável) e gera um PDF com uma imagem por página. Três modos de página:
+- **Auto** — Detecta orientação de cada imagem (retrato ou paisagem) individualmente
+- **A4 Vertical** — Força todas as páginas em retrato
+- **A4 Horizontal** — Força todas as páginas em paisagem
+
+> O botão PDF fica desativado automaticamente quando há documentos na sessão — o motor PDF processa apenas imagens. Para sessões mistas (imagens + documentos), use o ZIP.
+
+### Export ZIP
+
+Empacota tudo — imagens e documentos — num único arquivo ZIP. Os arquivos ficam com os nomes das legendas limpas (ex: `imagem-1.png`, `relatorio.pdf`), sem prefixos numéricos que causem problemas em sistemas operativos.
+
+### Sessões e Histórico
+
+Cada abertura do arquivo cria uma sessão nova em branco. O histórico de sessões anteriores fica acessível na barra lateral (ícone de relógio). Sessões sem nome são identificadas cronologicamente como `#0001`, `#0002`, etc.
+
+Ao apagar a sessão ativa, a app navega automaticamente para a sessão adjacente. Se não houver mais sessões, o interface regressa ao estado limpo inicial.
 
 ---
 
-## Segurança
+## Segurança e Privacidade
 
-- **Zero-dependency** — Sem CDNs ou scripts externos, garantindo privacidade militar.
-- **Air-gapped** — Opera 100% localmente e offline.
-- **XSS Prevention** — Codificação estrita com `escapeHTML()` de todos os dados renderizados no DOM.
-- **Quine sanitization** — `sanitizeForQuine()` evita a cannibalização de blocos de marcação durante a auto-mutação.
-- **Admin Gate** — Painel oculto ativado por 6 cliques no logo da marca.
+| Característica | Detalhe |
+|---|---|
+| **Zero-dependency** | Sem CDNs, sem bibliotecas externas — nada a carregar da internet |
+| **Air-gapped** | Funciona 100% offline; nenhum dado sai do seu computador |
+| **XSS Protection** | Todo o texto inserido pelo utilizador é sanitizado antes de aparecer no tela |
+| **Admin Gate oculto** | O painel de admin ativa-se apenas com 6 cliques no logo — invisível para utilizadores comuns |
 
 ---
 
 ## Requisitos
 
-- Navegador moderno (Chrome 90+, Edge 90+, Firefox 90+)
-- Suporte a IndexedDB, Canvas API, Clipboard API
-- Sem necessidade de servidor ou internet
+- Browser moderno: Chrome 90+, Edge 90+, Firefox 90+
+- Sem internet, sem servidor, sem instalação
 
 ---
 
 ## Estrutura de Arquivos
 
 ```
-V14/
-├── capture-engine.html   ← Motor principal (single-file)
-├── readme.md             ← Este arquivo (Guia Geral)
-├── changelog.md          ← Registro de atualizações e versões
-├── agents.md             ← Regras operacionais para agentes IA
-└── design-tokens.md      ← Especificação de Design Tokens e Estilos
+V15/
+├── capture-engine.html      ← A aplicação completa (abrir este)
+├── CaptureEngineApp.vbs     ← Launcher Windows (abre em janela isolada)
+├── CaptureEngineApp.vbs.md  ← Documentação técnica do launcher
+├── readme.md                ← Este guia geral
+├── changelog.md             ← Registo de todas as versões e alterações
+├── agents.md                ← Regras operacionais para agentes IA que editam o código
+└── design-tokens.md         ← Especificação completa do design system
 ```
 
 ---
 
-*Capture Engine V14 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V15 · Design de Excelência FAANG · Air-gapped ready*

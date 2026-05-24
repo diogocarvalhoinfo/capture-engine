@@ -1,155 +1,313 @@
 # Changelog · Capture Engine
 
-> Registo completo de todas as atualizações, otimizações e correções do Capture Engine, alinhado com as especificações de excelência de interface e integridade arquitetural.
+> Registo de todas as versões. Cada entrada explica **o que mudou**, **porquê mudou**, e **o impacto real** para o utilizador.
+> Formato: `### Adicionado` — nova funcionalidade. `### Modificado` — comportamento existente alterado. `### Corrigido` — bug eliminado.
 
 ---
+
+## [V15] — 2026-05-24
+
+### Corrigido
+
+**Race condition na criação de sessões — comportamento: sem impacto visível, mas dado potencialmente corrompido**
+
+Ao colar imagem e texto simultaneamente (dois `Ctrl+V` muito rápidos), a aplicação podia criar duas sessões em paralelo em vez de uma. O utilizador não notaria imediatamente — a interface parecia normal — mas a base de dados ficaria com uma sessão "fantasma" sem conteúdo. A causa: ambas as operações assíncronas verificavam `if(sessId)return` ao mesmo tempo, antes de qualquer uma ter terminado de criar a sessão. Adicionado um mutex (`_ensurePromise`) que garante que a segunda operação espera a primeira terminar.
+
+**Quine Engine corrompido por certos textos em tokens — comportamento: export de User produzia arquivo quebrado**
+
+Se o administrador colocasse o texto `EXPORT MODAL` ou `FIM EXPORT MODAL` em qualquer campo do Visual Builder (título, rodapé, etc.), o Quine Engine ao fazer Export de User interpretava esse texto como um marcador de código e removia a secção HTML correspondente do arquivo exportado. O resultado era um arquivo que abria sem o modal de exportação. A função `sanitizeForQuine()` já protegia outros marcadores (`ADMIN_*`) mas não estes dois. Adicionada proteção por zero-width space nos dois marcadores em falta.
+
+**`restoreDoc` verificava apenas metade das listas na deduplicação — comportamento: nomes potencialmente inconsistentes após restauro**
+
+Ao restaurar um documento da lixeira, a aplicação verificava colisões de nomes apenas contra os documentos ativos. A função equivalente para imagens (`restoreImg`) e para captura inicial (`captureDoc`) já verificavam contra ambas as listas (ativos + lixeira). Esta assimetria podia resultar em nomes de arquivos internamente não-únicos em sessões com muitos documentos movidos entre ativo e lixeira. Alinhado o comportamento de `restoreDoc` com o resto do motor.
+
+**`purgeExpired` engolia erros de base de dados em silêncio — comportamento: sessões expiradas não apagadas, sem aviso**
+
+O bloco `try{}catch(e){}` que apaga documentos removidos durante o purge de sessões expiradas capturava erros do IndexedDB mas não os registava em lado nenhum. Se a base de dados estivesse num estado inconsistente, o purge falhava e a pasta de `removed_documents` crescia indefinidamente sem que ninguém soubesse. Adicionado `SysLogger.warn` com a mensagem de erro para diagnóstico.
+
+**Launcher VBS falhava em pastas com nomes acentuados — comportamento: aplicação não abria, sem mensagem de erro clara**
+
+Se o arquivo estivesse numa pasta chamada `Área de Trabalho`, `Documentação`, ou qualquer pasta com caracteres portugueses acentuados, a URI `file:///` gerada pelo launcher ficava malformada. O Edge tentava abrir o URL inválido e ou mostrava página em branco ou página de erro genérica. A função `SecureURLEncode` passou a codificar em `%HH` qualquer caractere com código ASCII > 127.
+
+---
+
 ## [V14] — 2026-05-24
 
 ### Adicionado
-- **Estado de Histórico Pristine (Empty State):** O motor de sessão foi reescrito para permitir que a lista de histórico fique completamente vazia. O fallback automático que forçava a criação de uma sessão (`createSession()`) aquando da inicialização com a base de dados limpa foi eliminado. O sistema aguarda a primeira interação do utilizador antes de instanciar qualquer sessão.
-- **Spawning em Tempo Real (Sessão On-Demand):** Uma nova sessão é dinamicamente instanciada e anexada à lista lateral exatamente no momento em que o utilizador insere texto, larga um ficheiro ou aciona um evento de colagem de clipboard. Recarregamentos de página e o botão `btn-refresh` não geram mais sessões automaticamente.
-- **Bordas Persistentes nos Botões de Captura:** Os botões "Adicionar Imagem" e "Adicionar Documento" passam a exibir uma borda sólida de `1px` na cor `var(--border-strong)`, permanentemente ativa em todos os estados. Em hover, a borda transita suavemente para `var(--accent)`.
-- **Bordas Persistentes nos CTAs de Exportação:** Os botões "Imagens em PDF" e "Imagens Separadas" (modo ZIP ativo) passam a usar a nova classe CSS `btn-zip-cta`, exibindo uma borda permanente de `1px solid var(--accent)` que não desaparece quando o cursor abandona o elemento.
-- **Deteção Automática de Tema do Sistema (OS Dark Mode):** O script anti-FOUC e `initTheme()` passam a usar `window.matchMedia('(prefers-color-scheme: dark)')` como fallback quando o `localStorage` não contém preferência explícita do utilizador. A preferência do OS é respeitada na primeira abertura; após o utilizador comutar manualmente, a escolha é persistida no `localStorage`.
+
+**Estado inicial em branco (Pristine State) — impacto: experiência mais limpa e previsível ao abrir**
+
+Até à V13, ao abrir a aplicação sem histórico existente, uma sessão era criada automaticamente e aparecia imediatamente no histórico (mesmo vazia). O utilizador via uma entrada `#0001` no histórico mesmo antes de fazer qualquer coisa. Agora a interface abre completamente em branco. A sessão só aparece no histórico no momento em que o utilizador interage pela primeira vez (cola uma imagem, escreve o nome do utilizador, etc.). Histórico limpo = mente limpa.
+
+**Bordas permanentes nos botões de captura — impacto: sem layout shift, interface mais estável**
+
+Os botões "Adicionar Imagem" e "Adicionar Documento" passaram a ter uma borda cinzenta sempre visível (mesmo em repouso), que transita para azul no hover. Antes, a borda só aparecia no hover, causando um "salto" de 1px no layout quando o cursor passava por cima. A borda permanente elimina esse salto — o elemento nunca muda de tamanho.
+
+**Bordas permanentes nos botões de export ZIP — impacto: consistência visual no modo ZIP**
+
+Os botões "Imagens em PDF" e "Imagens Separadas" (quando o modo ZIP está ativo) passaram a usar a classe `btn-zip-cta` com borda azul permanente. Antes, a borda desaparecia ao mover o cursor — o que criava inconsistência visual com os outros botões.
+
+**Deteção automática do tema do sistema — impacto: respeita a preferência do OS na primeira abertura**
+
+Se o utilizador abre a aplicação pela primeira vez sem ter definido preferência de tema, a app passa a seguir o tema do sistema operativo (dark/light). Depois de o utilizador comutar manualmente, essa escolha fica guardada e sobrepõe-se à preferência do OS.
 
 ### Modificado
-- **Ícone do Botão de Nova Sessão (`btn-new-sess`):** O ícone de quadrado com "+" foi substituído pelo SVG de duplos quadrados sobrepostos (extraído diretamente do componente "Imagens Separadas"), garantindo simetria visual perfeita no conjunto de ícones da barra de topo.
-- **FAB Mobile Neutro:** O botão flutuante `#mobile-paste-fab` foi refinado para estado discreto: ícone `var(--text-muted)` e borda `var(--border-strong)` em repouso (alinhado com os CTAs PDF/ZIP); accent ativa-se apenas no `:active`, dando feedback visual preciso ao toque.
-- **Chips de Modo (Auto/Horizontal/Vertical):** O chip selecionado/ativo herda agora uma borda sólida de `1px solid var(--border-strong)` no estado padrão, transitando suavemente para `var(--accent)` no hover. Chips não selecionados/inativos são completamente sem borda (`border: none`) em todos os estados.
-- **Auto-Colapso da Sidebar:** Quando a lista de histórico está completamente vazia e o utilizador clica fora do componente `#sidebar`, a barra lateral colapsa automaticamente para o estado recolhido.
-- **Eliminação de Redundâncias:** Remoção completa da regra CSS `.sb-empty` e de qualquer lógica que pudesse gerar o texto "Sem sessões guardadas". O estado vazio é limpo, sem bordas e sem texto.
-- **Deleção de Sessão Ativa (Sem Reload):** Eliminar a sessão atualmente ativa reseta o estado de forma limpa e programática (sem `location.reload()`), permitindo que o ecrã regresse ao estado pristine correto.
-- **Espaçamento Harmónico da Left Sidebar (Desktop):** Gap entre secções reduzido de `clamp(12px,3vh,32px)` para `clamp(10px,2vh,20px)`. Padding interno de `clamp(12px,2vh,20px)` para `clamp(10px,1.5vh,16px)`. Elimina o excesso de espaço morto em monitores de alta resolução.
-- **Altura das Section Titles (Left Sidebar):** `.sb-section-title` reduzida de `44px` para `28px` exclusivamente no contexto da left sidebar. O modal de histórico (`#sidebar`) mantém `44px` para área de toque confortável em mobile.
-- **Espaçamento Harmónico da Left Sidebar (Mobile):** Em `max-width:900px`, padding de `24px 20px` → `16px` e gap de `24px` → `16px`. Section titles da left sidebar fixas em `28px` via selector específico `#left-sidebar .sb-section-title`, sem afetar o histórico modal.
+
+**Ícone do botão "Nova Sessão" substituído — impacto: mais harmonia visual com os outros ícones da barra de topo**
+
+O ícone de "quadrado com +" foi substituído pelo ícone de "duplos quadrados sobrepostos" (o mesmo SVG do botão "Imagens Separadas"). A razão foi puramente visual: o conjunto de ícones da barra de topo ficou mais coeso.
+
+**FAB mobile em estado neutro — impacto: menos distração em mobile**
+
+O botão flutuante de colar em mobile passou de sempre azul/accent para cinzento discreto em repouso. O azul só aparece no momento exato do toque (`:active`). Em mobile, um botão sempre azul chama atenção desnecessariamente — a cor deve sinalizar ação, não presença constante.
+
+**Chips de seleção de modo (Auto/Vertical/Horizontal) — impacto: clareza visual sobre qual modo está ativo**
+
+O chip selecionado passou a ter borda cinzenta permanente (que vai para azul no hover). Os chips não selecionados ficam sem borda em todos os estados. O contraste é claro: borda = ativo, sem borda = inativo.
+
+**Auto-colapso da sidebar de histórico quando vazia — impacto: mais espaço disponível automaticamente**
+
+Quando o histórico está completamente vazio e o utilizador clica fora da sidebar, ela fecha sozinha. Antes ficava aberta mesmo sem conteúdo.
+
+**Espaçamento da left sidebar otimizado — impacto: menos espaço morto em monitores grandes**
+
+Os gaps e paddings internos da coluna esquerda foram reduzidos de valores maiores para valores `clamp` mais compactos. Em monitores de alta resolução, a versão anterior desperdiçava demasiado espaço vertical entre os campos.
 
 ### Corrigido
-- **Captura de Pointer Events no Mobile (Overlay Bug):** Em resoluções `max-width: 900px`, apenas os 25% esquerdos dos cartões de preview de imagem respondiam a cliques/toque. Corrigido com regras CSS defensivas na media query: `pointer-events:auto` e `touch-action:manipulation` nos seletores `.t-item` e `.t-wrap`; `pointer-events:none` forçado no `.t-overlay` para garantir que 100% da superfície do elemento captura ações corretamente.
-- **Sessão Sempre Nova ao Abrir (`init`):** Removida a lógica que reutilizava uma sessão vazia existente no IndexedDB ao reiniciar a aplicação. A função `init()` chama agora `createSession()` directamente e de forma incondicional (exceto quando um `ec_pending_session` válido está pendente no `localStorage`), garantindo um ecrã sempre limpo a cada abertura.
-- **Autosave Imediato no Primeiro Keystroke (`initSessionSync`):** O handler `oninput` dos campos User e Equipamento disparava `isDirty=true` mas aguardava o intervalo de 5 segundos para persistir. Corrigido com a adição de `triggerSave()` imediato após `isDirty=true`, gravando no IndexedDB no próprio evento de digitação.
-- **Campos UI não Limpos ao Apagar Sessão Activa (`deleteSessionId`):** Ao eliminar a sessão activa, os campos `session-user`, `session-pc` e `session-name` mantinham os valores anteriores no DOM. Corrigido com zeragem explícita dos três campos e chamada a `updateBtnTitles()` no bloco de reset.
-- **Criação Ansiosa de Sessão Após Deleção (`deleteSessionId`):** Após apagar a sessão activa, uma nova sessão era instanciada imediatamente via `createSession()`, aparecendo no histórico antes de qualquer interação do utilizador. Removida a chamada ansiosa — a criação é agora diferida para `ensureSession()`, que apenas instancia a sessão no momento da primeira interação real (texto, imagem ou documento).
-- **Navegação Automática ao Apagar Sessão Activa (`deleteSessionId`):** Ao eliminar a sessão activa, o painel ficava em estado vazio mesmo existindo sessões adjacentes no histórico. Reescrita a função: antes da deleção captura o `neighbor` (`allBefore[idx+1] || allBefore[idx-1]`), e após a deleção chama `loadSession(neighbor.id)` para navegação automática. Se não existir vizinho, aplica o estado pristine completo (campos limpos, arrays zerados, DOM limpo).
-- **Fecho do Modal de Imagem via Backdrop (`#img-modal-overlay`):** Clicar fora da imagem não fechava o modal — apenas as bordas extremas da janela e o botão X respondiam. Causa: o `.modal-box` ocupa `96vw × 94vh` com fundo transparente, tornando `#ann-viewport` o alvo real dos cliques no espaço escuro. Corrigido adicionando `#ann-viewport` como alvo válido de backdrop no handler `mousedown`, sem afectar o bloqueio de fecho durante zoom ou anotação.
-- **Campos Sidebar em Branco com VB Aberto (`initVbSync`):** Ao apagar o rótulo de Campo 1 ou Campo 2 no Visual Builder, o placeholder da sidebar não limpava — o fallback `|| 'User'` e `|| 'Equipamento'` forçava sempre o texto de volta. Removidos os fallbacks: o placeholder da sidebar segue agora o campo do VB em tempo real, incluindo o estado vazio.
 
-### Visual Builder — Refinamentos UX
-- **Reordenação do Tab Histórico:** Ordem actualizada para `Campo 1 → Campo 2 → Rótulo Campo 1 → Rótulo Campo 2`, agrupando os toggles de visibilidade antes dos campos de rótulo.
-- **Terminologia Evergreen no Visual Builder:** Referências hardcoded a "User" e "Equipamento" nos títulos das linhas do VB foram substituídas por **"Campo 1"**, **"Campo 2"**, **"Rótulo — Campo 1"** e **"Rótulo — Campo 2"** — independentes do domínio de utilização.
-- **Tokens de Rótulo com Default Vazio + Dirty Flag:** `TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` passam a ter valor padrão `''`. O Visual Builder exibe `User`/`Equipamento` como valor visual inicial (hardcoded na UI), mas o Quine só grava o token se o admin **alterar activamente** o campo (`_vbLabelDirty` flag). Exportar sem tocar preserva o token original.
-- **Fecho do Visual Builder apenas pelo X:** Desactivado o fecho por clique no backdrop do `#vb-overlay`. O Visual Builder fecha exclusivamente pelo botão `×`, evitando perdas acidentais de configuração.
-- **Renomeação da Qualidade PDF:** Label `"Qualidade PDF (JPEG)"` renomeado para **"Qualidade do PDF"**. Descrição actualizada para clarificar que as imagens PNG são convertidas internamente para JPEG apenas durante a geração do PDF — os originais permanecem em PNG.
-- **Labels da Aba Interface:** `"Título — Parte inicial"` renomeado para **"Texto Inicial"**; `"Título — Parte destaque"` renomeado para **"Texto em Destaque"**.
+**Touch targets em mobile falhavam — comportamento: apenas 25% esquerdo dos cards respondia a toque**
+
+Em telas com `max-width: 900px`, clicar/tocar num thumbnail de imagem só funcionava se o toque fosse no quarto esquerdo do card. O resto da área não respondia. A causa era um overlay CSS (`pointer-events: auto`) que intercetava os eventos antes de chegarem ao elemento correto. Corrigido com regras defensivas: `pointer-events: auto` + `touch-action: manipulation` nos elementos corretos, `pointer-events: none` forçado no overlay.
+
+**Sessão reutilizada ao reabrir a app — comportamento: estado "sujo" ao abrir em vez de interface limpa**
+
+Ao reabrir a aplicação, o `init()` verificava se havia uma sessão vazia no IndexedDB e reutilizava-a. O resultado era que dados da sessão anterior (nome do utilizador, configurações) podiam persistir indevidamente. Agora `init()` chama sempre `createSession()` de forma incondicional (exceto quando há uma sessão pendente explícita via `localStorage`).
+
+**Auto-save demorava 5 segundos após digitar — comportamento: primeiros caracteres podiam perder-se num crash**
+
+O handler dos campos User e Equipamento marcava `isDirty=true` mas aguardava o intervalo de auto-save (5 segundos) para escrever no IndexedDB. Se a aplicação fechasse ou o browser crashasse nos primeiros 5 segundos, o texto perdia-se. Agora `triggerSave()` é chamado imediatamente a cada keystroke — a latência de escrita passa de até 5 segundos para imediata.
+
+**Campos de texto não limpavam ao apagar sessão ativa — comportamento: texto fantasma visível após apagar**
+
+Ao apagar a sessão atualmente ativa, os campos User, Equipamento e Nome mantinham os valores no tela. Visualmente parecia que ainda havia dados de sessão, quando na verdade não havia sessão nenhuma. Os três campos passaram a ser zerados explicitamente no reset.
+
+**Nova sessão criada automaticamente após apagar — comportamento: apagar a última sessão criava imediatamente uma nova**
+
+Após apagar a sessão ativa, o motor criava automaticamente uma nova sessão vazia que aparecia imediatamente no histórico. O utilizador que apagou a última sessão intencionalmente ficava com `#0001` de volta no histórico sem ter pedido isso. A criação automática foi removida — o interface fica em branco e aguarda interação real.
+
+**Navegação automática ao apagar sessão ativa — comportamento: tela ficava vazio mesmo com sessões adjacentes**
+
+Ao apagar a sessão ativa com histórico existente, a interface ficava em branco em vez de navegar para a sessão adjacente. Reescrita a lógica: antes de apagar, o motor captura qual é a sessão vizinha (`allBefore[idx+1] || allBefore[idx-1]`), e após apagar navega automaticamente para ela. Se não houver vizinha, aplica o estado pristine completo.
+
+**Fechar modal de imagem clicando no fundo não funcionava — comportamento: só o botão × fechava**
+
+Clicar na área escura fora da imagem devia fechar o modal, mas não funcionava. A causa: o `.modal-box` ocupa `96vw × 94vh` com fundo transparente, e o `#ann-viewport` (o canvas de anotação) cobria toda a área de "fundo" e intercetava os cliques. Corrigido adicionando `#ann-viewport` como alvo válido de fecho por backdrop, sem afetar o bloqueio de fecho durante zoom ou anotação ativa.
+
+**Sidebar mostrava texto errado ao limpar rótulos no Visual Builder — comportamento: limpeza não era refletida em tempo real**
+
+Ao apagar o rótulo de "Campo 1" ou "Campo 2" no Visual Builder, o campo correspondente na sidebar não limpava — mantinha "User" ou "Equipamento" como texto fixo. O fallback `|| 'User'` no código da sidebar sobrepunha-se ao valor vazio. Removidos os fallbacks — a sidebar agora espelha exatamente o que está no Visual Builder, incluindo o estado vazio.
+
+### Visual Builder — Melhorias UX
+
+**Terminologia "evergreen" no Visual Builder — impacto: funciona para qualquer contexto de uso, não só Service Desk**
+
+Os títulos das linhas do VB mudaram de referências hardcoded a "User" e "Equipamento" para "Campo 1", "Campo 2", "Rótulo — Campo 1" e "Rótulo — Campo 2". Uma organização que usa o CE para outro fim (ex: jurídico) não quer ver "Equipamento" hardcoded na interface de configuração.
+
+**Fecho do Visual Builder apenas pelo × — impacto: sem perdas acidentais de configuração**
+
+O Visual Builder deixou de fechar ao clicar no backdrop (área escura fora do modal). Fechar por clique acidental a meio de uma configuração era frustrante — todas as alterações não guardadas perdiam-se. Agora só o botão × fecha.
+
+**Label "Qualidade PDF" clarificada — impacto: sem confusão sobre o que é comprimido**
+
+O label passou de `"Qualidade PDF (JPEG)"` para `"Qualidade do PDF"`. A descrição foi atualizada para explicar que as imagens PNG originais são convertidas para JPEG internamente *apenas durante a geração do PDF* — os arquivos originais na sessão ficam sempre em PNG. Vários utilizadores confundiam esta compressão com uma degradação permanente dos originais.
 
 ---
+
 ## [V13] — 2026-05-22
 
 ### Adicionado
-- **Menu Dinâmico de Opções ZIP (Alinhamento de Identidade):** Conversão dos botões de exportação (PDF e ZIP) em botões dinâmicos de opção estilo outline (`btn-outline`) quando o modo ZIP é ativo, mimetizando a experiência dos chips ativos/inativos.
-- **Harmonização Estética da Barra Lateral:** Unificação dos fundos, bordas e comportamentos dos botões sob a secção de exportação com os botões superiores de captura, adotando fundo transparente e ativação de bordas na cor primária (`var(--accent)`) apenas em estado hover/focus, preservando as dimensões espaciais para eliminar qualquer oscilação (layout shift).
-- **Tipografia em Caixa Alta (Uppercase):** Enforcamento automático via CSS (`text-transform: uppercase`) das etiquetas textuais do menu ZIP de opções.
+
+**Menu dinâmico de opções ZIP — impacto: clareza sobre as duas formas de exportar ZIP**
+
+Ao clicar no botão ZIP quando há imagens na sessão, a interface revela dois botões de escolha: "Imagens em PDF" e "Imagens Separadas". Antes, estas opções eram menos óbvias. Os novos botões usam estilo outline com uppercase, estilo consistente com os chips de seleção de modo.
 
 ### Corrigido
-- **Mitigação de Exceção Silenciosa em Modal de Texto:** Reparação do bug crítico (ReferenceError) no tratamento de erros do modal de cópia de texto, assegurando o uso correto do botão na secção `catch`.
-- **Integridade da Base de Dados:** Correção do ciclo de expiração (*purge*) das sessões no `IndexedDB`. O sistema passa a basear a idade na data da última atualização (`updatedAt`) em vez da data de criação (`createdAt`). Adicionado *fallback* resiliente para salvaguardar a operação da base de dados caso a inicialização primordial falhe.
-- **Unicidade Assíncrona Total (Zero-Collision):** Extensão da dedupicação nativa para garantir que nomes de `screenshots` ou `textos` colados não entram em conflito quer com arquivos ativos quer com arquivos presentes nos removidos (`Trash Bar`). Adição da lógica de decomposição de sufixos `-\d+` no caso de edições manuais.
-- **Normalização UTF-8 em Arquivos ZIP:** Aplicação técnica da rotina `normalize('NFD')` no empacotamento ZIP, garantindo que acentos gráficos severos não convertem os nomes exportados para strings vazias.
-- **Isolamento de Escape em Modo de Anotação:** A tecla `Escape` atua agora estritamente no cancelamento da ferramenta de desenho se a janela de anotação estiver ativa, impedindo o fecho abrupto do visualizador inteiro e perda do progresso visual.
-- **Extensões Corretas via Mobile Paste FAB:** Restruturação do *File Object* dinâmico do botão `Mobile Paste` para incorporar corretamente extensões (`.png`, `.jpg`, `.webp`) adequadas ao formato inferido do MIME type.
-- **Reatividade Visual no Visual Builder:** Correção lógica que garante a exibição e oclusão imediata da barra secundária (`id-section-wrap`) quando os campos "User" e "Equipamento" são desativados nos settings ao vivo.
-- **Sincronização de Painéis Flutuantes:** A rotina de `closeImgModal` inclui agora o fecho implícito do mini-modal de texto inline do motor de anotações (caso exista), mantendo o DOM escrupulosamente limpo.
-- **Manutenção de Documentação (Gold Standard):** Alinhamento perfeito dos *fallback tokens* da rotina de *Visual Builder* para coincidirem com as etiquetas padrão PT (`User` e `Equipamento`), mitigando ambiguidades case-sensitive.
-- **Libertação Silenciosa de ObjectURLs:** Aplicação da função simétrica de revogação (`revokeObjectURL`) no `onerror` da injeção de imagens de pré-visualização.
-- **Padronização Ortográfica V13:** Eliminação de regionalismos ("ficheiros") nos balões de informação do botão ZIP, em prol do padrão neutro português standard ("arquivos").
+
+**ReferenceError no modal de cópia de texto — comportamento: botão Copiar falhava silenciosamente**
+
+Um erro de referência a variável (`ReferenceError`) no bloco `catch` do modal de cópia de texto fazia com que, se a cópia falhasse, o código de recuperação também falhasse. O utilizador via o botão reagir mas nada acontecia e nenhuma mensagem de erro aparecia. Corrigido com referência correta ao elemento de botão.
+
+**Purge baseado na data errada — comportamento: sessões ativas eram apagadas prematuramente**
+
+O purge automático calculava a idade de uma sessão com base em `createdAt` (data de criação), não em `updatedAt` (data de última atividade). Uma sessão criada há 3 dias mas usada ontem seria apagada — o critério correto é a última atividade, não a criação. Corrigido para usar `updatedAt`.
+
+**Colisões de nomes com itens na lixeira — comportamento: deduplicação incompleta permitia nomes duplicados internamente**
+
+A deduplicação de nomes verificava apenas os itens ativos. Um item na lixeira com o mesmo nome de um item sendo capturado não era detetado. Em casos extremos podia causar conflitos no ZIP. Estendida a verificação para incluir sempre `removed_images` e `removed_documents`.
+
+**Nomes com acentos vazios no ZIP — comportamento: arquivos com nomes acentuados apareciam sem nome no ZIP**
+
+Ao criar o ZIP, nomes de arquivos com acentos (`imagem-ã.png`) eram processados sem `normalize('NFD')`, resultando em strings vazias ou corrompidas no ZIP dependendo do sistema operativo. Adicionada normalização NFD antes do empacotamento.
+
+**Tecla Escape fechava o visualizador inteiro durante anotação — comportamento: perda de trabalho de anotação**
+
+Pressionar Escape com o modo de anotação ativo e uma ferramenta de desenho selecionada devia apenas cancelar a ferramenta de desenho — não fechar o modal. Antes fechava tudo. Isolado o handler de Escape para agir apenas no contexto correto.
 
 ---
 
 ## [V12] — 2026-05-22
 
 ### Adicionado
-- **Motor de Navegação de Imagens (Zoom-to-Pointer FAANG):** Refatoração integral do visualizador de screenshots. Adicionado suporte a Scroll/Wheel (ou Pinch no trackpad) com física de deslocação focal para o cursor do rato e limites flexíveis de 20% a 1000% sem perda de estado.
-- **Glassmorphism Zoom UI:** Introdução de pílula flutuante (barra de controlo) translúcida (`backdrop-filter`) com botões táteis dinâmicos (+, -, Reset a 100%) ativada estritamente quando a imagem desvia da sua escala original.
-- **Modal Mobile Centralizado de Histórico:** Transformação estrutural da gaveta (drawer) lateral da versão móvel num Modal de Alta Densidade posicionado centralmente (`fixed` + `transform: translate`), aumentando os *touch targets* e harmonizando a escala visual.
-- **Isolamento de Estado (Body Scroll Lock):** Inserção de bloqueio dinâmico do `document.body.style.overflow` quando o Modal de Histórico está ativo, impedindo a rolagem indesejada do conteúdo base.
-- **Configuração de Etiquetas Customizáveis:** Ampliação do *Visual Builder* para permitir alteração em tempo real das etiquetas e *placeholders* "User" e "Equipamento", materializada com dois novos tokens SSOT no *Quine Engine* (`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL`).
-- **Nomenclatura Cronológica com Preenchimento Lógico:** Modificada a mecânica de nomeação por *fallback* para históricos não identificados. Substituição de `Sessão-X` pelo formato rígido padronizado com zeros à esquerda (`#0001`, `#0002`).
+
+**Motor de zoom com física "zoom-to-pointer" — impacto: experiência de visualização de screenshots ao nível FAANG**
+
+O visualizador de imagens foi reescrito do zero. O zoom com scroll/roda do rato passa a centrar-se exatamente no ponto onde o cursor está — se amplia o canto superior direito, é esse canto que fica no centro. Antes o zoom centrava-se sempre no centro da imagem, forçando o utilizador a fazer pan depois de cada zoom. Limites de 20% a 1000%. Barra de controlo flutuante com glassmorphism que aparece apenas quando o zoom é diferente de 100%.
+
+**Modal de histórico centralizado em mobile — impacto: uso com o polegar muito mais fácil em smartphones**
+
+Em telas pequenos (`max-width: 900px`), o histórico de sessões passou de drawer lateral para modal centralizado. A largura e altura do modal foram otimizadas para uso com o polegar — targets de toque maiores, posição central mais acessível.
+
+**Body scroll lock no modal de histórico mobile — impacto: sem rolar o fundo acidentalmente**
+
+Ao abrir o histórico em mobile, `document.body.overflow = 'hidden'` previne que o conteúdo principal role enquanto o utilizador navega no modal. Ao fechar, o scroll é restaurado.
+
+**Rótulos personalizáveis no Visual Builder — impacto: o CE funciona para qualquer domínio, não apenas Service Desk**
+
+Adicionados dois novos tokens (`TOKEN_USER_LABEL`, `TOKEN_EQUIP_LABEL`) e dois campos no Visual Builder para renomear os labels "User" e "Equipamento". Uma clínica pode querer "Médico" e "Paciente"; um escritório jurídico pode querer "Advogado" e "Processo".
+
+**Nomeação cronológica de sessões (#0001, #0002...) — impacto: histórico ordenado e sem ambiguidade**
+
+Sessões sem nome digitado pelo utilizador passaram de `Sessão-1` para `#0001`, `#0002`, etc. O formato com zeros à esquerda garante ordenação alfabética correta em qualquer sistema — `#0009` vem antes de `#0010`, ao contrário de `Sessão-9` vs `Sessão-10`.
 
 ### Corrigido
-- **Mitigação de Falha Silenciosa no Clipboard (Zero-Trust Loop):** Reparação de bug obscuro no motor WebKit/Edge onde colar objetos (`Ctrl+V`) originava um erro assíncrono indetetável de `DataTransferItemList is not iterable`. Substituído por iteração clássica forçada num vetor nativo `Array`, restaurando a leitura blindada da área de transferência.
-- **Bloqueio Defensivo de Modal em Zoom:** Adicionada interdição no evento de clique do overlay (`#img-modal-overlay`). Caso a imagem esteja ampliada, o utilizador já não fecha a janela inadvertidamente ao falhar um arrastamento de `pan`. Exige agora clique forçado no 'X', tecla Escape, ou reposição a 100%.
-- **Mitigação Crítica de Eventos Fantasma (Pointer-Events):** Resolução cirúrgica (1 linha) num vazamento de eventos de toque no CSS Mobile. O bloco `#sb-content` invisível estava configurado forçadamente com `pointer-events: auto`, provocando a interceção de cliques da área de exibição e alterando sessões invisivelmente. Modificado para reagir apenas quando o modal está aberto (`.mobile-open`).
-- **Normalização Semântica e Coerência de Cursor:** Substituição transversal da terminologia nativa `Sessões/Sessão` para `Histórico` em toda a aplicação. Remoção de cursor forçado `zoom-in` em idle para manter a seta padrão neutral consoante exigência de UI minimalista.
-- **Consistência de Ícones em Telas Pequenas:** Troca do SVG da barra lateral em smartphones pelo ícone de "Relógio", uniformizando-o com o botão principal do desktop.
+
+**Colar com Ctrl+V falhava em Edge/WebKit — comportamento: clipboard ignorado silenciosamente em certos browsers**
+
+Em algumas versões do Edge e browsers baseados em WebKit, `DataTransferItemList` não é iterável com `for...of`. O loop de leitura do clipboard falhava silenciosamente sem colar nada. Substituído por iteração com índice numérico explícito (`for(let i=0; i<items.length; i++)`), que funciona em todos os browsers.
+
+**Eventos fantasma bloqueavam a interface em mobile — comportamento: clicar na grelha de imagens mudava de sessão**
+
+O `#sb-content` (a lista de sessões, invisível quando a sidebar está fechada) tinha `pointer-events: auto` mesmo quando não estava visível. Em mobile, a camada invisível intercetava cliques sobre a grelha de imagens e ativava sessões no histórico sem o utilizador saber. Corrigido: `pointer-events: auto` apenas quando o modal está aberto (`.mobile-open`).
 
 ---
 
 ## [V11] — 2026-05-20
 
 ### Adicionado
-- **Isolamento Estrutural da Sidebar:** Refatoração arquitetural (colocando o Trash Bar numa coluna direita), permitindo à barra lateral esquerda expandir a 100% da altura da janela, eliminando cortes em ecrãs verticais curtos.
-- **Compressão Fluida Vertical:** Implementação de `flex-shrink: 1` e cálculos fluidos (`clamp` com `vh`) nas media queries para colapso elástico ultra-suave. A interface absorve a redução drástica da janela sem ativar scrolls prematuramente.
-- **Harmonização Flex FAANG:** Spacing dinâmico estendido para garantir que a interface respire muito mais em resoluções com espaço abundante de altura, mantendo-se perfeitamente ancorada ao topo.
+
+**Sidebar esquerda em altura completa — impacto: sem cortes em janelas pequenas**
+
+A sidebar esquerda passou a ocupar 100% da altura disponível. Em telas verticais curtos (janelas pequenas ou resoluções baixas), a versão anterior cortava o fundo da sidebar.
+
+**Compressão vertical fluida — impacto: interface utilizável em qualquer tamanho de janela**
+
+Usando `flex-shrink: 1` e `clamp` com `vh`, os elementos da sidebar esquerda comprimem-se suavemente quando a janela encolhe, antes de ativar scroll. Evita que os botões PDF/ZIP sejam cortados em janelas baixas.
 
 ### Corrigido
-- **Vazamento de Dados de Sessão:** Resolução na função `loadSession()`. Valores em memória vazavam para campos não preenchidos de sessões antigas, corrigido com atribuição incondicional via falback nulo.
-- **Congelamento Visual de Datas:** A barra de histórico exibia todas as sessões com a mesma hora (hora de último auto-save). Substituído logicamente e de forma restrita para exibição do `createdAt` puro.
-- **Inconsistência Tipográfica do Histórico:** Aplicada lógica de espelhamento DOM in-stream em `toUpperCase()`. Isto impede que nomes de sessões que apareciam visualmente maiúsculas via CSS fossem guardados internamente e exibidos lateralmente com capitalização quebrada, alinhando simultaneamente o fallback padrão (`SESSÃO-N`).
+
+**Dados de sessão vazavam entre sessões — comportamento: campos mostravam texto de uma sessão anterior**
+
+Ao navegar para uma sessão diferente, campos não preenchidos nessa sessão mostravam os valores da sessão anterior. A causa: a atribuição usava `|| 'valor_anterior'` em vez de atribuição incondicional. Corrigido com zeragem explícita antes de atribuir novos valores.
+
+**Todas as sessões mostravam a mesma hora — comportamento: histórico inútil para ordenação temporal**
+
+A lista de histórico exibia o horário do último auto-save (o mesmo para todas as sessões). A data mostrada passou a ser `createdAt` (data de criação da sessão), que nunca muda.
 
 ---
 
 ## [V10] — 2026-05-19
 
 ### Adicionado
-- **Content Security Policy Metatag:** Hardening local robusto no head restringindo injeções de script/estilo no motor SPA offline.
-- **Mini-Modal de Texto Inline para Anotador:** Substituição da função bloqueante `prompt()` nativa por um mini-modal `#ann-text-overlay` estilizado com focagem automática rápida e atalhos de teclado Enter/Escape.
-- **Controlo de Consola por Token:** Introdução de `TOKEN_DEBUG_MODE` para controlo de outputs operacionais, o qual é desativado de forma automática em exports de utilizador para purgar logs informativos em produção.
+
+**Content Security Policy — impacto: proteção adicional contra injeção de scripts**
+
+Adicionada metatag CSP no `<head>` que restringe quais scripts e estilos podem ser carregados. Num arquivo que corre localmente com `file://`, esta é uma camada extra de defesa contra conteúdo injetado.
+
+**Mini-modal de texto para anotações — impacto: adicionar texto nas imagens sem popups do sistema**
+
+A ferramenta de texto no anotador usava `prompt()` — o popup nativo do browser que congela toda a interface e tem estilo diferente em cada browser. Substituído por um mini-modal interno (`#ann-text-overlay`) com estilo consistente, foco automático, e suporte a Enter/Escape.
+
+**`TOKEN_DEBUG_MODE` — impacto: logs de debug invisíveis para utilizadores finais**
+
+Adicionado token que controla se `SysLogger` escreve na consola do browser. Em exports de User, este token é automaticamente definido como `false` — os utilizadores finais nunca veem logs técnicos na consola.
 
 ### Corrigido
-- **Mitigação de Path Traversal e Colisão (ZIP):** Sanitização estrita de delimitadores de diretórios (`/`, `\`, `../`) em arquivos exportados e algoritmo de deduplicação cross-lista para evitar sobrescritas silenciosas em sistemas operacionais durante extração.
-- **Resolução de Callback de Regex (Quine):** Substituição de strings simples por funções callback de substituição nos métodos `.replace` do Quine, neutralizando injeções acidentais de caracteres especiais (`$`) que corrompam o HTML gerado.
-- **Estabilização de Pristine Fallback:** Uso da constante estática `BOOT_HTML` no fallback do Quine caso o fetch local falhe (e.g. sob protocolo `file://`), impedindo exportação de DOMs mutados em runtime.
-- **Proteção do StatusBar contra innerHTML:** Isolamento de injeção dinâmica no status bar utilizando criação explícita e concatenação programática de nós de texto em vez de interpolações perigosas em `innerHTML`.
-- **Prevenção de Downgrade de IDB e NaN em JPEG:** Inclusão de tratamentos `onblocked` no IndexedDB e sanitizações de coerência com `isFinite()` na qualidade do exportador JPEG.
+
+**Path traversal e colisões no ZIP — comportamento: arquivos podiam sobrescrever-se mutuamente**
+
+Nomes de arquivos com `/`, `\`, ou `../` podiam criar estruturas de pastas não intencionais dentro do ZIP, ou sobrescrever arquivos uns com os outros. Adicionada sanitização de todos estes caracteres e verificação de unicidade cross-lista antes do empacotamento.
+
+**Caracteres `$` corrompiam o HTML exportado pelo Quine — comportamento: arquivo exportado quebrado**
+
+A função `.replace()` do JavaScript trata `$` no segundo argumento como referência especial a grupos de captura do regex. Um token com o valor `$1` ou `$$` corromperia silenciosamente o HTML gerado. Substituídas as strings de substituição simples por funções callback, que não têm este comportamento especial.
+
+**Export do Quine com DOM mutado — comportamento: arquivo exportado diferente do original**
+
+Se o Quine não conseguisse ler o arquivo original via `fetch(location.href)` (ex: quando corre em `file://` sem servidor), usava `document.documentElement.outerHTML` — o DOM atual, com todas as mutações de runtime (legendas editadas, contadores atualizados). O arquivo exportado ficava "sujo" com estado da sessão atual. Corrigido usando a constante estática `BOOT_HTML` como fallback — capturada antes de qualquer mutação.
 
 ---
 
 ## [V9] — 2026-05-19
 
 ### Adicionado
-- **Rodapé de Créditos Institucionais:** Integração do rodapé de créditos oficial (`© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM`) alinhado no rodapé da aplicação.
-- **Estilo de Crédito Ultra-Sutil:** Definido a opacidade de 50% (`opacity: 0.5`) e `pointer-events: none` para garantir invisibilidade tátil operacional sem perturbar cliques.
-- **Estados Visuais de Sessão:** Implementados estados `.active` e `:hover` altamente harmonizados na barra lateral esquerda (Sessões Anteriores) utilizando `var(--bg)` de modo a combinar perfeitamente com os campos de identificação de usuário e máquina.
-- **Centralização de Modais Global:** Configuração das modais (`.modal-hdr`) para centralizar os títulos de forma síncrona com botões fechar circulares absolutos à direita.
-- **Persistência SPA Completa:** Mecanismo SPA que mantém a barra lateral aberta e estendida ao navegar entre sessões antigas, melhorando radicalmente a velocidade de trabalho.
+
+**Rodapé institucional — impacto: identificação da ferramenta em cada janela**
+
+Adicionado rodapé com texto configurável via `TOKEN_FOOTER_TEXT`. O token `{YEAR}` é substituído automaticamente pelo ano atual. Opacidade 50% e `pointer-events: none` — presente mas discreto.
+
+**Estados visuais de sessão na sidebar — impacto: sempre claro qual a sessão ativa**
+
+A sessão ativa na sidebar passou a ter fundo `var(--bg)` (ligeiramente diferente do fundo da sidebar), distinguindo-a claramente das sessões inativas. Hover suave nos itens inativos.
+
+**Persistência da sidebar aberta entre sessões — impacto: navegação mais rápida entre sessões**
+
+Ao clicar numa sessão diferente no histórico, a sidebar permanece aberta. Antes fechava automaticamente a cada navegação, forçando o utilizador a reabri-la para cada mudança de sessão.
 
 ### Corrigido
-- **Prevenção de FOUC (Anti-Flicker):** Correção do "piscar de tema" (FOUC). Substituição do carregamento tardio por um micro-script síncrono injetado logo após a tag `<body>` para aplicar a classe `.dark` antes de qualquer renderização gráfica do ecrã.
-- **Inputs de Identificação Sem Bordas:** Remoção de bordas inline residuais e listeners mouseover/mouseout nos inputs de identificação (**User** e **Equipamento**), retornando o comportamento limpo sem bordas (borda visível apenas com box-shadow no foco).
-- **Limpeza do Visualizador de Imagem:** Exclusão das setas de controle físicas (chevrons) no overlay da imagem do visualizador, mantendo a área com design minimalista ultra-limpo (e a navegação por setas do teclado preservada).
-- **Estabilidade Visual na Remoção:** Ajuste do layout de remoção de sessões antigas. O botão de remoção agora permanece em fluxo oculto invisível quando inativo para evitar pulos/quebras de linhas de texto.
-- **Segurança de Sincronização do IDB:** Automatização de recarregamento limpo caso a sessão ativa atual seja apagada pelo utilizador através do painel lateral.
+
+**FOUC (Flash of Unstyled Content) em dark mode — comportamento: flash branco ao abrir em modo escuro**
+
+Ao abrir a aplicação em modo escuro, havia um flash branco momentâneo antes de o JavaScript aplicar a classe `.dark`. Corrigido com um script síncrono imediatamente após `<body>` que aplica `.dark` antes de qualquer pintura do DOM.
+
+**Bordas residuais nos inputs de User e Equipamento — comportamento: borda visível em repouso que não devia estar**
+
+Os campos User e Equipamento mostravam uma borda visível em repouso e tinham listeners `mouseover/mouseout` que alteravam o estilo. O design correto é sem borda em repouso, com `box-shadow` apenas no foco. Removidos os listeners e as bordas inline.
 
 ---
 
 ## [V8] — 2026-05-18
 
 ### Adicionado
-- **Gold Standard Convergence:** Ajustes minuciosos nas proporções visuais da UI para total simetria com o *SDE V48 Gold Standard*.
-- **Cantos Perfeitamente Retos (Imagens):** Aplicação de `border-radius: 0` e remoção de divisórias rígidas nas legendas (`.t-label`) exclusivamente em cartões de evidências gráficas.
-- **Design System Premium Borderless:** Remoção de bordas visíveis em painéis e cartões de documentos, permitindo que flutuem organicamente sobre o fundo.
-- **Lixeira Unificada (Trash Bar):** Integração dos botões de restauro e download direto no rodapé de remoção de documentos e imagens.
+
+**Cantos perfeitamente retos em imagens — impacto: imagens como evidências, não como decoração**
+
+Thumbnails, wrappers e legendas de imagens passaram a ter `border-radius: 0`. A distinção visual é intencional: elementos de texto (botões, cards, modais) têm cantos arredondados — são interfaces amigáveis. Imagens têm cantos retos — são evidências técnicas, precisas e formais.
+
+**Design borderless em cards de documentos — impacto: interface mais limpa, menos "tabular"**
+
+Os cards de documentos (`.d-item`) passaram a ter `border: 1px solid transparent` em vez de borda visível. Os documentos flutuam sobre o fundo sem criar uma grelha rígida de linhas.
+
+**Lixeira unificada (Trash Bar) — impacto: recuperação fácil de items removidos por engano**
+
+A barra inferior de lixeira foi integrada com botões de restauro e download direto, sem precisar de abrir um modal separado para cada item.
 
 ### Corrigido
-- **Prevenção de Colisão Militar (ZIP):** Resolução inteligente de nomes duplicados em capturas sequenciais (`imagem-1`, `imagem-2`) e remoção de prefixos `001-` nos arquivos ZIP exportados para evitar problemas de compatibilidade nos SO.
+
+**Nomes duplicados e prefixos `001-` nos ZIPs — comportamento: ZIPs com arquivos incorretamente nomeados ou colisões**
+
+Capturas sequenciais podiam gerar nomes duplicados em certos fluxos. O ZIP exportado incluía prefixos numéricos (`001-imagem-1.png`) desnecessários. Corrigido o algoritmo de deduplicação e removidos os prefixos — os nomes dos arquivos no ZIP são agora as legendas limpas das imagens.
 
 ---
 
 ## [V7] — 2026-05-15
 
-### Adicionado
-- **IndexedDB Multi-Store Engine:** Implementação do banco de dados local com 5 tabelas separadas para total controle assíncrono do histórico de capturas.
-- **Visualizador de Texto Modal:** Área interativa para visualização de logs com isolamento de arquivos binários (mensagens centradas de erro amigável).
-- **Anotador Vetorial Estendido:** Desenho vetorial sobre screenshots (círculos, retângulos, setas, texto livre) com achatamento lossless direto em PNG.
+### Base da Arquitetura Atual
+
+Esta versão estabeleceu as fundações sobre as quais todo o motor assenta:
+
+- **IndexedDB com 5 object stores:** `sessions`, `images`, `documents`, `removed_images`, `removed_documents` — persistência local robusta, assíncrona, sem localStorage para dados grandes
+- **Visualizador de texto modal:** Abre documentos de texto inline com área de texto monoespaçada; arquivos binários (PDF, DOCX) mostram mensagem amigável para download
+- **Anotador vetorial:** Desenho sobre screenshots com círculos, retângulos, setas, texto livre — achatamento lossless direto em PNG (as anotações ficam permanentes na imagem)
 
 ---
 
