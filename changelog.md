@@ -3,6 +3,45 @@
 > Registo completo de todas as atualizações, otimizações e correções do Capture Engine, alinhado com as especificações de excelência de interface e integridade arquitetural.
 
 ---
+## [V14] — 2026-05-24
+
+### Adicionado
+- **Estado de Histórico Pristine (Empty State):** O motor de sessão foi reescrito para permitir que a lista de histórico fique completamente vazia. O fallback automático que forçava a criação de uma sessão (`createSession()`) aquando da inicialização com a base de dados limpa foi eliminado. O sistema aguarda a primeira interação do utilizador antes de instanciar qualquer sessão.
+- **Spawning em Tempo Real (Sessão On-Demand):** Uma nova sessão é dinamicamente instanciada e anexada à lista lateral exatamente no momento em que o utilizador insere texto, larga um ficheiro ou aciona um evento de colagem de clipboard. Recarregamentos de página e o botão `btn-refresh` não geram mais sessões automaticamente.
+- **Bordas Persistentes nos Botões de Captura:** Os botões "Adicionar Imagem" e "Adicionar Documento" passam a exibir uma borda sólida de `1px` na cor `var(--border-strong)`, permanentemente ativa em todos os estados. Em hover, a borda transita suavemente para `var(--accent)`.
+- **Bordas Persistentes nos CTAs de Exportação:** Os botões "Imagens em PDF" e "Imagens Separadas" (modo ZIP ativo) passam a usar a nova classe CSS `btn-zip-cta`, exibindo uma borda permanente de `1px solid var(--accent)` que não desaparece quando o cursor abandona o elemento.
+- **Deteção Automática de Tema do Sistema (OS Dark Mode):** O script anti-FOUC e `initTheme()` passam a usar `window.matchMedia('(prefers-color-scheme: dark)')` como fallback quando o `localStorage` não contém preferência explícita do utilizador. A preferência do OS é respeitada na primeira abertura; após o utilizador comutar manualmente, a escolha é persistida no `localStorage`.
+
+### Modificado
+- **Ícone do Botão de Nova Sessão (`btn-new-sess`):** O ícone de quadrado com "+" foi substituído pelo SVG de duplos quadrados sobrepostos (extraído diretamente do componente "Imagens Separadas"), garantindo simetria visual perfeita no conjunto de ícones da barra de topo.
+- **FAB Mobile Neutro:** O botão flutuante `#mobile-paste-fab` foi refinado para estado discreto: ícone `var(--text-muted)` e borda `var(--border-strong)` em repouso (alinhado com os CTAs PDF/ZIP); accent ativa-se apenas no `:active`, dando feedback visual preciso ao toque.
+- **Chips de Modo (Auto/Horizontal/Vertical):** O chip selecionado/ativo herda agora uma borda sólida de `1px solid var(--border-strong)` no estado padrão, transitando suavemente para `var(--accent)` no hover. Chips não selecionados/inativos são completamente sem borda (`border: none`) em todos os estados.
+- **Auto-Colapso da Sidebar:** Quando a lista de histórico está completamente vazia e o utilizador clica fora do componente `#sidebar`, a barra lateral colapsa automaticamente para o estado recolhido.
+- **Eliminação de Redundâncias:** Remoção completa da regra CSS `.sb-empty` e de qualquer lógica que pudesse gerar o texto "Sem sessões guardadas". O estado vazio é limpo, sem bordas e sem texto.
+- **Deleção de Sessão Ativa (Sem Reload):** Eliminar a sessão atualmente ativa reseta o estado de forma limpa e programática (sem `location.reload()`), permitindo que o ecrã regresse ao estado pristine correto.
+- **Espaçamento Harmónico da Left Sidebar (Desktop):** Gap entre secções reduzido de `clamp(12px,3vh,32px)` para `clamp(10px,2vh,20px)`. Padding interno de `clamp(12px,2vh,20px)` para `clamp(10px,1.5vh,16px)`. Elimina o excesso de espaço morto em monitores de alta resolução.
+- **Altura das Section Titles (Left Sidebar):** `.sb-section-title` reduzida de `44px` para `28px` exclusivamente no contexto da left sidebar. O modal de histórico (`#sidebar`) mantém `44px` para área de toque confortável em mobile.
+- **Espaçamento Harmónico da Left Sidebar (Mobile):** Em `max-width:900px`, padding de `24px 20px` → `16px` e gap de `24px` → `16px`. Section titles da left sidebar fixas em `28px` via selector específico `#left-sidebar .sb-section-title`, sem afetar o histórico modal.
+
+### Corrigido
+- **Captura de Pointer Events no Mobile (Overlay Bug):** Em resoluções `max-width: 900px`, apenas os 25% esquerdos dos cartões de preview de imagem respondiam a cliques/toque. Corrigido com regras CSS defensivas na media query: `pointer-events:auto` e `touch-action:manipulation` nos seletores `.t-item` e `.t-wrap`; `pointer-events:none` forçado no `.t-overlay` para garantir que 100% da superfície do elemento captura ações corretamente.
+- **Sessão Sempre Nova ao Abrir (`init`):** Removida a lógica que reutilizava uma sessão vazia existente no IndexedDB ao reiniciar a aplicação. A função `init()` chama agora `createSession()` directamente e de forma incondicional (exceto quando um `ec_pending_session` válido está pendente no `localStorage`), garantindo um ecrã sempre limpo a cada abertura.
+- **Autosave Imediato no Primeiro Keystroke (`initSessionSync`):** O handler `oninput` dos campos User e Equipamento disparava `isDirty=true` mas aguardava o intervalo de 5 segundos para persistir. Corrigido com a adição de `triggerSave()` imediato após `isDirty=true`, gravando no IndexedDB no próprio evento de digitação.
+- **Campos UI não Limpos ao Apagar Sessão Activa (`deleteSessionId`):** Ao eliminar a sessão activa, os campos `session-user`, `session-pc` e `session-name` mantinham os valores anteriores no DOM. Corrigido com zeragem explícita dos três campos e chamada a `updateBtnTitles()` no bloco de reset.
+- **Criação Ansiosa de Sessão Após Deleção (`deleteSessionId`):** Após apagar a sessão activa, uma nova sessão era instanciada imediatamente via `createSession()`, aparecendo no histórico antes de qualquer interação do utilizador. Removida a chamada ansiosa — a criação é agora diferida para `ensureSession()`, que apenas instancia a sessão no momento da primeira interação real (texto, imagem ou documento).
+- **Navegação Automática ao Apagar Sessão Activa (`deleteSessionId`):** Ao eliminar a sessão activa, o painel ficava em estado vazio mesmo existindo sessões adjacentes no histórico. Reescrita a função: antes da deleção captura o `neighbor` (`allBefore[idx+1] || allBefore[idx-1]`), e após a deleção chama `loadSession(neighbor.id)` para navegação automática. Se não existir vizinho, aplica o estado pristine completo (campos limpos, arrays zerados, DOM limpo).
+- **Fecho do Modal de Imagem via Backdrop (`#img-modal-overlay`):** Clicar fora da imagem não fechava o modal — apenas as bordas extremas da janela e o botão X respondiam. Causa: o `.modal-box` ocupa `96vw × 94vh` com fundo transparente, tornando `#ann-viewport` o alvo real dos cliques no espaço escuro. Corrigido adicionando `#ann-viewport` como alvo válido de backdrop no handler `mousedown`, sem afectar o bloqueio de fecho durante zoom ou anotação.
+- **Campos Sidebar em Branco com VB Aberto (`initVbSync`):** Ao apagar o rótulo de Campo 1 ou Campo 2 no Visual Builder, o placeholder da sidebar não limpava — o fallback `|| 'User'` e `|| 'Equipamento'` forçava sempre o texto de volta. Removidos os fallbacks: o placeholder da sidebar segue agora o campo do VB em tempo real, incluindo o estado vazio.
+
+### Visual Builder — Refinamentos UX
+- **Reordenação do Tab Histórico:** Ordem actualizada para `Campo 1 → Campo 2 → Rótulo Campo 1 → Rótulo Campo 2`, agrupando os toggles de visibilidade antes dos campos de rótulo.
+- **Terminologia Evergreen no Visual Builder:** Referências hardcoded a "User" e "Equipamento" nos títulos das linhas do VB foram substituídas por **"Campo 1"**, **"Campo 2"**, **"Rótulo — Campo 1"** e **"Rótulo — Campo 2"** — independentes do domínio de utilização.
+- **Tokens de Rótulo com Default Vazio + Dirty Flag:** `TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` passam a ter valor padrão `''`. O Visual Builder exibe `User`/`Equipamento` como valor visual inicial (hardcoded na UI), mas o Quine só grava o token se o admin **alterar activamente** o campo (`_vbLabelDirty` flag). Exportar sem tocar preserva o token original.
+- **Fecho do Visual Builder apenas pelo X:** Desactivado o fecho por clique no backdrop do `#vb-overlay`. O Visual Builder fecha exclusivamente pelo botão `×`, evitando perdas acidentais de configuração.
+- **Renomeação da Qualidade PDF:** Label `"Qualidade PDF (JPEG)"` renomeado para **"Qualidade do PDF"**. Descrição actualizada para clarificar que as imagens PNG são convertidas internamente para JPEG apenas durante a geração do PDF — os originais permanecem em PNG.
+- **Labels da Aba Interface:** `"Título — Parte inicial"` renomeado para **"Texto Inicial"**; `"Título — Parte destaque"` renomeado para **"Texto em Destaque"**.
+
+---
 ## [V13] — 2026-05-22
 
 ### Adicionado

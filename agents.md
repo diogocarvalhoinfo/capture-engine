@@ -1,4 +1,4 @@
-# Agents · Capture Engine V13
+# Agents · Capture Engine V14
 
 > Regras operacionais obrigatórias para agentes de IA que editam o Capture Engine.
 
@@ -33,7 +33,7 @@
 
 ### 2.1 Linguagem
 - **Código** em inglês (variáveis, funções, comentários técnicos)
-- **Labels de UI** em português neutro harmonizado padrão V13 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
+- **Labels de UI** em português neutro harmonizado padrão V14 (ex: utilizar `"User"`, `"Equipamento"`, `"Documento"`, `"Screenshot"`, `"Download"`, `"Confirmar"`, `"Removidos"`, `"Processando..."`, `"Opções"`, `"Histórico"`). Evitar termos regionais como `"ficheiro"`, `"descarregar"`, `"ecrã"`, `"utilizar"`, `"Sessões"`.
 
 ### 2.2 CSS
 - Todas as variáveis CSS definidas em `:root` e `body.dark`.
@@ -87,6 +87,20 @@ Para prevenir colisões de arquivos que bloqueiem extrações de arquivos ZIP em
 ### 3.3 Histórico
 - Históricos sem título explícito devem ser nomeados dinamicamente com base na sua ordem cronológica de criação, utilizando um formato cardinal preenchido com zeros: `#0001`, `#0002`, `#0003`, etc., em vez do termo genérico `"Sessão-X"`.
 
+### 3.4 Ciclo de Vida da Sessão (Session Lifecycle — Regras Absolutas V14)
+
+> **CRÍTICO:** Qualquer agente que edite lógica de sessão DEVE respeitar este contrato integralmente.
+
+| Evento | Comportamento Obrigatório |
+|---|---|
+| **Abertura da aplicação** | `init()` chama `createSession()` directamente. Nunca reutilizar sessões existentes. Excepção: `ec_pending_session` válido no `localStorage` (botão Nova Sessão). |
+| **Primeira interação do utilizador** | `ensureSession()` já criou a sessão em `init()`. O `renderSbSessions()` é chamado após `createSession()` em `ensureSession()` para reflectir on-demand. |
+| **Digitação nos campos User/PC** | `initSessionSync` → `up()` → `isDirty=true` → `triggerSave()` **imediato** (não diferido). |
+| **Apagar sessão NÃO activa** | Apenas `renderSbSessions()`. Sessão activa e DOM intactos. |
+| **Apagar sessão ACTIVA com vizinha** | Capturar `neighbor` (`allBefore[idx+1] \|\| allBefore[idx-1]`) **antes** da deleção. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
+| **Apagar sessão ACTIVA sem vizinha** | Estado pristine: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos `session-name/user/pc` zerados, `updateCounters/Btns/BtnTitles()`, `renderTrash()`, `renderSbSessions()`. **Não** criar nova sessão neste momento. |
+| **`createSession()` chamado directamente** | Apenas em `init()` e `ensureSession()`. Nunca chamar em `deleteSessionId` ou em handlers de evento. |
+
 ---
 
 ## 4. Tokens (SSOT)
@@ -139,6 +153,11 @@ Antes de declarar uma tarefa completa:
 - [ ] Estética borderless e simetria de cantos testados nos cards.
 - [ ] Mecânica de Navegação de Imagens (Zoom/Pan e Scroll de rato) rigorosamente isolada do modo de Anotação.
 - [ ] Arquivo abre sem erros na console do browser.
+- [ ] **Ciclo de vida de sessão validado:** abrir o ficheiro → painel limpo, campos vazios, histórico vazio.
+- [ ] **Autosave no keystroke:** digitar uma letra no campo User → estado "Gravado" aparece sem aguardar 5s.
+- [ ] **Delete com vizinha:** apagar sessão activa com histórico existente → navega automaticamente para sessão adjacente.
+- [ ] **Delete sem vizinha:** apagar última sessão activa → campos limpos, histórico vazio, painel pristine.
+- [ ] **Nunca** chamar `createSession()` directamente em `deleteSessionId` ou handlers de evento.
 
 ---
 
@@ -167,4 +186,4 @@ Antes de declarar uma tarefa completa:
 
 ---
 
-*Capture Engine V13 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V14 · Agents Operational Rules · FAANG Standards*

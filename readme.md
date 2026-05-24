@@ -1,4 +1,4 @@
-# Capture Engine · V13
+# Capture Engine · V14
 
 > Motor de captura e exportação de evidências — zero-dependency, air-gapped, single-file HTML Quine.
 
@@ -49,10 +49,11 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 | `TOKEN_SUBTITLE` | string | `''` | Subtítulo abaixo do logo |
 | `TOKEN_MAIN_COLOR` | hex | `'#0ea5e9'` | Cor principal da interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | hex | `''` | Override da cor de texto sobre destaque |
+| `TOKEN_FOOTER_TEXT` | string | `'© {YEAR} • CAPTURE ENGINE'` | Texto do rodapé institucional (`{YEAR}` é substituído dinamicamente) |
 | `TOKEN_SHOW_SESSION_USER` | bool | `true` | Mostrar campo User |
 | `TOKEN_SHOW_SESSION_PC` | bool | `true` | Mostrar campo Equipamento |
-| `TOKEN_USER_LABEL` | string | `'User'` | Customização do rótulo/placeholder para o campo User |
-| `TOKEN_EQUIP_LABEL` | string | `'Equipamento'` | Customização do rótulo/placeholder para o campo Equipamento |
+| `TOKEN_USER_LABEL` | string | `''` | Rótulo/placeholder do campo User (vazio = usa "User" como fallback visual) |
+| `TOKEN_EQUIP_LABEL` | string | `''` | Rótulo/placeholder do campo Equipamento (vazio = usa "Equipamento" como fallback visual) |
 | `TOKEN_JPEG_QUALITY` | float | `0.92` | Qualidade JPEG no export PDF (0.70–0.95) |
 | `TOKEN_MAX_IMG_DIMENSION` | int | `0` | Dimensão máxima de redimensionamento (0=original) |
 | `TOKEN_AUTO_PURGE_HOURS` | int | `48` | Horas para purge automático de sessões |
@@ -129,15 +130,16 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 - **Download na Lixeira:** O botão Download está disponível tanto para imagens ativas como removidas.
 
 ### Exportação Otimizada
-- **PDF** — Imagens compactadas em JPEG (qualidade configurável). Suporta formatos Auto (misto), A4 Vertical e A4 Horizontal.
+- **PDF** — Imagens compactadas em JPEG (qualidade configurável). Suporta formatos Auto (misto), A4 Vertical e A4 Horizontal. **Nota:** O botão PDF é desativado automaticamente quando existem documentos presentes na sessão — o motor PDF processa apenas imagens. Para exportar uma sessão mista (imagens + documentos), utilize o ZIP.
 - **ZIP** — Empacota screenshots e documentos brutos com extensões correctas por tipo MIME (PNG, JPG, WEBP, GIF, AVIF, BMP). Os screenshots usam os nomes das legendas limpos (ex: `imagem-1.png`, `imagem-2.webp`) sem prefixos numéricos `001-`, prevenindo erros de extração nos sistemas operacionais.
 
 ### Sessões
-- **Auto-save** a cada 5 segundos no IndexedDB.
-- **Restore automático** — Sessão anterior é recarregada automaticamente ao abrir, incluindo campos User e Equipamento.
-- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V13).
-- **Sessões Anteriores (Histórico):** Históricos sem título agora são nomeados cronologicamente com zeros à esquerda (`#0001`, `#0002`, etc.), garantindo uma identificação clara e neutra.
-- **Segurança de Deleção:** Eliminar a sessão atualmente ativa aciona um recarregamento limpo automático da interface para manter o IndexedDB perfeitamente íntegro.
+- **Sessão Sempre Nova ao Abrir:** Cada abertura do ficheiro cria e regista uma nova sessão em branco no IndexedDB — os campos User, Equipamento e o painel ficam sempre limpos. A sessão aparece no Histórico da sidebar imediatamente após a primeira interação real (digitação, colagem, drag-drop ou picker); sessões abertas sem qualquer interação não geram entradas visíveis.
+- **Auto-save imediato no primeiro keystroke:** Qualquer digitação nos campos User ou Equipamento dispara `triggerSave()` de imediato, sem aguardar o intervalo de 5 segundos.
+- **Auto-save periódico** a cada 5 segundos para toda a restante actividade (capturas, reordenação, anotações).
+- **Navegação SPA Persistente:** Ao trocar de sessão na barra lateral, o painel mantém-se estendido e exibe o estado ativo/selecionado no hover/click com cores de transição harmónicas (padrão V14).
+- **Sessões Anteriores (Histórico):** Históricos sem título são nomeados cronologicamente com zeros à esquerda (`#0001`, `#0002`, etc.), garantindo uma identificação clara e neutra.
+- **Navegação Automática ao Apagar:** Eliminar a sessão activa navega automaticamente para a sessão adjacente (abaixo primeiro, acima como fallback). Se não existir nenhuma sessão restante, o ecrã regressa ao estado pristine (campos limpos, painel vazio, histórico vazio).
 - **Purge automático** de sessões expiradas ao iniciar.
 
 ---
@@ -163,7 +165,7 @@ capture-engine.html    ← Arquivo único (Quine Engine)
 ## Estrutura de Arquivos
 
 ```
-V13/
+V14/
 ├── capture-engine.html   ← Motor principal (single-file)
 ├── readme.md             ← Este arquivo (Guia Geral)
 ├── changelog.md          ← Registro de atualizações e versões
@@ -173,4 +175,4 @@ V13/
 
 ---
 
-*Capture Engine V13 · Design de Excelência FAANG · Air-gapped ready*
+*Capture Engine V14 · Design de Excelência FAANG · Air-gapped ready*

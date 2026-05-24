@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V13
+# Design Tokens · Capture Engine V14
 
 > Especificação completa do design system — CSS variables, JS tokens, z-index, componentes e estética borderless.
 
@@ -34,7 +34,8 @@
 | `--text` | `#e4e4e4` | Texto principal em modo noturno |
 | `--text-muted` | `#9a9a9a` | Texto secundário em modo noturno |
 
-> **Regra Absoluta**: O modo escuro ativa-se única e exclusivamente através da classe CSS `body.dark`. Nunca usar media queries `prefers-color-scheme`.
+> **Regra Absoluta**: O modo escuro ativa-se única e exclusivamente através da classe CSS `body.dark`. Nunca usar media queries `prefers-color-scheme` **no CSS**.
+> O **JavaScript** (`initTheme` e script anti-FOUC) usa `window.matchMedia('(prefers-color-scheme: dark)')` como fallback quando o `localStorage` não contém preferência explícita — respeitando o tema do OS na primeira abertura. Após o utilizador comutar manualmente, a preferência é persistida no `localStorage`.
 > **Estética Borderless**:
 > - Elementos `.d-item` (cards de documentos) têm bordas definidas como `1px solid transparent` para flutuar organicamente sobre o fundo.
 > - Badges de tamanho `.d-size` não possuem linhas limítrofes, exibindo apenas as dimensões de forma leve.
@@ -109,17 +110,23 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 
 | Token | Tipo | Valor Padrão | Aba no Visual Builder |
 |---|---|---|---|
-| `TOKEN_TITLE_START` | `string` | `'Capture'` | Interface |
-| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | Interface |
-| `TOKEN_TITLE_END` | `''` | (Obsoleto) Guardado para integridade Quine |
-| `TOKEN_USER_LABEL` | `'User'` | Label padrão do campo de nome de utilizador |
-| `TOKEN_EQUIP_LABEL` | `'Equipamento'` | Label padrão do campo de equipamento |
-| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Visibilidade do campo User (Oculta secção se ambos false) |
-| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Visibilidade do campo Equipamento (Oculta secção se ambos false) |
-| `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura |
+| `TOKEN_TITLE_START` | `string` | `'Capture'` | Interface — "Texto Inicial" |
+| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | Interface — "Texto em Destaque" |
+| `TOKEN_TITLE_END` | `string` | `''` | — (Obsoleto, preservado para integridade Quine) |
+| `TOKEN_SUBTITLE` | `string` | `''` | — (Reservado, sem UI no VB) |
+| `TOKEN_MAIN_COLOR` | `string` | `'#0ea5e9'` | Interface — Color picker principal |
+| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | Interface — Color picker foreground (vazio = auto) |
+| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE'` | Interface — "Texto do Rodapé" |
+| `TOKEN_USER_LABEL` | `string` | `''` | Histórico — "Rótulo — Campo 1" |
+| `TOKEN_EQUIP_LABEL` | `string` | `''` | Histórico — "Rótulo — Campo 2" |
+| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | Histórico — "Campo 1" (Oculta secção se ambos false) |
+| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | Histórico — "Campo 2" (Oculta secção se ambos false) |
+| `TOKEN_JPEG_QUALITY` | `float` | `0.92` | Captura — "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | Captura |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | Manutenção |
 | `TOKEN_DEBUG_MODE` | `bool` | `true` | — (Controle de console em build de produção) |
+
+> **TOKEN_USER_LABEL / TOKEN_EQUIP_LABEL:** Default `''` (vazio). O Visual Builder exibe `User`/`Equipamento` como valor visual inicial hardcoded na UI. O Quine apenas grava o token se o admin alterar o campo activamente (`_vbLabelDirty` flag por campo). Exportar sem editar preserva o token original.
 
 ---
 
@@ -189,10 +196,22 @@ Estes tokens são injetados no código por substituição via regex no Quine Eng
 
 > [!IMPORTANT]
 > A left sidebar utiliza `overflow-y: auto` com `scrollbar-width: none` (esconde scrollbar visualmente).
+> - **Gap entre secções:** `clamp(10px, 2vh, 20px)` — comprime harmonicamente em ecrãs menores (antes: `clamp(12px,3vh,32px)` causava até 32px de espaço morto).
+> - **Padding interno:** `clamp(10px, 1.5vh, 16px) 12px`.
+> - **`.sb-section-title` na left sidebar:** `height: 28px` via selector `#left-sidebar .sb-section-title` — elimina espaço morto acima dos labels. O modal de histórico (`#sidebar .sb-section-title`) mantém `44px` para área de toque confortável.
+> - **Mobile (`max-width: 900px`):** padding fixo `16px`, gap fixo `16px`, section titles `28px` via `#left-sidebar .sb-section-title`.
 > - Os filhos usam `flex-shrink: 1` para manter visibilidade com compressão elástica.
 > - A secção de título usa `flex-shrink: 0` para manter o tamanho natural e forçar scroll em vez de compressão.
 > Chips de layout (`chips-group`) usam `flex-wrap: nowrap` com `flex: 1 1 0` para ocupar sempre uma única linha.
-> A navegação de sessões suporta estado `.active` destacado com cor harmónica suave e transição de opacidade, com botão de deleção fixo invisível por padrão (evitando pulos de layout ao transitar).
+> **Comportamento de Sessão V14:** Ao abrir a aplicação, o histórico começa sempre vazio até à primeira interação. Ao apagar a sessão activa com vizinhas disponíveis, o `.active` move-se automaticamente para o item adjacente sem qualquer intervenção do utilizador.
+
+### FAB Mobile (`#mobile-paste-fab`)
+
+> [!NOTE]
+> O botão flutuante de paste mobile segue o mesmo padrão visual dos CTAs de captura (PDF/ZIP):
+> - **Repouso:** `color: var(--text-muted)`, `border: 1px solid var(--border-strong)` — totalmente neutro/cinzento.
+> - **Hover:** `color: var(--text)`, `border-color: var(--text-muted)` — reforço subtil.
+> - **`:active`:** `color: var(--accent)`, `border-color: var(--accent)` — accent ativa-se apenas no momento do toque, dando feedback preciso sem poluição visual em repouso.
 
 ### Trash Bar (Semântica Inline)
 
@@ -257,4 +276,30 @@ Dois breakpoints de adaptação móvel:
 
 ---
 
-*Capture Engine V13 · Design Tokens Specification · FAANG Standards*
+
+---
+
+## 11. Comportamento de Bordas V14 (Design Uniformity)
+
+### CTAs de Captura (Botões "Adicionar Imagem" / "Adicionar Documento")
+- **Estado padrão**: `border: 1px solid var(--border-strong)` — borda permanentemente ativa, visível em repouso.
+- **Estado hover**: `border-color: var(--accent)` — transição suave para azul primário.
+- **Regra**: A borda **nunca desaparece**. Antes do V14, estes botões tinham `border: 1px solid transparent` com borda apenas no hover, causando micro-instabilidade visual (layout shift em `border-width`).
+
+### CTAs de Exportação ZIP ("Imagens em PDF" / "Imagens Separadas")
+- **Classe CSS**: `.btn-send.btn-zip-cta` (substitui `.btn-outline` no modo ZIP ativo).
+- **Estado padrão**: `border: 1px solid var(--accent)!important` — borda azul permanente.
+- **Estado hover**: Adiciona fundo sutil `rgba(14,165,233,0.06)` e escurece a cor do texto.
+- **Regra**: A borda accent **não desaparece** ao sair com o cursor.
+
+### Chips de Seleção de Modo (Auto / Horizontal / Vertical)
+| Estado | Borda | Cor de Texto |
+|---|---|---|
+| **Selecionado (default)** | `1px solid var(--border-strong)` | `var(--text)` |
+| **Selecionado (hover)** | `border-color: var(--accent)` | `var(--text)` |
+| **Não selecionado (default)** | `border: none` | `var(--text-muted)` |
+| **Não selecionado (hover)** | `border: none` (inalterado) | `var(--text)` |
+
+> **Regra**: Chips inativos são completamente sem borda em **todos os estados**. Chips ativos têm borda cinzenta por defeito e azul no hover. Antes do V14, todos os chips tinham borda azul no hover (mesmo inativos), criando inconsistência visual.
+
+*Capture Engine V14 · Design Tokens Specification · FAANG Standards*
