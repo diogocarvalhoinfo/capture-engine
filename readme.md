@@ -1,4 +1,4 @@
-# Capture Engine · V17
+# Capture Engine · V18
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -114,9 +114,9 @@ Uma **IIFE** é um padrão JavaScript onde todo o código está encapsulado numa
 2. O arquivo abre no browser padrão
 
 **Método Windows com janela isolada:**
-1. Faça duplo clique em `CaptureEngineApp.vbs`
-2. O Capture Engine abre em modo de aplicação (sem barra de endereço, sem abas)
-3. Um atalho é criado automaticamente na Área de Trabalho
+1. Siga as instruções em `CaptureEngineApp-Atalho.md` para criar um atalho no Desktop
+2. Faça duplo clique no atalho criado
+3. O Capture Engine abre em modo de aplicação (sem barra de endereço, sem abas)
 
 ### Fluxo básico de trabalho
 
@@ -404,7 +404,7 @@ O Capture Engine não suporta estar aberto em múltiplas abas do mesmo browser a
 | **Uma aba de cada vez** | Não suporta uso simultâneo em múltiplas abas do mesmo browser. |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Windows VBS apenas** | O launcher `CaptureEngineApp.vbs` funciona apenas em Windows com Edge. macOS e Linux usam o HTML diretamente. |
+| **Atalho Windows manual** | O método de janela isolada requer criação manual de atalho (ver `CaptureEngineApp-Atalho.md`). macOS e Linux usam o HTML diretamente. |
 | **Quota do browser** | O IndexedDB tem limites de armazenamento impostos pelo browser (tipicamente 50-80% do disco disponível). Sessões com muitas imagens de alta resolução podem atingir estes limites. |
 | **GIF animados** | GIFs animados são capturados mas não animados — são tratados como imagem estática. |
 
@@ -431,11 +431,11 @@ O Capture Engine não suporta estar aberto em múltiplas abas do mesmo browser a
 - O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
 - Use o export ZIP para sessões com imagens e documentos juntos.
 
-### A janela não abre maximizada (launcher VBS)
-- Em ambientes corporativos com políticas de GPO, a flag `--start-maximized` pode ser ignorada. Maximize a janela manualmente.
+### A janela não abre maximizada (atalho Windows)
+- Em ambientes corporativos com políticas de GPO, a flag `--start-maximized` pode ser ignorada. Maximize a janela manualmente com `⊞ Win + ↑`.
 
-### Pasta com acentos no caminho (launcher VBS)
-- Resolvido na versão 1.1.0 do launcher. Se estiver a usar uma versão mais antiga, mova o arquivo para uma pasta sem caracteres acentuados.
+### Pasta com acentos no caminho (atalho Windows)
+- Certifique-se de que o caminho para o `capture-engine.html` no campo **Destino** do atalho não tem caracteres problemáticos. Se necessário, mova o arquivo para uma pasta com nome simples (ex: `C:\CE\`).
 
 ### O modal de anotação não fecha com Escape
 - Se uma ferramenta de anotação estiver ativa, Escape cancela a ferramenta — não fecha o modal. Prima Escape novamente para fechar.
@@ -454,7 +454,7 @@ Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo
 Não. Sessões inativas há mais de 48 horas (por defeito) são apagadas automaticamente. Além disso, limpar os dados do browser apaga tudo. Exporte os dados importantes.
 
 **Posso usar o Capture Engine em Mac ou Linux?**
-Sim — abra diretamente o `capture-engine.html` no browser. O launcher `.vbs` é exclusivo do Windows.
+Sim — abra diretamente o `capture-engine.html` no browser. O atalho Windows com `--app` é exclusivo do Windows com Edge.
 
 **Posso usar em Firefox?**
 Sim, Firefox 90+ é suportado. A experiência é idêntica ao Chrome/Edge.
@@ -490,19 +490,18 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V17/
-├── capture-engine.html      ← A aplicação completa — este é o arquivo que distribui
-├── CaptureEngineApp.vbs     ← Launcher opcional para Windows (experiência de app nativa)
-├── CaptureEngineApp.vbs.md  ← Documentação técnica do launcher
-├── readme.md                ← Este guia (início aqui)
-├── changelog.md             ← Histórico completo de versões e alterações
-├── agents.md                ← Guia operacional para desenvolvedores e agentes IA
-└── design-tokens.md         ← Especificação completa do design system
+V18/
+├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
+├── CaptureEngineApp-Atalho.md   ← Guia para criar atalho Windows (janela isolada sem browser)
+├── readme.md                    ← Este guia (início aqui)
+├── changelog.md                 ← Histórico completo de versões e alterações
+├── agents.md                    ← Guia operacional para desenvolvedores e agentes IA
+└── design-tokens.md             ← Especificação completa do design system
 ```
 
 **Qual arquivo distribuir aos utilizadores?**
 - Para uso básico: apenas `capture-engine.html`
-- Para uso em Windows com experiência de app: `capture-engine.html` + `CaptureEngineApp.vbs`
+- Para uso em Windows com experiência de app: `capture-engine.html` + `CaptureEngineApp-Atalho.md`
 - Os outros arquivos (`.md`) são documentação interna — não precisam de ser distribuídos
 
 ---
@@ -591,4 +590,4 @@ boot()
 
 ---
 
-*Capture Engine V17 · Design de Excelência FAANG · Air-gapped Ready*
+*Capture Engine V18 · Design de Excelência FAANG · Air-gapped Ready*

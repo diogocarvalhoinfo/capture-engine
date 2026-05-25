@@ -5,6 +5,41 @@
 
 ---
 
+## [V18] — 2026-05-25
+
+### Modificado
+
+**Sessão criada apenas na primeira interação real — impacto: abrir e fechar o programa sem usar não gera sessão no histórico**
+
+Anteriormente, `init()` chamava `createSession()` de forma incondicional ao abrir o arquivo — uma sessão era escrita no IndexedDB mesmo que o utilizador abrisse e fechasse o programa sem qualquer interação. Ao longo do tempo, isto acumulava sessões vazias no histórico. Agora `init()` não cria sessão. A criação acontece de forma lazy via `ensureSession()`, que é chamada automaticamente no primeiro evento real: digitar nos campos de sessão, colar uma imagem, arrastar um documento. Sessão sem interação = sessão inexistente.
+
+Alterações técnicas:
+- `init()`: removida chamada `await createSession()`
+- `saveSession()`: retorna imediatamente se `sessId === null` (guard contra o intervalo de 5s sem sessão ativa)
+- `ensureSession()` já existia e já era chamada por `captureImg`, `captureDoc` e `initSessionSync` — nenhuma alteração necessária nessas funções
+
+**Remoção do launcher VBS — substituído por guia de atalho manual**
+
+Os arquivos `CaptureEngineApp.vbs` e `CaptureEngineApp.vbs.md` foram removidos do pacote V18 por alerta de segurança (scripts VBS são bloqueados por políticas de segurança em ambientes corporativos e detetados como potencial ameaça por alguns antivírus). Substituídos pelo arquivo `CaptureEngineApp-Atalho.md` — guia passo a passo para criar um atalho Windows manualmente usando o parâmetro `--app` do Edge, sem nenhum script.
+
+**Ícone de desenho livre — lápis em vez de caneta/pena**
+
+O ícone do botão de desenho livre (modo Anotar) e do botão "Anotar" no modal de imagem foram substituídos por um lápis padrão (path `M17 3a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L17 3z`), mais reconhecível e intuitivo para a ação de desenho manual.
+
+**Desenho livre suavizado com Bezier quadrático + point thinning**
+
+O traço de desenho livre era renderizado com `lineTo` puro, produzindo linhas quebradas e tremidas especialmente em movimentos rápidos. Implementada suavização via curvas Bezier quadráticas: cada segmento usa o ponto médio entre dois pontos consecutivos como endpoint da curva, com o ponto original como ponto de controlo. Adicionado point thinning (pontos com distância < 3px são descartados) para reduzir ruído sem perder fidelidade. A mesma lógica aplica-se à re-renderização do histórico (`annDrawShape`).
+
+### Corrigido
+
+**Português neutro — correções de regionalismo PT-PT na interface**
+
+- `title="Guardar"` (botão de confirmar anotação) → `title="Confirmar"` — mais preciso semanticamente e neutro
+- `"Fecha-as e recarrega esta página"` (erro de IDB com múltiplas abas) → `"Feche-as e recarregue esta página"` — forma verbal mais neutra
+- `title="Cor (Duplo clique para Automático)"` → `title="Cor (Clique duplo para Automático)"` — ordem natural em português brasileiro
+
+---
+
 ## [V17] — 2026-05-25
 
 ### Modificado

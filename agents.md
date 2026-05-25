@@ -1,4 +1,4 @@
-# Agents · Capture Engine V17
+# Agents · Capture Engine V18
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -685,4 +685,4 @@ Nunca assumir que as substituições foram completas sem verificar.
 
 ---
 
-*Capture Engine V17 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V18 · Agents Operational Rules · FAANG Standards*

@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V17
+# Design Tokens · Capture Engine V18
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -386,4 +386,4 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 ---
 
-*Capture Engine V17 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V18 · Design Tokens Specification · FAANG Standards*
