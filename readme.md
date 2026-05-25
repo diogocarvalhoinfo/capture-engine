@@ -1,4 +1,4 @@
-# Capture Engine · V16
+# Capture Engine · V17
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -490,7 +490,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V16/
+V17/
 ├── capture-engine.html      ← A aplicação completa — este é o arquivo que distribui
 ├── CaptureEngineApp.vbs     ← Launcher opcional para Windows (experiência de app nativa)
 ├── CaptureEngineApp.vbs.md  ← Documentação técnica do launcher
@@ -591,4 +591,4 @@ boot()
 
 ---
 
-*Capture Engine V16 · Design de Excelência FAANG · Air-gapped Ready*
+*Capture Engine V17 · Design de Excelência FAANG · Air-gapped Ready*

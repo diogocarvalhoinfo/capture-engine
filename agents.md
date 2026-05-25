@@ -1,4 +1,4 @@
-# Agents · Capture Engine V16
+# Agents · Capture Engine V17
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -142,7 +142,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 | Nomes de variáveis, funções, comentários técnicos | Inglês | `captureImg()`, `sessId`, `isDirty` |
 | Labels visíveis para o utilizador na UI | Português neutro | `"Histórico"`, `"Removidos"`, `"Processando..."` |
 
-**Português neutro — glossário aprovado V16:**
+**Português neutro — glossário aprovado V17:**
 
 | ✅ Usar | ❌ Evitar | Razão |
 |---|---|---|
@@ -658,7 +658,7 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V16 → V17), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
+Ao passar para uma nova versão (ex: V17 → V17), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
 
 **Os 5 locais obrigatórios:**
 
@@ -678,11 +678,11 @@ Ao passar para uma nova versão (ex: V16 → V17), o número de versão antigo t
 
 **Ação obrigatória antes de fechar:**
 ```bash
-grep -rn "V16" capture-engine.html readme.md design-tokens.md agents.md changelog.md
+grep -rn "V17" capture-engine.html readme.md design-tokens.md agents.md changelog.md
 # Verificar se restam referências intencionais vs fantasmas
 ```
 Nunca assumir que as substituições foram completas sem verificar.
 
 ---
 
-*Capture Engine V16 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V17 · Agents Operational Rules · FAANG Standards*

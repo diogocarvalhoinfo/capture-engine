@@ -5,6 +5,26 @@
 
 ---
 
+## [V17] — 2026-05-25
+
+### Modificado
+
+**Remoção do botão e mecanismo de "Nova Sessão" — impacto: utilizador não consegue abrir sessões em janelas separadas fora do launcher VBS**
+
+O botão "Nova Sessão" (ícone de duplos quadrados sobrepostos na barra de topo) foi removido por decisão de produto. O fluxo de abrir uma nova sessão numa janela independente fazia sentido apenas em conjunto com o launcher `CaptureEngineApp.vbs`; fora desse contexto, o utilizador podia inadvertidamente abrir múltiplas instâncias do Capture Engine no browser, cada uma com o seu próprio contexto de sessão, gerando confusão. A remoção garante que o fluxo de trabalho é sempre numa única janela, com navegação entre sessões feita pelo histórico interno.
+
+Remoções associadas:
+- HTML: bloco `<button id="btn-new-sess">` da barra de topo
+- JS `boot()`: handler `_newSessLock` / `onclick` / `localStorage.setItem('ec_pending_session')` / `window.open()`
+
+**Limpeza de código morto pós-remoção (auditoria V17)**
+
+Após a remoção do botão de nova sessão, foram identificados e eliminados dois blocos de código que se tornaram dead code:
+
+- `init()` — Bloco `ec_pending_session`: lia a chave `ec_pending_session` do localStorage para decidir se devia carregar uma sessão pendente em vez de criar uma nova. Como nada escreve mais nessa chave, o bloco de leitura + remoção + `loadSession` era código morto. Removido.
+
+- `initPickers()` — Setups de `onclick` para `btn-img-pick` e `btn-doc-pick`: tentavam registar handlers de clique em IDs que nunca existiram no HTML (os botões usam `onclick` inline com `document.getElementById` diretamente). Os guards `if($('btn-img-pick'))` preveniam crashes mas o código era inoperante. Removidos. Os handlers `onchange` dos `<input type="file">`, que são a parte funcional real, foram preservados.
+
 ## [V16] — 2026-05-24
 
 ### Modificado

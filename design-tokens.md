@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V16
+# Design Tokens · Capture Engine V17
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -170,7 +170,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 ### Notas sobre tokens específicos
 
 **`TOKEN_TITLE_END` (obsoleto):**
-Este token não tem uso funcional na V16. Foi preservado para garantir que o Quine Engine, que usa regex para substituir todos os tokens, não quebre ao tentar encontrá-lo. Remover o token corromperia arquivos exportados de versões mais antigas. Não usar, não remover.
+Este token não tem uso funcional na V17. Foi preservado para garantir que o Quine Engine, que usa regex para substituir todos os tokens, não quebre ao tentar encontrá-lo. Remover o token corromperia arquivos exportados de versões mais antigas. Não usar, não remover.
 
 **`TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático):**
 Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto, baseando-se na luminância relativa da cor accent. Preencher apenas se o cálculo automático não produzir o contraste desejado.
@@ -344,7 +344,7 @@ A interface tem dois breakpoints de adaptação:
 
 ---
 
-## 11. Comportamento de Bordas V16
+## 11. Comportamento de Bordas V17
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
@@ -386,4 +386,4 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 ---
 
-*Capture Engine V16 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V17 · Design Tokens Specification · FAANG Standards*
