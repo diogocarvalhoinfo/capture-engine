@@ -1,4 +1,4 @@
-# Agents · Capture Engine V18
+# Agents · Capture Engine V19
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -480,6 +480,22 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
+### Funções de Anotação
+
+| Função | O que faz | Notas |
+|---|---|---|
+| `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra toolbar | Chamada pelo botão "Anotar" |
+| `annDeactivate()` | Desativa anotação: esconde canvas e toolbar, cancela timers pendentes, restaura `o.blob` | Cancela `annTextClickTimer` e `annCommitText` |
+| `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I consoante `t==='text'` | Atualiza `.active` nos botões |
+| `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
+| `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido | Usado por `annRedraw` e pelo `ann-save` |
+| `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o input de texto no canvas, com EMA state e B/I sync | `prefill` opcional para reedição via dblclick |
+| `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
+| `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
+| `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path de pontos removendo colineares | Aplicado no mouseup do desenho livre (ε=1.8px), após passagem Laplaciana |
+| `laplacian(pts, iters)` | Suavização Laplaciana — desloca cada ponto para a média ponderada dos vizinhos | Aplicado no mouseup do desenho livre (2 iterações), antes do RDP |
+| `deactivateAdmin()` | Oculta botões admin; exposta como `window._deactivateAdmin` | Chamada por `closeSettingsModal` e pelo gate manual |
+
 ### Funções de Segurança
 
 | Função | Assinatura | O que faz |
@@ -601,6 +617,18 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `_ensurePromise` | Promise \| null | Mutex de `ensureSession()` — evita race conditions |
 | `_vbLabelDirty` | object | `{user: bool, equip: bool}` — track se o admin editou rótulos no VB |
 | `sysColors` | object | Cores atuais `{main, fg}` — para cálculos de contraste automático |
+| `annActive` | boolean | `true` = modo de anotação ativo |
+| `annTool` | string | Ferramenta ativa: `rect` \| `circle` \| `arrow` \| `free` \| `text` |
+| `annHistory` | array | Stack de formas anotadas (undo buffer); cada entrada: `{type, x1, y1, ...}` |
+| `annRedoHistory` | array | Stack de redo; populado por undo |
+| `annCurrentColor` | string | Cor ativa da toolbar de anotação (hex) |
+| `annSizeIdx` | number | Índice em `ANN_SIZES=[2,4,8]` — espessura de linha ativa |
+| `annTextBold` | boolean | Negrito ativo na ferramenta texto (padrão: `true`) |
+| `annTextItalic` | boolean | Itálico ativo na ferramenta texto |
+| `annTextSizeIdx` | number | Índice em `ANN_TEXT_SIZES=[14,18,24,36,48]` — tamanho de fonte ativo |
+| `annEditingTextIdx` | number | Índice em `annHistory` do texto em edição via dblclick; `-1` = novo texto |
+| `annTextClickTimer` | TimeoutID \| null | Timer de 220ms para distinguir single-click (novo texto) de dblclick (editar); scope de módulo |
+| `annSmoothLast` | object \| null | Último ponto suavizado pelo EMA no desenho livre; resetado em activate/deactivate/mouseup |
 
 ---
 
@@ -654,6 +682,15 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 - [ ] Sem strings hardcoded em inglês visíveis ao utilizador
 - [ ] Sem strings hardcoded em PT-PT (regionalismo) — usar PT neutro
 
+**Ferramenta de Anotação (verificar após qualquer edição ao annotation engine):**
+- [ ] `annTextClickTimer` declarado no scope de módulo (antes de `initAnnotation`)
+- [ ] `annSmoothLast` declarado no scope de módulo
+- [ ] `annDeactivate()` faz `clearTimeout(annTextClickTimer)` e `annSmoothLast=null`
+- [ ] `annRedraw()` usa `forEach((h,_ri) => { if(_ri===annEditingTextIdx) return; ... })`
+- [ ] `annDrawShape` usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no final
+- [ ] `closeSettingsModal` chama `window._deactivateAdmin()`
+- [ ] `window._deactivateAdmin` é atribuído dentro de `initAdminGate`
+
 ---
 
 ## 12. Protocolo de Version Bump
@@ -674,7 +711,6 @@ Ao passar para uma nova versão (ex: V17 → V17), o número de versão antigo t
 
 5. **`agents.md`** — Este arquivo: título e referências
 
-> **`CaptureEngineApp.vbs.md`** é revisto no bump mas não requer substituição de versão CE — o launcher tem versionamento próprio (`1.x.x`). Verificar apenas se há referências de contexto ao número de versão CE.
 
 **Ação obrigatória antes de fechar:**
 ```bash
@@ -685,4 +721,4 @@ Nunca assumir que as substituições foram completas sem verificar.
 
 ---
 
-*Capture Engine V18 · Agents Operational Rules · FAANG Standards*
+*Capture Engine V19 · Agents Operational Rules · FAANG Standards*

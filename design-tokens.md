@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V18
+# Design Tokens · Capture Engine V19
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -384,6 +384,44 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 *O accent aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
 
+
 ---
 
-*Capture Engine V18 · Design Tokens Specification · FAANG Standards*
+## Annotation Engine — Constantes e Estado
+
+### Constantes de Traço
+
+| Constante | Valor | Descrição |
+|---|---|---|
+| `ANN_SIZES` | `[2, 4, 8]` | Espessuras de linha disponíveis (px, coordenadas canvas) |
+| `ANN_TEXT_SIZES` | `[14, 18, 24, 36, 48]` | Tamanhos de fonte disponíveis (px canvas); index 2 = 24px padrão |
+
+### Variáveis de Estado da Anotação
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `annTool` | `'rect'` | Ferramenta ativa: `rect` / `circle` / `arrow` / `free` / `text` |
+| `annSizeIdx` | `1` (4px) | Índice em `ANN_SIZES` — espessura de linha |
+| `annTextSizeIdx` | `2` (24px) | Índice em `ANN_TEXT_SIZES` — tamanho de fonte |
+| `annTextBold` | `true` | Negrito ativo na ferramenta texto |
+| `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
+| `annEditingTextIdx` | `-1` | Índice em `annHistory` do texto em reedição; `-1` = novo texto |
+| `annTextClickTimer` | `null` | Timer 220ms para distinguir single-click de dblclick |
+| `annSmoothLast` | `null` | Último ponto EMA no desenho livre (α=0.55); reset em activate/deactivate/mouseup |
+
+### Formato de Entradas em `annHistory`
+
+Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais por tipo:
+
+| `type` | Campos obrigatórios | Notas |
+|---|---|---|
+| `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
+| `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
+| `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
+| `free` | `pts: [{x,y}]`, `closed: bool` | Path simplificado por RDP (ε=1.5px) |
+| `text` | `x1, y1, txt, bold, italic, fontSize` | `textBaseline='top'`; x1/y1 = canto superior esquerdo |
+
+
+---
+
+*Capture Engine V19 · Design Tokens Specification · FAANG Standards*

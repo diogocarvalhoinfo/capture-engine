@@ -5,6 +5,25 @@
 
 ---
 
+## [V19] — 2026-05-26
+
+### Modificado
+
+**Desenho livre — suavização equilibrada para ratos de baixa qualidade — impacto: traços suaves sem perder cantos definidos**
+
+- EMA `alpha` ajustado de `0.55` para `0.35` — meio termo entre responsividade e suavização; permite desenhar formas com cantos (quadrados, retângulos) sem que as esquinas sejam demasiado arredondadas.
+- Adicionada passagem de suavização **Laplaciana** (2 iterações) antes do RDP no `mouseup`, eliminando jitter residual sem deformar cantos.
+- Epsilon do RDP ajustado de `1.5` para `1.8`.
+- Raio de **fecho automático** do traço reduzido de 24px para **12px** — evita fechos acidentais ao passar perto do ponto inicial.
+
+### Removido
+
+**`CaptureEngineApp-Atalho.md` — removido do pacote — impacto: distribuição simplificada, sem método não fiável**
+
+O guia de atalho Windows (`CaptureEngineApp-Atalho.md`) foi removido do pacote após confirmação de falhas em ambiente corporativo. O método `--app` do Edge é bloqueado por políticas GPO em organizações com hardening de browser, tornando o guia inútil e potencialmente confuso. O Capture Engine abre diretamente com duplo clique no `capture-engine.html` em qualquer sistema operativo — esse continua a ser o método oficial e único suportado.
+
+---
+
 ## [V18] — 2026-05-25
 
 ### Modificado
@@ -385,3 +404,44 @@ Esta versão estabeleceu as fundações sobre as quais todo o motor assenta:
 ---
 
 *Capture Engine · FAANG Standards · Zero-Dependency Quine System*
+
+---
+
+## [V19] — 2026-05-25
+
+### Novidades
+
+#### Ferramenta de Texto — Reformulação Completa
+- **Fix: Salto de posição eliminado** — O texto agora é renderizado exatamente onde o cursor clicar. A causa era um erro de `textBaseline`: o canvas usava `alphabetic` (baseline na base dos caracteres) enquanto o input HTML era posicionado a partir do topo. Corrigido com `textBaseline = 'top'` no canvas e `top = screenY` no input.
+- **Negrito (Ctrl+B)** — Toggle de negrito durante a digitação ou ao clicar no botão B na toolbar. Ativo por padrão.
+- **Itálico (Ctrl+I)** — Toggle de itálico durante a digitação ou ao clicar no botão I na toolbar.
+- **Tamanho de fonte variável** — Os botões −/+ de espessura, quando a ferramenta Texto está ativa, controlam o tamanho da fonte em 5 níveis: 14 · 18 · 24 · 36 · 48px (padrão: 24px).
+- **Double-click para reeditar** — Clicar duas vezes em cima de um texto já colocado (antes de confirmar) reabre o campo de edição com o conteúdo original, mantendo cor, bold e itálico.
+- **Cor ao reeditar** — Ao reeditar texto existente via double-click, clicar numa swatch atualiza a cor do texto em tempo real.
+
+#### Ícone da Ferramenta Texto
+- Substituído o ícone T "vazado" (com caule duplo e linha de base) por um T tipográfico com serifs em cima e baixo — mais harmonioso com os restantes ícones da toolbar.
+
+### Melhorias Técnicas
+- `annHistory` agora armazena `{bold, italic, fontSize}` por entrada de texto, permitindo fidelidade total na re-renderização.
+- `annShowTextInput` refatorizado: aceita `prefillText` opcional para suportar edição de texto existente.
+- Botões B/I aparecem automaticamente ao selecionar a ferramenta Texto e ocultam ao mudar para outra ferramenta.
+- `annEditingTextIdx` rastreia se o utilizador está a editar uma entrada existente ou a criar uma nova.
+
+### Corrigido (pós-release V19)
+
+#### Ferramenta Texto — Correções de Comportamento
+- **Fix: Salto invertido (texto subia)** — O `<input>` mesmo com `padding:0` adicionava *internal leading* que deslocava o texto visível abaixo do topo do elemento. Corrigido forçando `line-height` e `height` do input ao valor de `scaledFontSize` — o texto fica encostado ao topo, alinhado com o `textBaseline='top'` do canvas.
+- **Fix: Double-click criava novo texto em vez de editar** — O `mousedown` disparava antes do `dblclick` na sequência de eventos do browser (`mousedown → mouseup → click → mousedown → mouseup → click → dblclick`), chamando `annShowTextInput` com `annEditingTextIdx=-1` e destruindo a intenção de edição. Solução: single-click aguarda **220ms** via `setTimeout` antes de abrir input novo; o `dblclick` cancela o timer e toma conta da edição.
+- **Fix: Cor não mudava durante edição de texto** — Clicar numa swatch disparava `blur` no input (perda de foco), fazendo `commit()` antes de a cor ser aplicada. Corrigido com `mousedown.preventDefault()` nas swatches, botões B e I **apenas quando o input está ativo** — o input mantém foco, `inp.style.color` atualiza em tempo real, e `inp.focus()` garante continuidade de digitação.
+- **Fix: Perda de texto ao premir Escape durante edição** — O `dblclick` fazia `annHistory.splice(_i, 1)` imediatamente ao abrir o input. Se o utilizador premisse Escape, o texto era apagado permanentemente. Corrigido: sem splice; `annRedraw()` passa a saltar o índice `annEditingTextIdx` (texto fica em "ghost" durante edição); Escape faz `annRedraw()` que o restaura.
+- **Fix: Timer fantasma em `annDeactivate`** — `annTextClickTimer` era declarado dentro de `initAnnotation()`, tornando-o inacessível a `annDeactivate`. Ao fechar o modal durante os 220ms, o timer disparava `annShowTextInput` num overlay invisível. Corrigido: timer hoistado para scope de módulo; `annDeactivate` limpa-o explicitamente.
+
+#### Visual Builder — Admin Gate
+- **Fix: Ícones admin não desapareciam ao fechar o VB** — `deactivateAdmin()` estava encapsulada no closure de `initAdminGate`, inacessível a `closeSettingsModal`. Corrigido expondo-a como `window._deactivateAdmin`; `closeSettingsModal` chama-a ao fechar — ícones desaparecem imediatamente ao clicar no X.
+
+#### Ferramenta Desenho Livre — Suavização
+- **Fix: Linha tremia ao desenhar** — O `annPath` acumulava todos os pontos em bruto do mouse (threshold 3px), e o Catmull-Rom interpolava fiel e fielmente cada micro-tremor. Três camadas de correção:
+  1. **EMA (Exponential Moving Average, α=0.55)** — cada ponto é misturado com o anterior (`0.55 × novo + 0.45 × último`) antes de entrar no path, eliminando tremor de alta frequência em tempo real.
+  2. **Threshold 3px → 5px** — pontos mais próximos que 5px do anterior são descartados.
+  3. **RDP no commit (ε=1.5px)** — ao soltar o mouse, o path é simplificado com Ramer-Douglas-Peucker antes de ser guardado em `annHistory`, removendo pontos colineares redundantes sem alterar a geometria visível.
