@@ -2910,7 +2910,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (V20) -->
+  <!-- VISUAL BUILDER MODAL (V21) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -2928,7 +2928,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V20</span>
+            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V21</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -4036,7 +4036,7 @@
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V20 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V21 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
 function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();

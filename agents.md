@@ -1,4 +1,4 @@
-# Agents · Capture Engine V20
+# Agents · Capture Engine V21
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -671,7 +671,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
    - `changelog.md` — sempre, com entrada na versão atual
 4. **Codificação:** UTF-8 sem BOM
 5. **Testar regressão mental:** Para cada alteração, verificar se os 3 contratos (zero-dep, Quine, XSS) continuam válidos
-6. **Verificar markers:** Após qualquer edição ao HTML, confirmar que os 8 comment markers estão intactos
+6. **Verificar markers:** Após qualquer edição ao HTML, confirmar que os 10 comment markers estão intactos
 
 ---
 
@@ -702,6 +702,10 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 - [ ] Apagar última sessão ativa → interface volta ao estado limpo inicial (sem sessão nova no histórico)
 - [ ] Botão Nova Sessão → recarrega em branco, sessão anterior ainda no histórico
 
+**Documentação:**
+- [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Secção 13 do `readme.md` foi atualizado
+- [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Secção 9
+
 **Visual:**
 - [ ] Imagens têm `border-radius: 0`, botões e cards de texto têm `border-radius` arredondado
 - [ ] Arquivo abre sem erros na consola do browser
@@ -724,15 +728,15 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V19 → V20), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
+Ao passar para uma nova versão (ex: V20 → V21), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
 
 **Os 5 locais obrigatórios:**
 
 1. **`capture-engine.html`** — Dois locais dentro do arquivo:
-   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V20) -->`
-   - Badge visual no header do modal de configurações: `<span ...>V20</span>`
+   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V21) -->`
+   - Badge visual no header do modal de configurações: `<span ...>V21</span>`
 
-2. **`changelog.md`** — Nova entrada no topo: `## [V20] — YYYY-MM-DD`
+2. **`changelog.md`** — Nova entrada no topo: `## [V21] — YYYY-MM-DD`
 
 3. **`readme.md`** — Título principal e referências
 
@@ -743,7 +747,7 @@ Ao passar para uma nova versão (ex: V19 → V20), o número de versão antigo t
 
 **Ação obrigatória antes de fechar:**
 ```bash
-grep -rn "V20" capture-engine.html readme.md design-tokens.md agents.md changelog.md
+grep -rn "V21" capture-engine.html readme.md design-tokens.md agents.md changelog.md
 # Verificar se restam referências intencionais vs fantasmas
 ```
 Nunca assumir que as substituições foram completas sem verificar.
@@ -764,4 +768,4 @@ Caso um utilizador apague ou corrompa o seu ficheiro `capture-engine.html` mas m
 
 ---
 
-*Capture Engine V20 · Regras Operacionais para Agentes*
+*Capture Engine V21 · Regras Operacionais para Agentes*

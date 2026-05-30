@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V20
+# Design Tokens · Capture Engine V21
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -421,4 +421,4 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 
 ---
 
-*Capture Engine V20 · Especificações de Design Tokens*
+*Capture Engine V21 · Especificações de Design Tokens*

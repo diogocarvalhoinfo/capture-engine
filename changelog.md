@@ -5,6 +5,30 @@
 
 ---
 
+## [V21] — 2026-05-30
+
+### Corrigido
+
+**Bug crítico do Quine Engine — impacto: configurações do administrador agora são corretamente aplicadas em todos os exports**
+
+O regex de substituição de tokens de string no `exportFile()` usava o padrão `/const TOKEN_NOME='[^']*'/` (sem espaços em redor do `=`), enquanto as declarações reais no código têm o formato `const TOKEN_NOME = 'valor'` (com espaços). Consequência: todas as substituições de string — cor principal, título, texto do rodapé, rótulos de campos — falhavam silenciosamente. O arquivo exportado ignorava as configurações do Visual Builder e mantinha sempre os valores predefinidos. Corrigido com regex flexível `\s*=\s*` que aceita espaços opcionais; o output escreve sempre com espaços para consistência de leitura.
+
+Tokens afetados: `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START`, `TOKEN_TITLE_ACCENT`, `TOKEN_SUBTITLE`, `TOKEN_USER_LABEL`, `TOKEN_EQUIP_LABEL`, `TOKEN_FOOTER_TEXT`.
+
+Tokens não afetados (usavam regex `=[^;]+` sem aspas, já funcionavam): `TOKEN_SHOW_SESSION_USER`, `TOKEN_SHOW_SESSION_PC`, `TOKEN_JPEG_QUALITY`, `TOKEN_MAX_IMG_DIMENSION`, `TOKEN_AUTO_PURGE_HOURS`, `TOKEN_DEBUG_MODE`.
+
+### Documentação — Auditoria de Resiliência Operacional
+
+Auditoria completa de consistência entre documentação e código. Todas as divergências identificadas foram corrigidas:
+
+- **`agents.md`:** Contagem de markers corrigida de 8 para 10 (com nota sobre o segundo par `ADMIN_JS` em `boot()`); localização de `BOOT_HTML` corrigida para "dentro do bloco ADMIN_JS"; 15+ variáveis de estado global adicionadas à Secção 9 (`lastSaveAt`, `pdfFmt`, `zipModeActive`, `modalIsTrash`, `modalItemId`, variáveis de zoom/pan, variáveis de anotação em progresso); `idbTx` adicionada à tabela de funções críticas; schema de `localStorage` documentado (chave `theme`, histórico de `ec_pending_session`); modo PDF `exact` documentado na Secção 8.
+- **`readme.md`:** Diagrama `boot()` corrigido — hierarquia invertida (`init → boot`, não `boot → init`) e lista de funções expandida de 7 para 18 chamadas reais; termos `Estado Pristine` e `initSessionSync` adicionados ao glossário; secção de Diagnóstico de Export adicionada para administradores; suporte Safari documentado (parcial, mitigado pelo fallback `BOOT_HTML`).
+- **`design-tokens.md`:** Instrução de formato de tokens atualizada para refletir que espaços à volta do `=` são suportados e recomendados; referência a "V17" em `TOKEN_TITLE_END` corrigida para "a partir da V17".
+- **`changelog.md`:** Nomenclatura "Zero Trust Audit" substituída por "Auditoria de Resiliência Operacional" em todas as ocorrências da V20.
+- **`agents.md` — Checklist (Secção 11):** Corrigida referência residual a "8 markers" (deve ser 10); adicionada nova secção **Documentação** com dois itens preventivos: verificação do diagrama `boot()` sempre que uma função de inicialização for adicionada ou removida, e verificação da tabela de variáveis globais sempre que uma nova variável de estado for introduzida.
+
+---
+
 ## [V20] — 2026-05-30
 
 ### Adicionado

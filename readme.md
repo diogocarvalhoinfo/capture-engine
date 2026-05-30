@@ -1,4 +1,4 @@
-# Capture Engine · V20
+# Capture Engine · V21
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -501,7 +501,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V20/
+V21/
 ├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
 ├── readme.md                    ← Este guia (início aqui)
 ├── changelog.md                 ← Histórico completo de versões e alterações
@@ -610,4 +610,4 @@ init()
 
 ---
 
-*Capture Engine V20 · Focado na simplicidade e uso 100% offline*
+*Capture Engine V21 · Focado na simplicidade e uso 100% offline*
