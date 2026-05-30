@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V19
+# Design Tokens · Capture Engine V20
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -35,7 +35,7 @@ A paleta tem dois grupos:
 |---|---|---|
 | `--bg` | `#f4f3f0` | Fundo geral — off-white quente (não puro) para reduzir fadiga visual |
 | `--surface` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
-| `--border` | `#dddcd8` | Bordas subtis, linhas de separação — estruturam sem poluir |
+| `--border` | `#dddcd880` | Bordas subtis, linhas de separação — estruturam sem poluir (alpha 50%) |
 | `--border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
 | `--text` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
 | `--text-muted` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
@@ -52,7 +52,7 @@ A paleta tem dois grupos:
 |---|---|---|
 | `--bg` | `#121212` | Quase preto — padrão Material Dark |
 | `--surface` | `#1e1e1e` | Ligeiramente mais claro que o fundo — cria profundidade sem bordas |
-| `--border` | `#333333` | Bordo escuro subtil |
+| `--border` | `#33333380` | Bordo escuro subtil (alpha 50%) |
 | `--border-strong` | `#555555` | Bordo escuro mais visível |
 | `--text` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
 | `--text-muted` | `#9a9a9a` | Cinzento médio para elementos secundários |
@@ -95,7 +95,7 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 
 ### Tipografia — Fonte do sistema
 
-A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para respeitar o ambiente air-gapped e para que a interface se pareça "em casa" no sistema operativo de cada utilizador.
+A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operativo de cada utilizador.
 
 ### Raio de Canto — A escala de arredondamento
 
@@ -109,7 +109,7 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 | `--radius-md` | `8px` | Painéis internos, caixas — contentores secundários |
 | `--radius-lg` | `12px` | Modais e diálogos — elementos de maior destaque visual |
 
-> **Exceção geométrica — imagens têm cantos retos:** Os elementos `.t-item`, `.t-wrap` e `.t-label` têm `border-radius: 0`. Isto é intencional: imagens são *evidências técnicas*, não decoração. Cantos retos comunicam precisão e formalidade. Botões e cards textuais ficam arredondados para parecerem interativos e acessíveis.
+> **Exceção geométrica — imagens:** Os elementos `.t-item` e `.t-label` têm `border-radius: 0` (cantos retos — comunicam precisão e formalidade). O `.t-wrap` (wrapper do thumbnail) tem `border-radius: var(--radius-sm)` (6px) para suavizar visualmente a moldura da imagem na grelha, mantendo o card exterior reto. Botões e cards textuais ficam arredondados para parecerem interativos e acessíveis.
 
 ### Medidas fixas de layout
 
@@ -170,7 +170,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 ### Notas sobre tokens específicos
 
 **`TOKEN_TITLE_END` (obsoleto):**
-Este token não tem uso funcional na V17. Foi preservado para garantir que o Quine Engine, que usa regex para substituir todos os tokens, não quebre ao tentar encontrá-lo. Remover o token corromperia arquivos exportados de versões mais antigas. Não usar, não remover.
+Este token não tem uso funcional a partir da V17. Foi preservado para garantir que o Quine Engine, que usa regex para substituir todos os tokens, não quebre ao tentar encontrá-lo. Remover o token corromperia arquivos exportados de versões mais antigas. Não usar, não remover.
 
 **`TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático):**
 Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto, baseando-se na luminância relativa da cor accent. Preencher apenas se o cálculo automático não produzir o contraste desejado.
@@ -188,14 +188,14 @@ Se definido (ex: `1920`), qualquer imagem com dimensão superior é redimensiona
 
 O Quine substitui valores por regex no código-fonte:
 ```js
-// O Quine procura exatamente este padrão:
-html.replace(/const TOKEN_MAIN_COLOR='[^']*'/, "const TOKEN_MAIN_COLOR='#ff6600'")
+// O Quine procura um padrão flexível, por exemplo:
+html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '#ff6600'")
 ```
 
-**Por isso, o formato exato nunca pode ser alterado:**
+**Por isso, o formato exato deve seguir a sintaxe:**
 - `const` (não `let` ou `var`)
-- `TOKEN_NOME` (sem espaços)
-- `=` (sem espaços)
+- `TOKEN_NOME`
+- `=` (espaços à volta são suportados e recomendados para legibilidade)
 - `'valor'` (aspas simples, não duplas)
 
 ---
@@ -208,9 +208,6 @@ html.replace(/const TOKEN_MAIN_COLOR='[^']*'/, "const TOKEN_MAIN_COLOR='#ff6600'
 ┌────────────────────────────────────────────────────────────────┐
 │  [⬚] Capture Engine                         [⚙] [💾] [🌙]   │
 │   ↑ logo + brand name                         ↑ tb-actions    │
-│                                                                │
-│                               [+ Sessão]  [↻]                 │
-│                                ↑ btn-new-sess  ↑ btn-refresh  │
 └────────────────────────────────────────────────────────────────┘
   height: 64px (--top-bar-h)
   Os botões [⚙] [💾] são ADMIN_BUTTONS — removidos em exports User
@@ -344,7 +341,7 @@ A interface tem dois breakpoints de adaptação:
 
 ---
 
-## 11. Comportamento de Bordas V17
+## 11. Comportamento de Bordas
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
@@ -407,7 +404,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
 | `annEditingTextIdx` | `-1` | Índice em `annHistory` do texto em reedição; `-1` = novo texto |
 | `annTextClickTimer` | `null` | Timer 220ms para distinguir single-click de dblclick |
-| `annSmoothLast` | `null` | Último ponto EMA no desenho livre (α=0.55); reset em activate/deactivate/mouseup |
+| `annSmoothLast` | `null` | Último ponto EMA no desenho livre (α=0.35); reset em activate/deactivate/mouseup |
 
 ### Formato de Entradas em `annHistory`
 
@@ -418,10 +415,10 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
 | `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed: bool` | Path simplificado por RDP (ε=1.5px) |
+| `free` | `pts: [{x,y}]`, `closed: bool` | Path simplificado por RDP (ε=1.8px) |
 | `text` | `x1, y1, txt, bold, italic, fontSize` | `textBaseline='top'`; x1/y1 = canto superior esquerdo |
 
 
 ---
 
-*Capture Engine V19 · Design Tokens Specification · FAANG Standards*
+*Capture Engine V20 · Especificações de Design Tokens*

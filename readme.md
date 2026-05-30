@@ -1,4 +1,4 @@
-# Capture Engine · V19
+# Capture Engine · V20
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -91,8 +91,17 @@ Dois perfis de exportação do Quine Engine:
 - **Export Admin** — gera uma cópia com todas as capacidades de administração. Outros admins podem reconfigurar e re-exportar.
 - **Export User** — gera uma cópia limpa, sem painel de administração. Utilizadores finais recebem uma ferramenta focada apenas em capturar e exportar.
 
-### Air-gapped
-Um ambiente **air-gapped** (literalmente "com separação de ar") é um sistema sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
+> **⚠️ AVISO CRÍTICO — Exportar não é fazer backup de dados:** O ficheiro HTML gerado pelo Export contém **apenas a configuração** e o código da ferramenta. As imagens, documentos e histórico de sessões **não são exportados no HTML** — estes ficam permanentemente guardados no IndexedDB do browser.
+
+### Diagnóstico de Export
+
+Se suspeitar que as configurações não foram aplicadas no ficheiro exportado, pode verificar manualmente:
+1. Abra o ficheiro HTML exportado num editor de texto simples (Notepad, TextEdit).
+2. Procure por `const TOKEN_MAIN_COLOR`.
+3. Verifique se o valor corresponde à cor que escolheu no Visual Builder. Se ainda mostrar o valor predefinido, pode haver uma falha no formato interno do token ou os marcadores de proteção não estão íntegros.
+
+### Funcionamento 100% Offline
+Um sistema isolado (offline) é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
 
 ### XSS (Cross-Site Scripting)
 **XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine sanitiza (limpa) todos os dados inseridos pelo utilizador antes de os apresentar, impedindo este tipo de ataque.
@@ -102,6 +111,12 @@ Uma **IIFE** é um padrão JavaScript onde todo o código está encapsulado numa
 
 ### FOUC (Flash of Unstyled Content)
 **FOUC** é o flash momentâneo de conteúdo sem estilo que aparece antes de o JavaScript carregar (ex: fundo branco num utilizador de dark mode). O Capture Engine tem proteção anti-FOUC: aplica o tema antes de qualquer pintura do ecrã.
+
+### Estado Pristine
+O estado inicial e limpo da interface. Acontece quando abre a aplicação ou apaga a última sessão. Significa que a interface está vazia, campos limpos, e não há ainda nenhuma sessão ativa gravada na base de dados.
+
+### initSessionSync
+Função técnica chamada no arranque que atualiza visualmente a interface (botões, barra de estado) para refletir se a sessão atual já foi guardada (sincronizada) com o IndexedDB ou se ainda está num estado pendente/pristine.
 
 ---
 
@@ -248,6 +263,7 @@ Gera um PDF com uma imagem por página.
 | **Auto** | Detecta orientação de cada imagem individualmente (retrato ou paisagem) |
 | **A4 Vertical** | Força todas as páginas em formato retrato |
 | **A4 Horizontal** | Força todas as páginas em formato paisagem |
+| **Exato (Via Código)** | Modo oculto ('exact') que preserva as dimensões em pontos (px * 0.75) e preenche a página inteira, útil para preservar proporções exatas da imagem. Ativável apenas através de configuração programática (`pdfFmt = 'exact'`). |
 
 **Processo de geração:**
 1. As imagens PNG originais são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
@@ -306,7 +322,7 @@ Sessões sem atividade há mais de 48 horas (configurável) são apagadas automa
 O painel de administração não é visível por defeito. Para o ativar:
 
 1. **Clicar 6 vezes seguidas no logo** (canto superior esquerdo)
-2. Dois botões aparecem na barra de topo: ⚙️ (Visual Builder) e 💾 (Export)
+2. Dois botões aparecem na barra de topo: Visual Builder (ícone engrenagem) e Export (ícone disquete)
 
 O modo administrador não persiste entre aberturas — tem de ser ativado de novo cada vez que abre a aplicação.
 
@@ -335,7 +351,7 @@ O Visual Builder é o painel de configuração. Está dividido em três abas:
 
 ### 6.3 Guardar configurações (Export)
 
-O botão 💾 abre o painel de Export com duas opções:
+O botão Export abre o painel de exportação com duas opções:
 
 **Export Admin:**
 - Gera uma cópia do arquivo com as configurações atuais
@@ -352,6 +368,8 @@ O botão 💾 abre o painel de Export com duas opções:
 ```
 Admin configura → Export Admin (backup) → Export User → distribui aos utilizadores
 ```
+
+> **⚠️ AVISO CRÍTICO — Atualizações e Same-Origin Policy:** Se distribuir uma nova versão da ferramenta (ex: enviar um novo ficheiro aos utilizadores), instrua-os a guardar o novo ficheiro **exatamente com o mesmo nome e na exata mesma pasta** do ficheiro antigo (substituindo-o). Devido às restrições de segurança dos browsers sobre caminhos locais (`file://`), usar um nome de ficheiro diferente ou uma pasta diferente forçará o browser a criar uma nova base de dados em branco, fazendo com que o utilizador perca o acesso ao histórico anterior.
 
 ### 6.4 Tokens de configuração
 
@@ -380,7 +398,7 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | Característica | Detalhe |
 |---|---|
 | **Zero dependências externas** | Sem CDNs, sem bibliotecas remotas, sem Google Fonts — nada carregado da internet |
-| **Air-gapped** | Funciona 100% offline; nenhum dado sai do dispositivo |
+| **Isolado / Offline** | Funciona 100% offline; nenhum dado sai do dispositivo |
 | **Sanitização de inputs** | Todo o texto inserido pelo utilizador é sanitizado antes de ser apresentado (proteção XSS) |
 | **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados |
 | **Admin Gate oculto** | O painel de admin requer 6 cliques no logo — invisível e inatingível acidentalmente |
@@ -406,7 +424,7 @@ O Capture Engine não suporta estar aberto em múltiplas abas do mesmo browser a
 | **Uma aba de cada vez** | Não suporta uso simultâneo em múltiplas abas do mesmo browser. |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do browser** | O IndexedDB tem limites de armazenamento impostos pelo browser (tipicamente 50-80% do disco disponível). Sessões com muitas imagens de alta resolução podem atingir estes limites. |
+| **Quota do browser** | O IndexedDB tem limites de armazenamento impostos pelo browser. Se o disco esgotar, a aplicação não consegue gravar novas capturas (falhando silenciosamente na interface, mas registando o erro na consola). As sessões anteriores já guardadas não são corrompidas. |
 | **GIF animados** | GIFs animados são capturados mas não animados — são tratados como imagem estática. |
 
 ---
@@ -437,6 +455,9 @@ O Capture Engine não suporta estar aberto em múltiplas abas do mesmo browser a
 
 ### Sessões com mais de 48 horas desapareceram
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
+
+### Perdi o ficheiro HTML. Perdi os dados? (Disaster Recovery)
+- **Não.** Os dados não estão no ficheiro HTML, estão no perfil oculto do browser. Se apagou acidentalmente o ficheiro `capture-engine.html`, basta criar um ficheiro HTML com o exato mesmo nome, na exata mesma pasta, e abri-lo. O browser restabelece a ligação à base de dados IndexedDB (que é indexada pelo caminho do ficheiro) e os dados reaparecem. Para recuperação técnica sem o ficheiro, use o separador *Application > IndexedDB* das Chrome DevTools.
 
 ---
 
@@ -471,7 +492,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 11. Requisitos
 
 ### Requisitos mínimos
-- Browser moderno: Chrome 90+, Edge 90+ ou Firefox 90+
+- Browser moderno: Chrome 90+, Edge 90+ ou Firefox 90+ (O Safari possui suporte parcial e pode apresentar falhas de CORS ao abrir ficheiros locais `file://`, mas estas são mitigadas pelo fallback interno do Quine)
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operativo com browser moderno
 
@@ -480,7 +501,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V19/
+V20/
 ├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
 ├── readme.md                    ← Este guia (início aqui)
 ├── changelog.md                 ← Histórico completo de versões e alterações
@@ -549,17 +570,28 @@ capture-engine.html
 ### Como os componentes se ligam
 
 ```
-boot()
-  ├── openDB()           → Abre/cria a base de dados IndexedDB
-  ├── purgeExpired()     → Apaga sessões antigas
-  ├── init()             → Cria sessão nova em branco
-  ├── initClipboard()    → Activa listener de Ctrl+V e FAB mobile
-  ├── initDragDrop()     → Activa drag-and-drop nas zonas de captura
-  ├── initReorder()      → Activa drag-and-drop de reordenação
-  ├── initPickers()      → Activa botões "Adicionar Imagem/Documento"
-  ├── initTheme()        → Aplica tema (dark/light) guardado
-  ├── initSidebar()      → Configura sidebar de histórico
-  └── setInterval(5s)    → Auto-save quando isDirty === true
+init()
+  ├── openDB()
+  ├── purgeExpired()
+  └── boot()
+        ├── initClipboard()
+        ├── initDragDrop()
+        ├── initReorder()
+        ├── initSidebar()
+        ├── initPickers()
+        ├── initTheme()
+        ├── initTrashBar()
+        ├── initPdfModal()
+        ├── initVbSync()
+        ├── initAdminGate()
+        ├── initSessionSync()
+        ├── initAnnotation()
+        ├── applyTokens()
+        ├── updateCounters()
+        ├── updateBtns()
+        ├── updateBtnTitles()
+        ├── updateStatusBar()
+        └── [ADMIN_JS] capturePristine()
 ```
 
 ### Base de dados local (IndexedDB)
@@ -578,4 +610,4 @@ boot()
 
 ---
 
-*Capture Engine V19 · Design de Excelência FAANG · Air-gapped Ready*
+*Capture Engine V20 · Focado na simplicidade e uso 100% offline*

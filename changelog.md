@@ -5,6 +5,61 @@
 
 ---
 
+## [V20] — 2026-05-30
+
+### Adicionado
+
+**Melhorias na Lixeira (Trashbar) — impacto: gestão e recuperação rápida de arquivos apagados**
+- **Botão de Restauro:** Adicionado um botão dedicado de restauro nos itens da lixeira, permitindo recuperar imagens ou documentos com apenas um clique.
+- **Pré-visualização (Hover):** Arquivos na lixeira passam a exibir um ícone de inspecção ("olho") quando o cursor é posicionado sobre eles, melhorando a interatividade visual.
+
+**Alerta visual suave ao fechar sem guardar — impacto: feedback intuitivo sem agressividade**
+- Introduzida uma animação de aviso fluida (*pulse* com escala a 1.08x) nos botões de "Confirmar" e "Cancelar", que é acionada caso o utilizador tente fechar o modal com modificações pendentes por gravar.
+
+### Modificado
+
+**Estado Real de Modificação (annIsDirty) — impacto: bloqueios inteligentes apenas quando estritamente necessário**
+- Introduzida uma flag de ciclo de vida em tempo real (`annIsDirty`) para detetar alterações efetivas feitas com o cursor. Isto substitui as pesadas comparações de base de dados, eliminando os falsos positivos que bloqueavam indevidamente o fecho imediato das imagens.
+
+**Lógica de fecho dinâmico do modal de edição — impacto: proteção invisível contra perda de dados**
+- O botão de "Fechar" (`X`) no canto superior direito do modal desaparece dinamicamente assim que uma edição é iniciada. O botão permanece visível apenas se não houver modificações pendentes, canalizando o utilizador para cliques seguros e prevenindo encerramentos acidentais.
+
+**Padronização e UI dos botões de ação — impacto: experiência visual mais premium e suave**
+- Removido o efeito de sombra (`box-shadow`) nos botões de ação, padronizando o design para um aspeto mais limpo, harmonioso e com maior destaque dentro da UI.
+- Adicionado destaque visual refinado aos ícones de texto dentro do modo de anotação.
+- Removido o comportamento de seleção acidental de texto (*highlight*) no ícone de "Excluir Sessões", tornando o clique na UI mais consistente.
+
+**Limpeza automática (Purge) — impacto: base de dados resiliente em falhas isoladas**
+- A funcionalidade de limpeza de sessões antigas (`purgeExpired`) foi reestruturada para ser mais robusta. A deleção individual de cada sessão isola-se em blocos `try/catch`, pelo que uma eventual corrupção num arquivo não interrompe a eliminação do restante lixo acumulado.
+- As transações IndexedDB (`idbTx`) foram blindadas para intercetar falhas nativas (`tx.onerror`) diretamente na raiz, prevenindo erros silenciosos.
+
+### Corrigido
+
+**Expansão da Lixeira (Trashbar) — impacto: UI polida, responsiva e sem interrupções visuais**
+- Aperfeiçoada a lógica de expansão do painel da lixeira: a animação de abertura é agora ininterrupta, crescendo na proporção exata do conteúdo e eliminando o *flicker* da barra de *scroll* que surgia por breves milissegundos.
+
+**Gestão de Memória e Downloads (Object URLs) — impacto: downloads fiáveis e eficiência de RAM**
+- Resolvido um bug crítico nos botões de download (`img-modal-dl` e `text-modal-dl`) herdado da V19. A URL do arquivo era revogada instantaneamente (`URL.revokeObjectURL`), cortando a ligação antes de o browser iniciar o download. Foi aplicado um desfasamento seguro de 1000ms.
+- Eliminado um *memory leak* na rotina de conversão de imagens (`imgToJPEG`). Anteriormente, se o carregamento falhasse (`img.onerror`), a memória do *blob* nunca era liberta. A revogação ocorre agora de forma imediata na captura do erro.
+
+### Auditoria de Resiliência Operacional
+
+**Recuperação de Desastres e Expectativas — impacto: eliminação de risco de perda de dados e falsas expectativas**
+- **Same-Origin Policy Documentada:** Adicionado alerta crítico para administradores garantirem a consistência do nome e pasta do ficheiro nas atualizações enviadas aos utilizadores, prevenindo o reinício silencioso da base de dados e aparente perda de histórico.
+- **Desambiguação do Export:** Definida explicitamente a regra de que os botões de Exportar NUNCA guardam os dados da sessão corrente (apenas a configuração).
+- **Mecanismos de Esgotamento de Quota:** Documentado o comportamento passivo da aplicação ao esgotar o armazenamento do disco, de forma a acalmar os utilizadores num eventual desastre (as sessões anteriores ficam salvaguardas e ilesas).
+- **Disaster Recovery e DevTools:** Adicionado aos manuais operacionais novos passos para recuperar dados bloqueados ou dados corrompidos usando apenas os recursos nativos e as premissas estritas do IndexedDB, e documentada a lógica oculta de contorno a bloqueios CORS do WebKit/Chromium em ambientes `file://` que justificam o `BOOT_HTML`.
+
+**Finalização da Auditoria de Resiliência Operacional — impacto: correção final de inconsistências técnicas**
+- **Quine Engine Token Regex:** O motor Quine foi ajustado (`\s*=\s*`) para suportar e escrever tokens com espaços ao redor do `=`, garantindo legibilidade do código-fonte sem quebrar o regex em exports futuros.
+- **Boot Flow Corrigido:** O diagrama de arquitetura no `readme.md` foi corrigido para refletir a ordem real de execução: `init()` chama `boot()`, e não o inverso.
+- **Suporte Safari:** Documentado o suporte parcial e as mitigações do Quine Engine para o browser Safari.
+- **Modo PDF Exato:** Documentado formalmente o modo `exact` (geração de PDF à escala original) nos manuais `agents.md` e `readme.md`.
+- **Contagem de Markers:** A documentação de validação (grep) foi atualizada de 8 para 10 markers, refletindo a duplicação natural do bloco `ADMIN_JS_START/END` no motor.
+- **Glossário e Estado Global:** Documentados conceitos ausentes como `Estado Pristine` e variáveis de estado recém-descobertas no código base.
+
+---
+
 ## [V19] — 2026-05-26
 
 ### Modificado
@@ -21,6 +76,45 @@
 **`CaptureEngineApp-Atalho.md` — removido do pacote — impacto: distribuição simplificada, sem método não fiável**
 
 O guia de atalho Windows (`CaptureEngineApp-Atalho.md`) foi removido do pacote após confirmação de falhas em ambiente corporativo. O método `--app` do Edge é bloqueado por políticas GPO em organizações com hardening de browser, tornando o guia inútil e potencialmente confuso. O Capture Engine abre diretamente com duplo clique no `capture-engine.html` em qualquer sistema operativo — esse continua a ser o método oficial e único suportado.
+
+### Adicionado
+
+#### Ferramenta de Texto — Reformulação Completa
+- **Fix: Salto de posição eliminado** — O texto agora é renderizado exatamente onde o cursor clicar. A causa era um erro de `textBaseline`: o canvas usava `alphabetic` (baseline na base dos caracteres) enquanto o input HTML era posicionado a partir do topo. Corrigido com `textBaseline = 'top'` no canvas e `top = screenY` no input.
+- **Negrito (Ctrl+B)** — Toggle de negrito durante a digitação ou ao clicar no botão B na toolbar. Ativo por padrão.
+- **Itálico (Ctrl+I)** — Toggle de itálico durante a digitação ou ao clicar no botão I na toolbar.
+- **Tamanho de fonte variável** — Os botões −/+ de espessura, quando a ferramenta Texto está ativa, controlam o tamanho da fonte em 5 níveis: 14 · 18 · 24 · 36 · 48px (padrão: 24px).
+- **Double-click para reeditar** — Clicar duas vezes em cima de um texto já colocado (antes de confirmar) reabre o campo de edição com o conteúdo original, mantendo cor, bold e itálico.
+- **Cor ao reeditar** — Ao reeditar texto existente via double-click, clicar numa swatch atualiza a cor do texto em tempo real.
+
+#### Ícone da Ferramenta Texto
+- Substituído o ícone T "vazado" (com caule duplo e linha de base) por um T tipográfico com serifs em cima e baixo — mais harmonioso com os restantes ícones da toolbar.
+
+### Melhorias Técnicas
+- `annHistory` agora armazena `{bold, italic, fontSize}` por entrada de texto, permitindo fidelidade total na re-renderização.
+- `annShowTextInput` refatorizado: aceita `prefillText` opcional para suportar edição de texto existente.
+- Botões B/I aparecem automaticamente ao selecionar a ferramenta Texto e ocultam ao mudar para outra ferramenta.
+- `annEditingTextIdx` rastreia se o utilizador está a editar uma entrada existente ou a criar uma nova.
+
+### Corrigido (pós-release)
+
+#### Ferramenta Texto — Correções de Comportamento
+- **Fix: Salto invertido (texto subia)** — O `<input>` mesmo com `padding:0` adicionava *internal leading* que deslocava o texto visível abaixo do topo do elemento. Corrigido forçando `line-height` e `height` do input ao valor de `scaledFontSize` — o texto fica encostado ao topo, alinhado com o `textBaseline='top'` do canvas.
+- **Fix: Double-click criava novo texto em vez de editar** — O `mousedown` disparava antes do `dblclick` na sequência de eventos do browser (`mousedown → mouseup → click → mousedown → mouseup → click → dblclick`), chamando `annShowTextInput` com `annEditingTextIdx=-1` e destruindo a intenção de edição. Solução: single-click aguarda **220ms** via `setTimeout` antes de abrir input novo; o `dblclick` cancela o timer e toma conta da edição.
+- **Fix: Cor não mudava durante edição de texto** — Clicar numa swatch disparava `blur` no input (perda de foco), fazendo `commit()` antes de a cor ser aplicada. Corrigido com `mousedown.preventDefault()` nas swatches, botões B e I **apenas quando o input está ativo** — o input mantém foco, `inp.style.color` atualiza em tempo real, e `inp.focus()` garante continuidade de digitação.
+- **Fix: Perda de texto ao premir Escape durante edição** — O `dblclick` fazia `annHistory.splice(_i, 1)` imediatamente ao abrir o input. Se o utilizador premisse Escape, o texto era apagado permanentemente. Corrigido: sem splice; `annRedraw()` passa a saltar o índice `annEditingTextIdx` (texto fica em "ghost" durante edição); Escape faz `annRedraw()` que o restaura.
+- **Fix: Timer fantasma em `annDeactivate`** — `annTextClickTimer` era declarado dentro de `initAnnotation()`, tornando-o inacessível a `annDeactivate`. Ao fechar o modal durante os 220ms, o timer disparava `annShowTextInput` num overlay invisível. Corrigido: timer hoistado para scope de módulo; `annDeactivate` limpa-o explicitamente.
+
+#### Visual Builder — Admin Gate
+- **Fix: Ícones admin não desapareciam ao fechar o VB** — `deactivateAdmin()` estava encapsulada no closure de `initAdminGate`, inacessível a `closeSettingsModal`. Corrigido expondo-a como `window._deactivateAdmin`; `closeSettingsModal` chama-a ao fechar — ícones desaparecem imediatamente ao clicar no X.
+
+#### Ferramenta Desenho Livre — Suavização (valores pré-V19, antes dos ajustes acima)
+- **Fix: Linha tremia ao desenhar** — O `annPath` acumulava todos os pontos em bruto do mouse (threshold 3px), e o Catmull-Rom interpolava fiel e fielmente cada micro-tremor. Três camadas de correção:
+  1. **EMA (Exponential Moving Average, α=0.55)** — cada ponto é misturado com o anterior (`0.55 × novo + 0.45 × último`) antes de entrar no path, eliminando tremor de alta frequência em tempo real.
+  2. **Threshold 3px → 5px** — pontos mais próximos que 5px do anterior são descartados.
+  3. **RDP no commit (ε=1.5px)** — ao soltar o mouse, o path é simplificado com Ramer-Douglas-Peucker antes de ser guardado em `annHistory`, removendo pontos colineares redundantes sem alterar a geometria visível.
+
+> **Nota:** Estes valores de EMA (α=0.55) e RDP (ε=1.5px) foram os valores iniciais. Foram posteriormente ajustados para α=0.35 e ε=1.8px na secção "Modificado" acima.
 
 ---
 
@@ -251,7 +345,7 @@ Pressionar Escape com o modo de anotação ativo e uma ferramenta de desenho sel
 
 ### Adicionado
 
-**Motor de zoom com física "zoom-to-pointer" — impacto: experiência de visualização de screenshots ao nível FAANG**
+**Motor de zoom com física "zoom-to-pointer" — impacto: experiência de visualização fluida e natural**
 
 O visualizador de imagens foi reescrito do zero. O zoom com scroll/roda do rato passa a centrar-se exatamente no ponto onde o cursor está — se amplia o canto superior direito, é esse canto que fica no centro. Antes o zoom centrava-se sempre no centro da imagem, forçando o utilizador a fazer pan depois de cada zoom. Limites de 20% a 1000%. Barra de controlo flutuante com glassmorphism que aparece apenas quando o zoom é diferente de 100%.
 
@@ -403,45 +497,5 @@ Esta versão estabeleceu as fundações sobre as quais todo o motor assenta:
 
 ---
 
-*Capture Engine · FAANG Standards · Zero-Dependency Quine System*
+*Capture Engine · Zero-Dependency Quine System*
 
----
-
-## [V19] — 2026-05-25
-
-### Novidades
-
-#### Ferramenta de Texto — Reformulação Completa
-- **Fix: Salto de posição eliminado** — O texto agora é renderizado exatamente onde o cursor clicar. A causa era um erro de `textBaseline`: o canvas usava `alphabetic` (baseline na base dos caracteres) enquanto o input HTML era posicionado a partir do topo. Corrigido com `textBaseline = 'top'` no canvas e `top = screenY` no input.
-- **Negrito (Ctrl+B)** — Toggle de negrito durante a digitação ou ao clicar no botão B na toolbar. Ativo por padrão.
-- **Itálico (Ctrl+I)** — Toggle de itálico durante a digitação ou ao clicar no botão I na toolbar.
-- **Tamanho de fonte variável** — Os botões −/+ de espessura, quando a ferramenta Texto está ativa, controlam o tamanho da fonte em 5 níveis: 14 · 18 · 24 · 36 · 48px (padrão: 24px).
-- **Double-click para reeditar** — Clicar duas vezes em cima de um texto já colocado (antes de confirmar) reabre o campo de edição com o conteúdo original, mantendo cor, bold e itálico.
-- **Cor ao reeditar** — Ao reeditar texto existente via double-click, clicar numa swatch atualiza a cor do texto em tempo real.
-
-#### Ícone da Ferramenta Texto
-- Substituído o ícone T "vazado" (com caule duplo e linha de base) por um T tipográfico com serifs em cima e baixo — mais harmonioso com os restantes ícones da toolbar.
-
-### Melhorias Técnicas
-- `annHistory` agora armazena `{bold, italic, fontSize}` por entrada de texto, permitindo fidelidade total na re-renderização.
-- `annShowTextInput` refatorizado: aceita `prefillText` opcional para suportar edição de texto existente.
-- Botões B/I aparecem automaticamente ao selecionar a ferramenta Texto e ocultam ao mudar para outra ferramenta.
-- `annEditingTextIdx` rastreia se o utilizador está a editar uma entrada existente ou a criar uma nova.
-
-### Corrigido (pós-release V19)
-
-#### Ferramenta Texto — Correções de Comportamento
-- **Fix: Salto invertido (texto subia)** — O `<input>` mesmo com `padding:0` adicionava *internal leading* que deslocava o texto visível abaixo do topo do elemento. Corrigido forçando `line-height` e `height` do input ao valor de `scaledFontSize` — o texto fica encostado ao topo, alinhado com o `textBaseline='top'` do canvas.
-- **Fix: Double-click criava novo texto em vez de editar** — O `mousedown` disparava antes do `dblclick` na sequência de eventos do browser (`mousedown → mouseup → click → mousedown → mouseup → click → dblclick`), chamando `annShowTextInput` com `annEditingTextIdx=-1` e destruindo a intenção de edição. Solução: single-click aguarda **220ms** via `setTimeout` antes de abrir input novo; o `dblclick` cancela o timer e toma conta da edição.
-- **Fix: Cor não mudava durante edição de texto** — Clicar numa swatch disparava `blur` no input (perda de foco), fazendo `commit()` antes de a cor ser aplicada. Corrigido com `mousedown.preventDefault()` nas swatches, botões B e I **apenas quando o input está ativo** — o input mantém foco, `inp.style.color` atualiza em tempo real, e `inp.focus()` garante continuidade de digitação.
-- **Fix: Perda de texto ao premir Escape durante edição** — O `dblclick` fazia `annHistory.splice(_i, 1)` imediatamente ao abrir o input. Se o utilizador premisse Escape, o texto era apagado permanentemente. Corrigido: sem splice; `annRedraw()` passa a saltar o índice `annEditingTextIdx` (texto fica em "ghost" durante edição); Escape faz `annRedraw()` que o restaura.
-- **Fix: Timer fantasma em `annDeactivate`** — `annTextClickTimer` era declarado dentro de `initAnnotation()`, tornando-o inacessível a `annDeactivate`. Ao fechar o modal durante os 220ms, o timer disparava `annShowTextInput` num overlay invisível. Corrigido: timer hoistado para scope de módulo; `annDeactivate` limpa-o explicitamente.
-
-#### Visual Builder — Admin Gate
-- **Fix: Ícones admin não desapareciam ao fechar o VB** — `deactivateAdmin()` estava encapsulada no closure de `initAdminGate`, inacessível a `closeSettingsModal`. Corrigido expondo-a como `window._deactivateAdmin`; `closeSettingsModal` chama-a ao fechar — ícones desaparecem imediatamente ao clicar no X.
-
-#### Ferramenta Desenho Livre — Suavização
-- **Fix: Linha tremia ao desenhar** — O `annPath` acumulava todos os pontos em bruto do mouse (threshold 3px), e o Catmull-Rom interpolava fiel e fielmente cada micro-tremor. Três camadas de correção:
-  1. **EMA (Exponential Moving Average, α=0.55)** — cada ponto é misturado com o anterior (`0.55 × novo + 0.45 × último`) antes de entrar no path, eliminando tremor de alta frequência em tempo real.
-  2. **Threshold 3px → 5px** — pontos mais próximos que 5px do anterior são descartados.
-  3. **RDP no commit (ε=1.5px)** — ao soltar o mouse, o path é simplificado com Ramer-Douglas-Peucker antes de ser guardado em `annHistory`, removendo pontos colineares redundantes sem alterar a geometria visível.

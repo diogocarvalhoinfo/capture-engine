@@ -1,4 +1,4 @@
-# Agents · Capture Engine V19
+# Agents · Capture Engine V20
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -61,7 +61,7 @@ Qualquer texto que o utilizador escreva (nome de sessão, legenda de imagem, nom
 <link rel="stylesheet" href="https://fonts.googleapis.com/...">
 ```
 
-**Por quê:** O Capture Engine destina-se a ambientes *air-gapped* (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega.
+**Por quê:** O Capture Engine destina-se a ambientes totalmente isolados (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega.
 
 **Regra:** Toda a lógica, todo o CSS, todos os ícones SVG, devem estar inline dentro do `capture-engine.html`. Sem exceções.
 
@@ -73,6 +73,8 @@ Qualquer texto que o utilizador escreva (nome de sessão, legenda de imagem, nom
 1. `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo
 2. Fallback para `BOOT_HTML` se o `fetch` falhar (ex: protocolo `file://` com restrições)
 3. `exportFile()` substitui os valores dos tokens via regex
+
+> **Aviso Técnico (CORS Local):** Ao testar localmente, abrir o ficheiro HTML via protocolo `file://` no Chrome ou Safari causará uma falha imediata no `fetch(location.href)` devido a políticas rigorosas de CORS para recursos locais (o browser trata ficheiros locais como origens opacas e proíbe `fetch` a si mesmos). O sistema sobrevive a isto porque `BOOT_HTML` captura a string estática do DOM exato (via `document.documentElement.outerHTML` adaptado) no momento do boot antes de qualquer mutação. O Quine opera sobre o fallback de forma impercetível ao utilizador.
 4. Para exports de User, remove os blocos marcados com comment markers
 5. Faz download do HTML resultante
 
@@ -85,16 +87,13 @@ Qualquer texto que o utilizador escreva (nome de sessão, legenda de imagem, nom
 | `window.exportFile()` | `ADMIN_JS_START/END` | Ponto de entrada do Export |
 | `capturePristine()` | `ADMIN_JS_START/END` | Lê o código-fonte original |
 | `sanitizeForQuine()` | `ADMIN_JS_START/END` | Protege os marcadores de serem corrompidos pelo próprio conteúdo |
-| `BOOT_HTML` | Antes do IIFE | Fallback estático do Quine |
+| `BOOT_HTML` | Dentro do bloco ADMIN_JS, no início do bloco | Fallback estático do Quine. Capturado sincronamente quando o script executa, antes de qualquer mutação de runtime. Em Export User este bloco é removido. |
 | Todos os comment markers | Ver Secção 5 | Definem o que é removido em exports de User |
 
-**Formato exato dos tokens (obrigatório para o regex do Quine):**
+**Formato dos tokens:**
 ```js
-// Este formato NUNCA pode ser alterado — o Quine usa regex para substituir
-const TOKEN_MAIN_COLOR='#0ea5e9';
-// ✅ Correto — aspas simples, sem espaços à volta do =
+// O regex do Quine aceita espaços, e devem ser mantidos para legibilidade:
 const TOKEN_MAIN_COLOR = '#0ea5e9';
-// ❌ Errado — espaços extra quebram o regex
 ```
 
 **Regra:** Qualquer alteração ao arquivo deve preservar todos os comment markers intactos e todas as funções Quine funcionais.
@@ -123,7 +122,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 
 ---
 
-### 1.4 Air-Gapped Environment — Funcionar sem internet
+### 1.4 Ambiente Isolado — Funcionar totalmente offline
 
 **Regras práticas:**
 - Nenhum `fetch()` para URLs externas (apenas `fetch(location.href)` para o Quine é permitido)
@@ -142,7 +141,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 | Nomes de variáveis, funções, comentários técnicos | Inglês | `captureImg()`, `sessId`, `isDirty` |
 | Labels visíveis para o utilizador na UI | Português neutro | `"Histórico"`, `"Removidos"`, `"Processando..."` |
 
-**Português neutro — glossário aprovado V17:**
+**Português neutro — glossário aprovado:**
 
 | ✅ Usar | ❌ Evitar | Razão |
 |---|---|---|
@@ -208,7 +207,8 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 | Tipo de elemento | `border-radius` | Porquê |
 |---|---|---|
 | Botões, cards de texto, modais | `--radius-sm` a `--radius-lg` | Orgânicos, amigáveis |
-| Imagens, wrappers de imagem, legendas `.t-item`, `.t-wrap`, `.t-label` | `0` (quadrado perfeito) | Técnico, preciso — as imagens são evidências, não decoração |
+| Imagens e legendas `.t-item`, `.t-label` | `0` (quadrado perfeito) | Técnico, preciso — card e legenda com cantos retos |
+| Wrapper de thumbnail `.t-wrap` | `var(--radius-sm)` (6px) | Suaviza a moldura visual da imagem na grelha |
 
 **Cards de documento sem bordas visíveis:**
 
@@ -256,6 +256,9 @@ O IIFE isola o scope — funções chamadas por atributos HTML inline (`onclick=
 
 **O problema:** Nomes duplicados num ZIP causam comportamento imprevisível no Windows Explorer, macOS Archive Utility, e outros descompressores.
 
+### Mecanismo de Identificadores (genId)
+Para evitar colisões na base de dados, a função `genId(prefix)` é utilizada na criação de novos itens. Ela gera uma string leve e estatisticamente única através do formato `{prefix}_{entropia}` (ex: `img_1a2b3c4d5`). A entropia é baseada na conversão de `Math.random()` para base 36 truncada. A probabilidade de colisão numa mesma sessão local (Single Page App no IndexedDB) é desprezável.
+
 **O algoritmo de incremento inteligente:**
 
 1. Nome inicial: `imagem-1` ou `texto-1.txt`
@@ -293,31 +296,13 @@ Pense nas sessões como documentos num processador de texto:
 
 Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova.
 
-### ec_pending_session — O mecanismo de "nova sessão"
-
-O botão "Nova Sessão" na barra de topo não cria a sessão diretamente. Em vez disso:
-1. Guarda o ID da nova sessão a criar em `localStorage` com a chave `ec_pending_session`
-2. Recarrega o arquivo (`location.reload()`)
-3. No próximo `init()`, se `ec_pending_session` existir, usa esse ID em vez de criar um novo
-
-Porquê: Garante que a app começa sempre num estado limpo e consistente, sem herdar estado em memória da sessão anterior.
-
 ### Fluxo de estados
 
 ```
 Abrir arquivo
       │
       ▼
-Verificar ec_pending_session em localStorage
-      │
-      ├── Existe → usar esse sessId → criar sessão com esse ID
-      │
-      └── Não existe → createSession() → criar sessão com novo ID
-                              │
-      ┌───────────────────────┘
-      │
-      ▼
-Interface em branco (Pristine State)
+init() → interface em branco (Pristine State)
       │
       ├── Sem interação ──────────────► Sessão não aparece no histórico
       │
@@ -331,7 +316,7 @@ Interface em branco (Pristine State)
 
 | Evento | Comportamento obrigatório |
 |---|---|
-| **Abrir a aplicação** | `init()` → `createSession()` diretamente. Nunca reutilizar sessão existente. Exceção: `ec_pending_session` válido em `localStorage` (vem do botão Nova Sessão). |
+| **Abrir a aplicação** | `init()` → interface em branco (Pristine State). Nunca reutilizar sessão existente. |
 | **Primeira interação** | `ensureSession()` confirma e regista a sessão; `renderSbSessions()` faz-a aparecer no histórico. |
 | **Digitar em User/Equipamento/Nome** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
 | **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
@@ -367,7 +352,8 @@ Os markers são comentários especiais que o Quine Engine usa para identificar e
 **Para verificar integridade dos markers:**
 ```bash
 grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html
-# Deve retornar 8
+# Deve retornar 10
+# (Nota: ADMIN_JS_START/END aparecem em 2 locais distintos: o bloco principal de funções Quine e o bloco de chamada em boot)
 ```
 
 ---
@@ -429,9 +415,18 @@ Mesmos campos das tabelas ativas, com adição de:
 
 **Nota:** Items na lixeira **não têm** campo `order` — a lixeira ordena por `removedAt`.
 
+### Chaves de LocalStorage
+
+O sistema utiliza localStorage para preferências que devem sobreviver a diferentes abas ou ficheiros na mesma origem:
+- `theme`: Controla o modo visual. Valores possíveis: `'dark'`, `'light'` ou `null` (neste caso cai para a preferência do OS).
+- *Histórico:* A chave `ec_pending_session` foi utilizada em versões antigas e removida na V17.
+Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB apaga os dados reais das sessões.
+
 ### Auto-save e Purge
 
-**Auto-save:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. Digitação nos campos de sessão chama `triggerSave()` imediatamente.
+**Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o browser for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
+
+**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` regista a exceção na consola (Zero Trust). A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grelha acontece via URL local em memória temporária). A sessão já guardada e os itens antigos permanecem íntegros no DB.
 
 **Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os items associados (imagens, documentos, removidos das duas categorias).
 
@@ -454,6 +449,12 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
 | `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
 | `renderSbSessions()` | `async () → void` | Re-renderiza a lista de sessões na sidebar | Após qualquer alteração de sessão |
+
+### Funções do IndexedDB
+
+| Função | Assinatura | O que faz | Quando chamar |
+|---|---|---|---|
+| `idbTx(store, mode)` | `(string, string) → Promise` | Wrapper transacional para IndexedDB com gestão de erro e fallback | Base para todas as leituras e escritas |
 
 ### Funções de Captura
 
@@ -496,6 +497,14 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 | `laplacian(pts, iters)` | Suavização Laplaciana — desloca cada ponto para a média ponderada dos vizinhos | Aplicado no mouseup do desenho livre (2 iterações), antes do RDP |
 | `deactivateAdmin()` | Oculta botões admin; exposta como `window._deactivateAdmin` | Chamada por `closeSettingsModal` e pelo gate manual |
 
+### Funções de Estado de Anotação (V20)
+
+| Função | O que faz | Notas |
+|---|---|---|
+| `setAnnDirty(val)` | Define `annIsDirty` e controla visibilidade do botão fechar modal | Esconde `img-modal-close` quando `annActive && annIsDirty` |
+| `hasUnsavedAnnotations()` | Retorna `true` se há anotações não guardadas (`annActive && annIsDirty`) | Usada por `closeImgModal`, `imgModalNav` e backdrop click |
+| `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o utilizador | Chamada quando se tenta fechar com anotações pendentes |
+
 ### Funções de Segurança
 
 | Função | Assinatura | O que faz |
@@ -505,6 +514,10 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 ---
 
 ## 8. Fluxos de Comportamento
+
+### Modo PDF 'exact' (Exportação em Tamanho Real)
+
+Gera páginas com dimensões em pontos derivadas diretamente das dimensões em píxeis da imagem × 0.75 (conversão 96dpi → 72dpi). A imagem ocupa a página inteira, sem margens ou centrações. Útil para preservar as proporções exatas da evidência. Não está acessível via interface, sendo ativável apenas através do código via `pdfFmt = 'exact'` antes de `generatePDF()`.
 
 ### Fluxo completo de captura de imagem (Ctrl+V)
 
@@ -629,6 +642,22 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `annEditingTextIdx` | number | Índice em `annHistory` do texto em edição via dblclick; `-1` = novo texto |
 | `annTextClickTimer` | TimeoutID \| null | Timer de 220ms para distinguir single-click (novo texto) de dblclick (editar); scope de módulo |
 | `annSmoothLast` | object \| null | Último ponto suavizado pelo EMA no desenho livre; resetado em activate/deactivate/mouseup |
+| `annInitialState` | string \| null | JSON.stringify do `annHistory` ao ativar anotação — usado para detetar se houve alterações reais |
+| `lastSaveAt` | number | Timestamp do último save automático para a status bar |
+| `pdfFmt` | string | Modo de layout da página PDF ('vertical', 'horizontal', 'auto', 'exact') |
+| `zipModeActive` | boolean | Define se o modo ZIP está ativado |
+| `modalIsTrash` | boolean | Indica se o modal de visualização provém da lixeira |
+| `modalItemId` | string | ID da imagem visualizada no modal |
+| `imgZoomed` | boolean | Flag de imagem ampliada no modal |
+| `imgScale` | number | Fator de zoom atual da imagem |
+| `imgPanX` / `imgPanY` | number | Offsets de pan da imagem no modal |
+| `imgPanning` | boolean | Flag de estado de pan (arrastamento) ativo |
+| `imgStartX` / `imgStartY` | number | Coordenadas iniciais do pan |
+| `trashUrls` | array | Lista de ObjectURLs das imagens na lixeira |
+| `annDrawing` | boolean | Estado de desenho em progresso na anotação |
+| `annStart` | object | Coordenadas de início do traço de anotação |
+| `annPath` | array | Lista de pontos desenhados na ferramenta 'free' |
+| `annCommitText` | function | Callback para commitar input de texto na anotação |
 
 ---
 
@@ -656,9 +685,9 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 - [ ] Sem `eval()`, `Function()`, ou `document.write()`
 
 **Integridade do Quine:**
-- [ ] Todos os 8 comment markers estão intactos (verificar com `grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html` → deve retornar 8)
+- [ ] Todos os 10 comment markers estão intactos (verificar com `grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html` → deve retornar 10)
 - [ ] `window.exportFile()`, `capturePristine()` e `sanitizeForQuine()` não foram movidos
-- [ ] Formato das declarações `const TOKEN_*='valor'` preservado
+- [ ] Formato das declarações `const TOKEN_* = 'valor'` preservado
 
 **Unicidade:**
 - [ ] Sem nomes duplicados possíveis em screenshots ou documentos
@@ -695,15 +724,15 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V17 → V17), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
+Ao passar para uma nova versão (ex: V19 → V20), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
 
 **Os 5 locais obrigatórios:**
 
 1. **`capture-engine.html`** — Dois locais dentro do arquivo:
-   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V17) -->`
-   - Badge visual no header do modal de configurações: `<span ...>V17</span>`
+   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V20) -->`
+   - Badge visual no header do modal de configurações: `<span ...>V20</span>`
 
-2. **`changelog.md`** — Nova entrada no topo: `## [V17] — YYYY-MM-DD`
+2. **`changelog.md`** — Nova entrada no topo: `## [V20] — YYYY-MM-DD`
 
 3. **`readme.md`** — Título principal e referências
 
@@ -714,11 +743,25 @@ Ao passar para uma nova versão (ex: V17 → V17), o número de versão antigo t
 
 **Ação obrigatória antes de fechar:**
 ```bash
-grep -rn "V17" capture-engine.html readme.md design-tokens.md agents.md changelog.md
+grep -rn "V20" capture-engine.html readme.md design-tokens.md agents.md changelog.md
 # Verificar se restam referências intencionais vs fantasmas
 ```
 Nunca assumir que as substituições foram completas sem verificar.
 
 ---
 
-*Capture Engine V19 · Agents Operational Rules · FAANG Standards*
+## 13. Disaster Recovery Técnico
+
+Caso um utilizador apague ou corrompa o seu ficheiro `capture-engine.html` mas mantenha a pasta inalterada, o administrador pode orientar a recuperação baseada no princípio Same-Origin:
+
+1. **Recuperação Simples (Same-Origin):** Colocar uma nova cópia do ficheiro com o **exato mesmo nome** na **exata mesma pasta** reativa o vínculo do browser ao IndexedDB existente.
+2. **Extração de Emergência (DevTools):** Se a lógica do HTML for inoperável e precisar extrair os dados puros:
+   - Abra um HTML em branco no contexto/pasta correta.
+   - Pressione F12 para abrir as **Chrome DevTools**.
+   - Navegue até `Application` > `IndexedDB` > `CaptureEngineDB`.
+   - Expanda `images` ou `documents` e inspecione os registos.
+   - Os ficheiros estão armazenados na coluna `blob`. Poderão necessitar de ser guardados programaticamente caso a interface gráfica falhe.
+
+---
+
+*Capture Engine V20 · Regras Operacionais para Agentes*
