@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V21
+# Design Tokens · Capture Engine V22
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -151,10 +151,12 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 
 | Token | Tipo | Valor padrão | Alterável no VB | Aba VB |
 |---|---|---|---|---|
-| `TOKEN_TITLE_START` | `string` | `'Capture'` | ✅ | Interface → "Texto Inicial" |
+| `TOKEN_TITLE_START` | `string` | `'Capture '` | ✅ | Interface → "Texto Inicial" |
 | `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | ✅ | Interface → "Texto em Destaque" |
-| `TOKEN_TITLE_END` | `string` | `''` | ❌ | Obsoleto — preservado para integridade do Quine |
-| `TOKEN_SUBTITLE` | `string` | `''` | ❌ | Reservado — sem UI disponível |
+| `TOKEN_TITLE_END` | `string` | `''` | ✅ | Interface → "Texto Final" (terceira parte do título; espaços manuais) |
+| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Inicial (vazio = herda cor do texto) |
+| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto em Destaque (vazio = herda cor accent) |
+| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Final (vazio = herda cor do texto) |
 | `TOKEN_MAIN_COLOR` | `string` | `'#0ea5e9'` | ✅ | Interface → color picker principal |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color picker de texto |
 | `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE'` | ✅ | Interface → "Texto do Rodapé" |
@@ -169,8 +171,8 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 
 ### Notas sobre tokens específicos
 
-**`TOKEN_TITLE_END` (obsoleto):**
-Este token não tem uso funcional a partir da V17. Foi preservado para garantir que o Quine Engine, que usa regex para substituir todos os tokens, não quebre ao tentar encontrá-lo. Remover o token corromperia arquivos exportados de versões mais antigas. Não usar, não remover.
+**`TOKEN_TITLE_END` (ativo desde V22):**
+Terceira parte do título da aplicação. Renderizado como `<span id="ui-title-end">` com `font-weight: 600`. A cor é controlada por `TOKEN_TITLE_END_COLOR` (vazio = herda cor do texto). Espaços entre partes do título são manuais — incluir no valor do token.
 
 **`TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático):**
 Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto, baseando-se na luminância relativa da cor accent. Preencher apenas se o cálculo automático não produzir o contraste desejado.
@@ -194,7 +196,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 **Por isso, o formato exato deve seguir a sintaxe:**
 - `const` (não `let` ou `var`)
-- `TOKEN_NOME`
+- `TOKEN_NOME` *(placeholder — representa qualquer nome real de token, ex: `TOKEN_MAIN_COLOR`)*
 - `=` (espaços à volta são suportados e recomendados para legibilidade)
 - `'valor'` (aspas simples, não duplas)
 
@@ -421,4 +423,4 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 
 ---
 
-*Capture Engine V21 · Especificações de Design Tokens*
+*Capture Engine V22 · Especificações de Design Tokens*

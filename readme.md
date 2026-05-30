@@ -1,4 +1,4 @@
-# Capture Engine · V21
+# Capture Engine · V22
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -39,6 +39,8 @@ Tudo o que você captura (screenshots, documentos, textos) fica guardado localme
 | Uso pessoal | Agrupa prints para submeter num portal, chamado ou formulário |
 | Ambientes restritos (banco, governo, saúde) | Funciona sem internet, sem CDN, sem registo de dados externos |
 | Auditoria e conformidade | Evidências documentadas e exportadas sem sair do dispositivo |
+
+> **⚠️ Importante — os seus dados não ficam guardados para sempre (e isto é de propósito):** Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para conservar um trabalho, tem de o **exportar** (botão **PDF** ou **ZIP**) e guardar o ficheiro você mesmo. Fechar o programa não chega; só o que exportar fica garantido.
 
 ---
 
@@ -263,7 +265,6 @@ Gera um PDF com uma imagem por página.
 | **Auto** | Detecta orientação de cada imagem individualmente (retrato ou paisagem) |
 | **A4 Vertical** | Força todas as páginas em formato retrato |
 | **A4 Horizontal** | Força todas as páginas em formato paisagem |
-| **Exato (Via Código)** | Modo oculto ('exact') que preserva as dimensões em pontos (px * 0.75) e preenche a página inteira, útil para preservar proporções exatas da imagem. Ativável apenas através de configuração programática (`pdfFmt = 'exact'`). |
 
 **Processo de geração:**
 1. As imagens PNG originais são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
@@ -377,8 +378,9 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 
 | Token | Valor padrão | O que controla |
 |---|---|---|
-| `TOKEN_TITLE_START` | `'Capture'` | Primeira parte do nome no topo |
-| `TOKEN_TITLE_ACCENT` | `'Engine'` | Segunda parte (em cor de destaque) |
+| `TOKEN_TITLE_START` | `'Capture'` | Primeira parte do nome no topo (cor normal, bold) |
+| `TOKEN_TITLE_ACCENT` | `'Engine'` | Segunda parte (em cor de destaque, opacity 0.5) |
+| `TOKEN_TITLE_END` | `''` | Terceira parte do nome (cor normal, bold). Espaços manuais. Campo "Texto Final" no VB. |
 | `TOKEN_MAIN_COLOR` | `'#0ea5e9'` | Cor principal da interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `''` | Cor do texto sobre a cor principal (vazio = automático) |
 | `TOKEN_FOOTER_TEXT` | `'© {YEAR} • CAPTURE ENGINE'` | Texto do rodapé |
@@ -457,14 +459,17 @@ O Capture Engine não suporta estar aberto em múltiplas abas do mesmo browser a
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
 
 ### Perdi o ficheiro HTML. Perdi os dados? (Disaster Recovery)
-- **Não.** Os dados não estão no ficheiro HTML, estão no perfil oculto do browser. Se apagou acidentalmente o ficheiro `capture-engine.html`, basta criar um ficheiro HTML com o exato mesmo nome, na exata mesma pasta, e abri-lo. O browser restabelece a ligação à base de dados IndexedDB (que é indexada pelo caminho do ficheiro) e os dados reaparecem. Para recuperação técnica sem o ficheiro, use o separador *Application > IndexedDB* das Chrome DevTools.
+- **Talvez não — mas só em condições muito específicas.** Os dados não estão dentro do ficheiro HTML; ficam guardados no IndexedDB do browser, associados ao *endereço* do ficheiro **e ao browser/perfil** onde foram criados. Se apagou o ficheiro `capture-engine.html` mas o resto se mantém igual, pode recuperar criando um ficheiro com o **exato mesmo nome, na exata mesma pasta**, e abrindo-o no **mesmo browser e mesmo perfil**.
+- **A recuperação NÃO funciona se:** abrir numa **janela anónima/privada**; abrir num **perfil de browser diferente**; ou abrir o ficheiro **diretamente de dentro de um ZIP** (ex.: WinRAR) sem o extrair primeiro para uma pasta no disco. Em qualquer destes casos o browser usa um armazenamento diferente e os dados antigos **não aparecem**.
+- Este comportamento depende do browser e não é garantido em todos. **A forma fiável de não perder nada é exportar** (PDF ou ZIP) o que for importante — ver o aviso abaixo.
+- Recuperação técnica de último recurso (requer conhecimentos): separador *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
 
 ---
 
 ## 10. Perguntas frequentes
 
-**O meu arquivo HTML tem 140KB. É normal?**
-Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. 140KB é um tamanho esperado para uma aplicação desta complexidade.
+**O meu arquivo HTML tem perto de 190KB. É normal?**
+Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os 187KB; a versão exportada para utilizador final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por defeito) são apagadas automaticamente. Além disso, limpar os dados do browser apaga tudo. Exporte os dados importantes.
@@ -501,12 +506,14 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V21/
+V22/
 ├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
+├── LICENSE                      ← Licença MIT (Diogo Carvalho)
 ├── readme.md                    ← Este guia (início aqui)
 ├── changelog.md                 ← Histórico completo de versões e alterações
 ├── agents.md                    ← Guia operacional para desenvolvedores e agentes IA
-└── design-tokens.md             ← Especificação completa do design system
+├── design-tokens.md             ← Especificação completa do design system
+└── validate.sh                  ← Verificação estática de integridade (corre antes de validar)
 ```
 
 **Qual arquivo distribuir aos utilizadores?**
@@ -610,4 +617,16 @@ init()
 
 ---
 
-*Capture Engine V21 · Focado na simplicidade e uso 100% offline*
+*Capture Engine V22 · Focado na simplicidade e uso 100% offline*
+
+---
+
+## Licença
+
+Capture Engine — Copyright (c) 2026 **Diogo Carvalho** (@diogocarvalhoinfo). Distribuído sob a **Licença MIT** (ver ficheiro `LICENSE`).
+
+Autoria e contacto:
+- Site: https://diogocarvalhoinfo.com
+- GitHub: https://github.com/diogocarvalhoinfo
+
+Em linguagem simples: qualquer pessoa pode usar, copiar, alterar e distribuir a ferramenta, de graça, inclusive em contexto profissional ou comercial. A única condição é **manter o aviso de copyright** ("Diogo Carvalho") junto das cópias. O software é fornecido "como está", sem garantias. O texto do rodapé da aplicação pode ser personalizado pelo administrador (white-label) — isso é branding e não substitui nem remove o aviso de copyright no código e no ficheiro `LICENSE`.

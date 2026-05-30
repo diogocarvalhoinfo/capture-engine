@@ -1,4 +1,4 @@
-# Agents · Capture Engine V21
+# Agents · Capture Engine V22
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Secção 0 e a Secção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -90,6 +90,18 @@ Qualquer texto que o utilizador escreva (nome de sessão, legenda de imagem, nom
 | `BOOT_HTML` | Dentro do bloco ADMIN_JS, no início do bloco | Fallback estático do Quine. Capturado sincronamente quando o script executa, antes de qualquer mutação de runtime. Em Export User este bloco é removido. |
 | Todos os comment markers | Ver Secção 5 | Definem o que é removido em exports de User |
 
+**Tokens de título — três partes:**
+
+O título da app é composto por 3 spans independentes:
+```
+[TOKEN_TITLE_START][TOKEN_TITLE_ACCENT][TOKEN_TITLE_END]
+     cor normal         opacity 0.5         cor normal
+     font-weight 600    font-weight 400    font-weight 600
+```
+Os espaços entre as partes são **manuais** — incluir no valor do token se necessário. Exemplo para "Capture Engine": `TOKEN_TITLE_START='Capture '`, `TOKEN_TITLE_ACCENT='Engine'`, `TOKEN_TITLE_END=''`.
+
+No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_END`. O Quine exporta os 3 tokens.
+
 **Formato dos tokens:**
 ```js
 // O regex do Quine aceita espaços, e devem ser mantidos para legibilidade:
@@ -103,6 +115,8 @@ const TOKEN_MAIN_COLOR = '#0ea5e9';
 ### 1.3 XSS Prevention — Sanitização de inputs
 
 **O problema:** O browser interpreta HTML dentro de strings. Se um utilizador escrever `<img src=x onerror=alert(1)>` como legenda e esse texto for inserido via `innerHTML`, o JavaScript executa.
+
+> **Modelo de ameaça:** Embora a app seja local e de utilizador único, o conteúdo capturado pode ter origem em terceiros (ex.: um screenshot ou documento com texto controlado por outra pessoa, colado por um técnico de Service Desk a partir de um ticket de cliente). Esse texto, ao ser renderizado sem sanitização, executaria no contexto do ficheiro. Em ambientes que processam dados de clientes (banca, seguros), isto é um risco real — daí a sanitização ser obrigatória.
 
 **A solução:** Usar sempre `escapeHTML()` antes de qualquer `innerHTML` com dados do utilizador:
 ```js
@@ -180,7 +194,7 @@ body.dark { --bg: #121212; }
 
 ---
 
-### 2.3 Gold Standard — Tamanhos e Proporções
+### 2.3 Tamanhos e Proporções Calibrados
 
 Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmonia visual.
 
@@ -257,7 +271,19 @@ O IIFE isola o scope — funções chamadas por atributos HTML inline (`onclick=
 **O problema:** Nomes duplicados num ZIP causam comportamento imprevisível no Windows Explorer, macOS Archive Utility, e outros descompressores.
 
 ### Mecanismo de Identificadores (genId)
-Para evitar colisões na base de dados, a função `genId(prefix)` é utilizada na criação de novos itens. Ela gera uma string leve e estatisticamente única através do formato `{prefix}_{entropia}` (ex: `img_1a2b3c4d5`). A entropia é baseada na conversão de `Math.random()` para base 36 truncada. A probabilidade de colisão numa mesma sessão local (Single Page App no IndexedDB) é desprezável.
+Para evitar colisões na base de dados, a função `genId(prefix)` é utilizada na criação de novos itens. Ela gera uma string única com **3 partes** separadas por `_`:
+
+```
+{prefix}_{Date.now()}_{5_chars_base36}
+```
+
+Exemplo real: `img_1748611200000_a3f7k`
+
+- `prefix` — tipo do objeto (`img`, `doc`, `sess`)
+- `Date.now()` — timestamp em milissegundos (13 dígitos) — garante ordenação cronológica e unicidade temporal
+- `Math.random().toString(36).slice(2,7)` — 5 caracteres em base-36 — entropia adicional contra colisões no mesmo milissegundo
+
+A probabilidade de colisão numa mesma sessão local (Single Page App no IndexedDB) é desprezável.
 
 **O algoritmo de incremento inteligente:**
 
@@ -349,11 +375,21 @@ Os markers são comentários especiais que o Quine Engine usa para identificar e
 
 **Proteção do Quine:** `sanitizeForQuine()` substitui os marcadores nos *valores de tokens* com versões contendo zero-width space (caractere invisível `\u200B`). Isto evita que um token com o texto `ADMIN_JS_START` corrompa o regex de strip. Aplica-se a todos os 8 marcadores (4 pares de abertura/fecho).
 
+> **Nota sobre contagens — 8 vs 11:** existem **8 strings únicas de marcadores** (4 pares: ADMIN_BUTTONS, ADMIN_EDIT, ADMIN_JS, EXPORT MODAL), mas o `grep -c` no HTML retorna **11 linhas** porque os marcadores aparecem em 3 categorias de locais:
+> - **8 locais estruturais** — os 4 pares de comentários/tokens HTML e JS que delimitam blocos removíveis
+> - **1 linha em `boot()`** — o par `ADMIN_JS_START`/`ADMIN_JS_END` inline que envolve `capturePristine()`
+> - **1 linha em `sanitizeForQuine()`** — os 8 nomes como strings para substituição com zero-width space
+> - **1 linha em `exportFile()`** — os 4 pares como regex para remoção de blocos
+>
+> `sanitizeForQuine()` protege os 8 strings únicos; o checklist de integridade verifica as 11 linhas totais. Todos os números estão corretos — referem coisas diferentes.
+
+> **Decisão de Design — Modal do VB não fecha ao clicar fora:** O modal do Visual Builder (`#vb-overlay`) **não fecha ao clicar no backdrop**. Esta é uma decisão intencional (alterada na V22). O utilizador deve usar o botão ✕ para fechar. Todos os outros modais (imagem, documento, export) fecham ao clicar fora. A variável `_vbOverlayMdOnBackdrop` foi removida na V22 — era um resíduo da versão anterior em que o VB fechava ao clicar fora.
+
 **Para verificar integridade dos markers:**
 ```bash
 grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html
-# Deve retornar 10
-# (Nota: ADMIN_JS_START/END aparecem em 2 locais distintos: o bloco principal de funções Quine e o bloco de chamada em boot)
+# Deve retornar 11
+# (8 strings únicas; 11 linhas = 8 estruturais + 1 em boot() + 1 em sanitizeForQuine() + 1 em exportFile())
 ```
 
 ---
@@ -426,7 +462,7 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o browser for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` regista a exceção na consola (Zero Trust). A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grelha acontece via URL local em memória temporária). A sessão já guardada e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` regista a exceção na consola. A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grelha acontece via URL local em memória temporária). A sessão já guardada e os itens antigos permanecem íntegros no DB.
 
 **Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os items associados (imagens, documentos, removidos das duas categorias).
 
@@ -471,7 +507,7 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 | `renderDoc(o)` | `(object) → void` | Cria e insere card de documento na lista |
 | `renderTrash()` | `() → void` | Re-renderiza a barra de lixeira com itens atuais |
 | `updateCounters()` | `() → void` | Atualiza badges de contagem (imagens, documentos, lixeira) |
-| `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP (enable/disable) |
+| `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
 
 ### Funções do Quine
 
@@ -514,10 +550,6 @@ Esta secção documenta as funções mais importantes. Consultar antes de editar
 ---
 
 ## 8. Fluxos de Comportamento
-
-### Modo PDF 'exact' (Exportação em Tamanho Real)
-
-Gera páginas com dimensões em pontos derivadas diretamente das dimensões em píxeis da imagem × 0.75 (conversão 96dpi → 72dpi). A imagem ocupa a página inteira, sem margens ou centrações. Útil para preservar as proporções exatas da evidência. Não está acessível via interface, sendo ativável apenas através do código via `pdfFmt = 'exact'` antes de `generatePDF()`.
 
 ### Fluxo completo de captura de imagem (Ctrl+V)
 
@@ -620,7 +652,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 |---|---|---|
 | `sessId` | string \| null | ID da sessão ativa (`null` = estado pristine) |
 | `sessObj` | object \| null | Objeto completo da sessão ativa |
-| `images` | array | Imagens ativas da sessão (espelho em memória do IndexedDB) |
+| `images` | array | Imagens ativas da sessão (espelho em memória do IndexedDB). **Nota:** ao carregar sessão, items sem Blob válido são filtrados automaticamente (`blob instanceof Blob && blob.size > 0`) para proteger ambientes Safari/WebView onde blobs podem deserializar como `{}`. |
 | `docs` | array | Documentos ativos da sessão |
 | `removed` | array | Imagens na lixeira |
 | `removedDocs` | array | Documentos na lixeira |
@@ -644,7 +676,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `annSmoothLast` | object \| null | Último ponto suavizado pelo EMA no desenho livre; resetado em activate/deactivate/mouseup |
 | `annInitialState` | string \| null | JSON.stringify do `annHistory` ao ativar anotação — usado para detetar se houve alterações reais |
 | `lastSaveAt` | number | Timestamp do último save automático para a status bar |
-| `pdfFmt` | string | Modo de layout da página PDF ('vertical', 'horizontal', 'auto', 'exact') |
+| `pdfFmt` | string | Modo de layout da página PDF ('vertical', 'horizontal', 'auto') |
 | `zipModeActive` | boolean | Define se o modo ZIP está ativado |
 | `modalIsTrash` | boolean | Indica se o modal de visualização provém da lixeira |
 | `modalItemId` | string | ID da imagem visualizada no modal |
@@ -658,6 +690,14 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `annStart` | object | Coordenadas de início do traço de anotação |
 | `annPath` | array | Lista de pontos desenhados na ferramenta 'free' |
 | `annCommitText` | function | Callback para commitar input de texto na anotação |
+| `PRISTINE_HTML` | string \| null | Fonte primária do Quine — HTML original capturado via `fetch(location.href)` em `capturePristine()`; `null` até a primeira chamada. Fallback para `BOOT_HTML` se fetch falhar. Declarado dentro do bloco `ADMIN_JS`. |
+| `_imgOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de imagem — `true` se o `mousedown` ocorreu no backdrop (não num filho interativo); evita fechar o modal ao arrastar para fora |
+| `_textOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de documento — idem para o text modal |
+| `_expOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de Export |
+| `textModalItemId` | string \| null | ID do documento atualmente aberto no text modal; `null` = modal fechado |
+| `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
+| `ANN_SIZES` | array (const) | `[2, 4, 8]` — espessuras de linha disponíveis na toolbar de anotação (px) |
+| `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
 
 ---
 
@@ -671,7 +711,8 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
    - `changelog.md` — sempre, com entrada na versão atual
 4. **Codificação:** UTF-8 sem BOM
 5. **Testar regressão mental:** Para cada alteração, verificar se os 3 contratos (zero-dep, Quine, XSS) continuam válidos
-6. **Verificar markers:** Após qualquer edição ao HTML, confirmar que os 10 comment markers estão intactos
+6. **Verificar markers:** Após qualquer edição ao HTML, confirmar que os 11 comment markers estão intactos
+7. **Correr a verificação estática:** Após qualquer edição ao HTML, executar `./validate.sh` na pasta do projeto. É um conjunto de verificações mecânicas (grep + sintaxe) que dá sempre o mesmo resultado — uma IA pode confiar nele sem alucinar. **Não declarar a tarefa concluída se algum check falhar.** Isto não substitui o teste manual no browser (ver Secção 11), mas apanha regressões estruturais antes disso.
 
 ---
 
@@ -679,19 +720,24 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 
 Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
+> **Atalho:** os pontos mecânicos abaixo (markers, funções Quine, spans de título, APIs proibidas, sintaxe JS) são verificados automaticamente por `./validate.sh`. Os pontos que exigem o browser (ciclo de vida da sessão, dark mode, anotação, export real) continuam a precisar de teste manual por um humano.
+
 **Segurança:**
 - [ ] `escapeHTML()` aplicado a todos os dados do utilizador inseridos via `innerHTML`
 - [ ] `sanitizeForQuine()` aplicado antes de tokens serem injetados no HTML exportado
 - [ ] Sem `eval()`, `Function()`, ou `document.write()`
 
 **Integridade do Quine:**
-- [ ] Todos os 10 comment markers estão intactos (verificar com `grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html` → deve retornar 10)
+- [ ] Todos os 11 comment markers estão intactos (verificar com `grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" capture-engine.html` → deve retornar 11)
 - [ ] `window.exportFile()`, `capturePristine()` e `sanitizeForQuine()` não foram movidos
 - [ ] Formato das declarações `const TOKEN_* = 'valor'` preservado
+- [ ] Os 3 spans de título (`#ui-title-start`, `#ui-title-accent`, `#ui-title-end`) existem no HTML
+- [ ] `exportFile()` substitui `TOKEN_TITLE_END` via regex (além de START e ACCENT)
+- [ ] Campo `cfg-title-end` existe no VB (Tab Interface)
 
 **Unicidade:**
 - [ ] Sem nomes duplicados possíveis em screenshots ou documentos
-- [ ] A deduplicação verifica contra listas ativas **e** lixeira
+- [ ] A deduplicação verifica contra listas ativas **e** lixeira (verificar: `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc`, `setLabel`, `setDocName`)
 - [ ] Comparação de nomes é case-insensitive
 
 **Ciclo de vida de sessão (testar manualmente):**
@@ -723,20 +769,22 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 - [ ] `annDrawShape` usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no final
 - [ ] `closeSettingsModal` chama `window._deactivateAdmin()`
 - [ ] `window._deactivateAdmin` é atribuído dentro de `initAdminGate`
+- [ ] `annDrawShape` é função de draw pura — não contém `annIsDirty = true` nem manipulação do DOM (side effects pertencem ao caller)
 
 ---
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V20 → V21), o número de versão antigo tem de ser substituído em **exatamente 5 locais vitais**.
+Ao passar para uma nova versão (ex: V21 → V22), o número de versão antigo tem de ser substituído em **exatamente 5 ficheiros** (com 6 substituições no total — 3 dentro do HTML).
 
-**Os 5 locais obrigatórios:**
+**Os 5 ficheiros obrigatórios:**
 
-1. **`capture-engine.html`** — Dois locais dentro do arquivo:
-   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V21) -->`
-   - Badge visual no header do modal de configurações: `<span ...>V21</span>`
+1. **`capture-engine.html`** — Três locais dentro do arquivo:
+   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (V22) -->`
+   - Badge visual no header do modal de configurações: `<span ...>V22</span>`
+   - Mensagem de inicialização no console: `SysLogger.info('Capture Engine V22 Ready')`
 
-2. **`changelog.md`** — Nova entrada no topo: `## [V21] — YYYY-MM-DD`
+2. **`changelog.md`** — Nova entrada no topo: `## [V22] — YYYY-MM-DD`
 
 3. **`readme.md`** — Título principal e referências
 
@@ -747,25 +795,43 @@ Ao passar para uma nova versão (ex: V20 → V21), o número de versão antigo t
 
 **Ação obrigatória antes de fechar:**
 ```bash
-grep -rn "V21" capture-engine.html readme.md design-tokens.md agents.md changelog.md
+grep -rn "V22" capture-engine.html readme.md design-tokens.md agents.md changelog.md
 # Verificar se restam referências intencionais vs fantasmas
 ```
 Nunca assumir que as substituições foram completas sem verificar.
 
 ---
 
-## 13. Disaster Recovery Técnico
+## 13. Decisões de Design Documentadas
 
-Caso um utilizador apague ou corrompa o seu ficheiro `capture-engine.html` mas mantenha a pasta inalterada, o administrador pode orientar a recuperação baseada no princípio Same-Origin:
+Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e **não devem ser revertidas sem aprovação**:
 
-1. **Recuperação Simples (Same-Origin):** Colocar uma nova cópia do ficheiro com o **exato mesmo nome** na **exata mesma pasta** reativa o vínculo do browser ao IndexedDB existente.
+| # | Decisão | Justificação |
+|---|---|---|
+| D1 | **Botão PDF desativado quando há imagens + documentos** | PDF é exclusivo de imagens. Quando há docs na sessão, o utilizador deve usar o ZIP. |
+| D2 | **Modal do Visual Builder não fecha ao clicar fora** | O VB é de uso exclusivo Admin e requer fecho explícito pelo botão ✕ para evitar perda de configurações acidentais. |
+| D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os 16 eventos `isDirty=true` dentro do VB (color pickers, sliders, radios) que não chamam `triggerSave()` imediatamente por serem `input` events contínuos. Sem o interval, alterações no VB perdem-se se o browser for fechado dentro da janela de 5s. |
+| D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
+| D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceite. O setInterval de 5s garante persistência antes do fecho do browser em uso normal. |
+| D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + swatches de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
+
+## 14. Disaster Recovery Técnico
+
+Caso um utilizador apague ou corrompa o seu ficheiro `capture-engine.html`, a recuperação assenta no facto de o IndexedDB ser indexado pela *origin* do ficheiro. **Atenção: este comportamento depende do browser e não é garantido.** Condições de recuperação confirmadas por teste:
+
+1. **Recuperação Simples (mesmo nome + mesma pasta + mesmo browser/perfil):** Colocar uma nova cópia do ficheiro com o **exato mesmo nome** na **exata mesma pasta**, e abri-la no **mesmo browser e mesmo perfil**, reativa o vínculo ao IndexedDB existente.
+   - **NÃO funciona** em janela anónima/privada (armazenamento isolado e efémero).
+   - **NÃO funciona** num perfil de browser diferente.
+   - **NÃO funciona** se o ficheiro for aberto diretamente de dentro de um arquivo ZIP (ex.: WinRAR) — tem de ser **extraído para uma pasta no disco** primeiro, caso contrário a *origin* é diferente/temporária.
 2. **Extração de Emergência (DevTools):** Se a lógica do HTML for inoperável e precisar extrair os dados puros:
    - Abra um HTML em branco no contexto/pasta correta.
-   - Pressione F12 para abrir as **Chrome DevTools**.
+   - Pressione F12 para abrir as **DevTools**.
    - Navegue até `Application` > `IndexedDB` > `CaptureEngineDB`.
    - Expanda `images` ou `documents` e inspecione os registos.
    - Os ficheiros estão armazenados na coluna `blob`. Poderão necessitar de ser guardados programaticamente caso a interface gráfica falhe.
 
+> **Nota:** Dado que a recuperação não é garantida, a única salvaguarda fiável é **exportar (PDF/ZIP)** o material importante. Não existe backup automático dos dados — é uma decisão de design (privacidade), não uma falha.
+
 ---
 
-*Capture Engine V21 · Regras Operacionais para Agentes*
+*Capture Engine V22 · Regras Operacionais para Agentes*

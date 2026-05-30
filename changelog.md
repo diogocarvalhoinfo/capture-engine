@@ -5,6 +5,157 @@
 
 ---
 
+## [V22.2] — 2026-05-31
+
+Resultado de uma auditoria externa de documentação, com as decisões de intenção confirmadas pelo proprietário (Diogo Carvalho).
+
+### Adicionado
+
+**Licença MIT — impacto: a ferramenta pode ir para o GitHub e ser usada livremente por qualquer pessoa**
+- Novo ficheiro `LICENSE` (MIT, Copyright (c) 2026 Diogo Carvalho).
+- Cabeçalho de copyright adicionado no topo do `capture-engine.html` (dentro de `<html>`, por isso é preservado pelo Quine em todos os exports). Garante que o aviso viaja mesmo quando só o `.html` é distribuído.
+- Secção "Licença" adicionada ao `readme.md`, em linguagem simples.
+
+**`validate.sh` — impacto: um agente de IA pode verificar a integridade sem abrir o browser e sem alucinar**
+- Script de verificação estática (apenas grep + contagens + sintaxe via `node` se disponível): contagem de markers (=11), presença das funções Quine, spans de título, ausência de `eval/Function/document.write`, regra zero-dependência, cabeçalho de licença, ausência de código removido, sintaxe JS. Resultado determinístico (sempre igual para o mesmo ficheiro). Documentado em `agents.md` (Secções 10 e 11).
+
+### Removido
+
+**`TOKEN_SUBTITLE` — impacto: menos código morto**
+- Token "reservado" sem qualquer UI nem efeito. Removido da declaração, da `exportFile` (variável `sub` e respetiva substituição Quine) e da tabela em `design-tokens.md`.
+
+**Modo PDF `'exact'` — impacto: remoção de ramo inalcançável**
+- O modo `'exact'` (página = tamanho da imagem) não tinha nenhuma forma de ser ativado pela interface (os botões só produzem `auto`/`a4v`/`a4h`) e não estava associado ao controlo de qualidade do VB (esse é o `TOKEN_JPEG_QUALITY`). Ramo removido de `generatePDF`, e da documentação (`readme.md` §5.6, `agents.md` §8 e tabela de `pdfFmt`).
+
+### Corrigido
+
+**Documentação de recuperação de desastres — impacto: deixa de prometer algo que falha em vários cenários**
+- A promessa "mesmo nome + mesma pasta → dados voltam" foi reescrita com as condições reais (confirmadas por teste): só funciona no **mesmo browser e mesmo perfil**, com o ficheiro **extraído para uma pasta** (não aberto de dentro de um ZIP), e **não** funciona em janela anónima/privada. Atualizado em `readme.md` §9 e `agents.md` §14.
+
+**Contradição da contagem de markers — impacto: instrução de integridade coerente**
+- `agents.md` §5: o comentário do bloco `grep` dizia "Deve retornar 10"; corrigido para **11**, em linha com a Secção 11 e com o resultado real do `grep`. (A correção anunciada na V22.1 tinha ficado incompleta neste ponto.)
+
+**Tamanho do ficheiro no FAQ — impacto: número realista**
+- `readme.md` §10: "140KB" corrigido para ~187KB (versão admin) com nota de que o Export User fica menor.
+
+### Documentação
+
+- **Linguagem promocional neutralizada** (decisão do proprietário): "Auditoria FAANG/Militar", "Auditoria Zero Trust", "premium", "blindadas", referência a "padrões de grandes empresas (Google, Stripe, Notion, Apple, Microsoft)" e título "Gold Standard" da Secção 2.3 do `agents.md` substituídos por descrições factuais.
+- **Modelo de ameaça XSS** explicitado em `agents.md` §1.3 (conteúdo de terceiros colado a partir de tickets de cliente).
+- **Aviso de dados efémeros** em linguagem simples adicionado ao topo do `readme.md`.
+- `readme.md` §12: estrutura de ficheiros atualizada com `LICENSE` e `validate.sh`.
+
+### Decisões mantidas (confirmadas pelo proprietário, sem alteração de comportamento)
+
+- **Purge automático às 48h + sem backup automático** → comportamento **intencional** por privacidade. Para guardar, o utilizador exporta PDF/ZIP. Apenas clarificado na documentação, não alterado.
+- **Título com 3 partes e cores independentes** → **funcionalidade desejada** (ex.: "C" verde, "B" amarelo, "F" azul). Mantida; removida da lista de "complexidade desnecessária" da auditoria.
+
+
+
+### Correções (auditoria de consistência documentação↔código)
+
+**BUG #4 — delDoc selector sem especificidade de classe**
+- `window.delDoc`: selector DOM corrigido de `[data-id="..."]` para `.d-item[data-id="..."]`
+- Consistente com `delImg` que já usava `.t-item[data-id=...]`
+
+**BUG #5 — Memory leak no modal de imagem (img.onerror ausente)**
+- `openImgModal`: adicionado `img.onerror = function() { URL.revokeObjectURL(url); }`
+- Object URL agora é libertado tanto em sucesso (`onload`) como em falha (`onerror`)
+
+**INC #2 — Variável morta `_vbOverlayMdOnBackdrop` removida**
+- Resíduo da versão anterior em que o VB fechava ao clicar fora
+- Comportamento atual (fechar só pelo ✕) é intencional — ver Secção 13 do agents.md (Decisão D2)
+
+**INC #3 — ZIP path traversal: sanitização de backslash Windows**
+- `generateZIP`: adicionado `.replace(/\.\.\\/g, '')` para cobrir paths `..\` (Windows-style)
+- Contexto de uso: ambiente bancário/corporativo multi-OS
+
+**INC #5 — Blob validation ao carregar sessão (Safari/WebView)**
+- `loadSession`: imagens e documentos são agora filtrados por `blob instanceof Blob && blob.size > 0`
+- Protege contra Safari em modo privado e WebViews corporativos que deserializam Blobs como `{}`
+- Sem esta proteção, `URL.createObjectURL({})` causava crash silencioso
+
+### Nova Funcionalidade
+
+**TOKEN_TITLE_END — Terceiro campo de título**
+- HTML: `#tb-brand-name` refatorado de 1 span para 3 spans independentes (`#ui-title-start`, `#ui-title-accent`, `#ui-title-end`)
+- Visual Builder (Tab Interface): novo campo "Texto Final" (`cfg-title-end`) com nota "espaços manuais"
+- `initVbSync`: função `syncTitleSpans()` centraliza atualização live dos 3 campos
+- `applyTokens`: inicializa e renderiza os 3 spans
+- `exportFile` (Quine): substitui `TOKEN_TITLE_END` via regex (par com START e ACCENT)
+- CSS: `#ui-title-accent` herda `opacity:0.5`, `#ui-title-end` herda `font-weight:600` e `opacity:1`
+- Permite títulos como `CPC` (letras alternadas) ou `Service Desk Engine` com espaços manuais
+
+### Decisões Documentadas (sem código alterado)
+
+- **D1**: PDF desativado com imagens+docs — intencional (PDF é exclusivo de imagens)
+- **D2**: VB não fecha ao clicar fora — intencional (proteção contra fecho acidental)
+- **D3**: setInterval 5s mantido — cobre 16 eventos isDirty no VB sem triggerSave imediato
+- **D4**: Placeholder "Imagem N" não atualiza após reorder — decorativo, não numeração oficial
+- **D5**: triggerSave sem await em closeSettingsModal — risco aceite, coberto pelo interval
+
+### Documentação
+
+- `agents.md`: nova Secção 13 "Decisões de Design Documentadas" (D1-D6)
+- `agents.md`: Secção 5 — nota sobre VB modal intencional
+- `agents.md`: Secção 7 — lógica de `updateBtns()` documentada
+- `agents.md`: Secção 9 — `_vbOverlayMdOnBackdrop` removida; nota sobre blob validation
+- `agents.md`: Secção 11 — checklist atualizada com verificações TOKEN_TITLE_END
+- `agents.md`: Secção 1.2 — TOKEN_TITLE_END documentado com exemplo de uso
+
+## [V22] — 2026-05-30
+### Adicionado
+
+**Swatches de cor individuais para os 3 campos de título — impacto: permite criar títulos multicolor (ex: `C P C`) com cada parte numa cor independente**
+
+Os campos "Texto Inicial", "Texto em Destaque" e "Texto Final" no Visual Builder têm agora cada um o seu próprio swatch de cor (circle picker), à imagem do padrão do Service Desk Engine. Duplo clique ou clique direito no swatch repõe a cor para automático (herda cor do contexto). Três novos tokens adicionados ao sistema:
+
+- `TOKEN_TITLE_START_COLOR` — cor do Texto Inicial (vazio = herda `--text`)
+- `TOKEN_TITLE_ACCENT_COLOR` — cor do Texto em Destaque (vazio = herda opacidade da accent)
+- `TOKEN_TITLE_END_COLOR` — cor do Texto Final (vazio = herda `--text`)
+
+Todos os 3 tokens são exportados pelo Quine em Export Admin e Export User. As CSS vars `--title-start-color`, `--title-accent-color`, `--title-end-color` são aplicadas dinamicamente. Quando vazias, a propriedade é removida do `documentElement` para herança natural.
+
+
+### Corrigido
+
+**Bug de deduplicação em `setLabel` — impacto: renomear imagem já não permite colisão com nomes na lixeira**
+
+A função `setLabel` (renomear imagem ativa) verificava duplicados apenas contra `images[]`, ignorando `removed[]`. Era possível renomear uma imagem ativa para o mesmo nome de uma imagem na lixeira, violando a invariante de unicidade documentada no checklist ("deduplicação verifica contra listas ativas e lixeira"). A condição `while` foi corrigida para verificar ambas as listas, em paridade com `captureImg` e `restoreImg`.
+
+### Documentação — Auditoria de Resiliência V22
+
+Quatro divergências documentação/código identificadas e corrigidas:
+
+- **`agents.md` — `genId` (Secção 3):** Formato documentado corrigido de `{prefix}_{entropia}` (2 partes, exemplo `img_1a2b3c4d5`) para o formato real de **3 partes**: `{prefix}_{Date.now()}_{5_chars_base36}` (ex: `img_1748611200000_a3f7k`). Adicionada explicação do papel de cada componente (timestamp para ordenação cronológica, base-36 para entropia contra colisões no mesmo milissegundo).
+- **`agents.md` — Contagem de marcadores (Secção 5):** Adicionada nota explicativa que distingue **8 strings únicas de marcadores** (cobertura de `sanitizeForQuine`) de **10 ocorrências no HTML** (resultado do `grep -c` no checklist). Elimina a ambiguidade entre os dois números que apareciam sem contexto.
+- **`agents.md` — Protocolo de Version Bump (Secção 12):** Corrigido de "2 locais dentro do `capture-engine.html`" para **3 locais**: comentário do Visual Builder, badge visual, e `SysLogger.info('Capture Engine Vxx Ready')`. Atualizada contagem de "5 locais vitais" para "5 ficheiros (6 substituições no total)".
+- **`agents.md` — Checklist (Secção 11):** Item de deduplicação agora é consistente com o comportamento real do código após a correção de `setLabel`.
+
+### Auditoria de consistência — correções adicionais
+
+**Bug `setDocName` — deduplicação incompleta (simétrico ao bug de `setLabel`)**
+
+A função `setDocName` (renomear documento ativo) verificava duplicados apenas contra `docs[]`, ignorando `removedDocs[]`. O mesmo padrão de bug que existia em `setLabel` — prometido corrigido em V22 mas ainda presente nesta versão. Corrigido: condição `while` agora verifica `docs[]` e `removedDocs[]` em paridade com `captureDoc` e `restoreDoc`.
+
+**Bug `annDrawShape` — side effects no branch `arrow`**
+
+`annDrawShape` é uma função de desenho pura chamada por `annRedraw` (incluindo em undo/redo). O branch `type === 'arrow'` continha `annIsDirty = true` e manipulação de DOM (`btn-admin-save`, `btn-ann-close`) — side effects que não pertencem a uma função de draw. Consequência: abrir o modal de uma imagem com setas anotadas marcava imediatamente `annIsDirty = true` e exibia o botão de Export sem o utilizador ter editado nada. Corrigido: side effects removidos do branch arrow; o estado dirty é gerido exclusivamente pelos event handlers de input (mouseup, commit text).
+
+**`agents.md` — Contagem de markers: 10 → 11**
+
+O `grep -c` real retorna 11 (não 10). Os 3 locais em `agents.md` que diziam 10 foram corrigidos para 11, e a nota explicativa expandida para detalhar as 4 categorias de linhas: 8 estruturais, 1 em `boot()`, 1 em `sanitizeForQuine`, 1 em `exportFile`.
+
+**`agents.md` — Secção 9: 9 variáveis de estado adicionadas à tabela**
+
+Variáveis ausentes da tabela de referência rápida adicionadas: `PRISTINE_HTML` (fonte primária do Quine), 4 flags de gesture de modal (`_imgOverlayMdOnBackdrop`, `_textOverlayMdOnBackdrop`, `_vbOverlayMdOnBackdrop`, `_expOverlayMdOnBackdrop`), `textModalItemId`, `textModalIsTrash`, `ANN_SIZES`, `ANN_TEXT_SIZES`.
+
+**`design-tokens.md` — `TOKEN_NOME` clarificado**
+
+`TOKEN_NOME` na secção de sintaxe era ambíguo (parecia um token real). Clarificado como placeholder de sintaxe.
+
+---
+
 ## [V21] — 2026-05-30
 
 ### Corrigido
@@ -48,14 +199,14 @@ Auditoria completa de consistência entre documentação e código. Todas as div
 **Lógica de fecho dinâmico do modal de edição — impacto: proteção invisível contra perda de dados**
 - O botão de "Fechar" (`X`) no canto superior direito do modal desaparece dinamicamente assim que uma edição é iniciada. O botão permanece visível apenas se não houver modificações pendentes, canalizando o utilizador para cliques seguros e prevenindo encerramentos acidentais.
 
-**Padronização e UI dos botões de ação — impacto: experiência visual mais premium e suave**
+**Padronização e UI dos botões de ação — impacto: aspeto visual mais uniforme e limpo**
 - Removido o efeito de sombra (`box-shadow`) nos botões de ação, padronizando o design para um aspeto mais limpo, harmonioso e com maior destaque dentro da UI.
 - Adicionado destaque visual refinado aos ícones de texto dentro do modo de anotação.
 - Removido o comportamento de seleção acidental de texto (*highlight*) no ícone de "Excluir Sessões", tornando o clique na UI mais consistente.
 
 **Limpeza automática (Purge) — impacto: base de dados resiliente em falhas isoladas**
 - A funcionalidade de limpeza de sessões antigas (`purgeExpired`) foi reestruturada para ser mais robusta. A deleção individual de cada sessão isola-se em blocos `try/catch`, pelo que uma eventual corrupção num arquivo não interrompe a eliminação do restante lixo acumulado.
-- As transações IndexedDB (`idbTx`) foram blindadas para intercetar falhas nativas (`tx.onerror`) diretamente na raiz, prevenindo erros silenciosos.
+- As transações IndexedDB (`idbTx`) foram reforçadas para intercetar falhas nativas (`tx.onerror`) diretamente na raiz, prevenindo erros silenciosos.
 
 ### Corrigido
 
@@ -203,7 +354,7 @@ Após a remoção do botão de nova sessão, foram identificados e eliminados do
 
 **Documentação completamente reescrita — impacto: onboarding sem dependência de conhecimento verbal**
 
-Toda a documentação foi auditada, reorganizada e expandida seguindo padrões de grandes empresas de tecnologia (Google, Stripe, Notion, Apple, Microsoft). As principais mudanças:
+Toda a documentação foi auditada, reorganizada e expandida seguindo práticas comuns de boa documentação técnica (glossário, perfis de utilizador, fluxos reais, FAQ). As principais mudanças:
 
 - `readme.md` — Expandido de guia funcional para documentação completa com glossário de termos técnicos, perfis de utilizador (utilizador final / administrador / desenvolvedor), fluxos reais, limitações conhecidas, FAQ, e schema da base de dados. Qualquer pessoa sem contexto prévio consegue entender o sistema sem perguntar aos criadores.
 
