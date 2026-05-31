@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V22
+# Design Tokens · Capture Engine V23
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -40,7 +40,7 @@ A paleta tem dois grupos:
 | `--text` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
 | `--text-muted` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
 | `--accent` | `#0ea5e9` | Cor de destaque primária (Tailwind sky-500) — botões, links, elementos ativos |
-| `--accent-fg` | `#ffffff` | Texto legível sobre fundo accent — branco garante contraste WCAG |
+| `--accent-fg` | `#ffffff` | Texto legível sobre fundo accent — branco sobre `#0ea5e9` tem ratio ~3.1:1 (WCAG AA para texto grande/negrito ≥3:1; abaixo do mínimo para texto pequeno normal ≥4.5:1). Para texto pequeno, ajustar via `TOKEN_ACCENT_FG_OVERRIDE`. |
 | `--accent-hover` | `#0284c7` | Accent escurecido para hover (Tailwind sky-600) |
 | `--color-green` | `#22c55e` | Sucesso, confirmação, estado "Gravado" |
 | `--color-red` | `#ef4444` | Erro, remoção, ações destrutivas |
@@ -57,9 +57,9 @@ A paleta tem dois grupos:
 | `--text` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
 | `--text-muted` | `#9a9a9a` | Cinzento médio para elementos secundários |
 
-> **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência guardada em `localStorage`. Depois de o utilizador comutar manualmente, a escolha fica persistida. Isto dá controlo total ao utilizador.
+> **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência guardada em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controlo total ao usuário.
 
-> **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que aplica `body.dark` *antes* de qualquer pintura do DOM. Sem isto, o utilizador em dark mode veria um flash branco ao abrir a app.
+> **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que aplica `body.dark` *antes* de qualquer pintura do DOM. Sem isto, o usuário em dark mode veria um flash branco ao abrir a app.
 
 ---
 
@@ -95,7 +95,7 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 
 ### Tipografia — Fonte do sistema
 
-A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operativo de cada utilizador.
+A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operativo de cada usuário.
 
 ### Raio de Canto — A escala de arredondamento
 
@@ -115,7 +115,7 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 | Token CSS | Valor | Uso |
 |---|---|---|
-| `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho — consistente em todos os ecrãs |
+| `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho — consistente em todos as telas |
 | `--thumb-size` | `140px` | Tamanho da caixa de thumbnail — todos os thumbs têm a mesma área |
 
 ---
@@ -159,32 +159,44 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Final (vazio = herda cor do texto) |
 | `TOKEN_MAIN_COLOR` | `string` | `'#0ea5e9'` | ✅ | Interface → color picker principal |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color picker de texto |
-| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE'` | ✅ | Interface → "Texto do Rodapé" |
+| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → "Texto do Rodapé" |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → toggle "Campo 1" |
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → toggle "Campo 2" |
 | `TOKEN_USER_LABEL` | `string` | `''` | ✅ | Histórico → "Rótulo — Campo 1" |
 | `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → "Rótulo — Campo 2" |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
-| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Captura → horas até purge |
+| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Captura → horas até purge. **⚠️ Valor 0 é destrutivo** — apaga todas as sessões na próxima abertura (cutoff = `Date.now() - 0`). Para purge infrequente usar valor alto (ex: `8760` = 1 ano). |
 | `TOKEN_DEBUG_MODE` | `bool` | `true` | ❌ | Sem UI — desativado automaticamente em Export User |
 
 ### Notas sobre tokens específicos
 
-**`TOKEN_TITLE_END` (ativo desde V22):**
+**`TOKEN_TITLE_END` (adicionado na V23):**
 Terceira parte do título da aplicação. Renderizado como `<span id="ui-title-end">` com `font-weight: 600`. A cor é controlada por `TOKEN_TITLE_END_COLOR` (vazio = herda cor do texto). Espaços entre partes do título são manuais — incluir no valor do token.
 
 **`TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático):**
-Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto, baseando-se na luminância relativa da cor accent. Preencher apenas se o cálculo automático não produzir o contraste desejado.
+Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto. O algoritmo usado é **YIQ** — uma ponderação perceptual dos canais RGB calibrada para a sensibilidade do olho humano:
+
+```
+yiq = (R × 299 + G × 587 + B × 114) / 1000
+yiq ≥ 128  →  texto escuro (#1a1917)
+yiq < 128  →  texto branco (#ffffff)
+```
+
+O limiar 128 divide a escala 0–255 a meio. Para cores de baixo contraste intrínseco (ex: amarelo `#eab308` — yiq ≈ 176, texto escuro; ciano `#06b6d4` — yiq ≈ 133, texto escuro; laranja `#f97316` — yiq ≈ 145, texto escuro), o resultado automático pode não atingir os rácios WCAG AA (4.5:1 para texto normal). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
 
 **`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` (vazio = padrão visual):**
 Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
 
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
-Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefactos JPEG visíveis em screenshots com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual percetível.
+Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em screenshots com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
+
+> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual directa do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados directamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O standard HTML define que valores fora de `[0, 1]` fazem o browser usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceites sem erro — apenas produzem os artefactos ou o desperdício de espaço documentados acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
 Se definido (ex: `1920`), qualquer imagem com dimensão superior é redimensionada antes de ser armazenada. Útil em ambientes onde o armazenamento é limitado. O redimensionamento preserva a proporção (aspect ratio).
+
+> **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem é armazenada tal como está.
 
 ### Como o Quine usa estes tokens
 
@@ -233,7 +245,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 ├──────────────┴────────────────────────────┴──────────────────┴───────┤
 │ TRASH BAR  [🗑 Removidos  3]  ← expande ao clicar                    │
 ├───────────────────────────────────────────────────────────────────────┤
-│ RODAPÉ  © 2026 • CAPTURE ENGINE                      (opacity: 0.5)  │
+│ RODAPÉ  © 2026 • CAPTURE ENGINE • DIOGO CARVALHO     (opacity: 0.5)  │
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -408,6 +420,15 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | `annTextClickTimer` | `null` | Timer 220ms para distinguir single-click de dblclick |
 | `annSmoothLast` | `null` | Último ponto EMA no desenho livre (α=0.35); reset em activate/deactivate/mouseup |
 
+### Tokens CSS do Motor de Reordenação
+
+Estas variáveis CSS controlam a aparência do placeholder de arrasto (o espaço vazio que aparece durante a reordenação de itens). **Requerem edição direta do `capture-engine.html`** — não são expostas no Visual Builder e não viajam com o Export (o Quine não substitui variáveis CSS, apenas tokens `TOKEN_*`).
+
+| Token CSS | Valor padrão (via `color-mix`) | Descrição |
+|---|---|---|
+| `--drop-ph-bg` | `color-mix(in srgb, var(--text) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito subtil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
+| `--drop-ph-border` | `color-mix(in srgb, var(--text) 8%, transparent)` | Cor da borda do placeholder de arrasto. Ligeiramente mais visível que o fundo para delimitar a área. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
+
 ### Formato de Entradas em `annHistory`
 
 Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais por tipo:
@@ -417,10 +438,10 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
 | `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed: bool` | Path simplificado por RDP (ε=1.8px) |
+| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Guardado com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fecho automático do contorno. Ver changelog V23. |
 | `text` | `x1, y1, txt, bold, italic, fontSize` | `textBaseline='top'`; x1/y1 = canto superior esquerdo |
 
 
 ---
 
-*Capture Engine V22 · Especificações de Design Tokens*
+*Capture Engine V23 · Especificações de Design Tokens*

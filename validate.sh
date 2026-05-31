@@ -5,7 +5,7 @@
 # Faz verificacoes MECANICAS (texto/grep) sobre capture-engine.html.
 # Nao abre o browser, nao executa a app, nao "interpreta" nada: cada teste
 # e' uma contagem ou uma comparacao exata. Por isso o resultado e' SEMPRE o
-# mesmo para o mesmo ficheiro -> uma IA pode confiar nele sem alucinar.
+# mesmo para o mesmo arquivo -> uma IA pode confiar nele sem alucinar.
 #
 # O QUE ISTO COBRE (verificavel sem browser):
 #   - Integridade do Quine (comment markers, funcoes essenciais)
@@ -28,7 +28,7 @@ PASS=0
 FAIL=0
 
 if [ ! -f "$FILE" ]; then
-  echo "ERRO: ficheiro nao encontrado: $FILE"
+  echo "ERRO: arquivo nao encontrado: $FILE"
   exit 2
 fi
 
@@ -75,7 +75,7 @@ check_eq "APIs proibidas (eval/Function/write)" 0 "$BAD"
 EXT=$(grep -cE "src=\"https?://|href=\"https?://|cdn\.|googleapis" "$FILE")
 check_eq "Recursos externos http(s) (zero-dep)" 0 "$EXT"
 
-# 6) Cabecalho de licenca presente no ficheiro distribuido.
+# 6) Cabecalho de licenca presente no arquivo distribuido.
 LIC=$(grep -c "Copyright (c) 2026 Diogo Carvalho" "$FILE")
 if [ "$LIC" -ge 1 ]; then printf '[PASS] %-52s (%s)\n' "Cabecalho de licenca MIT presente" "$LIC"; PASS=$((PASS+1));
 else printf '[FAIL] %-52s (0)\n' "Cabecalho de licenca MIT AUSENTE"; FAIL=$((FAIL+1)); fi
@@ -86,10 +86,23 @@ check_eq "TOKEN_SUBTITLE removido" 0 "$SUB"
 EXACT=$(grep -c "'exact'" "$FILE")
 check_eq "Modo PDF 'exact' removido" 0 "$EXACT"
 
-# 8) Consistencia de versao no HTML: 3 referencias Vxx (comentario VB, badge, console).
-VER=$(grep -oE "V[0-9]+(\.[0-9]+)?" "$FILE" | grep -oE "V22" | wc -l | tr -d ' ')
-if [ "$VER" -ge 1 ]; then printf '[PASS] %-52s (%s)\n' "Referencias de versao V22 no HTML" "$VER"; PASS=$((PASS+1));
-else printf '[FAIL] %-52s (0)\n' "Sem referencia de versao no HTML"; FAIL=$((FAIL+1)); fi
+# 8) Consistencia de versao no HTML. A versao actual e' AUTO-DETECTADA do boot
+#    message ('Capture Engine Vxx Ready') — nao ha numero de versao hardcoded
+#    aqui, por isso o script nao precisa de ser editado a cada version bump.
+#    Verifica que essa mesma versao aparece nas 3 referencias de produto:
+#    comentario VB, badge visual e console. (Refs historicas tipo "NOTA (Vxx)"
+#    sao ignoradas — so contam as 3 referencias de produto.)
+VER=$(grep -oE "Capture Engine V[0-9]+(\.[0-9]+)? Ready" "$FILE" | grep -oE "V[0-9]+(\.[0-9]+)?" | head -1)
+if [ -n "$VER" ]; then
+  VBC=$(grep -c "VISUAL BUILDER MODAL ($VER)" "$FILE")
+  BDG=$(grep -c ">$VER</span>" "$FILE")
+  if [ "$VBC" -ge 1 ] && [ "$BDG" -ge 1 ]; then
+    printf '[PASS] %-52s (%s)\n' "Versao consistente no HTML (VB+badge+console)" "$VER"; PASS=$((PASS+1));
+  else
+    printf '[FAIL] %-52s (VB=%s badge=%s)\n' "Versao $VER inconsistente no HTML" "$VBC" "$BDG"; FAIL=$((FAIL+1));
+  fi
+else
+  printf '[FAIL] %-52s\n' "Sem boot message de versao (Capture Engine Vxx Ready)"; FAIL=$((FAIL+1)); fi
 
 # 9) Sintaxe JavaScript (opcional: so corre se 'node' existir).
 if command -v node >/dev/null 2>&1; then

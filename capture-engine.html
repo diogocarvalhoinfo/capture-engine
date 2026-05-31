@@ -653,8 +653,46 @@
       cursor: grab
     }
 
-    .t-item.dragging {
-      opacity: 0.4
+    .t-item, .d-item {
+      touch-action: none;
+      -webkit-user-drag: none;
+      user-select: none
+    }
+
+    .t-wrap img {
+      -webkit-user-drag: none;
+      user-drag: none;
+      pointer-events: none
+    }
+
+    /* Reordenacao estilo telemovel: itens deslizam suavemente para o novo lugar */
+    .t-item.reorder-anim, .d-item.reorder-anim {
+      transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1)
+    }
+
+    /* O item arrastado flutua, encolhe para ~75% e segue o cursor (sem transition, cola ao dedo) */
+    .t-item.dragging, .d-item.dragging {
+      position: fixed;
+      margin: 0;
+      z-index: 50;
+      opacity: 0.95;
+      transform: scale(0.75);
+      transform-origin: top left;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      border-radius: var(--radius-sm);
+      cursor: grabbing;
+      transition: none;
+      pointer-events: none
+    }
+
+    /* Espaco reservado para onde o item vai cair: area muito suave (quase um buraco).
+       Ajustavel via --drop-ph-bg / --drop-ph-border abaixo. */
+    .reorder-placeholder {
+      box-sizing: border-box;
+      border-radius: var(--radius-sm);
+      background: var(--drop-ph-bg, color-mix(in srgb, var(--text) 5%, transparent));
+      border: 1px solid var(--drop-ph-border, color-mix(in srgb, var(--text) 8%, transparent));
+      transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1)
     }
 
     .t-wrap {
@@ -822,10 +860,6 @@
 
     .d-item:hover {
       background: var(--bg)
-    }
-
-    .d-item.dragging {
-      opacity: 0.4
     }
 
     .d-item .d-icon {
@@ -2207,14 +2241,14 @@
 
       .t-item {
         pointer-events: auto;
-        touch-action: manipulation;
+        touch-action: none;
         cursor: pointer;
         width: 100%
       }
 
       .t-wrap {
         pointer-events: auto;
-        touch-action: manipulation;
+        touch-action: none;
         width: 100%;
         cursor: pointer
       }
@@ -2410,6 +2444,10 @@
     #img-modal-overlay #img-modal-dl:hover {
       background: rgba(255, 255, 255, 0.18);
       border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    #img-nav-prev:hover, #img-nav-next:hover {
+      background: rgba(255, 255, 255, 0.18) !important;
     }
 
     /* Zoom & Pan Styles */
@@ -2718,7 +2756,7 @@
 
   </div><!-- /main-layout -->
 
-  <div id="footer-credits">© 2026 • CAPTURE ENGINE • DIOGOCARVALHOINFO.COM</div>
+  <div id="footer-credits">© 2026 • CAPTURE ENGINE • DIOGO CARVALHO</div>
 
   <!-- ═══ MODAL: Visualizar imagem ═══ -->
   <div class="modal-overlay" id="img-modal-overlay">
@@ -2765,6 +2803,9 @@
           <input id="ann-text-input" type="text" autocomplete="off" spellcheck="false"
             style="position:absolute;background:transparent;color:#fff;border:none;padding:0;margin:0;font-family:sans-serif;font-weight:bold;outline:none;min-width:100px;pointer-events:auto;transform-origin:left top;">
         </div>
+        <!-- Image Navigation Arrows -->
+        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <!-- Footer Actions -->
       <div
@@ -2782,10 +2823,9 @@
           <button class="btn-send" id="ann-toggle" style="background:var(--accent);color:var(--accent-fg)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
-              <path d="M4.5 14.5L16.5 2.5a3.536 3.536 0 0 1 5 5L9.5 19.5Z" />
-              <path d="M4.5 14.5L9.5 19.5L2 22Z" fill="currentColor" />
-              <path d="M12 22h8" />
-            </svg> Anotar
+              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+              <path d="m15 5 4 4" />
+            </svg> Editar
           </button>
           <button class="btn-send" id="img-modal-dl"
             style="background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
@@ -2927,7 +2967,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (V22) -->
+  <!-- VISUAL BUILDER MODAL (V23) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -2945,7 +2985,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V22</span>
+            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V23</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3178,7 +3218,7 @@
       let trashUrls = [];
       const TOKEN_USER_LABEL = '';
       const TOKEN_EQUIP_LABEL = '';
-      const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE';
+      const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO';
       const TOKEN_JPEG_QUALITY = 0.92;
       const TOKEN_MAX_IMG_DIMENSION = 0;
       const TOKEN_AUTO_PURGE_HOURS = 48;
@@ -3234,7 +3274,7 @@
       async function triggerSave() { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }
 
       /* ═══ INDEXEDDB ═══ */
-      function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.error('IDB Bloqueado - Feche outras abas e recarregue'); document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff;font-family:sans-serif;background:#b91c1c;height:100vh;box-sizing:border-box"><h2>Erro de Banco de Dados</h2><p>O Capture Engine est\u00e1 aberto noutras abas. Feche-as e recarregue esta p\u00e1gina.</p></div>' } }) }
+      function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store), r = fn(st); tx.onabort = () => rej(tx.error || new Error('Transaction aborted')); tx.onerror = () => rej(tx.error || new Error('Transaction error')); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d));
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
@@ -3262,10 +3302,10 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').title = 'Exportar: ' + buildFilename('pdf'); $('btn-zip').title = 'Exportar: ' + buildFilename('zip') }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = true; el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" title="Ver"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">✕</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); el.addEventListener('dragstart', e => { const r = el.getBoundingClientRect(); el.dataset.ox = e.clientX - r.left; el.dataset.oy = e.clientY - r.top; e.dataTransfer.setData('text/plain', o.id); el.classList.add('dragging') }); el.addEventListener('dragend', () => el.classList.remove('dragging')); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" title="Ver"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">✕</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* ═══ RENDER DOC ═══ */
-      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = true; el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); el.addEventListener('dragstart', e => { const r = el.getBoundingClientRect(); el.dataset.ox = e.clientX - r.left; el.dataset.oy = e.clientY - r.top; e.dataTransfer.setData('text/plain', o.id); el.classList.add('dragging') }); el.addEventListener('dragend', () => el.classList.remove('dragging')); $('doc-list').appendChild(el) }
+      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
       function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(r.label || '')}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" style=\"background:var(--bg);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--text-muted)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
@@ -3313,6 +3353,8 @@
         if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
 
         $('img-modal-overlay').classList.add('open');
+        const _navShow = (trash ? removed : images).length > 1;
+        ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navShow ? 'flex' : 'none'; });
       };
 
       function closeImgModal() {
@@ -3397,7 +3439,7 @@
         $('zoom-out').onclick = (e) => { e.stopPropagation(); doImgZoom(-0.5, 0, 0, true) };
         $('zoom-level').onclick = (e) => { e.stopPropagation(); resetImgZoom() };
         vp.addEventListener('wheel', function (e) { if (annActive) return; e.preventDefault(); const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; let dy = e.deltaY; if (e.deltaMode === 1) dy *= 15; const delta = dy * -0.002; doImgZoom(delta, px, py, false) }, { passive: false });
-        vp.addEventListener('dblclick', function (e) { if (annActive) return; if (!imgZoomed) { const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; doImgZoom(1.0, px, py, true) } else { resetImgZoom() } });
+        vp.addEventListener('dblclick', function (e) { if (annActive) return; if (e.target.closest('#img-nav-prev,#img-nav-next')) return; if (!imgZoomed) { const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; doImgZoom(1.0, px, py, true) } else { resetImgZoom() } });
         vp.addEventListener('mousedown', function (e) { if (!imgZoomed || annActive) return; imgPanning = true; imgStartX = e.clientX - imgPanX; imgStartY = e.clientY - imgPanY; $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
         window.addEventListener('mousemove', function (e) { if (!imgPanning) return; if (e.buttons === 0) { imgPanning = false; if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim'); return; } imgPanX = e.clientX - imgStartX; imgPanY = e.clientY - imgStartY; applyImgZoom(false) });
         window.addEventListener('mouseup', function () { if (imgPanning) { imgPanning = false; if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim') } });
@@ -3490,10 +3532,13 @@
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1;
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
+      let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
       const ANN_TEXT_SIZES = [14, 18, 24, 36, 48]; let annTextSizeIdx = 2; // default 24px (index 2)
       function annLineW() { return ANN_SIZES[annSizeIdx] }
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
-      // Ramer-Douglas-Peucker path simplification (epsilon in canvas px)
+      // Ramer-Douglas-Peucker path simplification (epsilon in canvas px).
+      // NOTA (V23): definida mas NAO chamada no fluxo de desenho livre — o traco e guardado
+      // com os mesmos pontos do preview (annPath), sem simplificacao. Mantida caso seja reativada. Ver changelog V23.
       function rdp(pts, eps) {
         if (pts.length < 3) return pts;
         const p0 = pts[0], pn = pts[pts.length - 1];
@@ -3552,6 +3597,7 @@
         cv.style.display = 'block';
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
+        ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
         annSetTool('rect'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
         annRedraw();
         SysLogger.info('Annotation mode ON');
@@ -3566,6 +3612,7 @@
         const cv = $('ann-canvas'); cv.style.display = 'none';
         if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
         if ($('img-modal-default-actions')) $('img-modal-default-actions').style.display = 'flex';
+        if ($('img-modal-overlay').classList.contains('open')) { var _navArr = modalIsTrash ? removed : images; ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.remove('active'));
         const o = images.find(x => x.id === modalItemId);
         if (o) {
@@ -3745,8 +3792,32 @@
           annEditingTextIdx = -1;
           annShowTextInput(p.x, p.y);
         });
-        window.addEventListener('mousemove', e => { if (!annDrawing || !annActive) return; const p = annCanvasXYClamped(e); const ctx = annGetCtx(); annRedraw(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) } else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (annTool === 'free') { const alpha = 0.35; const sx = annSmoothLast ? alpha * p.x + (1 - alpha) * annSmoothLast.x : p.x; const sy = annSmoothLast ? alpha * p.y + (1 - alpha) * annSmoothLast.y : p.y; const sp = { x: sx, y: sy }; const lastPt = annPath[annPath.length - 1]; const dx = sp.x - lastPt.x, dy = sp.y - lastPt.y; if (dx * dx + dy * dy < 25) return; annSmoothLast = sp; annPath.push(sp); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, annPath, false); if (annPath.length > 10) { const fdx = sp.x - annPath[0].x, fdy = sp.y - annPath[0].y; if (fdx * fdx + fdy * fdy < 144) { ctx.beginPath(); ctx.arc(annPath[0].x, annPath[0].y, annLineW() + 4, 0, Math.PI * 2); ctx.stroke() } } } });
-        window.addEventListener('mouseup', e => { if (!annDrawing || !annActive) return; annDrawing = false; const p = annCanvasXYClamped(e); if (annTool === 'free') { annSmoothLast = null; if (annPath.length > 1) { const fdx = annPath[annPath.length - 1].x - annPath[0].x, fdy = annPath[annPath.length - 1].y - annPath[0].y; const closed = annPath.length > 10 && fdx * fdx + fdy * fdy < 144; const laplacian = function (pts, iters) { let p = pts.slice(); for (let k = 0; k < iters; k++) { const n = [p[0]]; for (let i = 1; i < p.length - 1; i++)n.push({ x: (p[i - 1].x + p[i].x * 2 + p[i + 1].x) / 4, y: (p[i - 1].y + p[i].y * 2 + p[i + 1].y) / 4 }); n.push(p[p.length - 1]); p = n; } return p; }; const smoothed = annPath.length > 4 ? laplacian(annPath, 2) : annPath.slice(); const simplified = smoothed.length > 4 ? rdp(smoothed, 1.8) : [...smoothed]; annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }); setAnnDirty(true); annRedoHistory = [] } } else if (annTool !== 'text') { annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }); setAnnDirty(true); annRedoHistory = [] } annRedraw() });
+        function annPaintPreview() {
+          annRafId = 0;
+          if (!annDrawing || !annActive || !annLastEvt) return;
+          const p = annCanvasXYClamped(annLastEvt);
+          const ctx = annGetCtx(); annRedraw(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() }
+          else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) }
+          else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() }
+          else if (annTool === 'free') { annCR(ctx, annPath, false); }
+        }
+        function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
+        window.addEventListener('mousemove', e => {
+          if (!annDrawing || !annActive) return;
+          annLastEvt = e;
+          if (annTool === 'free') {
+            const p = annCanvasXYClamped(e); const alpha = 0.35;
+            const sx = annSmoothLast ? alpha * p.x + (1 - alpha) * annSmoothLast.x : p.x;
+            const sy = annSmoothLast ? alpha * p.y + (1 - alpha) * annSmoothLast.y : p.y;
+            const sp = { x: sx, y: sy }; const lastPt = annPath[annPath.length - 1];
+            const dx = sp.x - lastPt.x, dy = sp.y - lastPt.y;
+            if (dx * dx + dy * dy < 25) return; // ignora micro-movimentos
+            annSmoothLast = sp; annPath.push(sp);
+          }
+          annScheduledPaint();
+        });
+        window.addEventListener('mouseup', e => { if (!annDrawing || !annActive) return; annDrawing = false; if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; } annLastEvt = null; const p = annCanvasXYClamped(e); if (annTool === 'free') { annSmoothLast = null; if (annPath.length > 1) { const closed = false; /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */ const simplified = annPath.slice(); annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }); setAnnDirty(true); annRedoHistory = [] } } else if (annTool !== 'text') { annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }); setAnnDirty(true); annRedoHistory = [] } annRedraw() });
       }
 
       /* ═══ CLIPBOARD HANDLER ═══ */
@@ -3756,7 +3827,153 @@
       function initDragDrop() { ['img-zone', 'doc-zone'].forEach(zId => { const z = $(zId); z.addEventListener('dragover', e => { e.preventDefault(); if (document.querySelector('.dragging')) return; const t = e.dataTransfer.types; if (t && t.includes('Files')) z.classList.add('drag-over') }); z.addEventListener('dragleave', e => { if (!z.contains(e.relatedTarget)) z.classList.remove('drag-over') }); z.addEventListener('drop', async e => { e.preventDefault(); z.classList.remove('drag-over'); if (document.querySelector('.dragging')) return; const txt = e.dataTransfer.getData('text/plain'); if (txt && (txt.startsWith('img_') || txt.startsWith('doc_'))) return; const files = e.dataTransfer.files; if (!files.length) return; for (const f of files) { if (f.type.startsWith('image/')) await captureImg(f); else await captureDoc(f, f.name, f.type) } }) }); document.addEventListener('dragleave', e => { if (!e.clientX && !e.clientY) document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')) }); document.addEventListener('drop', e => document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))) }
 
       /* ═══ DRAG-DROP REORDER ═══ */
-      function initReorder() { const tg = $('thumb-grid'), dl = $('doc-list');[tg, dl].forEach(container => { container.addEventListener('dragover', e => { e.preventDefault(); const drag = container.querySelector('.dragging'); if (!drag) return; const ox = parseFloat(drag.dataset.ox) || 0; const oy = parseFloat(drag.dataset.oy) || 0; const rect = drag.getBoundingClientRect(); const ghostX = e.clientX - ox + rect.width / 2; const ghostY = e.clientY - oy + rect.height / 2; const after = getDragAfterEl(container, ghostY, ghostX, drag); if (!after) { if (container.lastElementChild !== drag) container.appendChild(drag) } else { if (drag.nextElementSibling !== after) container.insertBefore(drag, after) } }); container.addEventListener('drop', async e => { const drag = container.querySelector('.dragging'); if (!drag) return; e.stopPropagation(); const isImg = container === tg; const items = container.querySelectorAll(isImg ? '.t-item' : '.d-item'); const arr = isImg ? images : docs; const store = isImg ? 'images' : 'documents'; const ordered = []; items.forEach((el, i) => { const id = el.dataset.id; const obj = arr.find(x => x.id === id); if (obj) { obj.order = i; ordered.push(obj) } }); if (isImg) images = ordered; else docs = ordered; for (const o of ordered) await idbPut(store, o); isDirty = true; triggerSave() }) }); function getDragAfterEl(container, y, x, drag) { const els = [...container.querySelectorAll('.t-item:not(.dragging),.d-item:not(.dragging)')]; if (!els.length) return null; const isList = container === dl; let closest = null; let minDist = Infinity; for (const el of els) { const box = el.getBoundingClientRect(); const cx = box.left + box.width / 2; const cy = box.top + box.height / 2; const dist = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)); if (dist < minDist) { minDist = dist; closest = el } } if (!closest) return null; const box = closest.getBoundingClientRect(); const dragIsBefore = !!(drag.compareDocumentPosition(closest) & Node.DOCUMENT_POSITION_FOLLOWING); let isBefore; if (isList) { const cy = box.top + box.height / 2; const offset = box.height * 0.1; const threshold = dragIsBefore ? cy - offset : cy + offset; isBefore = y < threshold } else { const isSameRow = y >= box.top && y <= box.bottom; if (!isSameRow) { const cy = box.top + box.height / 2; const offset = box.height * 0.1; const threshold = dragIsBefore ? cy - offset : cy + offset; isBefore = y < threshold } else { const cx = box.left + box.width / 2; const offset = box.width * 0.1; const threshold = dragIsBefore ? cx - offset : cx + offset; isBefore = x < threshold } } let afterNode; if (isBefore) { afterNode = closest } else { afterNode = closest.nextElementSibling; if (afterNode === drag) { afterNode = drag.nextElementSibling } } return afterNode } }
+      function initReorder() {
+        const tg = $('thumb-grid'), dl = $('doc-list');
+        // Reordenacao estilo telemovel com PLACEHOLDER:
+        // - ao segurar, o item encolhe para ~75% e flutua (position:fixed) seguindo o cursor;
+        // - um espaco reservado (placeholder) marca onde vai cair e desloca-se com o cursor;
+        // - os outros itens fluem naturalmente a' volta do placeholder;
+        // - so ao soltar e' que o item assume a posicao final (encaixa no placeholder).
+        const DRAG_THRESHOLD = 6;
+
+        [tg, dl].forEach(container => {
+          const itemSel = container === tg ? '.t-item' : '.d-item';
+          let dragEl = null, ph = null, pointerId = null, active = false;
+          let startX = 0, startY = 0, grabDX = 0, grabDY = 0, w = 0, h = 0;
+
+          function makePlaceholder(refRect) {
+            const p = document.createElement('div');
+            p.className = 'reorder-placeholder';
+            p.style.width = refRect.width + 'px';
+            p.style.height = refRect.height + 'px';
+            return p;
+          }
+
+          // Decide antes de que elemento (entre os irmaos visiveis) o placeholder deve ficar.
+          function targetBefore(cx, cy) {
+            // Usa a geometria de REPOUSO (offsetLeft/offsetTop), que NAO e' afetada pelos
+            // transforms da animacao FLIP em curso. Medir getBoundingClientRect durante a
+            // animacao apanhava posicoes intermedias e mandava o placeholder para o sitio errado.
+            const els = [...container.querySelectorAll(itemSel)].filter(el => el !== dragEl);
+            if (!els.length) return null;
+            const cRect = container.getBoundingClientRect();
+            // cursor em coordenadas internas do contentor (inclui scroll)
+            const px = cx - cRect.left + container.scrollLeft;
+            const py = cy - cRect.top + container.scrollTop;
+            const HX = Math.max(10, w * 0.18), HY = Math.max(10, h * 0.18); // zona morta (histerese)
+            for (const el of els) {
+              const ox = el.offsetLeft, oy = el.offsetTop, ow = el.offsetWidth, oh = el.offsetHeight;
+              const mx = ox + ow / 2, my = oy + oh / 2;
+              if (container === dl) { if (py < my - HY) return el; }
+              else {
+                const sameRow = py >= oy && py <= oy + oh;
+                if (sameRow && px < mx - HX) return el;
+                if (py < oy - HY) return el;
+              }
+            }
+            return null;
+          }
+
+          function positionFloat(cx, cy) {
+            // canto superior-esquerdo do item = cursor - offset de pega (em coords de viewport)
+            dragEl.style.left = (cx - grabDX) + 'px';
+            dragEl.style.top = (cy - grabDY) + 'px';
+          }
+
+          function onMove(e) {
+            if (!dragEl) return;
+            const cx = e.clientX, cy = e.clientY;
+            if (!active) {
+              if (Math.hypot(cx - startX, cy - startY) < DRAG_THRESHOLD) return; // ainda e' clique
+              active = true;
+              const r = dragEl.getBoundingClientRect();
+              w = r.width; h = r.height;
+              const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
+              // cria placeholder no lugar atual e tira o item do fluxo
+              ph = makePlaceholder(r);
+              container.insertBefore(ph, dragEl.nextSibling);
+              dragEl.style.width = w + 'px';
+              dragEl.style.height = h + 'px';
+              dragEl.classList.add('dragging');
+              positionFloat(cx, cy);
+              try { dragEl.setPointerCapture(pointerId) } catch (_) {}
+              return;
+            }
+            e.preventDefault();
+            positionFloat(cx, cy);
+            // move o placeholder para a posicao alvo (os irmaos deslizam via FLIP)
+            const before = targetBefore(cx, cy);
+            // Ignora se o alvo ja' corresponde ao lugar atual do placeholder (evita FLIP a' toa).
+            const samePlace = (before === ph) || (before === ph.nextElementSibling) || (!before && container.lastElementChild === ph);
+            if (!samePlace) {
+              // FLIP: mede irmaos ANTES, move o placeholder, anima do lugar antigo para o novo
+              const movers = [...container.querySelectorAll(itemSel)].filter(el => el !== dragEl);
+              const firsts = new Map();
+              movers.forEach(el => firsts.set(el, el.getBoundingClientRect()));
+              if (!before) container.appendChild(ph);
+              else container.insertBefore(ph, before);
+              movers.forEach(el => {
+                const f = firsts.get(el); const l = el.getBoundingClientRect();
+                const dx = f.left - l.left, dy = f.top - l.top;
+                if (!dx && !dy) return;
+                el.classList.remove('reorder-anim');
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
+                requestAnimationFrame(() => { el.classList.add('reorder-anim'); el.style.transform = ''; });
+              });
+            }
+          }
+
+          async function onUp() {
+            container.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onUp);
+            const wasActive = active;
+            const movedEl = dragEl;
+            const placeholder = ph;
+            dragEl = null; ph = null; active = false; pointerId = null;
+            if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // foi so um clique
+
+            // encaixa o item real no lugar do placeholder
+            if (placeholder && movedEl) container.insertBefore(movedEl, placeholder);
+            if (placeholder) placeholder.remove();
+            // limpa quaisquer transforms residuais dos irmaos
+            container.querySelectorAll(itemSel).forEach(el => { el.classList.remove('reorder-anim'); el.style.transform = ''; });
+            if (movedEl) {
+              clearFloat(movedEl);
+              // suprime o 'click' fantasma que dispara apos arrastar
+              const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
+              movedEl.addEventListener('click', swallow, { capture: true, once: true });
+              setTimeout(() => { try { movedEl.removeEventListener('click', swallow, { capture: true }); } catch (_) {} }, 0);
+            }
+
+            // persiste a nova ordem
+            const isImg = container === tg;
+            const items = container.querySelectorAll(isImg ? '.t-item' : '.d-item');
+            const arr = isImg ? images : docs, store = isImg ? 'images' : 'documents';
+            const ordered = [];
+            items.forEach((el, i) => { const obj = arr.find(x => x.id === el.dataset.id); if (obj) { obj.order = i; ordered.push(obj) } });
+            if (isImg) images = ordered; else docs = ordered;
+            for (const o of ordered) await idbPut(store, o);
+            isDirty = true; triggerSave();
+          }
+
+          function clearFloat(el) {
+            el.classList.remove('dragging');
+            el.style.left = ''; el.style.top = ''; el.style.width = ''; el.style.height = '';
+          }
+
+          container.addEventListener('pointerdown', e => {
+            if (e.button != null && e.button !== 0) return; // so botao principal
+            const item = e.target.closest(itemSel);
+            if (!item || !container.contains(item)) return;
+            if (e.target.closest('input, textarea, button, .t-del, .d-del')) return;
+            dragEl = item; pointerId = e.pointerId; startX = e.clientX; startY = e.clientY; active = false;
+            container.addEventListener('pointermove', onMove);
+            window.addEventListener('pointerup', onUp);
+            window.addEventListener('pointercancel', onUp);
+          });
+        });
+      }
 
       /* ═══ SIDEBAR ═══ */
       async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
@@ -3972,6 +4189,13 @@
         $('cfg-title-accent').addEventListener('input', syncTitleSpans);
         $('cfg-title-end').addEventListener('input', syncTitleSpans);
 
+        // Live footer preview — atualiza #footer-credits enquanto se edita (espelha {YEAR} do applyTokens)
+        $('cfg-footer-text').addEventListener('input', (e) => {
+          const fc = $('footer-credits');
+          if (fc) fc.textContent = (e.target.value || '').replace('{YEAR}', new Date().getFullYear());
+          isDirty = true;
+        });
+
         // Live session visibility settings
         $('cfg-show-user').addEventListener('change', (e) => {
           $('session-user').style.display = e.target.checked ? '' : 'none';
@@ -4128,7 +4352,7 @@
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V22 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V23 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
 function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
