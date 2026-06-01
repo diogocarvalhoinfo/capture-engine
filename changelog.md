@@ -5,6 +5,32 @@
 
 ---
 
+## [V24] — 2026-06-01
+
+Ferramenta de Texto da anotação: suporte a **texto multilinha** e **redimensionamento ao vivo** do tamanho da fonte, com o texto a ficar achatado na imagem exatamente como aparece no editor (WYSIWYG).
+
+### Adicionado
+
+**Texto multilinha na anotação** — o editor de texto (`#ann-text-input`, dentro de `#ann-text-overlay`) passou de `<input type="text">` para `<textarea wrap="off">`. Agora é possível escrever **várias linhas** e o editor cresce em altura e largura à medida que se escreve (nova função `annAutosizeText()`: como `wrap="off"` não quebra linhas sozinho, mede a linha mais longa com `measureText` na fonte escalada e ajusta `width`/`height`). O render no canvas (`annDrawShape`, ramo `h.type === 'text'`) deixou de usar um único `fillText` (que ignora `\n`) e desenha **linha a linha** (`String(h.txt).split('\n')`). Foi introduzida a constante única `ANN_TEXT_LINE_RATIO = 1.3`, usada **tanto** no `line-height` do `<textarea>` **como** no canvas, garantindo que o que se vê a escrever é igual ao que fica gravado. Alinhamento vertical determinístico: a 1.ª linha é desenhada em `y1 + halfLeading`, com `halfLeading = (lineH − fontSize) / 2` e `lineH = fontSize × ANN_TEXT_LINE_RATIO`. A reedição por duplo-clique passou a testar o clique contra a **caixa completa** do texto (largura da linha mais comprida × número de linhas, com o mesmo `lineH`), permitindo reabrir o texto clicando em qualquer linha.
+
+**Cursor da ferramenta Texto** — ao selecionar a ferramenta Texto, o cursor sobre o canvas de anotação passa de cruz (`crosshair`) para cursor de texto (`text` / I-beam), dando feedback imediato do modo ativo; volta a `crosshair` nas restantes ferramentas (definido em `annSetTool`).
+
+### Modificado
+
+**Enter deixou de confirmar o texto — passou a inserir nova linha** — na ferramenta Texto, removido o ramo `if (e.key === 'Enter') { e.preventDefault(); commit() }` do `onkeydown`. A confirmação acontece agora ao **clicar fora** do editor (`onblur`), ao clicar noutro ponto do canvas, ou no botão **Confirmar** (`#ann-save`). `Ctrl+B` / `Ctrl+I` e `Escape` (cancelar) mantêm-se inalterados.
+
+### Corrigido
+
+**Botões de tamanho −/+ fechavam o editor de texto e não redimensionavam ao vivo** — com texto em edição, clicar em `#ann-thickness-down` / `#ann-thickness-up` tirava o foco ao editor (disparando o commit) e mudava o tamanho apenas uma vez, sem refletir na caixa aberta. Corrigido aplicando o mesmo padrão já usado pelas swatches e pelos botões B/I: `mousedown` com `e.preventDefault()` quando o overlay de texto está visível (impede o blur/commit) e, no `onclick` (só no ramo `annTool === 'text'` e com o editor visível), atualização **ao vivo** do `font-size` e `line-height` do editor + reposicionamento, via `annTextLiveResize()` → `annAutosizeText()`, sem fechar. Fora do modo texto, os botões continuam a controlar a espessura do traço, sem qualquer alteração.
+
+**Texto novo aparecia abaixo do cursor** — o ponto clicado corresponde ao **centro vertical** do cursor I-beam (`cursor: text`), mas a 1.ª linha ancorava pelo topo nesse ponto, fazendo o texto aparecer abaixo de onde se mirava. Corrigido em `annShowTextInput`: para texto novo (sem `prefill`), a âncora sobe meia linha — `canvasY -= ANN_TEXT_SIZES[annTextSizeIdx] × ANN_TEXT_LINE_RATIO / 2` (coords do canvas) — ficando a 1.ª linha **centrada** no ponto clicado, tanto no editor como no canvas (o `y1` gravado já leva o ajuste, por isso o WYSIWYG mantém-se). A reedição por duplo-clique (com `prefill`) preserva a âncora gravada, sem deslocamento.
+
+**Ctrl+Z desfazia a anotação enquanto se escrevia texto** — o listener global de `keydown` tratava `Ctrl+Z`/`Ctrl+Y` como undo/redo da anotação mesmo com o foco no editor de texto, impedindo o desfazer nativo da digitação. Adicionado um guard: se `document.activeElement` for `INPUT`/`TEXTAREA`/`isContentEditable`, o bloco de undo/redo da anotação é ignorado (sem `preventDefault`), deixando o campo desfazer/refazer as letras nativamente. Fora de um campo de texto, o comportamento é igual ao anterior.
+
+**Documentação** — `agents.md` §7 (`annShowTextInput` agora descreve o `<textarea>` multilinha e Enter=nova linha; `annDrawShape` o render linha a linha; nova função `annAutosizeText`), §9 (nova constante `ANN_TEXT_LINE_RATIO`) e §11 (checklist de `annDrawShape` estendida ao render multilinha); `readme.md` §5.3 (secção da ferramenta Texto: multilinha, Enter=nova linha, confirmar a clicar fora/Confirmar, resize ao vivo dos −/+).
+
+**Documentação — auditoria universal (correções).** Após uma auditoria à documentação: documentados os motores **PDF** e **ZIP** em `agents.md` §7 (até aqui sem referência de funções); acrescentados os campos `origBlob`/`annHistory` ao esquema do `images` (`agents.md` §6 e `readme.md` §13); corrigida a descrição da anotação na `readme.md` §5.3 (de "permanente" para **não-destrutiva e reeditável**, com o original preservado); reposto o cabeçalho em falta `## 7. Segurança e privacidade` na `readme.md`; corrigida a posição do script anti-FOUC no diagrama da `readme.md` §13 (de `<head>` para logo após `<body>`); `design-tokens.md` actualizado (constante `ANN_TEXT_LINE_RATIO`, entrada `text` multilinha, afirmações subjectivas); siglas **EMA** e **FLIP** expandidas; tamanho do ficheiro (~190KB → ~198KB) corrigido.
+
 ## [V23] — 2026-05-31
 
 Versão maior: correção de dois bugs de interação reportados pelo usuário (visíveis durante o uso, não no código estático) e substituição do mecanismo de reordenação.

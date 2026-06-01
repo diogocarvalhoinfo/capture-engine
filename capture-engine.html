@@ -2800,8 +2800,8 @@
         </div>
         <!-- Inline text overlay for annotation -->
         <div id="ann-text-overlay" style="display:none;position:absolute;inset:0;z-index:200;pointer-events:none">
-          <input id="ann-text-input" type="text" autocomplete="off" spellcheck="false"
-            style="position:absolute;background:transparent;color:#fff;border:none;padding:0;margin:0;font-family:sans-serif;font-weight:bold;outline:none;min-width:100px;pointer-events:auto;transform-origin:left top;">
+          <textarea id="ann-text-input" wrap="off" rows="1" autocomplete="off" spellcheck="false"
+            style="position:absolute;background:transparent;color:#fff;border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
         <!-- Image Navigation Arrows -->
         <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -2967,7 +2967,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (V23) -->
+  <!-- VISUAL BUILDER MODAL (V24) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -2985,7 +2985,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V23</span>
+            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V24</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3399,7 +3399,10 @@
 
       // Keyboard navigation
       window.addEventListener('keydown', function (e) {
-        if (annActive && (e.ctrlKey || e.metaKey)) {
+        // Guard: se o foco está num campo de texto (ex: editor de texto da anotação), deixar o
+        // Ctrl+Z/Ctrl+Y nativos do campo desfazerem a DIGITAÇÃO — não o undo/redo da anotação.
+        const _annUndoInField = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
+        if (annActive && (e.ctrlKey || e.metaKey) && !_annUndoInField) {
           if (e.key.toLowerCase() === 'z') {
             e.preventDefault();
             if (e.shiftKey) { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRedraw() } }
@@ -3534,6 +3537,7 @@
       let annSmoothLast = null; // EMA smoothing state for free draw
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
       const ANN_TEXT_SIZES = [14, 18, 24, 36, 48]; let annTextSizeIdx = 2; // default 24px (index 2)
+      const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio — usado no textarea E no canvas (WYSIWYG multilinha)
       function annLineW() { return ANN_SIZES[annSizeIdx] }
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
       // Ramer-Douglas-Peucker path simplification (epsilon in canvas px).
@@ -3622,10 +3626,10 @@
           img.src = u;
         }
       }
-      function annSetTool(t) { annTool = t; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) }); const _isText = t === 'text'; const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn'); if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) } if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) } annUpdateThicknessIcon(); }
+      function annSetTool(t) { annTool = t; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) }); const _isText = t === 'text'; const _cv = $('ann-canvas'); if (_cv) _cv.style.cursor = _isText ? 'text' : 'crosshair'; const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn'); if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) } if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) } annUpdateThicknessIcon(); }
       function annCR(ctx, pts, closed) { if (pts.length < 2) return; function seg(i) { const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)]; return { cp1x: p1.x + (p2.x - p0.x) / 6, cp1y: p1.y + (p2.y - p0.y) / 6, cp2x: p2.x - (p3.x - p1.x) / 6, cp2y: p2.y - (p3.y - p1.y) / 6 } } ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 0; i < pts.length - 1; i++) { const s = seg(i); ctx.bezierCurveTo(s.cp1x, s.cp1y, s.cp2x, s.cp2y, pts[i + 1].x, pts[i + 1].y) } if (closed) ctx.closePath(); ctx.stroke() }
       function annRedraw() { const ctx = annGetCtx(), cv = $('ann-canvas'); ctx.clearRect(0, 0, cv.width, cv.height); annHistory.forEach((h, _ri) => { if (_ri === annEditingTextIdx) return; annDrawShape(ctx, h) }) }
-      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.textBaseline = 'top'; ctx.fillStyle = h.color; ctx.fillText(h.txt, h.x1, h.y1); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() { const sw = [2, 3, 5]; const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) } const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) } const td = $('ann-thickness-down'), tu = $('ann-thickness-up'); if (annTool === 'text') { if (td) td.title = 'Texto menor'; if (tu) tu.title = 'Texto maior' } else { if (td) td.title = 'Espessura menor'; if (tu) tu.title = 'Espessura maior' } }
@@ -3633,7 +3637,23 @@
         if (annCommitText) { annCommitText(); annCommitText = null; }
         const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
       }
+      // Cresce o textarea em altura (scrollHeight) e largura (linha mais longa medida na fonte escalada).
+      // wrap="off" => as linhas só quebram com Enter; o textarea tem de mostrar tudo sem cortar nem scroll.
+      function annAutosizeText() {
+        const inp = $('ann-text-input'); if (!inp) return;
+        inp.style.height = 'auto';
+        inp.style.height = inp.scrollHeight + 'px';
+        const ctx = annGetCtx(), cs = window.getComputedStyle(inp);
+        ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        let maxW = 0; const lines = inp.value.split('\n');
+        for (let i = 0; i < lines.length; i++) { const w = ctx.measureText(lines[i]).width; if (w > maxW) maxW = w; }
+        inp.style.width = (maxW + 4) + 'px';
+      }
       function annShowTextInput(canvasX, canvasY, prefillText) {
+        // Texto novo (sem prefill): o ponto clicado é o CENTRO vertical do cursor I-beam, por isso
+        // ancoramos a 1.ª linha pelo meio (sobe meia altura de linha) em vez do topo — senão o texto
+        // aparece abaixo do cursor. Na reedição (com prefill) mantém-se a âncora gravada (topo).
+        if (!prefillText) canvasY -= (ANN_TEXT_SIZES[annTextSizeIdx] * ANN_TEXT_LINE_RATIO) / 2;
         const cv = $('ann-canvas'), vp = $('ann-viewport'), r = cv.getBoundingClientRect(), vpR = vp.getBoundingClientRect();
         const scaleX = r.width / cv.width;
         const scaleY = r.height / cv.height;
@@ -3647,13 +3667,13 @@
         const scaledFontSize = fontSize * scaleX;
         inp.style.top = screenY + 'px';
         inp.style.fontSize = scaledFontSize + 'px';
-        inp.style.lineHeight = scaledFontSize + 'px';
-        inp.style.height = scaledFontSize + 'px';
+        inp.style.lineHeight = (scaledFontSize * ANN_TEXT_LINE_RATIO) + 'px';
         inp.style.fontWeight = annTextBold ? 'bold' : 'normal';
         inp.style.fontStyle = annTextItalic ? 'italic' : 'normal';
         inp.style.color = annCurrentColor;
         inp.style.pointerEvents = 'auto';
         inp.value = prefillText || '';
+        annAutosizeText();
         const bb = $('ann-bold-btn'), ib = $('ann-italic-btn');
         if (bb) bb.classList.toggle('active', annTextBold);
         if (ib) ib.classList.toggle('active', annTextItalic);
@@ -3683,9 +3703,9 @@
         inp.onkeydown = e => {
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); annTextBold = !annTextBold; inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; if (bb) bb.classList.toggle('active', annTextBold); return }
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); annTextItalic = !annTextItalic; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; if (ib) ib.classList.toggle('active', annTextItalic); return }
-          if (e.key === 'Enter') { e.preventDefault(); commit() }
           if (e.key === 'Escape') { e.preventDefault(); committed = true; annCommitText = null; annEditingTextIdx = -1; annRedraw(); const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none'; }
         };
+        inp.oninput = annAutosizeText;
         inp.onblur = () => setTimeout(() => { if (!committed) commit() }, 100);
       }
       function initAnnotation() {
@@ -3740,9 +3760,21 @@
           _italicBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
           _italicBtn.onclick = () => { annTextItalic = !annTextItalic; _italicBtn.classList.toggle('active', annTextItalic); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
         }
-        // Thickness minus/plus
-        $('ann-thickness-down').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon() } } else { if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() } } };
-        $('ann-thickness-up').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon() } } else { if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } } };
+        // Thickness minus/plus — em modo texto controla o tamanho da fonte (resize ao vivo); fora do texto, a espessura.
+        // mousedown.preventDefault impede o blur/commit do editor de texto (mesmo padrão das swatches e dos botões B/I).
+        function annTextLiveResize() {
+          const inp = $('ann-text-input');
+          if (!inp || annTool !== 'text' || $('ann-text-overlay').style.display === 'none') return;
+          const cv = $('ann-canvas'), scaleX = cv.getBoundingClientRect().width / cv.width;
+          const scaledFontSize = ANN_TEXT_SIZES[annTextSizeIdx] * scaleX;
+          inp.style.fontSize = scaledFontSize + 'px';
+          inp.style.lineHeight = (scaledFontSize * ANN_TEXT_LINE_RATIO) + 'px';
+          annAutosizeText();
+          inp.focus();
+        }
+        ['ann-thickness-down', 'ann-thickness-up'].forEach(_tid => { $(_tid).addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() }) });
+        $('ann-thickness-down').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon(); annTextLiveResize() } } else { if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() } } };
+        $('ann-thickness-up').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon(); annTextLiveResize() } } else { if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } } };
         // Tool buttons
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.onclick = () => annSetTool(b.dataset.tool) });
         const cv = $('ann-canvas');
@@ -3774,7 +3806,7 @@
               const _fs = _h.fontSize || 24; let _ff = '';
               if (_h.italic) _ff += 'italic '; if (_h.bold !== false) _ff += 'bold ';
               _ff += _fs + 'px sans-serif'; _tmpCtx.font = _ff;
-              const _tw = _tmpCtx.measureText(_h.txt).width; const _th = _fs;
+              const _lines = String(_h.txt).split('\n'); let _tw = 0; for (const _ln of _lines) { const _lw = _tmpCtx.measureText(_ln).width; if (_lw > _tw) _tw = _lw; } const _lineH = _fs * ANN_TEXT_LINE_RATIO; const _th = _lineH * _lines.length;
               if (p.x >= _h.x1 - 6 && p.x <= _h.x1 + _tw + 6 && p.y >= _h.y1 - 6 && p.y <= _h.y1 + _th + 6) {
                 annEditingTextIdx = _i;
                 annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
@@ -4352,7 +4384,7 @@
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V23 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message) } try { boot(); SysLogger.info('Capture Engine V24 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
 function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();

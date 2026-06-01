@@ -1,4 +1,4 @@
-# Agents · Capture Engine V23
+# Agents · Capture Engine V24
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -518,6 +518,8 @@ r.onupgradeneeded = e => {
 | `label` | string | ✅ | Nome/legenda da imagem (ex: `imagem-1`) — único dentro da sessão |
 | `order` | number | ✅ | Posição na grelha (0-based) — define a ordem de exibição e export |
 | `addedAt` | number | ✅ | Timestamp Unix (ms) de quando foi capturada |
+| `origBlob` | Blob | ❌ | Imagem **original** antes da anotação. Criada por `ann-save` na primeira vez que se confirma uma anotação; usada por `annActivate` como fundo do canvas ao reeditar. Removida (e `blob` reposto ao original) se todas as anotações forem apagadas. Presente apenas em imagens anotadas. |
+| `annHistory` | array | ❌ | Stack de formas anotadas (`{type, x1, y1, ...}`) persistida com a imagem para reedição posterior (anotação **não-destrutiva**). Presente apenas em imagens anotadas; removida quando fica vazia. |
 
 ### Tabela: `documents`
 
@@ -635,9 +637,28 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
+### Funções dos Motores PDF e ZIP
+
+Ambos geram os ficheiros **em JavaScript puro, sem bibliotecas** (contrato zero-dependência) — escrevem os bytes do formato à mão. Partilham os helpers `ENC` (`TextEncoder`), `dlBlob(blob, filename)` (cria Object URL, dispara o download e revoga ao fim de 1 s) e `buildFilename(ext)`.
+
+**PDF** (bloco `/* PDF ENGINE (JPEG COMPRESSED) */`):
+
+| Função | O que faz | Notas |
+|---|---|---|
+| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos directamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`). |
+| `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais na sessão permanecem PNG — a conversão JPEG é só para o PDF. |
+| `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
+
+**ZIP** (bloco `/* ZIP ENGINE */`):
+
+| Função | O que faz | Notas |
+|---|---|---|
+| `generateZIP(usePdf=false)` | Reúne os ficheiros da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem no formato original (extensão por MIME). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
+| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por ficheiro, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`. |
+
 ### Motor de Reordenação (`initReorder`)
 
-O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V23 com Pointer Events e animações FLIP. Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura directa do changelog.
+O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V23 com Pointer Events e animações FLIP (*First-Last-Invert-Play* — mede a posição inicial e final do elemento, aplica a diferença como `transform` e anima-a até zero). Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura directa do changelog.
 
 **Constantes e parâmetros:**
 
@@ -686,8 +707,9 @@ activar arrasto:
 | `annDeactivate()` | Desativa anotação: esconde canvas e toolbar, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
 | `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I consoante `t==='text'` | Atualiza `.active` nos botões |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
-| `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido | Usado por `annRedraw` e pelo `ann-save` |
-| `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o input de texto no canvas, com EMA state e B/I sync | `prefill` opcional para reedição via dblclick |
+| `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
+| `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o editor de texto (`#ann-text-input`, um `<textarea>` multilinha) no canvas, com B/I sync e `line-height = fontSize escalado × ANN_TEXT_LINE_RATIO`. **Enter insere nova linha**; a confirmação acontece no blur (clicar fora), ao clicar noutro ponto do canvas, e no botão Confirmar; `Escape` cancela. Chama `annAutosizeText()` ao abrir | `prefill` opcional para reedição via dblclick |
+| `annAutosizeText()` | Faz o `<textarea>` de texto crescer em altura (`scrollHeight`) e largura (linha mais longa medida com `measureText` na fonte escalada, + 4px). Necessário porque `wrap="off"` não quebra linhas automaticamente | Chamada em `oninput`, ao abrir o editor (`annShowTextInput`) e após cada resize ao vivo pelos botões −/+ |
 | `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
 | `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
 | `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exactamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no guardado final do traço via `annDrawShape`. **Não chamar directamente** — usar `annDrawShape` ou `annRedraw`. |
@@ -864,6 +886,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
 | `ANN_SIZES` | array (const) | `[2, 4, 8]` — espessuras de linha disponíveis na toolbar de anotação (px) |
 | `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
+| `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois sítios (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê a escrever (WYSIWYG) |
 
 ---
 
@@ -930,7 +953,7 @@ A validação tem **duas partes**:
 - [ ] `annSmoothLast` declarado no scope de módulo
 - [ ] `annDeactivate()` faz `clearTimeout(annTextClickTimer)` e `annSmoothLast=null`
 - [ ] `annRedraw()` usa `forEach((h,_ri) => { if(_ri===annEditingTextIdx) return; ... })`
-- [ ] `annDrawShape` usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no final
+- [ ] `annDrawShape` usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no final; o texto é desenhado **linha a linha** (split por `\n`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` (mesma constante do line-height do `<textarea>`)
 - [ ] `closeSettingsModal` chama `window._deactivateAdmin()`
 - [ ] `window._deactivateAdmin` é atribuído dentro de `initAdminGate`
 - [ ] `annDrawShape` é função de draw pura — não contém `annIsDirty = true` nem manipulação do DOM (side effects pertencem ao caller)
@@ -1120,4 +1143,4 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 
 ---
 
-*Capture Engine V23 · Regras Operacionais para Agentes*
+*Capture Engine V24 · Regras Operacionais para Agentes*

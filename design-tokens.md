@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V23
+# Design Tokens · Capture Engine V24
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -33,7 +33,7 @@ A paleta tem dois grupos:
 
 | Token | Hex | Uso na interface |
 |---|---|---|
-| `--bg` | `#f4f3f0` | Fundo geral — off-white quente (não puro) para reduzir fadiga visual |
+| `--bg` | `#f4f3f0` | Fundo geral — off-white (não branco puro) para suavizar o contraste com a superfície branca dos painéis |
 | `--surface` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
 | `--border` | `#dddcd880` | Bordas subtis, linhas de separação — estruturam sem poluir (alpha 50%) |
 | `--border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
@@ -87,7 +87,7 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 | `--warn-border` | `#ba7517` | `#9c6214` |
 | `--warn-text` | `#412402` | `#ecc680` |
 
-*Em dark mode, os fundos usam `rgba` com baixa opacidade — a cor semântica mistura-se harmoniosamente com o fundo escuro sem criar blocos de cor agressivos.*
+*Em dark mode, os fundos usam `rgba` com opacidade ~0.08 — a cor semântica fica sobreposta ao fundo escuro com baixa saturação, em vez de um bloco de cor sólido.*
 
 ---
 
@@ -406,6 +406,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 |---|---|---|
 | `ANN_SIZES` | `[2, 4, 8]` | Espessuras de linha disponíveis (px, coordenadas canvas) |
 | `ANN_TEXT_SIZES` | `[14, 18, 24, 36, 48]` | Tamanhos de fonte disponíveis (px canvas); index 2 = 24px padrão |
+| `ANN_TEXT_LINE_RATIO` | `1.3` | Line-height ratio do texto. Constante **única** usada no `line-height` do `<textarea>` editor **e** no render do canvas (`annDrawShape`) — garante que o texto multilinha achatado é igual ao que se vê a escrever (WYSIWYG) |
 
 ### Variáveis de Estado da Anotação
 
@@ -439,9 +440,9 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
 | `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Guardado com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fecho automático do contorno. Ver changelog V23. |
-| `text` | `x1, y1, txt, bold, italic, fontSize` | `textBaseline='top'`; x1/y1 = canto superior esquerdo |
+| `text` | `x1, y1, txt, bold, italic, fontSize` | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
 
 
 ---
 
-*Capture Engine V23 · Especificações de Design Tokens*
+*Capture Engine V24 · Especificações de Design Tokens*

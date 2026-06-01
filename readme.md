@@ -1,4 +1,4 @@
-# Capture Engine · V23
+# Capture Engine · V24
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -114,6 +114,9 @@ Uma **IIFE** é um padrão JavaScript onde todo o código está encapsulado numa
 ### FOUC (Flash of Unstyled Content)
 **FOUC** é o flash momentâneo de conteúdo sem estilo que aparece antes de o JavaScript carregar (ex: fundo branco num usuário de dark mode). O Capture Engine tem proteção anti-FOUC: aplica o tema antes de qualquer pintura da tela.
 
+### EMA (Exponential Moving Average)
+**EMA** (média móvel exponencial) é um filtro de suavização usado no Desenho Livre: cada novo ponto do traço é misturado com o anterior por um fator α (α=0.35), reduzindo o tremor em tempo real sem atrasar percetivelmente o traço.
+
 ### Estado Pristine
 O estado inicial e limpo da interface. Acontece quando abre a aplicação ou apaga a última sessão. Significa que a interface está vazia, campos limpos, e não há ainda nenhuma sessão ativa gravada na base de dados.
 
@@ -150,7 +153,7 @@ Função técnica chamada no arranque que atualiza visualmente a interface (bot�
 - **Drag & Drop** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
 - Itens removidos vão para a lixeira (barra inferior) — podem ser restaurados
-- A aplicação guarda automaticamente a cada 5 segundos
+- A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o browser dentro dessa janela pode perder as últimas alterações)
 
 ---
 
@@ -212,20 +215,23 @@ O botão de anotação (ícone de caneta, dentro do modal de imagem) abre um can
 - **Círculo** — desenha uma elipse por arrasto
 - **Seta** — desenha uma seta direcional
 - **Desenho Livre** — traço à mão livre, suavizado em tempo real enquanto desenha (filtro EMA), para sair limpo mesmo com mouses de fraca qualidade ou tremor de mão. O traço que fica guardado é **igual ao que vê na tela** — exatamente os mesmos pontos, sem alisamento adicional depois de soltar e sem fechar o contorno sozinho.
-- **Texto** — clique para colocar texto; confirmar com Enter, cancelar com Escape
+- **Texto** — clique para colocar texto; escreva em várias linhas (Enter = nova linha); confirme clicando fora ou no botão "Confirmar", cancele com Escape
 
 **Ferramenta Texto — detalhes:**
+- **Multilinha** — o editor cresce em altura e largura à medida que escreve. **Enter** insere uma nova linha (não confirma). O texto é achatado na imagem **exatamente como aparece no editor** — as mesmas linhas e o mesmo espaçamento.
+- **Confirmar / cancelar** — confirma-se clicando fora do editor, clicando noutro ponto da imagem, ou no botão "Confirmar". **Escape** cancela.
 - **Negrito / Itálico** — botões B e I na toolbar (ou Ctrl+B / Ctrl+I durante a digitação)
-- **Tamanho de fonte** — quando a ferramenta Texto está ativa, os botões −/+ de espessura controlam o tamanho em 5 níveis: 14 · 18 · 24 · 36 · 48px
+- **Tamanho de fonte** — quando a ferramenta Texto está ativa, os botões −/+ de espessura controlam o tamanho em 5 níveis: 14 · 18 · 24 · 36 · 48px. Com o editor aberto, clicar −/+ muda o tamanho **ao vivo** sem fechar o editor (pode clicar várias vezes seguidas).
 - **Reeditar texto** — duplo-clique sobre texto já colocado reabre o campo de edição com o conteúdo original; é possível corrigir o texto, mudar cor, negrito e itálico
-- **Mudar cor durante edição** — clicar numa swatch enquanto o campo de texto está aberto atualiza a cor sem fechar o input
+- **Mudar cor durante edição** — clicar numa swatch enquanto o editor de texto está aberto atualiza a cor sem fechar o editor
+- **Cursor** — com a ferramenta Texto selecionada, o cursor sobre a imagem fica em modo de texto (I-beam) em vez da cruz das outras ferramentas, indicando o modo ativo
 
 **Controlos comuns:**
 - Swatches de cor (8 cores pré-definidas) — muda a cor do traço ou texto
 - Botões −/+ de espessura — controla espessura do traço (ou tamanho do texto quando Texto está ativo)
 - Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 
-**Confirmar anotação:** O botão "Confirmar" funde as anotações na imagem original e guarda em PNG (um formato sem compressão com perdas, por isso o desenho não fica desfocado nem ganha manchas). Esta ação é permanente — as anotações passam a fazer parte da imagem.
+**Confirmar anotação:** O botão "Confirmar" funde as anotações sobre a imagem e guarda o resultado em PNG (formato sem perdas — o desenho não fica desfocado nem ganha manchas). A versão mostrada na grelha e usada nos exports passa a ser a imagem com as anotações. **A edição é não-destrutiva:** a imagem original é preservada e as anotações ficam guardadas — pode reabrir a imagem, clicar em "Editar" e voltar a mexer nas anotações (mover, apagar, acrescentar), mesmo depois de fechar e reabrir a aplicação. Se remover todas as anotações e confirmar, a imagem volta ao original.
 
 **Cancelar anotação:** Descarta todos os traços não confirmados e volta ao visualizador normal.
 
@@ -269,7 +275,7 @@ Gera um PDF com uma imagem por página.
 
 **Processo de geração:**
 1. As imagens PNG originais são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
-2. O PDF é construído com uma imagem por página, maximizando a área útil
+2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada
 3. O arquivo é descarregado automaticamente
 
 **Quando o botão PDF fica desativado:** Quando há documentos (não-imagens) na sessão. O motor PDF processa apenas imagens. Para sessões mistas, use o ZIP.
@@ -431,6 +437,8 @@ Quando existe uma nova versão do `capture-engine.html` e há utilizadores com s
 
 ---
 
+## 7. Segurança e privacidade
+
 | Característica | Detalhe |
 |---|---|
 | **Zero dependências externas** | Sem CDNs, sem bibliotecas remotas, sem Google Fonts — nada carregado da internet |
@@ -512,8 +520,8 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas part
 
 ## 10. Perguntas frequentes
 
-**O meu arquivo HTML tem perto de 190KB. É normal?**
-Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os 187KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
+**O meu arquivo HTML tem perto de 200KB. É normal?**
+Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ~198KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por defeito) são apagadas automaticamente. Além disso, limpar os dados do browser apaga tudo. Exporte os dados importantes.
@@ -554,7 +562,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V23/
+V24/
 ├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
 ├── LICENSE                      ← Licença MIT (Diogo Carvalho)
 ├── readme.md                    ← Este guia (início aqui)
@@ -580,8 +588,7 @@ Esta seção é para quem precisa de entender como o sistema funciona internamen
 capture-engine.html
 │
 ├── <head>
-│   ├── Content Security Policy (metatag)
-│   └── Script anti-FOUC (aplica dark mode antes de pintar)
+│   └── Content Security Policy (metatag)
 │
 ├── <style>
 │   ├── Design tokens (variáveis CSS)
@@ -593,6 +600,7 @@ capture-engine.html
 │   └── Animações
 │
 ├── <body>
+│   ├── Script anti-FOUC (aplica dark mode antes de pintar — logo após <body>)
 │   ├── Barra de topo (logo, nome, botões de ação)
 │   ├── Layout principal
 │   │   ├── Sidebar esquerda (campos de sessão, controlos de export)
@@ -656,7 +664,7 @@ init()
 | Tabela | Chave primária | Campos principais | Índices |
 |---|---|---|---|
 | `sessions` | `id` | `name`, `user`, `pc`, `createdAt`, `updatedAt`, `exported` | `createdAt` |
-| `images` | `id` | `sessionId`, `blob`, `label`, `order`, `addedAt` | `sessionId`, `order` |
+| `images` | `id` | `sessionId`, `blob`, `label`, `order`, `addedAt` (+ `origBlob`, `annHistory` em imagens anotadas) | `sessionId`, `order` |
 | `documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `order`, `addedAt` | `sessionId`, `order` |
 | `removed_images` | `id` | `sessionId`, `blob`, `label`, `removedAt` | `sessionId` |
 | `removed_documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `removedAt` | `sessionId` |
@@ -665,7 +673,7 @@ init()
 
 ---
 
-*Capture Engine V23 · Focado na simplicidade e uso 100% offline*
+*Capture Engine V24 · Single-file · zero dependências · 100% offline*
 
 ---
 
