@@ -797,7 +797,7 @@ Capturas sequenciais podiam gerar nomes duplicados em certos fluxos. O ZIP expor
 
 ---
 
-## [V7] — 2026-05-15
+## [V7] — 2026-05-17
 
 ### Base da Arquitetura Atual
 
