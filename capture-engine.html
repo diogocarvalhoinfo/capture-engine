@@ -2851,7 +2851,11 @@
         <div id="img-modal-ann-actions"
           style="display:none;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- Tools: Rect first -->
-          <button class="ann-btn active" data-tool="rect" title="Retângulo"><svg viewBox="0 0 24 24">
+          <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 14 Q 7 4 12 13 T 21 8" />
+            </svg></button>
+          <button class="ann-btn" data-tool="rect" title="Retângulo"><svg viewBox="0 0 24 24">
               <rect x="3" y="3" width="18" height="18" rx="2" />
             </svg></button>
           <button class="ann-btn" data-tool="circle" title="Círculo"><svg viewBox="0 0 24 24">
@@ -2861,12 +2865,16 @@
               <line x1="5" y1="19" x2="19" y2="5" />
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
-          <button class="ann-btn" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 14 Q 7 4 12 13 T 21 8" />
-            </svg></button>
           <button class="ann-btn" data-tool="text" title="Texto"><svg viewBox="0 0 24 24">
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
+            </svg></button>
+          <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
+              <polyline points="5 9 2 12 5 15"/>
+              <polyline points="9 5 12 2 15 5"/>
+              <polyline points="15 19 12 22 9 19"/>
+              <polyline points="19 9 22 12 19 15"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
           <button class="ann-btn" id="ann-bold-btn" title="Negrito (Ctrl+B)"
             style="display:none;font-weight:700;font-size:14px;font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
@@ -3415,13 +3423,13 @@
         if (annActive && (e.ctrlKey || e.metaKey) && !_annUndoInField) {
           if (e.key.toLowerCase() === 'z') {
             e.preventDefault();
-            if (e.shiftKey) { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRedraw() } }
-            else { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRedraw() } }
+            if (e.shiftKey) { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() } }
+            else { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll() } }
             return;
           }
           if (e.key.toLowerCase() === 'y') {
             e.preventDefault();
-            if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRedraw() }
+            if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() }
             return;
           }
         }
@@ -3542,7 +3550,7 @@
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
       const ANN_SIZES = [2, 4, 8]; let annSizeIdx = 1;
-      let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1;
+      let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
@@ -3612,12 +3620,12 @@
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annSetTool('rect'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
-        annRedraw();
+        annSetTool('free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
+        annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
-        annActive = false; annDrawing = false;
+        annActive = false; annDrawing = false; annSelectedIdx = -1;
         setAnnDirty(annIsDirty);
         if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
         annSmoothLast = null;
@@ -3636,9 +3644,28 @@
           img.src = u;
         }
       }
-      function annSetTool(t) { annTool = t; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) }); const _isText = t === 'text'; const _cv = $('ann-canvas'); if (_cv) _cv.style.cursor = _isText ? 'text' : 'crosshair'; const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn'); if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) } if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) } annUpdateThicknessIcon(); }
+      function annSetTool(t) { annTool = t; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) }); const _isText = t === 'text'; const _cv = $('ann-canvas'); if (_cv) _cv.style.cursor = _isText ? 'text' : (t === 'select' ? 'default' : 'crosshair'); const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn'); if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) } if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) } annUpdateThicknessIcon(); }
       function annCR(ctx, pts, closed) { if (pts.length < 2) return; function seg(i) { const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)]; return { cp1x: p1.x + (p2.x - p0.x) / 6, cp1y: p1.y + (p2.y - p0.y) / 6, cp2x: p2.x - (p3.x - p1.x) / 6, cp2y: p2.y - (p3.y - p1.y) / 6 } } ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 0; i < pts.length - 1; i++) { const s = seg(i); ctx.bezierCurveTo(s.cp1x, s.cp1y, s.cp2x, s.cp2y, pts[i + 1].x, pts[i + 1].y) } if (closed) ctx.closePath(); ctx.stroke() }
       function annRedraw() { const ctx = annGetCtx(), cv = $('ann-canvas'); ctx.clearRect(0, 0, cv.width, cv.height); annHistory.forEach((h, _ri) => { if (_ri === annEditingTextIdx) return; annDrawShape(ctx, h) }) }
+      function annBBox(e) {
+        if (e.type === 'free') { const xs = e.pts.map(p => p.x), ys = e.pts.map(p => p.y); const PAD = (e.lw || 2) + 4; return { x: Math.min(...xs) - PAD, y: Math.min(...ys) - PAD, w: Math.max(...xs) - Math.min(...xs) + PAD * 2, h: Math.max(...ys) - Math.min(...ys) + PAD * 2 }; }
+        if (e.type === 'text') { const ctx2 = annGetCtx(); const lines = String(e.txt || '').split('\n'); const fSize = e.fontSize || 24; let _fStr2 = ''; if (e.italic) _fStr2 += 'italic '; if (e.bold !== false) _fStr2 += 'bold '; _fStr2 += fSize + 'px sans-serif'; ctx2.save(); ctx2.font = _fStr2; const mw = Math.max(1, ...lines.map(l => ctx2.measureText(l).width)); ctx2.restore(); const lh = fSize * ANN_TEXT_LINE_RATIO; return { x: e.x1 - 4, y: e.y1 - 4, w: mw + 8, h: lh * lines.length + 8 }; }
+        const PAD = (e.lw || 2) + 4; const x1 = Math.min(e.x1, e.x2), y1 = Math.min(e.y1, e.y2), x2 = Math.max(e.x1, e.x2), y2 = Math.max(e.y1, e.y2);
+        return { x: x1 - PAD, y: y1 - PAD, w: (x2 - x1) + PAD * 2, h: (y2 - y1) + PAD * 2 };
+      }
+      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const b = annBBox(annHistory[_i]); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
+      function annDrawSelectionOverlay() {
+        if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+        const b = annBBox(annHistory[annSelectedIdx]); const M = 7;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0ea5e9';
+        const ctx = annGetCtx(); ctx.save();
+        ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); ctx.globalAlpha = 0.9;
+        ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
+        ctx.globalAlpha = 0.06; ctx.fillStyle = accent;
+        ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
+        ctx.restore();
+      }
+      function annRenderAll() { annRedraw(); annDrawSelectionOverlay(); }
       function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
@@ -3701,19 +3728,19 @@
             setAnnDirty(true);
             annEditingTextIdx = -1;
             annRedoHistory = [];
-            annRedraw();
+            annRenderAll();
           } else if (annEditingTextIdx >= 0) {
             annHistory.splice(annEditingTextIdx, 1);
             setAnnDirty(true);
             annEditingTextIdx = -1;
-            annRedraw();
+            annRenderAll();
           }
         }
         annCommitText = commit;
         inp.onkeydown = e => {
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); annTextBold = !annTextBold; inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; if (bb) bb.classList.toggle('active', annTextBold); return }
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); annTextItalic = !annTextItalic; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; if (ib) ib.classList.toggle('active', annTextItalic); return }
-          if (e.key === 'Escape') { e.preventDefault(); committed = true; annCommitText = null; annEditingTextIdx = -1; annRedraw(); const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none'; }
+          if (e.key === 'Escape') { e.preventDefault(); committed = true; annCommitText = null; annEditingTextIdx = -1; annRenderAll(); const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none'; }
         };
         inp.oninput = annAutosizeText;
         inp.onblur = () => setTimeout(() => { if (!committed) commit() }, 100);
@@ -3728,6 +3755,7 @@
           const ctx = cv.getContext('2d');
           ctx.drawImage(img, 0, 0);
           const aCv = $('ann-canvas');
+          annRedraw(); /* strip selection overlay from saved image */
           ctx.drawImage(aCv, 0, 0);
           const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
           const o = images.find(x => x.id === modalItemId);
@@ -3747,8 +3775,8 @@
           }
           annDeactivate();
         };
-        $('ann-undo').onclick = () => { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRedraw() } };
-        $('ann-redo').onclick = () => { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRedraw() } };
+        $('ann-undo').onclick = () => { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll() } };
+        $('ann-redo').onclick = () => { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() } };
         // Color swatches — mousedown.preventDefault impede blur no text input
         document.querySelectorAll('.ann-swatch').forEach(b => {
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
@@ -3790,6 +3818,11 @@
         const cv = $('ann-canvas');
         cv.addEventListener('mousedown', e => {
           if (!annActive) return;
+          if (annTool === 'select') {
+            if (annCommitText) annCommitText();
+            const p = annCanvasXY(e); annSelectedIdx = annHitTest(p.x, p.y); annRenderAll();
+            return;
+          }
           if (annTool === 'text') {
             if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
             const p = annCanvasXY(e);
@@ -3802,10 +3835,10 @@
             return;
           }
           if (annCommitText) annCommitText();
-          const p = annCanvasXY(e); annDrawing = true; annStart = p; annPath = [p];
+          const p = annCanvasXY(e); annSelectedIdx = -1; annDrawing = true; annStart = p; annPath = [p];
         });
         cv.addEventListener('dblclick', e => {
-          if (!annActive || annTool !== 'text') return;
+          if (!annActive || (annTool !== 'text' && annTool !== 'select')) return;
           e.stopPropagation();
           if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
           if (annCommitText) { annCommitText(); annCommitText = null; }
@@ -3825,20 +3858,20 @@
                 const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
                 if (_bb) _bb.classList.toggle('active', annTextBold);
                 if (_ib) _ib.classList.toggle('active', annTextItalic);
-                annRedraw(); // original text hidden by annRedraw skip
+                annRenderAll(); // original text hidden; overlay update
                 annShowTextInput(_h.x1, _h.y1, _h.txt);
                 return;
               }
             }
           }
           annEditingTextIdx = -1;
-          annShowTextInput(p.x, p.y);
+          if (annTool !== 'select') annShowTextInput(p.x, p.y);
         });
         function annPaintPreview() {
           annRafId = 0;
           if (!annDrawing || !annActive || !annLastEvt) return;
           const p = annCanvasXYClamped(annLastEvt);
-          const ctx = annGetCtx(); annRedraw(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          const ctx = annGetCtx(); annRenderAll(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() }
           else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) }
           else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() }
@@ -3859,7 +3892,7 @@
           }
           annScheduledPaint();
         });
-        window.addEventListener('mouseup', e => { if (!annDrawing || !annActive) return; annDrawing = false; if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; } annLastEvt = null; const p = annCanvasXYClamped(e); if (annTool === 'free') { annSmoothLast = null; if (annPath.length > 1) { const closed = false; /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */ const simplified = annPath.slice(); annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }); setAnnDirty(true); annRedoHistory = [] } } else if (annTool !== 'text') { annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }); setAnnDirty(true); annRedoHistory = [] } annRedraw() });
+        window.addEventListener('mouseup', e => { if (!annDrawing || !annActive) return; annDrawing = false; if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; } annLastEvt = null; const p = annCanvasXYClamped(e); if (annTool === 'free') { annSmoothLast = null; if (annPath.length > 1) { const closed = false; /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */ const simplified = annPath.slice(); annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }); setAnnDirty(true); annRedoHistory = [] } } else if (annTool !== 'text') { annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }); setAnnDirty(true); annRedoHistory = [] } annRenderAll() });
       }
 
       /* ═══ CLIPBOARD HANDLER ═══ */
