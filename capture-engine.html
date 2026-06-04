@@ -3423,8 +3423,25 @@
         if (annActive && (e.ctrlKey || e.metaKey) && !_annUndoInField) {
           if (e.key.toLowerCase() === 'z') {
             e.preventDefault();
-            if (e.shiftKey) { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() } }
-            else { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll() } }
+            if (e.shiftKey) {
+              // Ctrl+Shift+Z = Redo
+              if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() }
+            } else {
+              // Ctrl+Z = Undo
+              const _top = annRedoHistory.length ? annRedoHistory[annRedoHistory.length - 1] : null;
+              if (_top && _top._isMoveUndo) {
+                // Undo de movimento: restaura a shape na posição original do array
+                annRedoHistory.pop();
+                if (_top.idx >= 0 && _top.idx < annHistory.length) {
+                  annHistory[_top.idx] = _top.shape;
+                  annSelectedIdx = _top.idx;
+                  setAnnDirty(true); annRenderAll();
+                }
+              } else if (annHistory.length) {
+                // Undo normal: remove a última shape adicionada
+                annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll();
+              }
+            }
             return;
           }
           if (e.key.toLowerCase() === 'y') {
@@ -3561,7 +3578,14 @@
       let annCommitText = null;
       const ANN_SIZES = [2, 4, 8]; let annSizeIdx = 1;
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
-      let annHoverIdx = -1; // mantido para compatibilidade com o handler de keydown; lógica de hover removida na Fase 1c
+      let annHoverIdx = -1; // mantido para compatibilidade com annDeactivate; lógica de hover removida na Fase 1c
+      // Fase 2 — variáveis de arrasto de anotações
+      let annDragging = false;       // true enquanto o utilizador arrasta uma forma selecionada
+      let annDragStartX = 0, annDragStartY = 0; // ponto do canvas onde o arrasto começou (reservado para uso futuro)
+      let annDragLastX  = 0, annDragLastY  = 0; // posição do rato no frame anterior — delta incremental
+      let annDragOriginX = 0, annDragOriginY = 0; // coords x1,y1 originais da forma (reservado)
+      let annDragRafId = 0;          // RAF id para coalescing do render durante o arrasto
+      let annDragSnapshot = null;    // clone da shape antes do arrasto (para Undo)
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
@@ -3685,6 +3709,8 @@
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
         if (!_annDbBtn) return;
+        // Durante o arrasto: esconde sem recalcular posição (evita efeito elástico)
+        if (annDragging) { _annDbBtn.style.display = 'none'; return; }
         if (!annActive || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) {
           _annDbBtn.style.display = 'none';
           return;
@@ -3865,7 +3891,28 @@
           if (!annActive) return;
           if (annTool === 'select') {
             if (annCommitText) annCommitText();
-            const p = annCanvasXY(e); annSelectedIdx = annHitTest(p.x, p.y); annRenderAll();
+            const p = annCanvasXY(e);
+            const _hitIdx = annHitTest(p.x, p.y);
+            if (_hitIdx >= 0) {
+              // Clique numa forma: selecionar (se necessario) e iniciar arrasto imediatamente
+              annSelectedIdx = _hitIdx;
+              annDragging = true;
+              annDragStartX = p.x; annDragStartY = p.y;
+              annDragLastX  = p.x; annDragLastY  = p.y;
+              const _sh = annHistory[annSelectedIdx];
+              // Snapshot da shape antes do drag (para Undo de movimento)
+              annDragSnapshot = _sh.type === 'free'
+                ? { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh, pts: _sh.pts.map(pt => ({ ...pt })) } }
+                : { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh } };
+              annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
+              annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
+              annRenderAll(); // mostra caixa de selecao imediatamente
+              SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
+            } else {
+              // Clique no vazio: desselectionar
+              annSelectedIdx = -1;
+              annRenderAll();
+            }
             return;
           }
           if (annTool === 'text') {
@@ -3924,6 +3971,39 @@
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
         window.addEventListener('mousemove', e => {
+          // Fase 2.2: arrasto de forma selecionada com movimento visual em tempo real
+          if (annDragging && annActive) {
+            if (!annDragRafId) {
+              annDragRafId = requestAnimationFrame(() => {
+                annDragRafId = 0;
+                if (!annDragging || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+                const _p = annCanvasXY(e);
+                // Delta incremental: diferenca entre frame atual e frame anterior
+                // Garante movimento correto em todas as shapes (incluindo free com pts mutados)
+                const _dx = _p.x - annDragLastX;
+                const _dy = _p.y - annDragLastY;
+                annDragLastX = _p.x;
+                annDragLastY = _p.y;
+                const _sh = annHistory[annSelectedIdx];
+                // Aplica delta incremental às coordenadas da shape consoante o tipo
+                if (_sh.type === 'free') {
+                  // Desloca todos os pontos do traçado livre pelo mesmo incremento
+                  for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
+                    _sh.pts[_fi] = { x: _sh.pts[_fi].x + _dx, y: _sh.pts[_fi].y + _dy };
+                  }
+                } else if (_sh.type === 'text') {
+                  _sh.x1 += _dx;
+                  _sh.y1 += _dy;
+                } else {
+                  // rect, circle, arrow: desloca os dois pontos
+                  _sh.x1 += _dx; _sh.y1 += _dy;
+                  _sh.x2 += _dx; _sh.y2 += _dy;
+                }
+                annRenderAll();
+              });
+            }
+            return;
+          }
           if (!annDrawing || !annActive) return;
           annLastEvt = e;
           if (annTool === 'free') {
@@ -3937,7 +4017,46 @@
           }
           annScheduledPaint();
         });
-        window.addEventListener('mouseup', e => { if (!annDrawing || !annActive) return; annDrawing = false; if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; } annLastEvt = null; const p = annCanvasXYClamped(e); if (annTool === 'free') { annSmoothLast = null; if (annPath.length > 1) { const closed = false; /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */ const simplified = annPath.slice(); annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }); setAnnDirty(true); annRedoHistory = [] } } else if (annTool !== 'text') { annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }); setAnnDirty(true); annRedoHistory = [] } annRenderAll() });
+        window.addEventListener('mouseup', e => {
+          // Fase 2.3: terminar arrasto e registar no historico de Undo
+          if (annDragging) {
+            if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
+            annDragging = false;
+            annDragStartX = 0; annDragStartY = 0;
+            annDragLastX = 0; annDragLastY = 0;
+            annDragOriginX = 0; annDragOriginY = 0;
+            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annDragSnapshot) {
+              // Empurra snapshot pre-drag para annRedoHistory (Undo restaura posição original)
+              annRedoHistory.push(annDragSnapshot);
+              annDragSnapshot = null;
+              setAnnDirty(true);
+              annRenderAll();
+              SysLogger.info('Ann drag end: undo disponivel para idx=' + annSelectedIdx);
+            } else {
+              annDragSnapshot = null;
+            }
+            return;
+          }
+          if (!annDrawing || !annActive) return;
+          annDrawing = false;
+          if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; }
+          annLastEvt = null;
+          const p = annCanvasXYClamped(e);
+          if (annTool === 'free') {
+            annSmoothLast = null;
+            if (annPath.length > 1) {
+              const closed = false;
+              /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */
+              const simplified = annPath.slice();
+              annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed });
+              setAnnDirty(true); annRedoHistory = []
+            }
+          } else if (annTool !== 'text') {
+            annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() });
+            setAnnDirty(true); annRedoHistory = []
+          }
+          annRenderAll();
+        });
 
         // ── Botão ✕ flutuante para apagar anotações ───────────────────────────────
         // Criado via createElement (não HTML inline), conforme requisito da Fase 1c v2.
