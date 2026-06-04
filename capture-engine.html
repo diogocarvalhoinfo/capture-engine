@@ -3586,6 +3586,15 @@
       let annDragOriginX = 0, annDragOriginY = 0; // coords x1,y1 originais da forma (reservado)
       let annDragRafId = 0;          // RAF id para coalescing do render durante o arrasto
       let annDragSnapshot = null;    // clone da shape antes do arrasto (para Undo)
+      // Fase 3 — variáveis de redimensionamento via alças
+      let annResizing = false;       // true enquanto o utilizador arrasta uma alça
+      let annResizeHandle = '';      // 'tl','tr','bl','br'
+      let annResizeAnchorX = 0, annResizeAnchorY = 0; // canto oposto à alça (permanece fixo)
+      let annResizeSnapshot = null;  // clone pre-resize para Undo
+      let annResizeRafId = 0;        // RAF id para coalescing do render durante resize
+      let annResizeOriginFS = 0;     // fontSize original da shape de texto no inicio do resize
+      let annResizeStartX = 0, annResizeStartY = 0; // posicao canvas no inicio do resize (distancia diagonal)
+      let annResizeOriginBBox = null; // bbox canvas da shape no inicio do resize (para escala de free)
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
@@ -3690,15 +3699,52 @@
         return { x: x1 - PAD, y: y1 - PAD, w: (x2 - x1) + PAD * 2, h: (y2 - y1) + PAD * 2 };
       }
       function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const b = annBBox(annHistory[_i]); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
+      // Detecta se (cx,cy) está sobre uma das 4 alças da shape selecionada.
+      // Retorna 'tl','tr','bl','br' ou '' se não houver hit.
+      function annHandleHitTest(cx, cy) {
+        if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
+        const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
+        const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
+        const H = ANN_HANDLE_SIZE + 5; // zona de hit maior que a alça visual (+5px para facilitar o clique)
+        const _corners = [
+          { x: _bx,        y: _by,        id: 'tl' },
+          { x: _bx + _bw,  y: _by,        id: 'tr' },
+          { x: _bx,        y: _by + _bh,  id: 'bl' },
+          { x: _bx + _bw,  y: _by + _bh,  id: 'br' },
+        ];
+        for (const c of _corners) {
+          if (cx >= c.x - H && cx <= c.x + H && cy >= c.y - H && cy <= c.y + H) return c.id;
+        }
+        return '';
+      }
+      const ANN_HANDLE_SIZE = 6; // meio-lado da alça em px canvas (total 6×6) — usado também no hit-test
       function annDrawSelectionOverlay() {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-        const b = annBBox(annHistory[annSelectedIdx]); const M = 7;
+        const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0ea5e9';
         const ctx = annGetCtx(); ctx.save();
-        ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); ctx.globalAlpha = 0.9;
+        // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
+        ctx.strokeStyle = accent; ctx.lineWidth = 1; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
         ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
-        ctx.globalAlpha = 0.06; ctx.fillStyle = accent;
+        ctx.globalAlpha = 0.04; ctx.fillStyle = accent;
         ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
+        // ── Alças nos 4 cantos (preparação Passo 3.2) ────────────────────────────
+        const H = ANN_HANDLE_SIZE; // meio-lado
+        const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
+        const _corners = [
+          { x: _bx,        y: _by        }, // topo-esquerdo
+          { x: _bx + _bw,  y: _by        }, // topo-direito
+          { x: _bx,        y: _by + _bh  }, // baixo-esquerdo
+          { x: _bx + _bw,  y: _by + _bh  }, // baixo-direito
+        ];
+        _corners.forEach(c => {
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.roundRect(c.x - H, c.y - H, H * 2, H * 2, 2); // cantos suaves (radius 2px canvas)
+          ctx.fill();
+          ctx.stroke();
+        });
         ctx.restore();
       }
       // Posiciona e mostra/esconde o botão ✕ flutuante para apagar anotações.
@@ -3709,8 +3755,8 @@
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
         if (!_annDbBtn) return;
-        // Durante o arrasto: esconde sem recalcular posição (evita efeito elástico)
-        if (annDragging) { _annDbBtn.style.display = 'none'; return; }
+        // Durante o arrasto ou resize: esconde sem recalcular posição (evita efeito elástico)
+        if (annDragging || annResizing) { _annDbBtn.style.display = 'none'; return; }
         if (!annActive || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) {
           _annDbBtn.style.display = 'none';
           return;
@@ -3723,12 +3769,14 @@
         const _scaleX = _cvR.width / _annCv.width;
         const _scaleY = _cvR.height / _annCv.height;
         const _b = annBBox(annHistory[annSelectedIdx]);
-        // Canto superior-direito da bbox em coords do ann-viewport (parent de posicionamento)
-        const _bRight = (_cvR.left - _vpR.left) + (_b.x + _b.w) * _scaleX;
-        const _bTop   = (_cvR.top  - _vpR.top)  + _b.y * _scaleY;
-        const _OFFSET = 4; const _BTN = 20;
-        const _finalLeft = Math.min(_bRight + _OFFSET, _vpR.width  - _BTN - 2);
-        const _finalTop  = Math.max(_bTop  - _BTN - _OFFSET, 2);
+        const _M = 6; // mesma margem de annDrawSelectionOverlay
+        // Alça top-right em coords canvas: (b.x + b.w + M, b.y - M)
+        // Converter para coords do ann-viewport e centrar o botão sobre a alça
+        const _BTN = 20; // dimensão do botão ✕ (quadrado)
+        const _hX = (_cvR.left - _vpR.left) + (_b.x + _b.w + _M) * _scaleX; // centro X da alça
+        const _hY = (_cvR.top  - _vpR.top)  + (_b.y - _M)         * _scaleY; // centro Y da alça
+        const _finalLeft = Math.min(_hX - _BTN / 2, _vpR.width  - _BTN - 2);
+        const _finalTop  = Math.max(_hY - _BTN / 2, 2);
         _annDbBtn.style.left = _finalLeft + 'px';
         _annDbBtn.style.top  = _finalTop  + 'px';
         _annDbBtn.style.display = 'flex';
@@ -3892,6 +3940,46 @@
           if (annTool === 'select') {
             if (annCommitText) annCommitText();
             const p = annCanvasXY(e);
+            // Fase 3: verificar alças ANTES do drag normal (alças têm prioridade)
+            if (annSelectedIdx >= 0) {
+              const _hh = annHandleHitTest(p.x, p.y);
+              if (_hh) {
+                const _sh = annHistory[annSelectedIdx];
+                // Snapshot pre-resize para Undo
+                annResizeSnapshot = _sh.type === 'free'
+                  ? { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh, pts: _sh.pts.map(pt => ({ ...pt })) } }
+                  : { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh } };
+                annResizing = true;
+                annResizeHandle = _hh;
+                annResizeStartX = p.x; annResizeStartY = p.y; // posicao inicial do rato (para escala de texto)
+                annResizeOriginFS = _sh.fontSize || 24;
+                const b = annBBox(_sh);
+                annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox sem M (denominadores corretos)
+                if (_sh.type === 'free') {
+                  // Free: anchor nos cantos do inner bbox
+                  if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
+                  else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
+                  else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
+                  else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
+                } else if (_sh.type === 'text') {
+                  // Texto: anchor no canto oposto do inner bbox
+                  if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
+                  else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
+                  else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
+                  else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
+                } else {
+                  // rect, circle, arrow: anchor nas coords brutas da shape (min/max de x1,x2,y1,y2)
+                  const _minX = Math.min(_sh.x1, _sh.x2), _minY = Math.min(_sh.y1, _sh.y2);
+                  const _maxX = Math.max(_sh.x1, _sh.x2), _maxY = Math.max(_sh.y1, _sh.y2);
+                  if (_hh === 'tl') { annResizeAnchorX = _maxX; annResizeAnchorY = _maxY; }
+                  else if (_hh === 'tr') { annResizeAnchorX = _minX; annResizeAnchorY = _maxY; }
+                  else if (_hh === 'bl') { annResizeAnchorX = _maxX; annResizeAnchorY = _minY; }
+                  else                   { annResizeAnchorX = _minX; annResizeAnchorY = _minY; } // br
+                }
+                SysLogger.info('Ann resize start: handle=' + _hh + ' idx=' + annSelectedIdx);
+                return;
+              }
+            }
             const _hitIdx = annHitTest(p.x, p.y);
             if (_hitIdx >= 0) {
               // Clique numa forma: selecionar (se necessario) e iniciar arrasto imediatamente
@@ -3971,6 +4059,65 @@
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
         window.addEventListener('mousemove', e => {
+          // Fase 3: redimensionamento via alças
+          if (annResizing && annActive) {
+            if (!annResizeRafId) {
+              annResizeRafId = requestAnimationFrame(() => {
+                annResizeRafId = 0;
+                if (!annResizing || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+                const _p = annCanvasXY(e);
+                const _sh = annHistory[annSelectedIdx];
+                if (_sh.type === 'text') {
+                  // Texto: escala o fontSize pela razão de distâncias diagonal (anchor → mouse) / (anchor → posicao_inicial)
+                  // Funciona correctamente em todas as 4 alças sem ambiguidade de direccão
+                  const _dx0 = annResizeStartX - annResizeAnchorX, _dy0 = annResizeStartY - annResizeAnchorY;
+                  const _dx1 = _p.x            - annResizeAnchorX, _dy1 = _p.y            - annResizeAnchorY;
+                  const _d0 = Math.sqrt(_dx0 * _dx0 + _dy0 * _dy0);
+                  const _d1 = Math.sqrt(_dx1 * _dx1 + _dy1 * _dy1);
+                  const _scale = _d0 > 2 ? _d1 / _d0 : 1;
+                  const _newFS = Math.max(8, Math.min(96, Math.round(annResizeOriginFS * _scale)));
+                  // Ajusta x1,y1 para alças onde o texto deve crescer para cima ou para a esquerda
+                  const _ob = annResizeOriginBBox; // bbox original
+                  const _ratio = _newFS / annResizeOriginFS; // factor de crescimento linear
+                  if (annResizeHandle === 'tl' || annResizeHandle === 'tr') {
+                    // Alça superior: y1 move-se para cima mantendo a base (anchorY) fixa
+                    const _origH = _ob.h; // altura original do bbox (inclui padding ~8px)
+                    _sh.y1 = annResizeAnchorY - _origH * _ratio - 4; // 4 = padding top do bbox
+                  }
+                  if (annResizeHandle === 'tl' || annResizeHandle === 'bl') {
+                    // Alça esquerda: x1 move-se para a esquerda mantendo a direita (anchorX) fixa
+                    const _origW = _ob.w; // largura original do bbox (aprox - medida com font)
+                    _sh.x1 = annResizeAnchorX - _origW * _ratio - 4; // 4 = padding left do bbox
+                  }
+                  _sh.fontSize = _newFS;
+                } else if (_sh.type === 'free' && annResizeSnapshot && annResizeOriginBBox) {
+                  // Free: escala todos os pontos a partir do snapshot original (evita acumulação de erro)
+                  // O anchor é o canto fixo; scaleX/Y é a razão entre a nova largura/altura e a original
+                  const _ob = annResizeOriginBBox;
+                  const _newW = _p.x - annResizeAnchorX;
+                  const _newH = _p.y - annResizeAnchorY;
+                  // _origW/_origH: sinal dependente da alca (TL/BL: ancora a direita → origW negativo)
+                  const _origW = (annResizeHandle === 'tl' || annResizeHandle === 'bl') ? -_ob.w : _ob.w;
+                  const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
+                  const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
+                  const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
+                  const _origPts = annResizeSnapshot.shape.pts; // pts originais (imutáveis durante o resize)
+                  for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
+                    _sh.pts[_fi] = {
+                      x: annResizeAnchorX + (_origPts[_fi].x - annResizeAnchorX) * _sx,
+                      y: annResizeAnchorY + (_origPts[_fi].y - annResizeAnchorY) * _sy
+                    };
+                  }
+                } else if (_sh.type !== 'free') {
+                  // rect, circle, arrow: o canto oposto à alça fica fixo; o outro segue o rato
+                  _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY;
+                  _sh.x2 = _p.x;             _sh.y2 = _p.y;
+                }
+                annRenderAll();
+              });
+            }
+            return;
+          }
           // Fase 2.2: arrasto de forma selecionada com movimento visual em tempo real
           if (annDragging && annActive) {
             if (!annDragRafId) {
@@ -4018,6 +4165,22 @@
           annScheduledPaint();
         });
         window.addEventListener('mouseup', e => {
+          // Fase 3: terminar redimensionamento
+          if (annResizing) {
+            if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
+            annResizing = false;
+            annResizeHandle = '';
+            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annResizeSnapshot) {
+              annRedoHistory.push(annResizeSnapshot); // Undo disponivel (mesmo mecanismo do drag)
+              annResizeSnapshot = null;
+              setAnnDirty(true);
+              annRenderAll();
+              SysLogger.info('Ann resize end: undo disponivel para idx=' + annSelectedIdx);
+            } else {
+              annResizeSnapshot = null;
+            }
+            return;
+          }
           // Fase 2.3: terminar arrasto e registar no historico de Undo
           if (annDragging) {
             if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
