@@ -163,6 +163,16 @@
       color: var(--accent-fg)
     }
 
+    /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
+    #ann-text-input::selection {
+      background: rgba(14, 165, 233, 0.32);
+      color: inherit
+    }
+    #ann-text-input::-moz-selection {
+      background: rgba(14, 165, 233, 0.32);
+      color: inherit
+    }
+
     *:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px
@@ -3677,7 +3687,7 @@
         const bb = $('ann-bold-btn'), ib = $('ann-italic-btn');
         if (bb) bb.classList.toggle('active', annTextBold);
         if (ib) ib.classList.toggle('active', annTextItalic);
-        setTimeout(() => { inp.focus(); if (prefillText) { inp.select() } }, 30);
+        setTimeout(() => { inp.focus(); if (prefillText) { const _end = inp.value.length; inp.setSelectionRange(_end, _end); } }, 30);
         let committed = false;
         function commit() {
           if (committed) return;
