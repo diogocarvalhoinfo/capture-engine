@@ -3620,7 +3620,7 @@
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annSetTool('free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
+        annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
         annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
