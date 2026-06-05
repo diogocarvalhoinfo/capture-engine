@@ -2868,6 +2868,10 @@
           <button class="ann-btn" data-tool="text" title="Texto"><svg viewBox="0 0 24 24">
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
+          <button class="ann-btn" id="ann-bold-btn" title="Negrito (Ctrl+B)"
+            style="display:none;font-weight:700;font-size:14px;font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
+          <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
+            style="display:none;font-style:italic;font-size:14px;font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
               <polyline points="5 9 2 12 5 15"/>
               <polyline points="9 5 12 2 15 5"/>
@@ -2876,10 +2880,6 @@
               <line x1="2" y1="12" x2="22" y2="12"/>
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
-          <button class="ann-btn" id="ann-bold-btn" title="Negrito (Ctrl+B)"
-            style="display:none;font-weight:700;font-size:14px;font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
-          <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
-            style="display:none;font-style:italic;font-size:14px;font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
           <div class="ann-sep"></div>
           <!-- Colors + Thickness grouped together -->
           <div style="display:flex;gap:4px;align-items:center">
@@ -3425,28 +3425,16 @@
             e.preventDefault();
             if (e.shiftKey) {
               // Ctrl+Shift+Z = Redo
-              if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() }
+              annDoRedo();
             } else {
               // Ctrl+Z = Undo
-              const _top = annRedoHistory.length ? annRedoHistory[annRedoHistory.length - 1] : null;
-              if (_top && _top._isMoveUndo) {
-                // Undo de movimento: restaura a shape na posição original do array
-                annRedoHistory.pop();
-                if (_top.idx >= 0 && _top.idx < annHistory.length) {
-                  annHistory[_top.idx] = _top.shape;
-                  annSelectedIdx = _top.idx;
-                  setAnnDirty(true); annRenderAll();
-                }
-              } else if (annHistory.length) {
-                // Undo normal: remove a última shape adicionada
-                annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll();
-              }
+              annDoUndo();
             }
             return;
           }
           if (e.key.toLowerCase() === 'y') {
             e.preventDefault();
-            if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() }
+            annDoRedo();
             return;
           }
         }
@@ -3576,7 +3564,7 @@
       let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annRedoHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
-      const ANN_SIZES = [2, 4, 8]; let annSizeIdx = 1;
+      const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       let annHoverIdx = -1; // mantido para compatibilidade com annDeactivate; lógica de hover removida na Fase 1c
       // Fase 2 — variáveis de arrasto de anotações
@@ -3781,11 +3769,71 @@
         _annDbBtn.style.top  = _finalTop  + 'px';
         _annDbBtn.style.display = 'flex';
       }
-      function annRenderAll() { annRedraw(); annDrawSelectionOverlay(); annUpdateDelBtn(); }
+      function annRenderAll() { annRedraw(); annDrawSelectionOverlay(); annUpdateDelBtn(); annUpdateThicknessVis(); }
       function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
-      function annUpdateThicknessIcon() { const sw = [2, 3, 5]; const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) } const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) } const td = $('ann-thickness-down'), tu = $('ann-thickness-up'); if (annTool === 'text') { if (td) td.title = 'Texto menor'; if (tu) tu.title = 'Texto maior' } else { if (td) td.title = 'Espessura menor'; if (tu) tu.title = 'Espessura maior' } }
+      function annUpdateThicknessIcon() {
+        const sw = [1, 1.5, 2, 2.5, 3, 4]; // stroke-width visual do icone SVG — paralelo ao ANN_SIZES (6 entradas)
+        const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
+        const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
+        const td = $('ann-thickness-down'), tu = $('ann-thickness-up');
+        if (annTool === 'text') { if (td) td.title = 'Texto menor'; if (tu) tu.title = 'Texto maior' } else { if (td) td.title = 'Espessura menor'; if (tu) tu.title = 'Espessura maior' }
+      }
+      // Mostra/oculta os botoes de espessura de acordo com a selecao atual.
+      // Chamada por annRenderAll() (que chama annUpdateDelBtn(), seguido daqui).
+      // Regras: texto selecionado -> ocultar; forma nao-texto selecionada -> mostrar; sem selecao -> mostrar.
+      function annUpdateThicknessVis() {
+        // Botoes sao sempre visiveis — sem logica de ocultacao
+      }
+      // Helper: clona uma shape para o Undo de propriedade (cor, espessura, fontSize).
+      // Deep clone de pts para 'free' — evita que move/resize posteriores corrompam o snapshot.
+      function annSnapshotForUndo(idx) {
+        const _s = annHistory[idx];
+        const _clone = _s.type === 'free'
+          ? { ..._s, pts: _s.pts.map(p => ({ ...p })) }
+          : { ..._s };
+        return { _isMoveUndo: true, idx: idx, shape: _clone };
+      }
+      // annDoUndo / annDoRedo — logica unica partilhada por botoes e atalhos de teclado
+      function annDoUndo() {
+        const _top = annRedoHistory.length ? annRedoHistory[annRedoHistory.length - 1] : null;
+        if (_top && _top._isMoveUndo) {
+          // Undo de propriedade/movimento: troca o estado atual pelo snapshot guardado
+          // Guarda o estado "after" como novo entry de redo (simetrico)
+          annRedoHistory.pop();
+          const _cur = annHistory[_top.idx];
+          const _redoShape = _cur.type === 'free'
+            ? { ..._cur, pts: _cur.pts.map(p => ({ ...p })) }
+            : { ..._cur };
+          annHistory[_top.idx] = _top.shape; // restaura "before"
+          annSelectedIdx = _top.idx;
+          annRedoHistory.push({ _isMoveUndo: true, idx: _top.idx, shape: _redoShape }); // guarda "after" para redo
+          setAnnDirty(true); annRenderAll();
+        } else if (annHistory.length) {
+          // Undo normal: remove a ultima shape adicionada
+          annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll();
+        }
+      }
+      function annDoRedo() {
+        if (!annRedoHistory.length) return;
+        const _top = annRedoHistory[annRedoHistory.length - 1];
+        if (_top && _top._isMoveUndo) {
+          // Redo de propriedade/movimento: simetrico ao undo — troca estado atual pelo "after" guardado
+          annRedoHistory.pop();
+          const _cur = annHistory[_top.idx];
+          const _undoShape = _cur.type === 'free'
+            ? { ..._cur, pts: _cur.pts.map(p => ({ ...p })) }
+            : { ..._cur };
+          annHistory[_top.idx] = _top.shape; // re-aplica "after"
+          annSelectedIdx = _top.idx;
+          annRedoHistory.push({ _isMoveUndo: true, idx: _top.idx, shape: _undoShape }); // guarda "before" para undo
+          setAnnDirty(true); annRenderAll();
+        } else {
+          // Redo normal: re-adiciona a shape
+          annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll();
+        }
+      }
       function annHideTextInput() {
         if (annCommitText) { annCommitText(); annCommitText = null; }
         const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
@@ -3894,17 +3942,31 @@
           }
           annDeactivate();
         };
-        $('ann-undo').onclick = () => { if (annHistory.length) { annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll() } };
-        $('ann-redo').onclick = () => { if (annRedoHistory.length) { annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll() } };
+        $('ann-undo').onclick = () => annDoUndo();
+        $('ann-redo').onclick = () => annDoRedo();
         // Color swatches — mousedown.preventDefault impede blur no text input
         document.querySelectorAll('.ann-swatch').forEach(b => {
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
           b.onclick = () => {
-            annCurrentColor = b.dataset.color;
-            document.querySelectorAll('.ann-swatch').forEach(s => s.classList.remove('active'));
-            b.classList.add('active');
-            const inp = $('ann-text-input');
-            if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = annCurrentColor; inp.focus() }
+            const _color = b.dataset.color;
+            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+              // Fase 4.3: aplica cor na anotacao selecionada + Undo via _isMoveUndo
+              const _s = annHistory[annSelectedIdx];
+              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // deep clone via helper — Ctrl+Z restaura
+              _s.color = _color;
+              annCurrentColor = _color; // sincroniza cor da ferramenta
+              document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
+              const inp = $('ann-text-input');
+              if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = _color; inp.focus() }
+              setAnnDirty(true); annRenderAll();
+            } else {
+              // Sem selecao: comportamento original (define cor da ferramenta)
+              annCurrentColor = _color;
+              document.querySelectorAll('.ann-swatch').forEach(s => s.classList.remove('active'));
+              b.classList.add('active');
+              const inp = $('ann-text-input');
+              if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = annCurrentColor; inp.focus() }
+            }
           };
         });
         // Bold / Italic buttons — mesmo tratamento
@@ -3930,8 +3992,46 @@
           inp.focus();
         }
         ['ann-thickness-down', 'ann-thickness-up'].forEach(_tid => { $(_tid).addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() }) });
-        $('ann-thickness-down').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon(); annTextLiveResize() } } else { if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() } } };
-        $('ann-thickness-up').onclick = () => { if (annTool === 'text') { if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon(); annTextLiveResize() } } else { if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } } };
+        $('ann-thickness-down').onclick = () => {
+          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+            const _s = annHistory[annSelectedIdx];
+            if (_s.type === 'text') {
+              // Texto selecionado: diminui o fontSize ciclando em ANN_TEXT_SIZES
+              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
+              const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
+              const _ni = _idx > 0 ? _idx - 1 : 0;
+              _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+            } else {
+              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
+              const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
+              _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+            }
+          } else if (annTool === 'text') {
+            if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon(); annTextLiveResize() }
+          } else {
+            if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() }
+          }
+        };
+        $('ann-thickness-up').onclick = () => {
+          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+            const _s = annHistory[annSelectedIdx];
+            if (_s.type === 'text') {
+              // Texto selecionado: aumenta o fontSize ciclando em ANN_TEXT_SIZES
+              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
+              const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
+              const _ni = _idx < ANN_TEXT_SIZES.length - 1 ? _idx + 1 : ANN_TEXT_SIZES.length - 1;
+              _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+            } else {
+              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
+              const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx < ANN_SIZES.length - 1 ? _idx + 1 : ANN_SIZES.length - 1;
+              _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+            }
+          } else if (annTool === 'text') {
+            if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon(); annTextLiveResize() }
+          } else {
+            if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() }
+          }
+        };
         // Tool buttons
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.onclick = () => annSetTool(b.dataset.tool) });
         const cv = $('ann-canvas');
