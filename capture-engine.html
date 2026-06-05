@@ -3441,9 +3441,9 @@
         // Delete: apaga a anotação seleccionada (sem Ctrl, sem campo de texto activo)
         if (annActive && e.key === 'Delete' && !_annUndoInField && annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
           e.preventDefault();
+          annPushUndo(); // M7: snapshot ANTES de apagar via tecla Delete
           annHistory.splice(annSelectedIdx, 1);
           setAnnDirty(true);
-          annRedoHistory = [];
           annSelectedIdx = -1;
           annRenderAll();
           return;
@@ -3561,7 +3561,10 @@
       };
 
       /* ═══ ANNOTATION ENGINE ═══ */
-      let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annRedoHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
+      let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
+      // Fase 5 — pilhas de Undo/Redo por snapshots de estado completo
+      let annUndoStack = [], annRedoStack = [];
+      const ANN_HISTORY_MAX = 50;
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
@@ -3573,13 +3576,13 @@
       let annDragLastX  = 0, annDragLastY  = 0; // posição do rato no frame anterior — delta incremental
       let annDragOriginX = 0, annDragOriginY = 0; // coords x1,y1 originais da forma (reservado)
       let annDragRafId = 0;          // RAF id para coalescing do render durante o arrasto
-      let annDragSnapshot = null;    // clone da shape antes do arrasto (para Undo)
+      let annDragSnap = null, annDragDirty = false;
       // Fase 3 — variáveis de redimensionamento via alças
       let annResizing = false;       // true enquanto o utilizador arrasta uma alça
       let annResizeHandle = '';      // 'tl','tr','bl','br'
       let annResizeAnchorX = 0, annResizeAnchorY = 0; // canto oposto à alça (permanece fixo)
-      let annResizeSnapshot = null;  // clone pre-resize para Undo
       let annResizeRafId = 0;        // RAF id para coalescing do render durante resize
+      let annResizeSnap = null, annResizeDirty = false;
       let annResizeOriginFS = 0;     // fontSize original da shape de texto no inicio do resize
       let annResizeStartX = 0, annResizeStartY = 0; // posicao canvas no inicio do resize (distancia diagonal)
       let annResizeOriginBBox = null; // bbox canvas da shape no inicio do resize (para escala de free)
@@ -3636,7 +3639,12 @@
         annHistory = (o && o.annHistory) ? JSON.parse(JSON.stringify(o.annHistory)) : [];
         annInitialState = JSON.stringify(annHistory);
         setAnnDirty(false);
-        annRedoHistory = [];
+        annUndoStack = [];
+        annRedoStack = [];
+        for (let _i = 0; _i < annHistory.length; _i++) {
+          annUndoStack.push(JSON.parse(JSON.stringify(annHistory.slice(0, _i))));
+        }
+        while (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift();
         const btnClose = $('ann-cancel'), btnSave = $('ann-save');
         if (btnClose) btnClose.classList.remove('alert-anim');
         if (btnSave) btnSave.classList.remove('alert-anim');
@@ -3786,53 +3794,35 @@
       function annUpdateThicknessVis() {
         // Botoes sao sempre visiveis — sem logica de ocultacao
       }
-      // Helper: clona uma shape para o Undo de propriedade (cor, espessura, fontSize).
-      // Deep clone de pts para 'free' — evita que move/resize posteriores corrompam o snapshot.
-      function annSnapshotForUndo(idx) {
-        const _s = annHistory[idx];
-        const _clone = _s.type === 'free'
-          ? { ..._s, pts: _s.pts.map(p => ({ ...p })) }
-          : { ..._s };
-        return { _isMoveUndo: true, idx: idx, shape: _clone };
+      // Fase 5 — Novo sistema Undo/Redo por snapshots de estado completo
+      // annCloneState: deep clone perfeito (shapes sao POJOs, JSON round-trip e seguro)
+      function annCloneState() { return JSON.parse(JSON.stringify(annHistory)); }
+      // annCommitUndo: grava snapshot ANTES de uma mutacao; limpa redoStack (intencao nova do utilizador)
+      function annCommitUndo(snap) {
+        annUndoStack.push(snap);
+        if (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift(); // aplica teto
+        annRedoStack.length = 0; // nova mutacao invalida o futuro
       }
-      // annDoUndo / annDoRedo — logica unica partilhada por botoes e atalhos de teclado
+      // atalho conveniente: captura o estado atual e enfia no undoStack
+      function annPushUndo() { annCommitUndo(annCloneState()); }
+      // annDoUndo / annDoRedo — sem casos especiais, simetricos
       function annDoUndo() {
-        const _top = annRedoHistory.length ? annRedoHistory[annRedoHistory.length - 1] : null;
-        if (_top && _top._isMoveUndo) {
-          // Undo de propriedade/movimento: troca o estado atual pelo snapshot guardado
-          // Guarda o estado "after" como novo entry de redo (simetrico)
-          annRedoHistory.pop();
-          const _cur = annHistory[_top.idx];
-          const _redoShape = _cur.type === 'free'
-            ? { ..._cur, pts: _cur.pts.map(p => ({ ...p })) }
-            : { ..._cur };
-          annHistory[_top.idx] = _top.shape; // restaura "before"
-          annSelectedIdx = _top.idx;
-          annRedoHistory.push({ _isMoveUndo: true, idx: _top.idx, shape: _redoShape }); // guarda "after" para redo
-          setAnnDirty(true); annRenderAll();
-        } else if (annHistory.length) {
-          // Undo normal: remove a ultima shape adicionada
-          annRedoHistory.push(annHistory.pop()); setAnnDirty(true); annRenderAll();
-        }
+        if (!annUndoStack.length) return;
+        annRedoStack.push(annCloneState()); // guarda estado atual para redo
+        const _prev = annUndoStack.pop();
+        annHistory.splice(0, annHistory.length, ..._prev); // mutar NO LUGAR — nunca reatribuir
+        annSelectedIdx = -1;
+        const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
+        setAnnDirty(true); annRenderAll();
       }
       function annDoRedo() {
-        if (!annRedoHistory.length) return;
-        const _top = annRedoHistory[annRedoHistory.length - 1];
-        if (_top && _top._isMoveUndo) {
-          // Redo de propriedade/movimento: simetrico ao undo — troca estado atual pelo "after" guardado
-          annRedoHistory.pop();
-          const _cur = annHistory[_top.idx];
-          const _undoShape = _cur.type === 'free'
-            ? { ..._cur, pts: _cur.pts.map(p => ({ ...p })) }
-            : { ..._cur };
-          annHistory[_top.idx] = _top.shape; // re-aplica "after"
-          annSelectedIdx = _top.idx;
-          annRedoHistory.push({ _isMoveUndo: true, idx: _top.idx, shape: _undoShape }); // guarda "before" para undo
-          setAnnDirty(true); annRenderAll();
-        } else {
-          // Redo normal: re-adiciona a shape
-          annHistory.push(annRedoHistory.pop()); setAnnDirty(true); annRenderAll();
-        }
+        if (!annRedoStack.length) return;
+        annUndoStack.push(annCloneState()); // guarda estado atual para undo
+        const _next = annRedoStack.pop();
+        annHistory.splice(0, annHistory.length, ..._next); // mutar NO LUGAR — nunca reatribuir
+        annSelectedIdx = -1;
+        const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
+        setAnnDirty(true); annRenderAll();
       }
       function annHideTextInput() {
         if (annCommitText) { annCommitText(); annCommitText = null; }
@@ -3888,13 +3878,14 @@
           annSelectedIdx = -1; /* limpa seleção residual ao confirmar texto */
           const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none';
           if (txt) {
+            annPushUndo(); // M3/M4: snapshot ANTES de novo texto ou edicao de texto existente
             const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: ANN_TEXT_SIZES[annTextSizeIdx], lw: annLineW() };
             if (annEditingTextIdx >= 0 && annEditingTextIdx < annHistory.length) { annHistory[annEditingTextIdx] = entry } else { annHistory.push(entry) }
             setAnnDirty(true);
             annEditingTextIdx = -1;
-            annRedoHistory = [];
             annRenderAll();
           } else if (annEditingTextIdx >= 0) {
+            annPushUndo(); // M5: snapshot ANTES de remover texto vazio
             annHistory.splice(annEditingTextIdx, 1);
             setAnnDirty(true);
             annEditingTextIdx = -1;
@@ -3950,9 +3941,8 @@
           b.onclick = () => {
             const _color = b.dataset.color;
             if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-              // Fase 4.3: aplica cor na anotacao selecionada + Undo via _isMoveUndo
+              annPushUndo(); // M10: snapshot ANTES de mudar cor da anotacao selecionada
               const _s = annHistory[annSelectedIdx];
-              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // deep clone via helper — Ctrl+Z restaura
               _s.color = _color;
               annCurrentColor = _color; // sincroniza cor da ferramenta
               document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
@@ -3995,14 +3985,12 @@
         $('ann-thickness-down').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx];
+            annPushUndo(); // M11/M12: snapshot ANTES de diminuir espessura ou fontSize
             if (_s.type === 'text') {
-              // Texto selecionado: diminui o fontSize ciclando em ANN_TEXT_SIZES
-              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
               const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
               const _ni = _idx > 0 ? _idx - 1 : 0;
               _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             } else {
-              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
               const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
               _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             }
@@ -4015,14 +4003,12 @@
         $('ann-thickness-up').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx];
+            annPushUndo(); // M11/M12: snapshot ANTES de aumentar espessura ou fontSize
             if (_s.type === 'text') {
-              // Texto selecionado: aumenta o fontSize ciclando em ANN_TEXT_SIZES
-              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
               const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
               const _ni = _idx < ANN_TEXT_SIZES.length - 1 ? _idx + 1 : ANN_TEXT_SIZES.length - 1;
               _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             } else {
-              annRedoHistory.push(annSnapshotForUndo(annSelectedIdx)); // Undo via Ctrl+Z
               const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx < ANN_SIZES.length - 1 ? _idx + 1 : ANN_SIZES.length - 1;
               _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             }
@@ -4045,10 +4031,8 @@
               const _hh = annHandleHitTest(p.x, p.y);
               if (_hh) {
                 const _sh = annHistory[annSelectedIdx];
-                // Snapshot pre-resize para Undo
-                annResizeSnapshot = _sh.type === 'free'
-                  ? { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh, pts: _sh.pts.map(pt => ({ ...pt })) } }
-                  : { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh } };
+                // M9: snapshot do estado inteiro ANTES do resize (flag dirty para commit no mouseup)
+                annResizeSnap = annCloneState(); annResizeDirty = false;
                 annResizing = true;
                 annResizeHandle = _hh;
                 annResizeStartX = p.x; annResizeStartY = p.y; // posicao inicial do rato (para escala de texto)
@@ -4088,10 +4072,8 @@
               annDragStartX = p.x; annDragStartY = p.y;
               annDragLastX  = p.x; annDragLastY  = p.y;
               const _sh = annHistory[annSelectedIdx];
-              // Snapshot da shape antes do drag (para Undo de movimento)
-              annDragSnapshot = _sh.type === 'free'
-                ? { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh, pts: _sh.pts.map(pt => ({ ...pt })) } }
-                : { _isMoveUndo: true, idx: annSelectedIdx, shape: { ..._sh } };
+              // M8: snapshot do estado inteiro ANTES do drag (flag dirty para commit no mouseup)
+              annDragSnap = annCloneState(); annDragDirty = false;
               annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
               annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
               annRenderAll(); // mostra caixa de selecao imediatamente
@@ -4168,40 +4150,35 @@
                 const _p = annCanvasXY(e);
                 const _sh = annHistory[annSelectedIdx];
                 if (_sh.type === 'text') {
-                  // Texto: escala o fontSize pela razão de distâncias diagonal (anchor → mouse) / (anchor → posicao_inicial)
-                  // Funciona correctamente em todas as 4 alças sem ambiguidade de direccão
                   const _dx0 = annResizeStartX - annResizeAnchorX, _dy0 = annResizeStartY - annResizeAnchorY;
                   const _dx1 = _p.x            - annResizeAnchorX, _dy1 = _p.y            - annResizeAnchorY;
                   const _d0 = Math.sqrt(_dx0 * _dx0 + _dy0 * _dy0);
                   const _d1 = Math.sqrt(_dx1 * _dx1 + _dy1 * _dy1);
                   const _scale = _d0 > 2 ? _d1 / _d0 : 1;
                   const _newFS = Math.max(8, Math.min(96, Math.round(annResizeOriginFS * _scale)));
-                  // Ajusta x1,y1 para alças onde o texto deve crescer para cima ou para a esquerda
-                  const _ob = annResizeOriginBBox; // bbox original
-                  const _ratio = _newFS / annResizeOriginFS; // factor de crescimento linear
+                  const _ob = annResizeOriginBBox;
+                  const _ratio = _newFS / annResizeOriginFS;
                   if (annResizeHandle === 'tl' || annResizeHandle === 'tr') {
-                    // Alça superior: y1 move-se para cima mantendo a base (anchorY) fixa
-                    const _origH = _ob.h; // altura original do bbox (inclui padding ~8px)
-                    _sh.y1 = annResizeAnchorY - _origH * _ratio - 4; // 4 = padding top do bbox
+                    const _origH = _ob.h;
+                    _sh.y1 = annResizeAnchorY - _origH * _ratio - 4;
                   }
                   if (annResizeHandle === 'tl' || annResizeHandle === 'bl') {
-                    // Alça esquerda: x1 move-se para a esquerda mantendo a direita (anchorX) fixa
-                    const _origW = _ob.w; // largura original do bbox (aprox - medida com font)
-                    _sh.x1 = annResizeAnchorX - _origW * _ratio - 4; // 4 = padding left do bbox
+                    const _origW = _ob.w;
+                    _sh.x1 = annResizeAnchorX - _origW * _ratio - 4;
                   }
                   _sh.fontSize = _newFS;
-                } else if (_sh.type === 'free' && annResizeSnapshot && annResizeOriginBBox) {
-                  // Free: escala todos os pontos a partir do snapshot original (evita acumulação de erro)
-                  // O anchor é o canto fixo; scaleX/Y é a razão entre a nova largura/altura e a original
+                } else if (_sh.type === 'free' && annResizeOriginBBox) {
+                  // Free: escala todos os pontos a partir do snapshot do estado (evita acumulacao de erro)
+                  // Recupera pts originais do snapshot para calcular a escala correcta
                   const _ob = annResizeOriginBBox;
                   const _newW = _p.x - annResizeAnchorX;
                   const _newH = _p.y - annResizeAnchorY;
-                  // _origW/_origH: sinal dependente da alca (TL/BL: ancora a direita → origW negativo)
                   const _origW = (annResizeHandle === 'tl' || annResizeHandle === 'bl') ? -_ob.w : _ob.w;
                   const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
                   const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
                   const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
-                  const _origPts = annResizeSnapshot.shape.pts; // pts originais (imutáveis durante o resize)
+                  // annResizeSnap[annSelectedIdx].pts — pts originais do estado pre-resize (imutaveis)
+                  const _origPts = annResizeSnap[annSelectedIdx].pts;
                   for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
                     _sh.pts[_fi] = {
                       x: annResizeAnchorX + (_origPts[_fi].x - annResizeAnchorX) * _sx,
@@ -4209,10 +4186,10 @@
                     };
                   }
                 } else if (_sh.type !== 'free') {
-                  // rect, circle, arrow: o canto oposto à alça fica fixo; o outro segue o rato
                   _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY;
                   _sh.x2 = _p.x;             _sh.y2 = _p.y;
                 }
+                annResizeDirty = true;
                 annRenderAll();
               });
             }
@@ -4225,27 +4202,22 @@
                 annDragRafId = 0;
                 if (!annDragging || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
                 const _p = annCanvasXY(e);
-                // Delta incremental: diferenca entre frame atual e frame anterior
-                // Garante movimento correto em todas as shapes (incluindo free com pts mutados)
                 const _dx = _p.x - annDragLastX;
                 const _dy = _p.y - annDragLastY;
                 annDragLastX = _p.x;
                 annDragLastY = _p.y;
                 const _sh = annHistory[annSelectedIdx];
-                // Aplica delta incremental às coordenadas da shape consoante o tipo
                 if (_sh.type === 'free') {
-                  // Desloca todos os pontos do traçado livre pelo mesmo incremento
                   for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
                     _sh.pts[_fi] = { x: _sh.pts[_fi].x + _dx, y: _sh.pts[_fi].y + _dy };
                   }
                 } else if (_sh.type === 'text') {
-                  _sh.x1 += _dx;
-                  _sh.y1 += _dy;
+                  _sh.x1 += _dx; _sh.y1 += _dy;
                 } else {
-                  // rect, circle, arrow: desloca os dois pontos
                   _sh.x1 += _dx; _sh.y1 += _dy;
                   _sh.x2 += _dx; _sh.y2 += _dy;
                 }
+                annDragDirty = true;
                 annRenderAll();
               });
             }
@@ -4270,34 +4242,19 @@
             if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
             annResizing = false;
             annResizeHandle = '';
-            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annResizeSnapshot) {
-              annRedoHistory.push(annResizeSnapshot); // Undo disponivel (mesmo mecanismo do drag)
-              annResizeSnapshot = null;
-              setAnnDirty(true);
-              annRenderAll();
-              SysLogger.info('Ann resize end: undo disponivel para idx=' + annSelectedIdx);
-            } else {
-              annResizeSnapshot = null;
-            }
+            // M9: commit do snapshot pre-resize SE o gesto de facto mudou a shape
+            if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); annRenderAll(); SysLogger.info('Ann resize end: undo disponivel'); }
             return;
           }
-          // Fase 2.3: terminar arrasto e registar no historico de Undo
+          // Fase 2.3: terminar arrasto
           if (annDragging) {
             if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
             annDragging = false;
             annDragStartX = 0; annDragStartY = 0;
             annDragLastX = 0; annDragLastY = 0;
             annDragOriginX = 0; annDragOriginY = 0;
-            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annDragSnapshot) {
-              // Empurra snapshot pre-drag para annRedoHistory (Undo restaura posição original)
-              annRedoHistory.push(annDragSnapshot);
-              annDragSnapshot = null;
-              setAnnDirty(true);
-              annRenderAll();
-              SysLogger.info('Ann drag end: undo disponivel para idx=' + annSelectedIdx);
-            } else {
-              annDragSnapshot = null;
-            }
+            // M8: commit do snapshot pre-drag SE o gesto de facto moveu a shape
+            if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); annRenderAll(); SysLogger.info('Ann drag end: undo disponivel'); }
             return;
           }
           if (!annDrawing || !annActive) return;
@@ -4309,14 +4266,15 @@
             annSmoothLast = null;
             if (annPath.length > 1) {
               const closed = false;
-              /* fidelidade total: guarda exatamente os pontos do desenho, sem suavizar nem simplificar */
               const simplified = annPath.slice();
+              annPushUndo(); // M1: snapshot ANTES de adicionar traçado livre
               annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed });
-              setAnnDirty(true); annRedoHistory = []
+              setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
+            annPushUndo(); // M2: snapshot ANTES de adicionar rect/circle/arrow
             annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() });
-            setAnnDirty(true); annRedoHistory = []
+            setAnnDirty(true);
           }
           annRenderAll();
         });
@@ -4339,9 +4297,9 @@
         _annDelBtnEl.onclick = (e) => {
           e.stopPropagation();
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+            annPushUndo(); // M6: snapshot ANTES de apagar via botao X
             annHistory.splice(annSelectedIdx, 1);
             setAnnDirty(true);
-            annRedoHistory = [];
             annSelectedIdx = -1;
             annRenderAll();
           }
