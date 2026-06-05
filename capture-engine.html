@@ -2413,12 +2413,18 @@
       border-color: var(--accent);
     }
 
-    #img-modal-overlay .ann-btn.active[data-tool="text"],
     #img-modal-overlay #ann-bold-btn.active,
     #img-modal-overlay #ann-italic-btn.active {
       color: #121212;
       background: #ffffff;
       border-color: #ffffff;
+    }
+
+    #img-modal-overlay .ann-btn.active[data-tool="text"],
+    #img-modal-overlay .ann-btn.ann-txt-selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
     }
 
     #img-modal-overlay .ann-sep {
@@ -3777,7 +3783,20 @@
         _annDbBtn.style.top  = _finalTop  + 'px';
         _annDbBtn.style.display = 'flex';
       }
-      function annRenderAll() { annRedraw(); annDrawSelectionOverlay(); annUpdateDelBtn(); annUpdateThicknessVis(); }
+      function annRenderAll() {
+        annRedraw();
+        annDrawSelectionOverlay();
+        annUpdateDelBtn();
+        annUpdateThicknessVis();
+        const _tb = document.querySelector('.ann-btn[data-tool="text"]');
+        if (_tb) {
+          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annHistory[annSelectedIdx].type === 'text') {
+            _tb.classList.add('ann-txt-selected');
+          } else {
+            _tb.classList.remove('ann-txt-selected');
+          }
+        }
+      }
       function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
@@ -4023,6 +4042,27 @@
         const cv = $('ann-canvas');
         cv.addEventListener('mousedown', e => {
           if (!annActive) return;
+          if (e.button === 1) return;
+          if (e.button === 2) {
+            if (annCommitText) annCommitText();
+            const p = annCanvasXY(e);
+            const _hitIdx = annHitTest(p.x, p.y);
+            if (_hitIdx >= 0) {
+              annSelectedIdx = _hitIdx;
+              annDragging = true;
+              annDragStartX = p.x; annDragStartY = p.y;
+              annDragLastX  = p.x; annDragLastY  = p.y;
+              const _sh = annHistory[annSelectedIdx];
+              annDragSnap = annCloneState(); annDragDirty = false;
+              annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
+              annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
+              annRenderAll();
+            } else {
+              annSelectedIdx = -1;
+              annRenderAll();
+            }
+            return;
+          }
           if (annTool === 'select') {
             if (annCommitText) annCommitText();
             const p = annCanvasXY(e);
@@ -4098,6 +4138,10 @@
           }
           if (annCommitText) annCommitText();
           const p = annCanvasXY(e); annSelectedIdx = -1; annDrawing = true; annStart = p; annPath = [p];
+        });
+        cv.addEventListener('contextmenu', e => {
+          if (!annActive) return;
+          e.preventDefault();
         });
         cv.addEventListener('dblclick', e => {
           if (!annActive || (annTool !== 'text' && annTool !== 'select')) return;
@@ -4243,7 +4287,8 @@
             annResizing = false;
             annResizeHandle = '';
             // M9: commit do snapshot pre-resize SE o gesto de facto mudou a shape
-            if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); annRenderAll(); SysLogger.info('Ann resize end: undo disponivel'); }
+            if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
+            annRenderAll();
             return;
           }
           // Fase 2.3: terminar arrasto
@@ -4254,7 +4299,8 @@
             annDragLastX = 0; annDragLastY = 0;
             annDragOriginX = 0; annDragOriginY = 0;
             // M8: commit do snapshot pre-drag SE o gesto de facto moveu a shape
-            if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); annRenderAll(); SysLogger.info('Ann drag end: undo disponivel'); }
+            if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
+            annRenderAll();
             return;
           }
           if (!annDrawing || !annActive) return;
