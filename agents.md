@@ -43,6 +43,15 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 
 ---
 
+## Como editar este arquivo com segurança
+
+- Desative qualquer auto-formatador (Prettier, ESLint --fix, EditorConfig-based format-on-save) antes de editar. Formatação automática SILENCIOSAMENTE corrompe os comment-markers que o `validate.sh` e o Quine dependem. Se o IDE formatar ao salvar, desative essa opção especificamente para este arquivo.
+- Use code folding para navegar (ex.: VS Code "Fold by Indentation"). O arquivo tem 6000+ linhas — sem folding a navegação é impraticável.
+- Extensões de browser que injetam no DOM (Grammarly, Adblockers, gerenciadores de senha, tradutores automáticos) podem corromper o snapshot do Quine (`BOOT_HTML` é capturado do `outerHTML` no boot). Para testes de desenvolvimento, use um perfil de browser sem extensões.
+- Sempre execute `validate.sh` após qualquer mudança no `capture-engine.html` e antes de qualquer commit.
+
+---
+
 Antes de ler as regras, é necessário entender *por que* elas existem. As regras não são arbitrárias — cada uma protege um dos três contratos fundamentais do motor:
 
 ### Contrato 1: O arquivo é a aplicação inteira
@@ -724,7 +733,7 @@ activar arrasto:
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto). A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
 | **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
-| **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annDoUndo` e `annDoRedo` são simétricos, sem casos especiais: restauram o estado mutando `annHistory` *no lugar* (`splice`). Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `_dragDirty` / `_resizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal). |
+| **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annDoUndo` e `annDoRedo` são simétricos, sem casos especiais: restauram o estado mutando `annHistory` *no lugar* (`splice`). Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `_dragDirty` / `_resizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `_dragDirty`/`_resizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
 
 ### Funções do Admin Gate
 
@@ -975,7 +984,7 @@ A validação tem **duas partes**:
 **Documentação:**
 - [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 13 do `readme.md` foi atualizado
 - [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Seção 9
-- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `readme.md`, o `design-tokens.md` e o `agents.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo — EMA + Laplaciana + RDP. Verificar sempre que se mexe num motor.)*
+- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `readme.md`, o `design-tokens.md` e o `agents.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
 
 ---
 
