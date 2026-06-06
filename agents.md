@@ -137,6 +137,8 @@ No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_E
 const TOKEN_MAIN_COLOR = '#0ea5e9';
 ```
 
+> **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex ancorado à sintaxe de declaração (ex: `/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/`). Isto garante que apenas a declaração seja substituída, prevenindo a corrupção acidental da string em contextos de comentário, log ou código (ex: `console.log("TOKEN_MAIN_COLOR")`). Adicionalmente, `sanitizeForQuine()` insere zero-width spaces (U+200B) nos valores dos campos editáveis antes de serializar o HTML, impedindo que texto digitado pelo usuário coincida acidentalmente com os marcadores de estrutura do Quine (ex.: `ADMIN_EDIT_START`).
+
 **Regra:** Qualquer alteração ao arquivo deve preservar todos os comment markers intactos e todas as funções Quine funcionais.
 
 ---
@@ -568,7 +570,7 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` registra a exceção no console. A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grade acontece via URL local em memória temporária). A sessão já salva e os itens antigos permanecem íntegros no DB.
 
-**Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
+**Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a cota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
 
 > **Risco de redistribuição:** Se redistribuir com um valor de `TOKEN_AUTO_PURGE_HOURS` menor do que o anterior (ex: de 48h para 24h), sessões que antes sobreviveriam são purgadas na próxima abertura. O comportamento é correto (o código usa sempre o valor atual do token), mas pode surpreender usuários com sessões em curso. Comunicar a mudança antes de redistribuir.
 
@@ -654,7 +656,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos diretamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`). |
+| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos diretamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
 | `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais na sessão permanecem PNG — a conversão JPEG é só para o PDF. |
 | `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
 
