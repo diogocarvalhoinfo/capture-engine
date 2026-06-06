@@ -3190,6 +3190,8 @@
               for="purge-24">24h</label>
             <input type="radio" name="cfg-purge" value="48" class="chip-input" id="purge-48" checked><label
               class="chip-label" for="purge-48">48h</label>
+            <input type="radio" name="cfg-purge" value="0" class="chip-input" id="purge-0"><label class="chip-label"
+              for="purge-0">Nunca</label>
           </div>
         </div>
       </div>
@@ -3268,7 +3270,7 @@
       const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO';
       const TOKEN_JPEG_QUALITY = 0.92;
       const TOKEN_MAX_IMG_DIMENSION = 0;
-      const TOKEN_AUTO_PURGE_HOURS = 48;
+      const TOKEN_AUTO_PURGE_HOURS = 48; // 0 = nunca purgar
       const TOKEN_DEBUG_MODE = true;
 
       /* ═══ UTILITIES ═══ */
@@ -3328,7 +3330,7 @@
       const idbAll = s => idbTx(s, 'readonly', st => st.getAll());
       const idbDel = (s, id) => idbTx(s, 'readwrite', st => st.delete(id));
       function idbIdx(store, idx, val) { return new Promise((res, rej) => { const tx = _db.transaction(store, 'readonly'); tx.onabort = () => rej(tx.error || new Error('Transaction aborted')); tx.onerror = () => rej(tx.error || new Error('Transaction error')); const r = tx.objectStore(store).index(idx).getAll(val); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
-      async function purgeExpired() { const cut = Date.now() - TOKEN_AUTO_PURGE_HOURS * 3600 * 1000, all = await idbAll('sessions'); for (const s of all) { if (s.updatedAt < cut) { try { for (const i of await idbIdx('images', 'sessionId', s.id)) await idbDel('images', i.id); for (const d of await idbIdx('documents', 'sessionId', s.id)) await idbDel('documents', d.id); for (const r of await idbIdx('removed_images', 'sessionId', s.id)) await idbDel('removed_images', r.id); try { for (const r of await idbIdx('removed_documents', 'sessionId', s.id)) await idbDel('removed_documents', r.id) } catch (e) { SysLogger.warn('purgeExpired removed_documents: ' + e.message) } await idbDel('sessions', s.id); SysLogger.info('Sessão expirada: ' + s.id) } catch(e) { SysLogger.warn('Erro ao purgar sessão ' + s.id + ': ' + e.message) } } } }
+      async function purgeExpired() { if (!TOKEN_AUTO_PURGE_HOURS) return; const cut = Date.now() - TOKEN_AUTO_PURGE_HOURS * 3600 * 1000, all = await idbAll('sessions'); for (const s of all) { if (s.updatedAt < cut) { try { for (const i of await idbIdx('images', 'sessionId', s.id)) await idbDel('images', i.id); for (const d of await idbIdx('documents', 'sessionId', s.id)) await idbDel('documents', d.id); for (const r of await idbIdx('removed_images', 'sessionId', s.id)) await idbDel('removed_images', r.id); try { for (const r of await idbIdx('removed_documents', 'sessionId', s.id)) await idbDel('removed_documents', r.id) } catch (e) { SysLogger.warn('purgeExpired removed_documents: ' + e.message) } await idbDel('sessions', s.id); SysLogger.info('Sessão expirada: ' + s.id) } catch(e) { SysLogger.warn('Erro ao purgar sessão ' + s.id + ': ' + e.message) } } } }
 
       /* ═══ SESSION MANAGER ═══ */
       let _ensurePromise = null;

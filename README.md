@@ -549,14 +549,15 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V25/
-├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
-├── LICENSE                      ← Licença MIT (Diogo Carvalho)
-├── readme.md                    ← Este guia (início aqui)
-├── changelog.md                 ← Histórico completo de versões e alterações
-├── agents.md                    ← Guia operacional para desenvolvedores e agentes IA
-├── design-tokens.md             ← Especificação completa do design system
-└── validate.sh                  ← Verificação estática de integridade (corre antes de validar)
+capture-engine/              ← raiz do repositório
+├── capture-engine.html      ← A aplicação completa — este é o arquivo que distribui
+├── index.html               ← Redirect para GitHub Pages (abre capture-engine.html)
+├── LICENSE                  ← Licença MIT (Diogo Carvalho)
+├── README.md                ← Este guia (início aqui)
+├── changelog.md             ← Histórico completo de versões e alterações
+├── agents.md                ← Guia operacional para desenvolvedores e agentes IA
+├── design-tokens.md         ← Especificação completa do design system
+└── validate.sh              ← Script de validação estática pré-commit
 ```
 
 **Qual arquivo distribuir aos usuários?**
