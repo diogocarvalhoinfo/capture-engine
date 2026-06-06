@@ -2512,6 +2512,17 @@
         padding: 6px
       }
     }
+
+    /* Mobile overrides for touch devices */
+    @media (hover: none) {
+      .t-del,
+      .d-del,
+      .t-restore,
+      .sb-sess-del {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   </style>
 </head>
 
@@ -3377,6 +3388,8 @@
         if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
 
         $('img-modal-overlay').classList.add('open');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
         const _navShow = (trash ? removed : images).length > 1;
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navShow ? 'flex' : 'none'; });
       };
@@ -3388,6 +3401,8 @@
         annDeactivate();
         resetImgZoom();
         $('img-modal-overlay').classList.remove('open');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
         $('img-modal-img').src = '';
       }
 
@@ -3520,9 +3535,13 @@
         $('text-modal-restore').style.display = trash ? 'flex' : 'none';
         $('text-modal-dl').style.display = 'flex';
         $('text-modal-overlay').classList.add('open');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
       };
       function closeTextModal() {
         $('text-modal-overlay').classList.remove('open');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
         $('text-modal-content').value = '';
       }
       $('text-modal-close').onclick = closeTextModal;
@@ -4509,7 +4528,7 @@
       }
 
       /* ═══ SIDEBAR ═══ */
-      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
+      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
       window.openSession = async function (id) { if (isDirty) await triggerSave(); await loadSession(id); renderSbSessions(); if (window.closeMobileSidebar) window.closeMobileSidebar() };
       window.deleteSessionId = async function (id) {/* V17: Capture neighbor BEFORE deletion for auto-navigation */const allBefore = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); const idx = allBefore.findIndex(s => s.id === id); const neighbor = allBefore[idx + 1] || allBefore[idx - 1] || null; for (const i of await idbIdx('images', 'sessionId', id)) await idbDel('images', i.id); for (const d of await idbIdx('documents', 'sessionId', id)) await idbDel('documents', d.id); try { for (const r of await idbIdx('removed_images', 'sessionId', id)) await idbDel('removed_images', r.id) } catch (e) { SysLogger.warn('deleteSessionId removed_images: ' + e.message) }; try { for (const r of await idbIdx('removed_documents', 'sessionId', id)) await idbDel('removed_documents', r.id) } catch (e) { SysLogger.warn('deleteSessionId removed_documents: ' + e.message) } await idbDel('sessions', id); if (id === sessId) { if (neighbor) {/* Auto-navigate to adjacent session */await loadSession(neighbor.id); renderSbSessions() } else {/* No sessions left — pristine empty state */sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = []; const tg = $('thumb-grid'); if (tg) tg.innerHTML = ''; const dl = $('doc-list'); if (dl) dl.innerHTML = ''; const ie = $('img-empty'); if (ie) ie.style.display = ''; const de = $('doc-empty'); if (de) de.style.display = ''; $('session-name').value = ''; $('session-user').value = ''; $('session-pc').value = ''; updateCounters(); updateBtns(); updateBtnTitles(); renderTrash(); renderSbSessions() } } else { renderSbSessions() } };
 
@@ -4580,6 +4599,8 @@
       window.openSettingsModal = function () {
         const o = $('vb-overlay');
         o.classList.add('open');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
         _vbLabelDirty.user = false;
         _vbLabelDirty.equip = false;
         applySwatchVisuals();
@@ -4587,6 +4608,8 @@
 
       window.closeSettingsModal = function () {
         $('vb-overlay').classList.remove('open');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
         if (window._deactivateAdmin) window._deactivateAdmin();
         if (isDirty) {
           triggerSave();
