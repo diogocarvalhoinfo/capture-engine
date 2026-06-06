@@ -715,6 +715,17 @@ activar arrasto:
 | `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exactamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no guardado final do traço via `annDrawShape`. **Não chamar directamente** — usar `annDrawShape` ou `annRedraw`. |
 | `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | **Definida mas NÃO usada no fluxo de desenho desde a V23** (ver changelog V23). O traço livre é guardado com os mesmos pontos do preview (`annPath`), sem simplificação. A função permanece no arquivo caso seja reativada no futuro. |
 
+### Motor de Anotação — Seleção, Edição e Desfazer (desenvolvimento local — ainda não publicado)
+
+| Comportamento | Descrição e Invariantes |
+|---|---|
+| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica azul (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
+| **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** permite agarrar e mover imediatamente, não importando qual a ferramenta ativa (nunca desenha e suprime o menu de contexto nativo). |
+| **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
+| **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto). A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
+| **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
+| **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annDoUndo` e `annDoRedo` são simétricos, sem casos especiais: restauram o estado mutando `annHistory` *no lugar* (`splice`). Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `_dragDirty` / `_resizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal). |
+
 ### Funções do Admin Gate
 
 | Função | O que faz | Notas |
@@ -851,11 +862,14 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `_vbLabelDirty` | object | `{user: bool, equip: bool}` — track se o admin editou rótulos no VB |
 | `sysColors` | object | Cores atuais `{main, fg, tStart, tAccent, tEnd}`. `main`/`fg` são a cor principal e a cor do texto sobre ela (usadas no contraste automático YIQ); `tStart`/`tAccent`/`tEnd` são as cores dos 3 spans de título (vazio = herda do contexto). Inicializado a partir de `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Lido por `applyTokens()`/`initVbSync()` e exportado pelo Quine. |
 | `annActive` | boolean | `true` = modo de anotação ativo |
-| `annTool` | string | Ferramenta ativa: `rect` \| `circle` \| `arrow` \| `free` \| `text` |
-| `annHistory` | array | Stack de formas anotadas (undo buffer); cada entrada: `{type, x1, y1, ...}` |
-| `annRedoHistory` | array | Stack de redo; populado por undo |
+| `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `text` |
+| `annHistory` | array | Fonte única da verdade das formas atuais no canvas; cada entrada: `{type, x1, y1, ...}` |
+| `annUndoStack` | array | Pilha de snapshots de estado (`annHistory` serializado) para desfazer; máximo `ANN_HISTORY_MAX` (50) |
+| `annRedoStack` | array | Pilha de snapshots para refazer; limpa sempre que uma nova ação gera um undo |
+| `annSelectedIdx` | number | Índice em `annHistory` da anotação selecionada; `-1` = nenhuma seleção |
+| `_dragDirty` / `_resizeDirty` | boolean | Flags transitórias para identificar se o gesto contínuo gerou mutação de coordenadas antes do undo |
 | `annCurrentColor` | string | Cor ativa da toolbar de anotação (hex) |
-| `annSizeIdx` | number | Índice em `ANN_SIZES=[2,4,8]` — espessura de linha ativa |
+| `annSizeIdx` | number | Índice em `ANN_SIZES=[1,2,4,6,8,12]` — espessura de linha ativa |
 | `annTextBold` | boolean | Negrito ativo na ferramenta texto (padrão: `true`) |
 | `annTextItalic` | boolean | Itálico ativo na ferramenta texto |
 | `annTextSizeIdx` | number | Índice em `ANN_TEXT_SIZES=[14,18,24,36,48]` — tamanho de fonte ativo |
@@ -884,7 +898,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `_expOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de Export |
 | `textModalItemId` | string \| null | ID do documento atualmente aberto no text modal; `null` = modal fechado |
 | `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
-| `ANN_SIZES` | array (const) | `[2, 4, 8]` — espessuras de linha disponíveis na toolbar de anotação (px) |
+| `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na toolbar de anotação (px) |
 | `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
 | `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois sítios (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê a escrever (WYSIWYG) |
 

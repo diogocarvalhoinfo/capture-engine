@@ -5,6 +5,24 @@
 
 ---
 
+## Não publicado (desenvolvimento local)
+
+Anotação iterativa: motor de interação enriquecido com suporte completo a seleção, edição, redimensionamento, movimento e um novo modelo de histórico (undo/redo).
+
+### Adicionado
+
+**Motor de Seleção e Edição (Anotação)** — agora é possível selecionar, mover, redimensionar e apagar anotações previamente desenhadas. A ferramenta "Selecionar" (ativa por padrão ao abrir anotações existentes) permite clicar numa forma para exibir uma caixa de seleção sólida e fina com quatro alças de redimensionamento e um botão de exclusão (✕). Suporta redimensionamento bidirecional contínuo (incluindo redimensionamento visual contínuo de texto). O ✕ e a tecla `Delete` apagam o item atual.
+
+**Edição de Propriedades Pós-Desenho** — com uma anotação selecionada, os botões da barra de ferramentas alteram diretamente o objeto em vez de apenas mudar o próximo traço. Os botões −/+ ajustam a espessura ou tamanho de fonte, e a paleta altera a cor atual. Os níveis de espessura foram expandidos para seis opções: `[1, 2, 4, 6, 8, 12]`.
+
+**Polimentos de UX (Anotação)** — o botão direito do mouse permite agarrar e mover anotações em qualquer ferramenta (sem desenhar, suprimindo o menu nativo). O ícone "T" fica azul (cor primária) quando a ferramenta de texto está ativa OU quando uma anotação de texto encontra-se selecionada (`.ann-txt-selected`). A seleção anterior limpa automaticamente ao confirmar ou trocar para texto.
+
+### Modificado
+
+**Desfazer e Refazer (Modelo Snapshots de Estado)** — o sistema de undo/redo foi integralmente reescrito. Substitui a antiga pilha única baseada em eventos (que causava bugs de ordem ao intercalar ações) por um modelo de snapshots completos com dupla pilha (`annUndoStack` / `annRedoStack`, teto de 50). Toda mutação altera a fonte única (`annHistory`). Ações contínuas de mover/redimensionar só persistem se houve mudança efetiva (flags `_dragDirty` / `_resizeDirty`). Ao reentrar numa imagem salva, o histórico é "semeado" iterativamente, permitindo desfazer todas as ações até revelar a imagem original sem anotações.
+
+---
+
 ## [V24] — 2026-06-01
 
 Ferramenta de Texto da anotação: suporte a **texto multilinha** e **redimensionamento ao vivo** do tamanho da fonte, com o texto a ficar achatado na imagem exatamente como aparece no editor (WYSIWYG).
