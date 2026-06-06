@@ -219,7 +219,7 @@ Motor de anotação (V24→V25):
 Mobile (V25):
 - Desenho por toque funciona (Pointer Events nativos)
 - Scroll de fundo bloqueado quando qualquer modal está aberto
-- Botões de apagar e restaurar sempre visíveis em ecrãs touch
+- Botões de apagar e restaurar sempre visíveis em dispositivos touch
 - Toolbar em 3 linhas: ferramentas / cores+espessura / ações
 
 ---

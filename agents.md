@@ -920,7 +920,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas
 2. **Nunca abrir o browser para testar** — o humano testa, o agente edita
 3. **Após cada alteração significativa, atualizar:**
-   - `readme.md` — se for nova funcionalidade visível ao usuário
+   - `README.md` — se for nova funcionalidade visível ao usuário
    - `design-tokens.md` — se for novo token CSS ou JS
    - `changelog.md` — sempre, com entrada na versão atual
 4. **Codificação:** UTF-8 sem BOM
@@ -984,9 +984,9 @@ A validação tem **duas partes**:
 - [ ] `annDrawShape` é função de draw pura — não contém `annIsDirty = true` nem manipulação do DOM (side effects pertencem ao caller)
 
 **Documentação:**
-- [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 13 do `readme.md` foi atualizado
+- [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 13 do `README.md` foi atualizado
 - [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Seção 9
-- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `readme.md`, o `design-tokens.md` e o `agents.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
+- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `README.md`, o `design-tokens.md` e o `agents.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
 
 ---
 
@@ -1071,9 +1071,9 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), 
    - Adicionar nova entrada no topo: `## [VERSAO_NOVA] — YYYY-MM-DD`
    - As referências `VERSAO_ANTERIOR` existentes no changelog são **registos históricos — não se substituem**.
 
-3. **`readme.md`** — 3 substituições:
+3. **`README.md`** — 2 substituições:
    - Título principal: `# Capture Engine · VERSAO_ANTERIOR` → `VERSAO_NOVA`
-   - Bloco de estrutura de arquivos: `VERSAO_ANTERIOR/` → `VERSAO_NOVA/`
+
    - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
 
 4. **`design-tokens.md`** — 2 substituições:
@@ -1096,7 +1096,7 @@ Exemplos de referências a preservar após um bump para VERSAO_NOVA:
 
 **Verificação obrigatória antes de fechar:**
 ```bash
-grep -rn "VERSAO_ANTERIOR" capture-engine.html readme.md design-tokens.md agents.md changelog.md
+grep -rn "VERSAO_ANTERIOR" capture-engine.html README.md design-tokens.md agents.md changelog.md
 ```
 Substituir `VERSAO_ANTERIOR` pelo número real (ex: `V23`). Confrontar cada resultado: os únicos que devem restar são referências históricas (changelog e comentários de código). Se restar algum nos títulos ou rodapés, está incompleto.
 
