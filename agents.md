@@ -1,4 +1,4 @@
-# Agents · Capture Engine V24
+# Agents · Capture Engine V25
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -442,7 +442,7 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 **Nome da base de dados:** `CaptureEngineDB`
 **Versão do schema:** `2`
 
-> **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V24+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
+> **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V25+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
 
 #### Como migrar o schema em segurança
 
@@ -1044,9 +1044,21 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V23 → V24), o número de versão tem de ser atualizado em **exatamente 5 arquivos**, com **10 substituições + 1 inserção**, distribuídas da seguinte forma.
+Ao passar para uma nova versão (ex: V24 → V25), o número de versão tem de ser atualizado em vários locais dos 5 arquivos do projeto. O número exato de substituições varia conforme a documentação cresce — **nunca assuma uma contagem fixa**.
 
-Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V23`), `VERSAO_NOVA` = a versão de destino (ex: `V24`).
+---
+**Passo 0 — Localizar todas as ocorrências (obrigatório antes de qualquer substituição):**
+
+```bash
+grep -rn "VERSAO_ANTERIOR" --include="*.html" --include="*.md" .
+```
+
+Classifique cada resultado como **mudar** (label de versão, título, rodapé) ou **manter** (entrada histórica do changelog, referências evolutivas como `V24→V25`). Só então execute as substituições. Esta etapa previne que novas localizações introduzidas em ciclos anteriores passem despercebidas.
+
+---
+
+
+Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), `VERSAO_NOVA` = a versão de destino (ex: `V25`).
 
 **Os 5 arquivos e as alterações exatas:**
 
@@ -1168,4 +1180,4 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 
 ---
 
-*Capture Engine V24 · Regras Operacionais para Agentes*
+*Capture Engine V25 · Regras Operacionais para Agentes*

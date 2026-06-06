@@ -1,4 +1,4 @@
-# Capture Engine · V24
+# Capture Engine · V25
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -549,7 +549,7 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ## 12. Estrutura de arquivos
 
 ```
-V24/
+V25/
 ├── capture-engine.html          ← A aplicação completa — este é o arquivo que distribui
 ├── LICENSE                      ← Licença MIT (Diogo Carvalho)
 ├── readme.md                    ← Este guia (início aqui)
@@ -660,7 +660,7 @@ init()
 
 ---
 
-*Capture Engine V24 · Single-file · zero dependências · 100% offline*
+*Capture Engine V25 · Single-file · zero dependências · 100% offline*
 
 ---
 
