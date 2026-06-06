@@ -35,7 +35,7 @@ Tudo o que você captura (screenshots, documentos, textos) fica guardado localme
 | Situação | Como o Capture Engine ajuda |
 |---|---|
 | Suporte técnico / Service Desk | Junta screenshots de erros, logs e configurações num único PDF para o ticket |
-| Área jurídica | Compila documentos e evidências antes de os enviar ao advogado |
+| Área jurídica | Reúne e exporta provas e documentos para processos ou audiências |
 | Uso pessoal | Agrupa prints para submeter num portal, chamado ou formulário |
 | Ambientes restritos (banco, governo, saúde) | Funciona sem internet, sem CDN, sem registro de dados externos |
 | Auditoria e conformidade | Evidências documentadas e exportadas sem sair do dispositivo |
