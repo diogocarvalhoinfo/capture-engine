@@ -5,7 +5,13 @@
 
 ---
 
-## Não publicado (desenvolvimento local)
+## [V25] - 2026-06-06
+
+- Mobile: desenho por toque via Pointer Events + touch-action:none no canvas de anotação
+- Mobile: scroll lock em todos os modais fullscreen (imagem, documento, Visual Builder, sidebar)
+- Mobile: botões de apagar e restaurar sempre visíveis em dispositivos touch (@media hover:none)
+- Mobile: toolbar de anotação em 3 linhas responsivas
+- Código: comentários de secção HTML padronizados para maiúsculo
 
 Anotação iterativa: motor de interação enriquecido com suporte completo a seleção, edição, redimensionamento, movimento e um novo modelo de histórico (undo/redo).
 

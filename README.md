@@ -208,32 +208,19 @@ Ao clicar numa imagem, abre um modal com visualizador completo.
 
 ### 5.3 Anotação de imagens
 
-O botão de anotação (ícone de caneta, dentro do modal de imagem) abre um canvas transparente sobre a imagem.
+Motor de anotação (V24→V25):
+- 6 ferramentas: traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar
+- Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
+- Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
+- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
+- Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
+- Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
 
-**Ferramentas disponíveis:**
-- **Retângulo** — desenha um retângulo por arrasto
-- **Círculo** — desenha uma elipse por arrasto
-- **Seta** — desenha uma seta direcional
-- **Desenho Livre** — traço à mão livre, suavizado em tempo real enquanto desenha (filtro EMA), para sair limpo mesmo com mouses de fraca qualidade ou tremor de mão. O traço que fica guardado é **igual ao que vê na tela** — exatamente os mesmos pontos, sem alisamento adicional depois de soltar e sem fechar o contorno sozinho.
-- **Texto** — clique para colocar texto; escreva em várias linhas (Enter = nova linha); confirme clicando fora ou no botão "Confirmar", cancele com Escape
-
-**Ferramenta Texto — detalhes:**
-- **Multilinha** — o editor cresce em altura e largura à medida que escreve. **Enter** insere uma nova linha (não confirma). O texto é achatado na imagem **exatamente como aparece no editor** — as mesmas linhas e o mesmo espaçamento.
-- **Confirmar / cancelar** — confirma-se clicando fora do editor, clicando noutro ponto da imagem, ou no botão "Confirmar". **Escape** cancela.
-- **Negrito / Itálico** — botões B e I na toolbar (ou Ctrl+B / Ctrl+I durante a digitação)
-- **Tamanho de fonte** — quando a ferramenta Texto está ativa, os botões −/+ de espessura controlam o tamanho em 5 níveis: 14 · 18 · 24 · 36 · 48px. Com o editor aberto, clicar −/+ muda o tamanho **ao vivo** sem fechar o editor (pode clicar várias vezes seguidas).
-- **Reeditar texto** — duplo-clique sobre texto já colocado reabre o campo de edição com o conteúdo original; é possível corrigir o texto, mudar cor, negrito e itálico
-- **Mudar cor durante edição** — clicar numa swatch enquanto o editor de texto está aberto atualiza a cor sem fechar o editor
-- **Cursor** — com a ferramenta Texto selecionada, o cursor sobre a imagem fica em modo de texto (I-beam) em vez da cruz das outras ferramentas, indicando o modo ativo
-
-**Controles comuns:**
-- Swatches de cor (8 cores pré-definidas) — muda a cor do traço ou texto
-- Botões −/+ de espessura — controla espessura do traço (ou tamanho do texto quando Texto está ativo)
-- Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
-
-**Confirmar anotação:** O botão "Confirmar" funde as anotações sobre a imagem e guarda o resultado em PNG (formato sem perdas — o desenho não fica desfocado nem ganha manchas). A versão mostrada na grade e usada nos exports passa a ser a imagem com as anotações. **A edição é não-destrutiva:** a imagem original é preservada e as anotações ficam guardadas — pode reabrir a imagem, clicar em "Editar" e voltar a mexer nas anotações (mover, apagar, acrescentar), mesmo depois de fechar e reabrir a aplicação. Se remover todas as anotações e confirmar, a imagem volta ao original.
-
-**Cancelar anotação:** Descarta todos os traços não confirmados e volta ao visualizador normal.
+Mobile (V25):
+- Desenho por toque funciona (Pointer Events nativos)
+- Scroll de fundo bloqueado quando qualquer modal está aberto
+- Botões de apagar e restaurar sempre visíveis em ecrãs touch
+- Toolbar em 3 linhas: ferramentas / cores+espessura / ações
 
 ---
 
