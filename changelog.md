@@ -109,7 +109,7 @@ Reconciliação da documentação com o código real, após auditoria. Sem alter
 - **Migração de schema IndexedDB documentada com código executável** (`agents.md` §6). A nota existente avisava que a migração era necessária mas não instruía como fazê-la. Adicionados dois blocos de código: Caso A (adicionar nova store — seguro, sem migração de dados) e Caso B (alterar campos de store existente — requer iteração e reescrita), com regras críticas sobre o uso de `e.target.transaction` e atomicidade do `onupgradeneeded`.
 
 - **Anotação (desenho livre) alinhada com o código V23.** O `readme.md` (§5.3), o `agents.md` (§7) e o `design-tokens.md` ainda descreviam o pipeline antigo (EMA + suavização Laplaciana + simplificação RDP + fecho automático a 12px). O código V23 mantém **apenas** a suavização EMA em tempo real; a Laplaciana e o auto-fecho foram removidos e o RDP deixou de ser chamado. A documentação foi corrigida nos três arquivos. Removida a referência à função `laplacian()`, que já não existe no arquivo.
-- **Tabela de tokens do `readme.md` (§6.4) completada.** Faltavam três tokens que existem no código: `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR` e `TOKEN_TITLE_END_COLOR`. Corrigido também o valor por defeito de `TOKEN_TITLE_START` para `'Capture '` (com o espaço final).
+- **Tabela de tokens do `readme.md` (§6.4) completada.** Faltavam três tokens que existem no código: `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR` e `TOKEN_TITLE_END_COLOR`. Corrigido também o valor por padrão de `TOKEN_TITLE_START` para `'Capture '` (com o espaço final).
 - **Texto duplicado removido.** No `readme.md` (§9) havia dois bullets repetidos após o aviso de recuperação; no `changelog.md` o parágrafo de introdução da V23 estava duplicado. Ambos limpos.
 - **Cobertura de browser esclarecida na recuperação de dados.** O `readme.md` (§9) e o `agents.md` (§14) passaram a indicar que o modelo de partilha por perfil foi confirmado em Chromium/Windows; Firefox e Safari não foram testados formalmente.
 - **Aviso de quota tornado claro.** O `readme.md` (§8) explica agora que o esgotamento de espaço falha sem aviso visível na tela (só na consola), e recomenda exportar com frequência em sessões grandes. Acrescentada nota sobre ausência de limite fixo de itens.
@@ -123,13 +123,13 @@ Reconciliação da documentação com o código real, após auditoria. Sem alter
 
 ### Corrigido (desenho à mão livre — fidelidade do traço)
 
-> **Estado final (resumo):** RDP definido no código mas **não chamado** no fluxo de desenho. O traço livre é guardado com exactamente os mesmos pontos do preview (`annPath`), sem simplificação. A suavização activa é apenas o filtro EMA (α=0.35) em tempo real. Esta secção regista o percurso de decisões que levou a este estado.
+> **Estado final (resumo):** RDP definido no código mas **não chamado** no fluxo de desenho. O traço livre é salvo com exactamente os mesmos pontos do preview (`annPath`), sem simplificação. A suavização activa é apenas o filtro EMA (α=0.35) em tempo real. Esta secção regista o percurso de decisões que levou a este estado.
 
-**O traço guardado deixou de ser arredondado ao soltar — impacto: o resultado é igual ao que se vê a desenhar**
-- Causa: ao soltar o mouse, o traço passava por uma suavização Laplaciana (2 iterações) antes de ser guardado, o que "alisava" e arredondava a forma em relação ao preview ao vivo.
-- Correção: removida a suavização Laplaciana no `mouseup`. O traço é guardado com os mesmos pontos do desenho, renderizado pela mesma curva (`annCR`) usada no preview. Mantida apenas a simplificação RDP (agora com epsilon 1.0, mais suave), que reduz pontos redundantes sem alterar a forma — a pedido do usuário (manter arquivos leves sem perda visual).
-- **Correção adicional (auto-fechar):** o traço ainda se alterava ao soltar quando a ponta ficava perto do início — o código marcava `closed = true` e a curva guardada **fechava-se sozinha** (ligava ponta ao início), algo que não acontecia durante o desenho. A pedido do usuário, o auto-fechar foi **removido por completo**: o traço guardado fica sempre aberto, idêntico ao desenhado. Removido também o círculo-indicador de "fechar" do preview, que deixou de fazer sentido.
-- **Correção final (quinas pontudas):** mesmo sem Laplaciana e sem auto-fechar, as quinas das curvas ficavam **suaves durante o desenho mas pontudas ao soltar**. Causa: a simplificação RDP removia os pontos intermédios das curvas; com menos pontos, a curva `annCR` fazia ângulos em vez de curvas. Como o traço já é filtrado em tempo real (só regista pontos a >5px de distância), o RDP poupava pouco e partia as curvas. **RDP removido do fluxo de desenho** (a função fica definida mas deixa de ser chamada): o traço é guardado com **exatamente os mesmos pontos** do preview (`annPath`), garantindo fidelidade total — o que se desenha é o que fica, quinas suaves incluídas.
+**O traço salvo deixou de ser arredondado ao soltar — impacto: o resultado é igual ao que se vê a desenhar**
+- Causa: ao soltar o mouse, o traço passava por uma suavização Laplaciana (2 iterações) antes de ser salvo, o que "alisava" e arredondava a forma em relação ao preview ao vivo.
+- Correção: removida a suavização Laplaciana no `mouseup`. O traço é salvo com os mesmos pontos do desenho, renderizado pela mesma curva (`annCR`) usada no preview. Mantida apenas a simplificação RDP (agora com epsilon 1.0, mais suave), que reduz pontos redundantes sem alterar a forma — a pedido do usuário (manter arquivos leves sem perda visual).
+- **Correção adicional (auto-fechar):** o traço ainda se alterava ao soltar quando a ponta ficava perto do início — o código marcava `closed = true` e a curva salva **fechava-se sozinha** (ligava ponta ao início), algo que não acontecia durante o desenho. A pedido do usuário, o auto-fechar foi **removido por completo**: o traço salvo fica sempre aberto, idêntico ao desenhado. Removido também o círculo-indicador de "fechar" do preview, que deixou de fazer sentido.
+- **Correção final (quinas pontudas):** mesmo sem Laplaciana e sem auto-fechar, as quinas das curvas ficavam **suaves durante o desenho mas pontudas ao soltar**. Causa: a simplificação RDP removia os pontos intermédios das curvas; com menos pontos, a curva `annCR` fazia ângulos em vez de curvas. Como o traço já é filtrado em tempo real (só regista pontos a >5px de distância), o RDP poupava pouco e partia as curvas. **RDP removido do fluxo de desenho** (a função fica definida mas deixa de ser chamada): o traço é salvo com **exatamente os mesmos pontos** do preview (`annPath`), garantindo fidelidade total — o que se desenha é o que fica, quinas suaves incluídas.
 
 ### Corrigido
 
@@ -143,7 +143,7 @@ Reconciliação da documentação com o código real, após auditoria. Sem alter
 
 **Correção de seguimento (mesmo ciclo):** após o primeiro teste, faltavam duas coisas no arrasto novo: (1) o `<img>` dentro de cada miniatura continuava a ser arrastável nativamente pelo browser, o que gerava uma *cópia fantasma* da imagem e impedia a reordenação — bloqueado agora via CSS (`-webkit-user-drag: none`, `pointer-events: none` na imagem) e em JS (`draggable=false` + cancelamento de `dragstart` nos itens); (2) a reordenação saltava de posição sem transição.
 
-**Reordenação reescrita com a técnica FLIP (arrasto livre estilo celular):** numa segunda iteração, o arrasto passou a comportar-se como nas apps de iPhone/Android. O item arrastado sai do fluxo e **segue o cursor/dedo livremente** (via `transform`), flutuando por cima dos restantes (`z-index`, sombra, contorno). Os outros itens **deslizam suavemente** para abrir/fechar espaço, usando FLIP (First-Last-Invert-Play) com uma transição CSS (`transform 0.22s`). Ao largar, o item **anima até ao lugar final** (snap suave) e só então a ordem é confirmada no DOM e gravada no IndexedDB. Mantida a supressão do clique-fantasma pós-arrasto e o limiar de ~6px que distingue clique de arrasto.
+**Reordenação reescrita com a técnica FLIP (arrasto livre estilo celular):** numa segunda iteração, o arrasto passou a comportar-se como nas apps de iPhone/Android. O item arrastado sai do fluxo e **segue o cursor/dedo livremente** (via `transform`), flutuando por cima dos restantes (`z-index`, sombra, contorno). Os outros itens **deslizam suavemente** para abrir/fechar espaço, usando FLIP (First-Last-Invert-Play) com uma transição CSS (`transform 0.22s`). Ao largar, o item **anima até o lugar final** (snap suave) e só então a ordem é confirmada no DOM e gravada no IndexedDB. Mantida a supressão do clique-fantasma pós-arrasto e o limiar de ~6px que distingue clique de arrasto.
 
 **Refinamento do arrasto (3.ª iteração, modelo placeholder):** a pedido, o arrasto passou a usar um **espaço reservado (placeholder)** em vez de reordenar os itens em tempo real. Comportamento final: ao segurar, o item **encolhe para 75%** (`transform: scale(0.75)`) e flutua em `position: fixed` a seguir o cursor (offset de pega corrigido para a escala); no destino aparece um **placeholder de área cinza muito suave** (tom derivado de `--text` via `color-mix`, ajustável pelas variáveis `--drop-ph-bg`/`--drop-ph-border`); os outros itens deslizam à volta do placeholder (FLIP a cada deslocação); e **só ao soltar** é que o item real assume a posição do placeholder e volta ao tamanho normal. Adicionada limpeza de transforms residuais dos irmãos no fim do gesto.
 
@@ -202,7 +202,7 @@ Bateria de 13 testes executada pelo usuário em Windows 11 25H2 com Edge 148 e C
 
 ### Decisões mantidas (confirmadas pelo proprietário, sem alteração de comportamento)
 
-- **Purge automático às 48h + sem backup automático** → comportamento **intencional** por privacidade. Para guardar, o usuário exporta PDF/ZIP. Apenas clarificado na documentação, não alterado.
+- **Purge automático às 48h + sem backup automático** → comportamento **intencional** por privacidade. Para salvar, o usuário exporta PDF/ZIP. Apenas clarificado na documentação, não alterado.
 - **Título com 3 partes e cores independentes** → **funcionalidade desejada** (ex.: "C" verde, "B" amarelo, "F" azul). Mantida; removida da lista de "complexidade desnecessária" da auditoria.
 
 
@@ -343,7 +343,7 @@ Auditoria completa de consistência entre documentação e código. Todas as div
 - **Botão de Restauro:** Adicionado um botão dedicado de restauro nos itens da lixeira, permitindo recuperar imagens ou documentos com apenas um clique.
 - **Pré-visualização (Hover):** Arquivos na lixeira passam a exibir um ícone de inspecção ("olho") quando o cursor é posicionado sobre eles, melhorando a interatividade visual.
 
-**Alerta visual suave ao fechar sem guardar — impacto: feedback intuitivo sem agressividade**
+**Alerta visual ao fechar sem salvar — impacto: alerta de modificações pendentes**
 - Introduzida uma animação de aviso fluida (*pulse* com escala a 1.08x) nos botões de "Confirmar" e "Cancelar", que é acionada caso o usuário tente fechar o modal com modificações pendentes por gravar.
 
 ### Modificado
@@ -351,7 +351,7 @@ Auditoria completa de consistência entre documentação e código. Todas as div
 **Estado Real de Modificação (annIsDirty) — impacto: bloqueios inteligentes apenas quando estritamente necessário**
 - Introduzida uma flag de ciclo de vida em tempo real (`annIsDirty`) para detetar alterações efetivas feitas com o cursor. Isto substitui as pesadas comparações de base de dados, eliminando os falsos positivos que bloqueavam indevidamente o fecho imediato das imagens.
 
-**Lógica de fecho dinâmico do modal de edição — impacto: proteção invisível contra perda de dados**
+**Lógica de fecho dinâmico do modal de edição — impacto: proteção contra perda de dados**
 - O botão de "Fechar" (`X`) no canto superior direito do modal desaparece dinamicamente assim que uma edição é iniciada. O botão permanece visível apenas se não houver modificações pendentes, canalizando o usuário para cliques seguros e prevenindo encerramentos acidentais.
 
 **Padronização e UI dos botões de ação — impacto: aspeto visual mais uniforme e limpo**
@@ -360,12 +360,12 @@ Auditoria completa de consistência entre documentação e código. Todas as div
 - Removido o comportamento de seleção acidental de texto (*highlight*) no ícone de "Excluir Sessões", tornando o clique na UI mais consistente.
 
 **Limpeza automática (Purge) — impacto: base de dados resiliente em falhas isoladas**
-- A funcionalidade de limpeza de sessões antigas (`purgeExpired`) foi reestruturada para ser mais robusta. A deleção individual de cada sessão isola-se em blocos `try/catch`, pelo que uma eventual corrupção num arquivo não interrompe a eliminação do restante lixo acumulado.
+- A funcionalidade de limpeza de sessões antigas (`purgeExpired`) foi reestruturada: a deleção individual de cada sessão isola-se em blocos `try/catch`, pelo que uma eventual corrupção num arquivo não interrompe a eliminação do restante lixo acumulado.
 - As transações IndexedDB (`idbTx`) foram reforçadas para intercetar falhas nativas (`tx.onerror`) diretamente na raiz, prevenindo erros silenciosos.
 
 ### Corrigido
 
-**Expansão da Lixeira (Trashbar) — impacto: UI polida, responsiva e sem interrupções visuais**
+**Expansão da Lixeira (Trashbar) — impacto: UI responsiva e sem interrupções visuais**
 - Aperfeiçoada a lógica de expansão do painel da lixeira: a animação de abertura é agora ininterrupta, crescendo na proporção exata do conteúdo e eliminando o *flicker* da barra de *scroll* que surgia por breves milissegundos.
 
 **Gestão de Memória e Downloads (Object URLs) — impacto: downloads fiáveis e eficiência de RAM**
@@ -442,7 +442,7 @@ O guia de atalho Windows (`CaptureEngineApp-Atalho.md`) foi removido do pacote a
 - **Fix: Linha tremia ao desenhar** — O `annPath` acumulava todos os pontos em bruto do mouse (threshold 3px), e o Catmull-Rom interpolava fiel e fielmente cada micro-tremor. Três camadas de correção:
   1. **EMA (Exponential Moving Average, α=0.55)** — cada ponto é misturado com o anterior (`0.55 × novo + 0.45 × último`) antes de entrar no path, eliminando tremor de alta frequência em tempo real.
   2. **Threshold 3px → 5px** — pontos mais próximos que 5px do anterior são descartados.
-  3. **RDP no commit (ε=1.5px)** — ao soltar o mouse, o path é simplificado com Ramer-Douglas-Peucker antes de ser guardado em `annHistory`, removendo pontos colineares redundantes sem alterar a geometria visível.
+  3. **RDP no commit (ε=1.5px)** — ao soltar o mouse, o path é simplificado com Ramer-Douglas-Peucker antes de ser salvo em `annHistory`, removendo pontos colineares redundantes sem alterar a geometria visível.
 
 > **Nota:** Estes valores de EMA (α=0.55) e RDP (ε=1.5px) foram os valores iniciais. Foram posteriormente ajustados para α=0.35 e ε=1.8px na seção "Modificado" acima.
 
@@ -821,7 +821,7 @@ Capturas sequenciais podiam gerar nomes duplicados em certos fluxos. O ZIP expor
 
 Esta versão estabeleceu as fundações sobre as quais todo o motor assenta:
 
-- **IndexedDB com 5 object stores:** `sessions`, `images`, `documents`, `removed_images`, `removed_documents` — persistência local robusta, assíncrona, sem localStorage para dados grandes
+- **IndexedDB com 5 object stores:** `sessions`, `images`, `documents`, `removed_images`, `removed_documents` — persistência local, assíncrona, sem localStorage para dados grandes
 - **Visualizador de texto modal:** Abre documentos de texto inline com área de texto monoespaçada; arquivos binários (PDF, DOCX) mostram mensagem amigável para download
 - **Anotador vetorial:** Desenho sobre screenshots com círculos, retângulos, setas, texto livre — achatamento lossless direto em PNG (as anotações ficam permanentes na imagem)
 
