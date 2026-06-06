@@ -2774,7 +2774,7 @@
 
   <div id="footer-credits">© 2026 • CAPTURE ENGINE • DIOGO CARVALHO</div>
 
-  <!-- ═══ MODAL: Visualizar imagem ═══ -->
+  <!-- ═══ MODAL: VISUALIZAR IMAGEM ═══ -->
   <div class="modal-overlay" id="img-modal-overlay">
     <div class="modal-box">
       <div class="modal-hdr">
@@ -2796,7 +2796,7 @@
         <div style="padding:12px 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:10">
           <span id="img-modal-dims" style="font-size:11px;color:rgba(255,255,255,0.6)"></span>
         </div>
-        <!-- Zoom Controls -->
+        <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
           style="display:none;position:absolute;bottom:16px;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-md);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
           <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:#fff"><svg
@@ -2814,16 +2814,16 @@
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg></button>
         </div>
-        <!-- Inline text overlay for annotation -->
+        <!-- INLINE TEXT OVERLAY FOR ANNOTATION -->
         <div id="ann-text-overlay" style="display:none;position:absolute;inset:0;z-index:200;pointer-events:none">
           <textarea id="ann-text-input" wrap="off" rows="1" autocomplete="off" spellcheck="false"
             style="position:absolute;background:transparent;color:#fff;border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
-        <!-- Image Navigation Arrows -->
+        <!-- IMAGE NAVIGATION ARROWS -->
         <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
         <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
-      <!-- Footer Actions -->
+      <!-- FOOTER ACTIONS -->
       <div
         style="padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
 
@@ -2853,10 +2853,10 @@
           </button>
         </div>
 
-        <!-- ANNOTATION ACTIONS (Square CTAs) -->
+        <!-- ANNOTATION ACTIONS (SQUARE CTAS) -->
         <div id="img-modal-ann-actions"
           style="display:none;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
-          <!-- Tools: Rect first -->
+          <!-- TOOLS: RECT FIRST -->
           <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
@@ -2887,7 +2887,7 @@
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
           <div class="ann-sep"></div>
-          <!-- Colors + Thickness grouped together -->
+          <!-- COLORS + THICKNESS GROUPED TOGETHER -->
           <div style="display:flex;gap:4px;align-items:center">
             <button class="ann-swatch active" data-color="#ef4444" style="background:#ef4444" title="Vermelho"></button>
             <button class="ann-swatch" data-color="#f97316" style="background:#f97316" title="Laranja"></button>
@@ -2899,7 +2899,7 @@
               style="background:#1a1a1a;border-color:rgba(120,120,120,0.5)" title="Preto"></button>
             <button class="ann-swatch" data-color="#f0f0f0"
               style="background:#f0f0f0;border-color:rgba(120,120,120,0.5)" title="Branco"></button>
-            <!-- Thickness minus/plus directly after colors -->
+            <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
               style="width:28px;height:28px;margin-left:4px"><svg viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
@@ -2911,7 +2911,7 @@
               </svg></button>
           </div>
           <div class="ann-sep"></div>
-          <!-- Actions: Undo, Redo, Cancel, Save -->
+          <!-- ACTIONS: UNDO, REDO, CANCEL, SAVE -->
           <button class="ann-btn" id="ann-undo" title="Desfazer"><svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
@@ -2938,7 +2938,7 @@
 
 
 
-  <!-- ═══ MODAL: Visualizar documento/texto ═══ -->
+  <!-- ═══ MODAL: VISUALIZAR DOCUMENTO/TEXTO ═══ -->
   <div class="modal-overlay" id="text-modal-overlay">
     <div class="modal-box" style="max-width:85vw; width:650px; height:80vh">
       <div class="modal-hdr">
@@ -2956,7 +2956,7 @@
           style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-muted); font-size:13px; padding:24px; line-height:1.6; gap:12px">
         </div>
       </div>
-      <!-- Footer -->
+      <!-- FOOTER -->
       <div
         style="padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex-shrink:0">
         <div style="display:flex; gap:8px; justify-content:center">
@@ -3020,7 +3020,7 @@
         <div class="sb-tab" onclick="switchVbTab(3)">Manutenção</div>
       </div>
 
-      <!-- TAB 0: Interface -->
+      <!-- TAB 0: INTERFACE -->
       <div class="sb-content-tab active" id="vb-tab-0">
         <div class="sb-row">
           <div class="sb-info">
@@ -3094,7 +3094,7 @@
         </div>
       </div>
 
-      <!-- TAB 1: Histórico -->
+      <!-- TAB 1: HISTÓRICO -->
       <div class="sb-content-tab" id="vb-tab-1">
         <div class="sb-row">
           <div class="sb-info">
@@ -3124,7 +3124,7 @@
         </div>
       </div>
 
-      <!-- TAB 2: Captura -->
+      <!-- TAB 2: CAPTURA -->
       <div class="sb-content-tab" id="vb-tab-2">
         <div class="sb-row">
           <div class="sb-info">
@@ -3153,7 +3153,7 @@
         </div>
       </div>
 
-      <!-- TAB 3: Manutenção -->
+      <!-- TAB 3: MANUTENÇÃO -->
       <div class="sb-content-tab" id="vb-tab-3">
         <div class="sb-row">
           <div class="sb-info">
