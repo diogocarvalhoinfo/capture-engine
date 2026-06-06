@@ -4,15 +4,15 @@
 
 ---
 
-## O que são Design Tokens e porque existem?
+## O que são Design Tokens e por que existem?
 
 Um **design token** é um nome simbólico para um valor visual. Em vez de escrever `#0ea5e9` diretamente no CSS, usamos `var(--accent)`. Em vez de escrever `36px` em cada botão, os botões têm sempre `height: 36px` por convenção documentada.
 
-**Porquê usar tokens?**
+**Por que usar tokens?**
 
 1. **Consistência** — Mudar a cor principal em um lugar (`--accent`) muda em toda a interface automaticamente
 2. **Personalização via Quine** — O admin muda a cor pelo Visual Builder; o Quine Engine substitui o valor no arquivo exportado
-3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `body.dark` (dark); o CSS que usa os tokens não precisa de saber em que modo está
+3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `body.dark` (dark); o CSS que usa os tokens não precisa saber em que modo está
 4. **Legibilidade** — `color: var(--text-muted)` diz o que faz; `color: #6b6a66` não
 
 **Dois tipos de tokens:**
@@ -35,7 +35,7 @@ A paleta tem dois grupos:
 |---|---|---|
 | `--bg` | `#f4f3f0` | Fundo geral — off-white (não branco puro) para suavizar o contraste com a superfície branca dos painéis |
 | `--surface` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
-| `--border` | `#dddcd880` | Bordas subtis, linhas de separação — estruturam sem poluir (alpha 50%) |
+| `--border` | `#dddcd880` | Bordas sutis, linhas de separação — estruturam sem poluir (alpha 50%) |
 | `--border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
 | `--text` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
 | `--text-muted` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
@@ -52,12 +52,12 @@ A paleta tem dois grupos:
 |---|---|---|
 | `--bg` | `#121212` | Quase preto — padrão Material Dark |
 | `--surface` | `#1e1e1e` | Ligeiramente mais claro que o fundo — cria profundidade sem bordas |
-| `--border` | `#33333380` | Bordo escuro subtil (alpha 50%) |
-| `--border-strong` | `#555555` | Bordo escuro mais visível |
+| `--border` | `#33333380` | Borda escura sutil (alpha 50%) |
+| `--border-strong` | `#555555` | Borda escura mais visível |
 | `--text` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
-| `--text-muted` | `#9a9a9a` | Cinzento médio para elementos secundários |
+| `--text-muted` | `#9a9a9a` | Cinza médio para elementos secundários |
 
-> **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência guardada em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controlo total ao usuário.
+> **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência salva em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controle total ao usuário.
 
 > **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que aplica `body.dark` *antes* de qualquer pintura do DOM. Sem isto, o usuário em dark mode veria um flash branco ao abrir a app.
 
@@ -95,7 +95,7 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 
 ### Tipografia — Fonte do sistema
 
-A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operativo de cada usuário.
+A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operacional de cada usuário.
 
 ### Raio de Canto — A escala de arredondamento
 
@@ -115,7 +115,7 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 | Token CSS | Valor | Uso |
 |---|---|---|
-| `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho — consistente em todos as telas |
+| `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho — consistente em todas as telas |
 | `--thumb-size` | `140px` | Tamanho da caixa de thumbnail — todos os thumbs têm a mesma área |
 
 ---
@@ -128,7 +128,7 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 | Banner | `1000` | Banners de aviso (ex: "Restaurar sessão anterior?") |
 | Modal overlay | `9999` | Modais de imagem, texto, anotação — nada pode ficar à frente |
 
-*Porquê apenas 3 níveis?* Uma stack com dezenas de valores é fonte constante de bugs. Três níveis bem definidos eliminam ambiguidade. **Não adicionar novos valores sem documentar aqui e em `agents.md`.**
+*Por que apenas 3 níveis?* Uma stack com dezenas de valores é fonte constante de bugs. Três níveis bem definidos eliminam ambiguidade. **Não adicionar novos valores sem documentar aqui e em `agents.md`.**
 
 ---
 
@@ -147,7 +147,7 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 ## 6. Tokens JavaScript (SSOT — Single Source of Truth)
 
-Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São a **fonte de verdade** para a configuração: o Visual Builder lê estes valores ao abrir, e o Quine Engine substitui-os ao exportar.
+Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São a **fonte de verdade** para a configuração: o Visual Builder lê estes valores ao abrir, e o Quine Engine os substitui ao exportar.
 
 | Token | Tipo | Valor padrão | Alterável no VB | Aba VB |
 |---|---|---|---|---|
@@ -183,7 +183,7 @@ yiq ≥ 128  →  texto escuro (#1a1917)
 yiq < 128  →  texto branco (#ffffff)
 ```
 
-O limiar 128 divide a escala 0–255 a meio. Para cores de baixo contraste intrínseco (ex: amarelo `#eab308` — yiq ≈ 176, texto escuro; ciano `#06b6d4` — yiq ≈ 133, texto escuro; laranja `#f97316` — yiq ≈ 145, texto escuro), o resultado automático pode não atingir os rácios WCAG AA (4.5:1 para texto normal). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
+O limiar 128 divide a escala 0–255 ao meio. Para cores de baixo contraste intrínseco (ex: amarelo `#eab308` — yiq ≈ 176, texto escuro; ciano `#06b6d4` — yiq ≈ 133, texto escuro; laranja `#f97316` — yiq ≈ 145, texto escuro), o resultado automático pode não atingir os rácios WCAG AA (4.5:1 para texto normal). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
 
 **`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` (vazio = padrão visual):**
 Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
@@ -191,7 +191,7 @@ Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Vis
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
 Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em screenshots com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
 
-> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual directa do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados directamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O standard HTML define que valores fora de `[0, 1]` fazem o browser usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceites sem erro — apenas produzem os artefactos ou o desperdício de espaço documentados acima.
+> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O standard HTML define que valores fora de `[0, 1]` fazem o browser usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceitos sem erro — apenas produzem os artefatos ou o desperdício de espaço documentados acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
 Se definido (ex: `1920`), qualquer imagem com dimensão superior é redimensionada antes de ser armazenada. Útil em ambientes onde o armazenamento é limitado. O redimensionamento preserva a proporção (aspect ratio).
@@ -269,7 +269,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 *A barra `#zoom-ui` usa glassmorphism: `background: rgba(25,25,25,0.7)` + `backdrop-filter: blur(10px)`. Flutua sobre a imagem com texto sempre a `#fff` independentemente do conteúdo por baixo.*
 
-*O fecho por clique no backdrop está bloqueado quando zoom > 100% — evita fechos acidentais durante o panning.*
+*O fechamento por clique no backdrop está bloqueado quando zoom > 100% — evita fechamentos acidentais durante o panning.*
 
 ### Modal de Documento (`#text-modal-overlay`)
 
@@ -341,7 +341,7 @@ A interface tem dois breakpoints de adaptação:
 ### `max-width: 900px` — Tablets e smartphones em paisagem
 
 - Layout muda de horizontal para vertical (painéis empilhados)
-- A sidebar de histórico (desktop: coluna lateral direita) transforma-se num **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
+- A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
 - O botão de histórico fica na barra de topo
 - FAB mobile (`#mobile-paste-fab`) fica visível — botão flutuante para colar do clipboard
 - `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
@@ -372,7 +372,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | Estado | Borda |
 |---|---|
 | **Repouso** | `1px solid var(--accent)` — azul permanente |
-| **Hover** | Fundo subtil `rgba(14,165,233,0.06)` + texto mais escuro |
+| **Hover** | Fundo sutil `rgba(14,165,233,0.06)` + texto mais escuro |
 | **Regra** | A borda accent **não desaparece** ao sair com o cursor. |
 
 ### Chips de Modo (Auto / A4 Vertical / A4 Horizontal)
@@ -390,7 +390,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | Estado | Visual |
 |---|---|
 | **Repouso** | Ícone `var(--text-muted)`, borda `var(--border-strong)` — neutro, discreto |
-| **Hover** | Ícone `var(--text)`, borda `var(--text-muted)` — reforço subtil |
+| **Hover** | Ícone `var(--text)`, borda `var(--text-muted)` — reforço sutil |
 | **`:active` (toque)** | Ícone e borda em `var(--accent)` — feedback preciso no momento do toque |
 
 *O accent aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
@@ -404,7 +404,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 | Constante | Valor | Descrição |
 |---|---|---|
-| `ANN_SIZES` | `[2, 4, 8]` | Espessuras de linha disponíveis (px, coordenadas canvas) |
+| `ANN_SIZES` | `[1, 2, 4, 6, 8, 12]` | Espessuras de linha disponíveis (px, coordenadas canvas). Escala de 6 níveis (do mais fino ao mais grosso). |
 | `ANN_TEXT_SIZES` | `[14, 18, 24, 36, 48]` | Tamanhos de fonte disponíveis (px canvas); index 2 = 24px padrão |
 | `ANN_TEXT_LINE_RATIO` | `1.3` | Line-height ratio do texto. Constante **única** usada no `line-height` do `<textarea>` editor **e** no render do canvas (`annDrawShape`) — garante que o texto multilinha achatado é igual ao que se vê a escrever (WYSIWYG) |
 
@@ -413,7 +413,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | Variável | Padrão | Descrição |
 |---|---|---|
 | `annTool` | `'rect'` | Ferramenta ativa: `rect` / `circle` / `arrow` / `free` / `text` |
-| `annSizeIdx` | `1` (4px) | Índice em `ANN_SIZES` — espessura de linha |
+| `annSizeIdx` | `1` (2px) | Índice em `ANN_SIZES` — espessura de linha |
 | `annTextSizeIdx` | `2` (24px) | Índice em `ANN_TEXT_SIZES` — tamanho de fonte |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
@@ -427,7 +427,7 @@ Estas variáveis CSS controlam a aparência do placeholder de arrasto (o espaço
 
 | Token CSS | Valor padrão (via `color-mix`) | Descrição |
 |---|---|---|
-| `--drop-ph-bg` | `color-mix(in srgb, var(--text) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito subtil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
+| `--drop-ph-bg` | `color-mix(in srgb, var(--text) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito sutil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
 | `--drop-ph-border` | `color-mix(in srgb, var(--text) 8%, transparent)` | Cor da borda do placeholder de arrasto. Ligeiramente mais visível que o fundo para delimitar a área. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
 
 ### Formato de Entradas em `annHistory`
@@ -439,7 +439,7 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
 | `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Guardado com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fecho automático do contorno. Ver changelog V23. |
+| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Salvo com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
 | `text` | `x1, y1, txt, bold, italic, fontSize` | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
 
 
