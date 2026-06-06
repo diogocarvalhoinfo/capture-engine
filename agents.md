@@ -32,7 +32,7 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 | Situação | Ler obrigatoriamente |
 |---|---|
 | **Primeira vez a trabalhar no código** | §0, §1, §2, §3, §4, §5, §11 |
-| **Corrigir um bug pontual** | §0, §1, §5, §11 + a secção do motor afectado |
+| **Corrigir um bug pontual** | §0, §1, §5, §11 + a seção do motor afetado |
 | **Adicionar funcionalidade** | §0, §1, §2, §3, §4, §5, §7, §10, §11 |
 | **Modificar o ciclo de sessões** | §0, §1, §4, §6, §7 (funções de sessão), §11 |
 | **Modificar a anotação** | §0, §1, §7 (funções de anotação), §9, §11 |
@@ -94,7 +94,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 
 > **Aviso Técnico (CORS Local):** Ao testar localmente, abrir o arquivo HTML via protocolo `file://` no Chrome ou Safari causará uma falha imediata no `fetch(location.href)` devido a políticas rigorosas de CORS para recursos locais (o browser trata arquivos locais como origens opacas e proíbe `fetch` a si mesmos). O sistema sobrevive a isto porque `BOOT_HTML` captura a string estática do DOM exato (via `document.documentElement.outerHTML` adaptado) no momento do boot antes de qualquer mutação. O Quine opera sobre o fallback de forma imperceptível ao usuário.
 
-> **Aviso Técnico (Servidor HTTP):** Se a ferramenta for servida via servidor HTTP (ex: `python -m http.server`, Apache, Nginx), o `fetch(location.href)` pode ter sucesso — mas retornar HTML **gerado dinamicamente pelo servidor** em vez do código-fonte original. Neste cenário, o Quine exportaria o DOM mutado pelo runtime (com contadores actualizados, legendas editadas) em vez do código limpo. O `BOOT_HTML` (fallback estático) não é utilizado quando o fetch tem sucesso. Para desenvolvimento local, usar um servidor que sirva o ficheiro estático sem processamento (ex: `python -m http.server` serve ficheiros estáticos directamente — é seguro neste caso). Em servidores com geração dinâmica de HTML, o Export pode produzir arquivos corrompidos silenciosamente.
+> **Aviso Técnico (Servidor HTTP):** Se a ferramenta for servida via servidor HTTP (ex: `python -m http.server`, Apache, Nginx), o `fetch(location.href)` pode ter sucesso — mas retornar HTML **gerado dinamicamente pelo servidor** em vez do código-fonte original. Neste cenário, o Quine exportaria o DOM mutado pelo runtime (com contadores atualizados, legendas editadas) em vez do código limpo. O `BOOT_HTML` (fallback estático) não é utilizado quando o fetch tem sucesso. Para desenvolvimento local, usar um servidor que sirva o arquivo estático sem processamento (ex: `python -m http.server` serve arquivos estáticos diretamente — é seguro neste caso). Em servidores com geração dinâmica de HTML, o Export pode produzir arquivos corrompidos silenciosamente.
 4. Para exports de User, remove os blocos marcados com comment markers
 5. Faz download do HTML resultante
 
@@ -149,7 +149,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 
 **Para o Quine:** Usar `sanitizeForQuine()` antes de injetar valores de tokens no HTML exportado. Esta função protege os comment markers de serem acidentalmente incluídos em valores de tokens (o que corromperia o arquivo exportado).
 
-> **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) são exportados com a aspa escapada — o arquivo resultante é sintaticamente correcto em JavaScript, mas quem inspecionar o HTML manualmente verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correcto e esperado.
+> **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) são exportados com a aspa escapada — o arquivo resultante é sintaticamente correto em JavaScript, mas quem inspecionar o HTML manualmente verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correto e esperado.
 
 **Nunca usar:**
 - `eval()` — executa código arbitrário
@@ -349,7 +349,7 @@ Este é o comportamento mais complexo do motor. Qualquer agente que edite códig
 
 Pense nas sessões como documentos num processador de texto:
 - **Sessão ativa** = o documento aberto agora
-- **Histórico** = outros documentos guardados
+- **Histórico** = outros documentos salvos
 - **Pristine** = estado de "documento novo" — em branco
 
 Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova.
@@ -386,7 +386,7 @@ init() → interface em branco (Pristine State)
 
 ### isDirty — O flag de alterações pendentes
 
-`isDirty` é um boolean que indica se há dados não guardados. É `true` sempre que algo muda (captura de imagem, edição de legenda, reordenação). O auto-save de 5 segundos só corre quando `isDirty === true`. Após guardar, `isDirty` volta a `false`.
+`isDirty` é um boolean que indica se há dados não salvos. É `true` sempre que algo muda (captura de imagem, edição de legenda, reordenação). O auto-save de 5 segundos só corre quando `isDirty === true`. Após salvar, `isDirty` volta a `false`.
 
 Digitação em campos de texto chama `triggerSave()` imediatamente (sem esperar os 5 segundos), para garantir que até os primeiros caracteres são persistidos imediatamente.
 
@@ -431,13 +431,13 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 **Nome da base de dados:** `CaptureEngineDB`
 **Versão do schema:** `2`
 
-> **Nota de migração de schema:** O `onupgradeneeded` actual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V24+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica actual: o `onupgradeneeded` não executa para utilizadores já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
+> **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V24+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
 
 #### Como migrar o schema em segurança
 
 **Caso A — Adicionar uma nova object store (seguro, sem migração destrutiva)**
 
-Incrementar a versão e adicionar a store com `contains` guard — utilizadores existentes passam pelo `onupgradeneeded` e recebem a nova store; stores existentes e dados não são tocados:
+Incrementar a versão e adicionar a store com `contains` guard — usuários existentes passam pelo `onupgradeneeded` e recebem a nova store; stores existentes e dados não são tocados:
 
 ```js
 // Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
@@ -490,7 +490,7 @@ r.onupgradeneeded = e => {
 > - Usar **sempre** `e.target.transaction` (a transação de upgrade) — não abrir transações novas dentro de `onupgradeneeded`
 > - O `onupgradeneeded` é **atómico**: se alguma operação falhar, a base reverte para a versão anterior
 > - Após a migração, incrementar também o comentário de versão no código: `// CaptureEngineDB versão 3`
-> - **Testar com uma cópia de segurança dos dados** antes de distribuir — uma migração errada que seja distribuída aos utilizadores é irreversível
+> - **Testar com uma cópia de segurança dos dados** antes de distribuir — uma migração errada que seja distribuída aos usuários é irreversível
 
 ### Tabela: `sessions`
 
@@ -516,7 +516,7 @@ r.onupgradeneeded = e => {
 | `sessionId` | string | ✅ | ID da sessão a que pertence |
 | `blob` | Blob | ✅ | Dados binários da imagem (PNG, JPEG, WEBP, GIF) |
 | `label` | string | ✅ | Nome/legenda da imagem (ex: `imagem-1`) — único dentro da sessão |
-| `order` | number | ✅ | Posição na grelha (0-based) — define a ordem de exibição e export |
+| `order` | number | ✅ | Posição na grade (0-based) — define a ordem de exibição e export |
 | `addedAt` | number | ✅ | Timestamp Unix (ms) de quando foi capturada |
 | `origBlob` | Blob | ❌ | Imagem **original** antes da anotação. Criada por `ann-save` na primeira vez que se confirma uma anotação; usada por `annActivate` como fundo do canvas ao reeditar. Removida (e `blob` reposto ao original) se todas as anotações forem apagadas. Presente apenas em imagens anotadas. |
 | `annHistory` | array | ❌ | Stack de formas anotadas (`{type, x1, y1, ...}`) persistida com a imagem para reedição posterior (anotação **não-destrutiva**). Presente apenas em imagens anotadas; removida quando fica vazia. |
@@ -557,13 +557,13 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o browser for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` regista a exceção na consola. A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grelha acontece via URL local em memória temporária). A sessão já guardada e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` registra a exceção no console. A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grade acontece via URL local em memória temporária). A sessão já salva e os itens antigos permanecem íntegros no DB.
 
-**Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os items associados (imagens, documentos, removidos das duas categorias).
+**Purge:** `purgeExpired()` corre em cada `init()`. Apaga sessões cuja `updatedAt` seja mais antiga que `TOKEN_AUTO_PURGE_HOURS` horas. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
 
-> **Risco de redistribuição:** Se redistribuir com um valor de `TOKEN_AUTO_PURGE_HOURS` menor do que o anterior (ex: de 48h para 24h), sessões que antes sobreviveriam são purgadas na próxima abertura. O comportamento é correcto (o código usa sempre o valor actual do token), mas pode surpreender utilizadores com sessões em curso. Comunicar a mudança antes de redistribuir.
+> **Risco de redistribuição:** Se redistribuir com um valor de `TOKEN_AUTO_PURGE_HOURS` menor do que o anterior (ex: de 48h para 24h), sessões que antes sobreviveriam são purgadas na próxima abertura. O comportamento é correto (o código usa sempre o valor atual do token), mas pode surpreender usuários com sessões em curso. Comunicar a mudança antes de redistribuir.
 
-**Múltiplas instâncias (multi-aba permitido):** O `onblocked` apenas regista um aviso na consola — **não** bloqueia a interface. Em versões anteriores mostrava uma tela de erro vermelho que substituía o `body`; esse bloqueio foi removido na V23 (a pedido do proprietário). Várias abas partilham a mesma base `CaptureEngineDB`; a ressalva conhecida é a gravação concorrente na mesma sessão (a última gravação prevalece). Ver readme §7.
+**Múltiplas instâncias (multi-aba permitido):** O `onblocked` apenas registra um aviso no console — **não** bloqueia a interface. Em versões anteriores mostrava uma tela de erro vermelha que substituía o `body`; esse bloqueio foi removido na V23 (a pedido do proprietário). Várias abas compartilham a mesma base `CaptureEngineDB`; a ressalva conhecida é a gravação concorrente na mesma sessão (a última gravação prevalece). Ver readme §7.
 
 ---
 
@@ -593,30 +593,30 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | Assinatura | O que faz |
 |---|---|---|
-| `idbPut(store, data)` | `(string, object) → Promise` | Insere ou substitui um registo (upsert). `data` deve conter a chave primária. |
-| `idbGet(store, id)` | `(string, any) → Promise<object>` | Lê um registo pela chave primária. Retorna `undefined` se não existir. |
-| `idbAll(store)` | `(string) → Promise<array>` | Retorna todos os registos da store como array. |
-| `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registo com a chave primária dada. |
-| `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registos onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
+| `idbPut(store, data)` | `(string, object) → Promise` | Insere ou substitui um registro (upsert). `data` deve conter a chave primária. |
+| `idbGet(store, id)` | `(string, any) → Promise<object>` | Lê um registro pela chave primária. Retorna `undefined` se não existir. |
+| `idbAll(store)` | `(string) → Promise<array>` | Retorna todos os registros da store como array. |
+| `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registro com a chave primária dada. |
+| `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registros onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
 
 ### Funções de Captura
 
 | Função | Assinatura | O que faz |
 |---|---|---|
-| `captureImg(blob)` | `async (Blob) → void` | Captura imagem: gera label único, guarda em IndexedDB, renderiza thumb |
-| `captureDoc(blob, name, type)` | `async (Blob, string, string) → void` | Captura documento: gera nome único, guarda em IndexedDB, renderiza card |
+| `captureImg(blob)` | `async (Blob) → void` | Captura imagem: gera label único, salva em IndexedDB, renderiza thumb |
+| `captureDoc(blob, name, type)` | `async (Blob, string, string) → void` | Captura documento: gera nome único, salva em IndexedDB, renderiza card |
 
 ### Funções de Renderização
 
 | Função | Assinatura | O que faz |
 |---|---|---|
-| `renderThumb(o)` | `(object) → void` | Cria e insere card de imagem na grelha |
+| `renderThumb(o)` | `(object) → void` | Cria e insere card de imagem na grade |
 | `renderDoc(o)` | `(object) → void` | Cria e insere card de documento na lista |
 | `renderTrash()` | `() → void` | Re-renderiza a barra de lixeira com itens atuais |
 | `updateCounters()` | `() → void` | Atualiza badges de contagem (imagens, documentos, lixeira) |
 | `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
-| `updateBtnTitles()` | `() → void` | Actualiza os atributos `title` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex: `Exportar: captura-2026-05-31.pdf`). Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
-| `updateStatusBar()` | `() → void` | Actualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`). Chamada pelo auto-save de 5 segundos e directamente em `boot()` para estado inicial. |
+| `updateBtnTitles()` | `() → void` | Atualiza os atributos `title` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex: `Exportar: captura-2026-05-31.pdf`). Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
+| `updateStatusBar()` | `() → void` | Atualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`). Chamada pelo auto-save de 5 segundos e diretamente em `boot()` para estado inicial. |
 | `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--accent`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. |
 | `initVbSync()` | `() → void` | Regista todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Fallback: `SESSAO-SEM-TITULO`. Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. Usada por `updateBtnTitles()`. |
@@ -626,8 +626,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | Função | O que faz | Notas |
 |---|---|---|
 | `openImgModal(id, trash)` | Abre o modal para a imagem `id`; inicializa título, zoom, botões de ação e setas de navegação (visíveis se array ≥ 2) | Chamada pelos thumbnails e pela lixeira |
-| `closeImgModal()` | Fecha o modal; bloqueia se há anotações por guardar | |
-| `imgModalNav(dir)` | Navega ±1 na lista dentro do modal aberto; bloqueia se há anotações por guardar | `dir = -1` (anterior) ou `+1` (seguinte). Chamada pelas setas ← → e pelas teclas ArrowLeft / ArrowRight |
+| `closeImgModal()` | Fecha o modal; bloqueia se há anotações por salvar | |
+| `imgModalNav(dir)` | Navega ±1 na lista dentro do modal aberto; bloqueia se há anotações por salvar | `dir = -1` (anterior) ou `+1` (seguinte). Chamada pelas setas ← → e pelas teclas ArrowLeft / ArrowRight |
 
 ### Funções do Quine
 
@@ -639,13 +639,13 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 ### Funções dos Motores PDF e ZIP
 
-Ambos geram os ficheiros **em JavaScript puro, sem bibliotecas** (contrato zero-dependência) — escrevem os bytes do formato à mão. Partilham os helpers `ENC` (`TextEncoder`), `dlBlob(blob, filename)` (cria Object URL, dispara o download e revoga ao fim de 1 s) e `buildFilename(ext)`.
+Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-dependência) — escrevem os bytes do formato à mão. Compartilham os helpers `ENC` (`TextEncoder`), `dlBlob(blob, filename)` (cria Object URL, dispara o download e revoga ao fim de 1 s) e `buildFilename(ext)`.
 
 **PDF** (bloco `/* PDF ENGINE (JPEG COMPRESSED) */`):
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos directamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`). |
+| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos diretamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`). |
 | `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais na sessão permanecem PNG — a conversão JPEG é só para o PDF. |
 | `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
 
@@ -653,12 +653,12 @@ Ambos geram os ficheiros **em JavaScript puro, sem bibliotecas** (contrato zero-
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generateZIP(usePdf=false)` | Reúne os ficheiros da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem no formato original (extensão por MIME). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
-| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por ficheiro, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`. |
+| `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem no formato original (extensão por MIME). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
+| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`. |
 
 ### Motor de Reordenação (`initReorder`)
 
-O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V23 com Pointer Events e animações FLIP (*First-Last-Invert-Play* — mede a posição inicial e final do elemento, aplica a diferença como `transform` e anima-a até zero). Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura directa do changelog.
+O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V23 com Pointer Events e animações FLIP (*First-Last-Invert-Play* — mede a posição inicial e final do elemento, aplica a diferença como `transform` e anima-a até zero). Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura direta do changelog.
 
 **Constantes e parâmetros:**
 
@@ -669,7 +669,7 @@ O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V
 | Histerese de reposicionamento | ~18% do tamanho do item | O placeholder só muda de posição quando o centro do item arrastado ultrapassa 18% do tamanho do item em relação ao centro do slot seguinte. Evita trocas involuntárias por movimentos mínimos. |
 | Transição FLIP | `transform 0.22s cubic-bezier(0.2,0,0,1)` | Duração e easing da animação que move os cards vizinhos para abrir/fechar espaço. |
 
-**O que é o placeholder:** Um elemento DOM vazio (`.reorder-placeholder`) com fundo e borda muito subtis (configuráveis via `--drop-ph-bg` / `--drop-ph-border`) que ocupa o espaço-alvo durante o arrasto. A sua posição actualiza com base na histerese descrita acima.
+**O que é o placeholder:** Um elemento DOM vazio (`.reorder-placeholder`) com fundo e borda muito sutis (configuráveis via `--drop-ph-bg` / `--drop-ph-border`) que ocupa o espaço-alvo durante o arrasto. A sua posição atualiza com base na histerese descrita acima.
 
 **Fluxo do gesto (resumo):**
 ```
@@ -712,8 +712,8 @@ activar arrasto:
 | `annAutosizeText()` | Faz o `<textarea>` de texto crescer em altura (`scrollHeight`) e largura (linha mais longa medida com `measureText` na fonte escalada, + 4px). Necessário porque `wrap="off"` não quebra linhas automaticamente | Chamada em `oninput`, ao abrir o editor (`annShowTextInput`) e após cada resize ao vivo pelos botões −/+ |
 | `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
 | `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
-| `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exactamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no guardado final do traço via `annDrawShape`. **Não chamar directamente** — usar `annDrawShape` ou `annRedraw`. |
-| `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | **Definida mas NÃO usada no fluxo de desenho desde a V23** (ver changelog V23). O traço livre é guardado com os mesmos pontos do preview (`annPath`), sem simplificação. A função permanece no arquivo caso seja reativada no futuro. |
+| `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exatamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no salvamento final do traço via `annDrawShape`. **Não chamar diretamente** — usar `annDrawShape` ou `annRedraw`. |
+| `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | **Definida mas NÃO usada no fluxo de desenho desde a V23** (ver changelog V23). O traço livre é salvo com os mesmos pontos do preview (`annPath`), sem simplificação. A função permanece no arquivo caso seja reativada no futuro. |
 
 ### Motor de Anotação — Seleção, Edição e Desfazer (desenvolvimento local — ainda não publicado)
 
@@ -770,7 +770,7 @@ Iterar items do clipboard (índice numérico, não for...of)
       │         ↓
       │   Gerar label único     → verificar contra images[] e removed[]
       │         ↓
-      │   idbPut('images', o)   → guardar em IndexedDB
+      │   idbPut('images', o)   → salvar em IndexedDB
       │         ↓
       │   renderThumb(o)        → inserir card na grelha
       │         ↓
@@ -900,7 +900,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
 | `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na toolbar de anotação (px) |
 | `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
-| `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois sítios (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê a escrever (WYSIWYG) |
+| `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois lugares (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê a escrever (WYSIWYG) |
 
 ---
 
@@ -941,8 +941,8 @@ A validação tem **duas partes**:
 ### Parte A — Verificações sem browser
 
 **Segurança:**
-- [ ] `escapeHTML()` aplicado a todos os dados do usuário inseridos via `innerHTML`
-- [ ] `sanitizeForQuine()` aplicado antes de tokens serem injetados no HTML exportado
+- [ ] `escapeHTML()` aplicado a todos os dados do utilizador inseridos via `innerHTML`
+- [ ] `sanitizeForQuine()` aplicado antes de tokens serem injetados no arquivo exportado
 - [ ] Sem `eval()`, `Function()`, ou `document.write()`
 
 **Integridade do Quine:**
@@ -954,7 +954,7 @@ A validação tem **duas partes**:
 - [ ] Campo `cfg-title-end` existe no VB (Tab Interface)
 
 **Unicidade:**
-- [ ] Sem nomes duplicados possíveis em screenshots ou documentos
+- [ ] Sem nomes duplicados possíveis em capturas de tela ou documentos
 - [ ] A deduplicação verifica contra listas ativas **e** lixeira (verificar: `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc`, `setLabel`, `setDocName`)
 - [ ] Comparação de nomes é case-insensitive
 
@@ -1000,13 +1000,13 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 **Anotação — comportamento (motor reescrito na V23, testar com atenção):**
 - [ ] Desenho à mão livre **não pisca** durante o desenho
-- [ ] O traço guardado é **igual ao que se viu na tela** — sem arredondar, sem alisar e sem fechar o contorno sozinho
+- [ ] O traço salvo é igual ao que se viu na tela — sem arredondar, sem alisar e sem fechar o contorno sozinho
 - [ ] Curvas mantêm as quinas suaves depois de soltar (não ficam pontudas)
 - [ ] Retângulo, círculo e seta desenham por arrasto
 - [ ] Texto: colocar (Enter confirma, Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
-- [ ] Tentar fechar o modal com anotações por guardar → botões Confirmar/Cancelar pulsam (alerta)
+- [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam (alerta)
 
 **Reordenação (reescrita com Pointer Events / FLIP na V23):**
 - [ ] Arrastar imagens para reordenar é **estável** (não salta nem pisca), com mouse
@@ -1016,28 +1016,28 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 **Visual e tema:**
 - [ ] Imagens com cantos retos; botões e cards de texto com cantos arredondados
-- [ ] O arquivo abre **sem erros na consola** (F12)
+- [ ] O arquivo abre **sem erros no console** (F12)
 - [ ] Dark mode funciona **sem flash branco** ao abrir (anti-FOUC)
 
 **Export (testar o ciclo real):**
 - [ ] PDF gera com imagens; fica **desativado** quando há documentos na sessão
 - [ ] ZIP empacota imagens + documentos
 - [ ] **Export Admin** → a cópia mantém o painel de administração e a capacidade de re-exportar
-- [ ] **Export User** → a cópia **não** tem botões de admin, Visual Builder, nem logs na consola
+- [ ] **Export User** → a cópia **não** tem botões de admin, Visual Builder, nem logs no console
 - [ ] Abrir a cópia exportada e confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 
 **Multi-aba:**
-- [ ] Abrir o arquivo numa segunda aba do mesmo browser → **carrega normalmente** (sem tela de erro vermelho); ambas as abas funcionam e partilham a mesma base de dados
+- [ ] Abrir o arquivo numa segunda aba do mesmo browser → **carrega normalmente** (sem tela de erro vermelha); ambas as abas funcionam e compartilham a mesma base de dados
 
 ---
 
 ## 12. Protocolo de Version Bump
 
-Ao passar para uma nova versão (ex: V23 → V24), o número de versão tem de ser actualizado em **exatamente 5 arquivos**, com **10 substituições + 1 inserção**, distribuídas da seguinte forma.
+Ao passar para uma nova versão (ex: V23 → V24), o número de versão tem de ser atualizado em **exatamente 5 arquivos**, com **10 substituições + 1 inserção**, distribuídas da seguinte forma.
 
 Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V23`), `VERSAO_NOVA` = a versão de destino (ex: `V24`).
 
-**Os 5 arquivos e as alterações exactas:**
+**Os 5 arquivos e as alterações exatas:**
 
 1. **`capture-engine.html`** — 3 substituições:
    - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (VERSAO_ANTERIOR) -->` → `(VERSAO_NOVA)`
@@ -1063,7 +1063,7 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V23`), 
 
 **Referências contextuais — NÃO substituir:**
 
-Em todos os arquivos existem referências ao número de versão anterior que são **registos históricos** e devem ser preservadas. A regra é simples: **substituir apenas onde o número de versão identifica o produto actual** (títulos, badges, logs de boot). Preservar onde descreve quando algo aconteceu.
+Em todos os arquivos existem referências ao número de versão anterior que são **registros históricos** e devem ser preservadas. A regra é simples: **substituir apenas onde o número de versão identifica o produto atual** (títulos, badges, logs de boot). Preservar onde descreve quando algo aconteceu.
 
 Exemplos de referências a preservar após um bump para VERSAO_NOVA:
 - `agents.md`: "removido na VERSAO_ANTERIOR", "reescrita com Pointer Events / FLIP na VERSAO_ANTERIOR", "desde a VERSAO_ANTERIOR"
@@ -1100,7 +1100,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 
 **Modelo de armazenamento (confirmado por bateria de testes — Windows 11 25H2, Edge 148, Chrome 148):**
 
-A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` partilham a mesma *origin*, pelo que a base é, na prática, **partilhada por perfil de browser**. Consequências confirmadas:
+A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, pelo que a base é, na prática, **compartilhada por perfil de browser**. Consequências confirmadas:
 
 | Condição | Encontra os dados? |
 | --- | --- |
@@ -1115,7 +1115,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 | Outro browser (Edge ↔ Chrome) | **NÃO** |
 | Mesma conta/perfil **em outra máquina** (sync ligado) | **NÃO** — IndexedDB não é sincronizado |
 
-> **Âmbito dos testes:** esta matriz foi confirmada em Windows 11 com Edge 148 e Chrome 148 (ambos motores Chromium). O Firefox e o Safari usam motores diferentes e **não foram testados formalmente** — o princípio geral (os dados estão ligados ao perfil de browser, não ao arquivo) deve manter-se, mas os detalhes de partilha entre arquivos `file://` podem variar.
+> **Âmbito dos testes:** esta matriz foi confirmada em Windows 11 com Edge 148 e Chrome 148 (ambos motores Chromium). O Firefox e o Safari usam motores diferentes e **não foram testados formalmente** — o princípio geral (os dados estão ligados ao perfil de browser, não ao arquivo) deve manter-se, mas os detalhes de compartilhamento entre arquivos `file://` podem variar.
 
 **Pontos-chave:**
 - O que decide o acesso é o **perfil de browser**, não o nome/pasta/versão do arquivo.
@@ -1129,11 +1129,11 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 1. Abra qualquer cópia da ferramenta no perfil correcto e pressione **F12** (DevTools).
 2. Navegue até **Application** (Chrome/Edge) ou **Storage** (Firefox) → **IndexedDB** → **CaptureEngineDB**.
 3. Clique em **`images`** ou **`documents`** para ver os registos. Cada linha é um item.
-4. Para exportar um ficheiro individual:
+4. Para exportar um arquivo individual:
    - Clique no registo pretendido para o expandir.
    - Localize o campo **`blob`** — aparece como `Blob {size: XXXXX, type: "image/png"}`.
    - Clique com o botão direito no valor do blob → **"Save as..."** (Chrome/Edge) ou copie via console (ver abaixo).
-5. Se a opção "Save as" não estiver disponível, use a consola (tab **Console**):
+5. Se a opção "Save as" não estiver disponível, use o console (tab **Console**):
    ```js
    // Substituir 'images' pelo nome da store e o ID pelo valor real
    const req = indexedDB.open('CaptureEngineDB', 2);
@@ -1153,7 +1153,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
    ```
    Este script faz download de todas as imagens da store. Para documentos, substituir `'images'` por `'documents'` e `item.label` por `item.name`.
 
-> **Nota:** A única salvaguarda fiável é **exportar (PDF/ZIP)** o material importante. Não existe backup automático dos dados — é uma decisão de design (privacidade), não uma falha.
+> **Nota:** A única salvaguarda confiável é **exportar (PDF/ZIP)** o material importante. Não existe backup automático dos dados — é uma decisão de design (privacidade), não uma falha.
 
 ---
 
