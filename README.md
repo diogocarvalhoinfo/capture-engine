@@ -551,7 +551,6 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 ```
 capture-engine/              ← raiz do repositório
 ├── capture-engine.html      ← A aplicação completa — este é o arquivo que distribui
-├── index.html               ← Redirect para GitHub Pages (abre capture-engine.html)
 ├── LICENSE                  ← Licença MIT (Diogo Carvalho)
 ├── README.md                ← Este guia (início aqui)
 ├── changelog.md             ← Histórico completo de versões e alterações
