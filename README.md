@@ -455,7 +455,7 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** de momento isto acontece sem aviso visível na tela — o erro só fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. |
+| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** de momento isto acontece sem aviso visível na tela — o erro só fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `agents.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do browser (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do browser. |
 | **GIF animados — comportamento por export** | O export **ZIP** inclui o arquivo GIF original com a animação intacta. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira frame — a animação perde-se. Se precisar preservar a animação, use sempre o export ZIP. |
 
@@ -530,6 +530,9 @@ Nada — a versão V15+ protege automaticamente os marcadores internos com um ca
 
 **Posso personalizar a ferramenta sem saber programar?**
 Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, campos e rodapé sem tocar no código.
+
+**Posso usar o Capture Engine em Edge e Chrome ao mesmo tempo com o mesmo histórico?**
+Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o seu próprio histórico, mesmo sendo a mesma conta ou perfil. Para ver as mesmas sessões, use sempre o mesmo browser. O mesmo se aplica ao Firefox: dados criados no Chrome não aparecem no Firefox e vice-versa. Ver §11 para a matriz completa de compatibilidade.
 
 ---
 

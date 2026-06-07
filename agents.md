@@ -46,6 +46,19 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 ## Como editar este arquivo com segurança
 
 - Desative qualquer auto-formatador (Prettier, ESLint --fix, EditorConfig-based format-on-save) antes de editar. Formatação automática SILENCIOSAMENTE corrompe os comment-markers que o `validate.sh` e o Quine dependem. Se o IDE formatar ao salvar, desative essa opção especificamente para este arquivo.
+
+  **VS Code / Cursor** — crie ou edite `.vscode/settings.json` na raiz do projeto:
+  ```json
+  {
+    "[html]": {
+      "editor.formatOnSave": false,
+      "editor.defaultFormatter": null
+    }
+  }
+  ```
+  **JetBrains / Sublime / outros:** desative a formatação automática de `.html` nas preferências do IDE.
+
+  **Antigravity:** risco menor — agentes editam por código. Confirme que nenhum workflow com "format" está ativo para `.html`.
 - Use code folding para navegar (ex.: VS Code "Fold by Indentation"). O arquivo tem 6000+ linhas — sem folding a navegação é impraticável.
 - Extensões de browser que injetam no DOM (Grammarly, Adblockers, gerenciadores de senha, tradutores automáticos) podem corromper o snapshot do Quine (`BOOT_HTML` é capturado do `outerHTML` no boot). Para testes de desenvolvimento, use um perfil de browser sem extensões.
 - Sempre execute `validate.sh` após qualquer mudança no `capture-engine.html` e antes de qualquer commit.
@@ -417,6 +430,19 @@ Os markers são comentários especiais que o Quine Engine usa para identificar e
 **Regra crítica:** Nunca mover código para dentro ou fora destes blocos sem entender as consequências. Código dentro de `ADMIN_JS_START/END` desaparece nos exports de User — se a funcionalidade for necessária para usuários normais, não pode estar nesse bloco.
 
 **Proteção do Quine:** `sanitizeForQuine()` substitui os marcadores nos *valores de tokens* com versões contendo zero-width space (caractere invisível `\u200B`). Isto evita que um token com o texto `ADMIN_JS_START` corrompa o regex de strip. Aplica-se a todos os 8 marcadores (4 pares de abertura/fecho).
+
+**Localização dos markers no arquivo** (diagnóstico manual sem `validate.sh`):
+
+| Marker | Localização | Contagem no grep |
+|---|---|---|
+| `<!-- ADMIN_BUTTONS_START -->` / `END` | `<body>` — barra de topo | 2 |
+| `<!-- ADMIN_EDIT_START -->` / `END` | `<body>` — modal Visual Builder | 2 |
+| `/* ADMIN_JS_START */` / `END` | `<script>` IIFE — bloco de funções admin | 2 |
+| `<!-- EXPORT MODAL -->` / `<!-- FIM EXPORT MODAL -->` | `<body>` — modal de export | 2 |
+| 3 ocorrências em funções JS | `boot()`, `sanitizeForQuine()`, `exportFile()` | 3 |
+| **Total** | | **11** |
+
+> Verificação rápida sem `validate.sh`: procure cada um dos 8 textos acima no HTML com Ctrl+F. Se algum estiver ausente ou duplicado, o Quine está corrompido.
 
 > **Nota sobre contagens — 8 vs 11:** existem **8 strings únicas de marcadores** (4 pares: ADMIN_BUTTONS, ADMIN_EDIT, ADMIN_JS, EXPORT MODAL), mas o `grep -c` no HTML retorna **11 linhas** porque os marcadores aparecem em 3 categorias de locais:
 > - **8 locais estruturais** — os 4 pares de comentários/tokens HTML e JS que delimitam blocos removíveis
