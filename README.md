@@ -658,6 +658,72 @@ init()
 
 **Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos User/Equipamento/Nome guarda imediatamente.
 
+### Diagrama de componentes
+
+```mermaid
+flowchart TD
+    subgraph MOTOR["Motor Principal"]
+        SM["Session Manager\ncria, carrega, purge"]
+        CE["Capture Engine\nclipboard, drag-drop, picker"]
+        AN["Annotation Engine\ncanvas, undo/redo, snapshots"]
+        RO["Reorder\nFLIP + Pointer Events"]
+    end
+    subgraph EXPORT["Export"]
+        PDF["PDF Engine\nJS puro"]
+        ZIP["ZIP Engine\nJS puro"]
+        QE["Quine Engine\nauto-copia configurada"]
+    end
+    subgraph ADMIN["Administracao"]
+        VB["Visual Builder\nGUI de tokens"]
+        AG["Admin Gate\n6 cliques no logo"]
+        TK["TOKEN_*\nconfiguracao"]
+    end
+    IDB[("IndexedDB\nCaptureEngineDB\n5 stores")]
+    CE --> IDB
+    SM --> IDB
+    AN --> IDB
+    AG --> VB
+    AG --> QE
+    VB --> TK
+    TK --> QE
+```
+
+### Ciclo de vida da sessao
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pristine : abrir arquivo
+    Pristine --> Pristine : sem interacao
+    Pristine --> Ativa : 1a interacao - ensureSession
+    state Ativa {
+        [*] --> Editando
+        Editando --> Persistindo : isDirty = true
+        Persistindo --> Editando : idbPut a cada 5s
+    }
+    Ativa --> Historico : navegar ou recarregar
+    Historico --> Ativa : selecionar sessao
+    Historico --> Apagada : purgeExpired - inatividade maior que 48h
+    Ativa --> Apagada : purgeExpired - inatividade maior que 48h
+    Apagada --> [*]
+```
+
+### Fluxo do Quine Engine
+
+```mermaid
+flowchart LR
+    A([Admin clica Export]) --> B["capturePristine executado no boot"]
+    B --> C{"fetch(location.href)"}
+    C -->|sucesso| D["HTML original limpo"]
+    C -->|falha CORS| E["fallback BOOT_HTML"]
+    D --> F["sanitizeForQuine - substitui TOKEN_* com valores atuais"]
+    E --> F
+    F --> G{Tipo de export}
+    G -->|Export Admin| H["mantem blocos ADMIN_*"]
+    G -->|Export User| I["remove blocos ADMIN_* via markers"]
+    H --> J(["download capture-engine.html"])
+    I --> J
+```
+
 ---
 
 *Capture Engine V25 · Single-file · zero dependências · 100% offline*
