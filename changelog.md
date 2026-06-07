@@ -12,6 +12,7 @@
 - Mobile: botões de apagar e restaurar sempre visíveis em dispositivos touch (@media hover:none)
 - Mobile: toolbar de anotação em 3 linhas responsivas
 - Código: comentários de secção HTML padronizados para maiúsculo
+- Visual: novo logótipo SVG (viewfinder com gradiente verde→amarelo no canto inferior direito) + favicon SVG inline base64 no `<head>`
 
 Anotação iterativa: motor de interação enriquecido com suporte completo a seleção, edição, redimensionamento, movimento e um novo modelo de histórico (undo/redo).
 
@@ -26,6 +27,8 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 ### Modificado
 
 **Desfazer e Refazer (Modelo Snapshots de Estado)** — o sistema de undo/redo foi integralmente reescrito. Substitui a antiga pilha única baseada em eventos (que causava bugs de ordem ao intercalar ações) por um modelo de snapshots completos com dupla pilha (`annUndoStack` / `annRedoStack`, teto de 50). Toda mutação altera a fonte única (`annHistory`). Ações contínuas de mover/redimensionar só persistem se houve mudança efetiva (flags `_dragDirty` / `_resizeDirty`). Ao reentrar numa imagem salva, o histórico é "semeado" iterativamente, permitindo desfazer todas as ações até revelar a imagem original sem anotações.
+
+**Logótipo e Favicon** — O ícone de câmara da barra de topo foi substituído por um novo SVG autónomo: fundo escuro `#1a1a1a`, quatro cantos em L (3 brancos + 1 com gradiente verde→amarelo no canto inferior direito). O favicon foi adicionado ao `<head>` como `<link rel="icon">` SVG em base64. O CSS de `#tb-brand-icon` deixou de usar `background: var(--accent)` transitional e passou a `background: #1a1a1a` fixo com `overflow: hidden`; a função de sincronização de cor de destaque deixou de aplicar inline style ao ícone — o logo é agora visualmente independente das personalizações de cor do utilizador.
 
 ---
 
