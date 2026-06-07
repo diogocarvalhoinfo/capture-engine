@@ -1251,6 +1251,59 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
    ```
    Este script faz download de todas as imagens da store. Para documentos, substituir `'images'` por `'documents'` e `item.label` por `item.name`.
 
+**Diagnosticar quota esgotada** (capturas desaparecem ao reabrir sem aviso na UI):
+```js
+// No console (F12 -> Console):
+navigator.storage.estimate().then(e =>
+  console.log(
+    'Usado:', (e.usage / 1024 / 1024).toFixed(1) + ' MB',
+    '| Disponivel:', (e.quota / 1024 / 1024).toFixed(1) + ' MB',
+    '| Uso:', ((e.usage / e.quota) * 100).toFixed(1) + '%'
+  )
+);
+```
+Se o uso estiver acima de 80%, a quota pode estar causando falhas silenciosas. **Solucao:** exportar (PDF/ZIP) e apagar sessoes antigas no historico.
+
+**Listar sessoes com nome, utilizador e data** (identificar qual sessao extrair antes de usar o script abaixo):
+```js
+const req = indexedDB.open('CaptureEngineDB', 2);
+req.onsuccess = e => {
+  const db = e.target.result;
+  db.transaction('sessions', 'readonly')
+    .objectStore('sessions')
+    .getAll().onsuccess = ev => {
+      ev.target.result.forEach(s =>
+        console.log(
+          'ID:', s.id,
+          '| Nome:', s.name || '(sem nome)',
+          '| User:', s.user || '-',
+          '| Criado:', new Date(s.createdAt).toLocaleString()
+        )
+      );
+    };
+};
+```
+
+**Extrair imagens de uma sessao especifica** (usar o ID obtido no script acima):
+```js
+const SESSION_ID = 'COLE_O_ID_AQUI'; // ID do console.log acima
+const req2 = indexedDB.open('CaptureEngineDB', 2);
+req2.onsuccess = e => {
+  const db = e.target.result;
+  const idx = db.transaction('images', 'readonly')
+    .objectStore('images').index('sessionId');
+  idx.getAll(SESSION_ID).onsuccess = ev => {
+    ev.target.result.forEach((item, i) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(item.blob);
+      a.download = (item.label || 'imagem-' + i) + '.png';
+      a.click();
+    });
+  };
+};
+```
+
+
 > **Nota:** A única salvaguarda confiável é **exportar (PDF/ZIP)** o material importante. Não existe backup automático dos dados — é uma decisão de design (privacidade), não uma falha.
 
 ---
