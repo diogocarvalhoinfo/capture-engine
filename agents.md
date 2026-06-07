@@ -939,6 +939,81 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 
 ---
 
+### Exemplos Práticos de Extensão
+
+As regras de §0–§9 descrevem o **que não fazer**. Esta seção mostra o **como fazer** para as duas tarefas de extensão mais comuns, do início ao fim.
+
+---
+
+#### Exemplo A — Adicionar novo TOKEN_*
+
+**Cenário:** adicionar `TOKEN_SHOW_LOGO` (boolean) que controla a visibilidade do logo.
+
+**Passo 1 — Declarar no bloco TOKENS** (junto aos outros `TOKEN_*`):
+```js
+const TOKEN_SHOW_LOGO = true;
+```
+
+**Passo 2 — Usar no código** (ex: em `applyTokens()`):
+```js
+document.getElementById('app-logo').style.display = TOKEN_SHOW_LOGO ? '' : 'none';
+```
+
+**Passo 3 — Integrar no Visual Builder** (se editável pelo admin):
+- Adicionar campo HTML na aba correta do modal VB
+- Registrar handler em `initVbSync()` seguindo o padrão dos campos existentes
+- Sincronizar em `syncVbFromTokens()` para refletir o valor atual no VB
+
+**Passo 4 — Quine cobre automaticamente:** `sanitizeForQuine()` processa todos os `TOKEN_*` por regex — nenhuma alteração necessária nessa função.
+
+**Passo 5 — Atualizar docs:**
+- `README.md §6.4` — nova linha na tabela de tokens
+- `design-tokens.md` — se for token de design visual
+- `changelog.md` — entrada na versão atual
+
+**Passo 6 — Validar:**
+```bash
+bash validate.sh  # deve retornar 15/15 PASS
+```
+
+> ⚠️ **Formato obrigatório:** `const TOKEN_NOME = 'valor'`. Usar `let`, TypeScript ou template literals quebra a regex do Quine Engine.
+
+---
+
+#### Exemplo B — Adicionar nova ferramenta de anotação
+
+**Cenário:** adicionar a ferramenta "Linha reta" ao motor de anotação.
+
+**Passo 1 — Adicionar botão na toolbar HTML** (fora dos blocos `ADMIN_*`):
+```html
+<button id="ann-tool-line" class="ann-tool-btn" title="Linha">—</button>
+```
+
+**Passo 2 — Registrar o tool name** em `initAnnotation()` seguindo o padrão de `rect`, `circle`, `arrow`, `free`, `text`.
+
+**Passo 3 — Implementar Pointer Events** em `initAnnotation()`:
+- `pointerdown` — registrar ponto inicial
+- `pointermove` — redesenhar preview
+- `pointerup` — confirmar e salvar snapshot
+
+**Passo 4 — Salvar snapshot antes de confirmar** (crítico para undo/redo):
+```js
+// Antes de modificar o canvas definitivamente:
+annUndoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+if (annUndoStack.length > 50) annUndoStack.shift(); // máximo 50 passos
+annRedoStack.length = 0; // limpar redo ao iniciar novo traço
+```
+
+**Passo 5 — NÃO colocar dentro de** `/* ADMIN_JS_START */` — anotação deve funcionar para usuários finais.
+
+**Passo 6 — Validar e testar:**
+- `bash validate.sh` → 15/15 PASS
+- Teste manual Parte B §11: undo/redo com Ctrl+Z / Ctrl+Y na nova ferramenta
+
+> ⚠️ **Não usar** `mousedown`/`touchstart` — todo o motor usa exclusivamente Pointer Events para compatibilidade cross-device.
+
+---
+
 ## 11. Checklist de Validação — Antes de Declarar Completo
 
 Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
