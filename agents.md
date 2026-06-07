@@ -941,6 +941,20 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 
 ---
 
+---
+
+### Os três sistemas de flags de estado "sujo"
+
+Existem três sistemas de flags com escopos e ciclos de vida diferentes — **não são intercambiáveis**:
+
+| Flag(s) | Escopo | Quem produz | Quem consome | Ciclo de vida |
+|---|---|---|---|---|
+| `isDirty` | Sessão inteira | Qualquer alteração de dados | `setInterval` auto-save 5s + `updateStatusBar()` | `true` quando dados mudam; `false` após `idbPut` |
+| `_dragDirty` / `_resizeDirty` | Gesto de anotação | `pointermove` durante drag/resize | `pointerup` — decide se empurra snapshot para `annUndoStack` | Transitório: `false` no início, `true` se houve mutação, descartado após o snapshot |
+| `annInitialState` | Sessão de anotação ativa | Atribuído na ativação | Comparado ao confirmar para detetar alterações reais | Criado ao ativar, comparado ao confirmar, destruído ao desativar |
+
+> **Regra:** use `isDirty = true` para mudanças de dados da sessão; `_dragDirty`/`_resizeDirty` apenas para undo de gestos de anotação; não substitua `annInitialState` por um boolean simples.
+
 ## 10. Workflow de Desenvolvimento para Agentes
 
 1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas

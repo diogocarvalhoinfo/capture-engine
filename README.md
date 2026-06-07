@@ -436,6 +436,16 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 | **Sem registro** | Nenhum dado de utilização, telemetria ou analytics |
 | **Sem cookies** | Usa IndexedDB e localStorage do browser (sem cookies de sessão) |
 
+### Content Security Policy — nota sobre `unsafe-inline`
+
+A CSP ativa inclui `script-src 'unsafe-inline'` e `style-src 'unsafe-inline'`. Isto é uma **consequência estrutural da arquitetura single-file**, não uma escolha de comodidade:
+
+- Toda a lógica JavaScript está inline no único arquivo HTML — sem `unsafe-inline`, o browser bloquearia o próprio script da aplicação.
+- Nonces e hashes são incompatíveis com o Quine Engine: o conteúdo do arquivo muda a cada Export, invalidando qualquer hash calculado no build.
+- A CSP ainda protege contra **scripts externos** (`default-src 'self'`), **recursos de rede** (`connect-src 'self'`) e **imagens externas** (`img-src blob: data:`).
+
+> Em scanners de segurança automáticos (OWASP ZAP, Lighthouse), `unsafe-inline` será marcado como aviso. O contexto acima explica por que é intencional neste modelo.
+
 ### Aviso sobre limpeza do browser
 
 Os dados do Capture Engine estão guardados no IndexedDB do browser. **Se limpar os dados de navegação, cache, ou histórico do browser, os dados do Capture Engine são apagados permanentemente.** Exporte sempre os dados importantes antes de limpar o browser.
