@@ -390,7 +390,7 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_EQUIP_LABEL` | `''` | Rótulo do Campo 2 (vazio = usa "Equipamento") |
 | `TOKEN_JPEG_QUALITY` | `0.92` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | `0` | Dimensão máxima de imagens (0 = sem limite) |
-| `TOKEN_AUTO_PURGE_HOURS` | `48` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **⚠️ Valor 0 é destrutivo:** com valor `0`, o cutoff é `Date.now() - 0 = agora`, pelo que **todas as sessões existentes são apagadas imediatamente** na próxima abertura. Não usar para "desativar" o purge — usar um valor muito alto (ex: `8760` = 1 ano) se se pretender purge infrequente. |
+| `TOKEN_AUTO_PURGE_HOURS` | `48` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para purge infrequente mas não desabilitado, use um valor alto como `8760` (1 ano). |
 | `TOKEN_DEBUG_MODE` | `true` | Logs na consola do browser (desativado em Export User) |
 
 ### 6.5 Distribuir uma atualização (nova versão)
