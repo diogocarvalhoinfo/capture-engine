@@ -11,6 +11,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIzMTQiIHkxPSIzMTQiIHgyPSIzODAiIHkyPSIzODAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMzVhODAwIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmZkODJiIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0ibSA1LjQ0NTM1MTQsMTQxLjQ5MDk1IHYgMjI3LjkxOTc4IHEgMCwxMzcuODc0MDkgMTM3Ljg3NDAyODYsMTM3Ljg3NDA5IGggMjI3LjkyMDY0IHEgMTM3Ljg3NDA5LDAgMTM3Ljg3NDA5LC0xMzcuODc0MDkgViAxNDEuNDkwOTUgcSAwLC0xMzcuODc0OTMwNyAtMTM3Ljg3NDA5LC0xMzcuODc0OTMwNyBIIDE0My4zMTkzOCBxIC0xMzcuODc0MDI4NiwwIC0xMzcuODc0MDI4NiwxMzcuODc0OTMwNyB6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMS4yOCwwLjU1KSIgZmlsbD0iIzFhMWExYSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNDQiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTMyLDE5OCBMMTMyLDEzMiBMMTk4LDEzMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjM4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzE0LDEzMiBMMzgwLDEzMiBMMzgwLDE5OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjM4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzgwLDMxNCBMMzgwLDM4MCBMMzE0LDM4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjM4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTk4LDM4MCBMMTMyLDM4MCBMMTMyLDMxNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjM4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' blob: data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -363,23 +364,18 @@
     #tb-brand-icon {
       width: 40px;
       height: 40px;
-      background: var(--accent);
+      background: #1a1a1a;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: background 0.2s
+      overflow: hidden
     }
 
     #tb-brand-icon svg {
-      width: 22px;
-      height: 22px;
-      stroke: #fff;
-      fill: none;
-      stroke-width: 2.2;
-      stroke-linecap: round;
-      stroke-linejoin: round
+      width: 40px;
+      height: 40px
     }
 
     #tb-brand-name {
@@ -2021,8 +2017,8 @@
       }
 
       #tb-brand-icon svg {
-        width: 18px;
-        height: 18px
+        width: 34px;
+        height: 34px
       }
 
       #tb-brand,
@@ -2285,8 +2281,8 @@
       }
 
       #tb-brand-icon svg {
-        width: 18px;
-        height: 18px
+        width: 32px;
+        height: 32px
       }
 
       #tb-brand-name {
@@ -2491,8 +2487,8 @@
       }
 
       #tb-brand-icon svg {
-        width: 16px;
-        height: 16px
+        width: 30px;
+        height: 30px
       }
 
       #main-layout {
@@ -2541,9 +2537,10 @@
   <div id="top-bar">
     <div id="tb-brand">
       <div id="tb-brand-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-          <circle cx="12" cy="13" r="4" />
+        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="ce_accent" x1="314" y1="314" x2="380" y2="380" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#35a800"/><stop offset="100%" stop-color="#ffd82b"/></linearGradient></defs>
+          <path d="m 5.4453514,141.49095 v 227.91978 q 0,137.87409 137.8740286,137.87409 h 227.92064 q 137.87409,0 137.87409,-137.87409 V 141.49095 q 0,-137.8749307 -137.87409,-137.8749307 H 143.31938 q -137.8740286,0 -137.8740286,137.8749307 z" transform="translate(-1.28,0.55)" fill="#1a1a1a"/>
+          <g><circle cx="256" cy="256" r="44" fill="#ffffff"/><path d="M132,198 L132,132 L198,132" fill="none" stroke="#ffffff" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/><path d="M314,132 L380,132 L380,198" fill="none" stroke="#ffffff" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/><path d="M380,314 L380,380 L314,380" fill="none" stroke="url(#ce_accent)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/><path d="M198,380 L132,380 L132,314" fill="none" stroke="#ffffff" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></g>
         </svg>
       </div>
       <div id="tb-brand-name"><span id="ui-title-start"></span><span id="ui-title-accent"></span><span id="ui-title-end"></span></div>
