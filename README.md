@@ -537,12 +537,23 @@ Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, c
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — suporte completo, testado formalmente (Windows 11, Edge 148 / Chrome 148)
-- **Firefox 90+** — suporte declarado; não testado formalmente. O princípio de funcionamento é idêntico ao Chromium mas o comportamento específico de compartilhamento de IndexedDB entre arquivos `file://` não foi verificado
+- **Firefox 151+** — suporte verificado (151.0.3, 64-bit, Windows). IndexedDB, captura, anotação e Export funcionam corretamente. Partilha de dados entre arquivos `file://` confirmada por teste manual
 - **Safari** — suporte parcial; não testado formalmente. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine; outros comportamentos não verificados
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com browser moderno
 
-> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) — são os únicos com comportamento verificado por testes reais.
+> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) — são os únicos com comportamento verificado por testes reais. Firefox é agora também verificado para uso geral.
+
+### Matriz de compatibilidade
+
+| Browser | Versão testada | Captura e Export | IndexedDB `file://` | Quine (fetch) | Disaster Recovery |
+|---|---|---|---|---|---|
+| **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
+| **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
+| **Firefox** | 151.0.3, Windows | ✅ Verificado | ✅ Verificado | ✅ Verificado | ⚠️ Não testado formalmente |
+| **Safari** | — | ⚠️ Parcial | ⚠️ Não testado | ⚠️ Pode falhar (CORS) | ⚠️ Não testado |
+
+**Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
 
 ---
 
