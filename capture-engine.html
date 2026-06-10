@@ -29,7 +29,7 @@
       --border-strong: #b5b3ae;
       --text: #1a1917;
       --text-muted: #6b6a66;
-      --accent: #e65616;
+      --accent: #e86b2e;
       --accent-fg: #ffffff;
       --accent-hover: #d4450f;
       --success-bg: #eaf3de;
@@ -170,11 +170,11 @@
 
     /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
     #ann-text-input::selection {
-      background: rgba(230, 86, 22, 0.32);
+      background: rgba(232, 107, 46, 0.32);
       color: inherit
     }
     #ann-text-input::-moz-selection {
-      background: rgba(230, 86, 22, 0.32);
+      background: rgba(232, 107, 46, 0.32);
       color: inherit
     }
 
@@ -396,7 +396,7 @@
     }
     #tb-brand-name #ui-title-accent {
       font-weight: 400;
-      opacity: 0.5;
+      opacity: var(--title-accent-opacity, 0.5);
       color: var(--title-accent-color, inherit)
     }
     #tb-brand-name #ui-title-end {
@@ -3059,10 +3059,10 @@
             <div class="sb-row-desc">Cor de destaque da interface</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <input type="text" class="hex-input" id="cfg-cor-hex" value="#0ea5e9" maxlength="7" spellcheck="false">
+            <input type="text" class="hex-input" id="cfg-cor-hex" value="#e86b2e" maxlength="7" spellcheck="false">
             <div class="swatch-wrap" id="wrap-cor-principal" title="Cor principal">
               <div class="swatch-bg" id="sw-accent-bg"></div>
-              <input type="color" id="cfg-cor-principal" value="#0ea5e9">
+              <input type="color" id="cfg-cor-principal" value="#e86b2e">
             </div>
           </div>
         </div>
@@ -3268,7 +3268,7 @@
       const TOKEN_TITLE_START_COLOR = '';
       const TOKEN_TITLE_ACCENT_COLOR = '';
       const TOKEN_TITLE_END_COLOR = '';
-      const TOKEN_MAIN_COLOR = '#0ea5e9';
+      const TOKEN_MAIN_COLOR = '#e86b2e';
       const TOKEN_ACCENT_FG_OVERRIDE = '';
       const TOKEN_SHOW_SESSION_USER = true;
       const TOKEN_SHOW_SESSION_PC = true;
@@ -3790,7 +3790,7 @@
       function annDrawSelectionOverlay() {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
         const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
-        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0ea5e9';
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
         // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
         ctx.strokeStyle = accent; ctx.lineWidth = 1; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
@@ -4676,8 +4676,13 @@
         document.documentElement.style.setProperty('--accent', sysColors.main);
         if (sysColors.tStart) document.documentElement.style.setProperty('--title-start-color', sysColors.tStart);
         else document.documentElement.style.removeProperty('--title-start-color');
-        if (sysColors.tAccent) document.documentElement.style.setProperty('--title-accent-color', sysColors.tAccent);
-        else document.documentElement.style.removeProperty('--title-accent-color');
+        if (sysColors.tAccent) {
+          document.documentElement.style.setProperty('--title-accent-color', sysColors.tAccent);
+          document.documentElement.style.setProperty('--title-accent-opacity', '1');
+        } else {
+          document.documentElement.style.removeProperty('--title-accent-color');
+          document.documentElement.style.removeProperty('--title-accent-opacity');
+        }
         if (sysColors.tEnd) document.documentElement.style.setProperty('--title-end-color', sysColors.tEnd);
         else document.documentElement.style.removeProperty('--title-end-color');
         let fg = sysColors.fg;
@@ -4922,7 +4927,7 @@
 
       /* ═══ APPLY INITIAL TOKENS ═══ */
       function applyTokens() {
-        sysColors.main = TOKEN_MAIN_COLOR || '#0ea5e9';
+        sysColors.main = TOKEN_MAIN_COLOR || '#e86b2e';
         sysColors.fg = TOKEN_ACCENT_FG_OVERRIDE || '';
         updateThemeColor();
 
