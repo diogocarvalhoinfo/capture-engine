@@ -12,7 +12,7 @@
 - Mobile: botões de apagar e restaurar sempre visíveis em dispositivos touch (@media hover:none)
 - Mobile: toolbar de anotação em 3 linhas responsivas
 - Código: comentários de secção HTML padronizados para maiúsculo
-- Visual: novo logótipo SVG (viewfinder com gradiente verde→amarelo no canto inferior direito) + favicon SVG inline base64 no `<head>`
+- Visual: logo Símbolo SVG theme-aware (sem caixa, currentColor) + PWA completo (favicon SVG, apple-touch-icon, manifest com ícones base64) + cor de destaque #e65616 (laranja)
 
 Anotação iterativa: motor de interação enriquecido com suporte completo a seleção, edição, redimensionamento, movimento e um novo modelo de histórico (undo/redo).
 
@@ -28,7 +28,9 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 **Desfazer e Refazer (Modelo Snapshots de Estado)** — o sistema de undo/redo foi integralmente reescrito. Substitui a antiga pilha única baseada em eventos (que causava bugs de ordem ao intercalar ações) por um modelo de snapshots completos com dupla pilha (`annUndoStack` / `annRedoStack`, teto de 50). Toda mutação altera a fonte única (`annHistory`). Ações contínuas de mover/redimensionar só persistem se houve mudança efetiva (flags `_dragDirty` / `_resizeDirty`). Ao reentrar numa imagem salva, o histórico é "semeado" iterativamente, permitindo desfazer todas as ações até revelar a imagem original sem anotações.
 
-**Logótipo e Favicon** — O ícone de câmara da barra de topo foi substituído por um novo SVG autónomo: fundo escuro `#1a1a1a`, quatro cantos em L (3 brancos + 1 com gradiente verde→amarelo no canto inferior direito). O favicon foi adicionado ao `<head>` como `<link rel="icon">` SVG em base64. O CSS de `#tb-brand-icon` deixou de usar `background: var(--accent)` transitional e passou a `background: #1a1a1a` fixo com `overflow: hidden`; a função de sincronização de cor de destaque deixou de aplicar inline style ao ícone — o logo é agora visualmente independente das personalizações de cor do utilizador.
+**Logótipo e Favicon (V25, sessão 2026-06-10)** — O SVG do logo foi substituído pela variante Símbolo: sem caixa de fundo, quatro cantos em L preenchidos (`fill`) em vez de traços (`stroke`), com `fill="currentColor"` nos 3 cantos neutros e `fill="url(#ce_accent)"` no canto inferior direito (gradiente verde→amarelo). O CSS de `#tb-brand-icon` deixou de ter `background`, `border-radius` e `overflow`. Adicionadas duas regras de theming: `color: #ffffff` em dark mode (padrão) e `color: #1a1a1a` em `body:not(.dark)`, para que o logo use `currentColor` e adapte-se automaticamente ao tema activo. O favicon no `<head>` foi actualizado para o novo SVG. Adicionados `<link rel="apple-touch-icon">`, `<link rel="manifest">` com ícones e manifest embebidos como data URI (zero ficheiros externos), `<meta name="theme-color">` e `<meta name="msapplication-TileColor">`.
+
+**Cor de destaque `--accent`** — substituída de `#0ea5e9` (azul) para `#e65616` (laranja de marca). `--accent-hover` actualizado de `#0284c7` para `#d4450f`. Cor hardcoded em `#ann-text-input::selection` (2 ocorrências) actualizada para `rgba(230, 86, 22, 0.32)` em consistência.
 
 ### Corrigido
 
