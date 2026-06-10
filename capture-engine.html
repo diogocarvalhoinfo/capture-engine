@@ -395,7 +395,7 @@
       color: var(--title-start-color, inherit)
     }
     #tb-brand-name #ui-title-accent {
-      font-weight: 400;
+      font-weight: var(--title-accent-weight, 400);
       opacity: var(--title-accent-opacity, 0.5);
       color: var(--title-accent-color, inherit)
     }
@@ -2914,6 +2914,13 @@
               <line x1="2" y1="12" x2="22" y2="12"/>
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
+          <button class="ann-btn" id="ann-rotate-btn" title="Rodar 90°"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
+            </svg></button>
+          <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
+              <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+            </svg></button>
           </div>
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
@@ -3634,6 +3641,28 @@
       };
 
       /* ═══ ANNOTATION ENGINE ═══ */
+      let annCurrentRotation = 0;
+      let annCropBox = null, annDraggingCrop = false, annCropHandle = null;
+      async function getRotatedBlob(blob, angle) {
+        if (!angle) return blob;
+        return new Promise(resolve => {
+          const u = URL.createObjectURL(blob);
+          const i = new Image();
+          i.onload = () => {
+            URL.revokeObjectURL(u);
+            const cv = document.createElement('canvas');
+            const is90 = angle === 90 || angle === 270;
+            cv.width = is90 ? i.naturalHeight : i.naturalWidth;
+            cv.height = is90 ? i.naturalWidth : i.naturalHeight;
+            const ctx = cv.getContext('2d');
+            ctx.translate(cv.width/2, cv.height/2);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.drawImage(i, -i.naturalWidth/2, -i.naturalHeight/2);
+            cv.toBlob(resolve, blob.type || 'image/png');
+          };
+          i.src = u;
+        });
+      }
       let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
       // Fase 5 — pilhas de Undo/Redo por snapshots de estado completo
       let annUndoStack = [], annRedoStack = [];
@@ -3706,9 +3735,10 @@
         if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
         if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
       }
-      function annActivate() {
+      async function annActivate() {
         annActive = true;
         const o = images.find(x => x.id === modalItemId);
+        annCurrentRotation = o ? (o.rotation || 0) : 0;
         annHistory = (o && o.annHistory) ? JSON.parse(JSON.stringify(o.annHistory)) : [];
         annInitialState = JSON.stringify(annHistory);
         setAnnDirty(false);
@@ -3718,15 +3748,9 @@
           annUndoStack.push(JSON.parse(JSON.stringify(annHistory.slice(0, _i))));
         }
         while (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift();
-        const btnClose = $('ann-cancel'), btnSave = $('ann-save');
-        if (btnClose) btnClose.classList.remove('alert-anim');
+        const btnSave = $('ann-save');
         if (btnSave) btnSave.classList.remove('alert-anim');
         const img = $('img-modal-img');
-        if (o && o.origBlob) {
-          const u = URL.createObjectURL(o.origBlob);
-          img.onload = () => URL.revokeObjectURL(u);
-          img.src = u;
-        }
         const cv = $('ann-canvas');
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
         cv.style.display = 'block';
@@ -3742,6 +3766,7 @@
         setAnnDirty(annIsDirty);
         if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
         annSmoothLast = null;
+        annCropBox = null;
         if (annCommitText) { annCommitText(); annCommitText = null; }
         const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
         const cv = $('ann-canvas'); cv.style.display = 'none';
@@ -3758,7 +3783,63 @@
           img.src = u;
         }
       }
-      function annSetTool(t) { annTool = t; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) }); const _isText = t === 'text'; if (_isText) { annSelectedIdx = -1; annRenderAll(); /* limpa seleção e redesenha imediatamente */ } const _cv = $('ann-canvas'); if (_cv) _cv.style.cursor = _isText ? 'text' : (t === 'select' ? 'default' : 'crosshair'); const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn'); if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) } if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) } annUpdateThicknessIcon(); }
+      async function annSetTool(t) {
+        annTool = t;
+        document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
+        const _isText = t === 'text';
+        if (_isText) { annSelectedIdx = -1; annRenderAll(); }
+        const _cv = $('ann-canvas');
+        if (_cv) _cv.style.cursor = _isText ? 'text' : (t === 'select' ? 'default' : 'crosshair');
+        
+        const o = images.find(x => x.id === modalItemId);
+        const img = $('img-modal-img');
+        
+        if (t === 'crop') {
+          if (o && o.cropBox && o.origBlob && !annCropBox) {
+             let rBlob = o.origBlob;
+             if (o.rotation) rBlob = await getRotatedBlob(o.origBlob, o.rotation);
+             const u = URL.createObjectURL(rBlob);
+             await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+             _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
+             const cx = o.cropBox.x, cy = o.cropBox.y;
+             function shift(pts) { pts.forEach(p => { p.x += cx; p.y += cy; }); }
+             [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+                arr.forEach(e => {
+                   if (e.type === 'free') shift(e.pts);
+                   else if (e.type === 'text') { e.x1 += cx; e.y1 += cy; }
+                   else { e.x1 += cx; e.y1 += cy; e.x2 += cx; e.y2 += cy; }
+                });
+             });
+             annCropBox = { x: cx, y: cy, w: o.cropBox.w, h: o.cropBox.h };
+             annRenderAll();
+          } else if (!annCropBox && _cv && _cv.width) {
+             annCropBox = { x: 0, y: 0, w: _cv.width, h: _cv.height };
+             annRenderAll();
+          }
+        } else if (t !== 'crop' && annCropBox) {
+          annCropBox = null;
+          if (o && o.cropBox && o.origBlob) {
+             const u = URL.createObjectURL(o.blob);
+             await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+             _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
+             const cx = o.cropBox.x, cy = o.cropBox.y;
+             function shift(pts) { pts.forEach(p => { p.x -= cx; p.y -= cy; }); }
+             [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+                arr.forEach(e => {
+                   if (e.type === 'free') shift(e.pts);
+                   else if (e.type === 'text') { e.x1 -= cx; e.y1 -= cy; }
+                   else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
+                });
+             });
+          }
+          annRenderAll();
+        }
+        
+        const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
+        if (_bb) { _bb.style.display = _isText ? 'flex' : 'none'; _bb.classList.toggle('active', _isText && annTextBold) }
+        if (_ib) { _ib.style.display = _isText ? 'flex' : 'none'; _ib.classList.toggle('active', _isText && annTextItalic) }
+        annUpdateThicknessIcon();
+      }
       function annCR(ctx, pts, closed) { if (pts.length < 2) return; function seg(i) { const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)]; return { cp1x: p1.x + (p2.x - p0.x) / 6, cp1y: p1.y + (p2.y - p0.y) / 6, cp2x: p2.x - (p3.x - p1.x) / 6, cp2y: p2.y - (p3.y - p1.y) / 6 } } ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 0; i < pts.length - 1; i++) { const s = seg(i); ctx.bezierCurveTo(s.cp1x, s.cp1y, s.cp2x, s.cp2y, pts[i + 1].x, pts[i + 1].y) } if (closed) ctx.closePath(); ctx.stroke() }
       function annRedraw() { const ctx = annGetCtx(), cv = $('ann-canvas'); ctx.clearRect(0, 0, cv.width, cv.height); annHistory.forEach((h, _ri) => { if (_ri === annEditingTextIdx) return; annDrawShape(ctx, h) }) }
       function annBBox(e) {
@@ -3862,6 +3943,35 @@
           } else {
             _tb.classList.remove('ann-txt-selected');
           }
+        }
+        if (annTool === 'crop') {
+          const cv = $('ann-canvas'), ctx = annGetCtx();
+          ctx.save();
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          if (!annCropBox) {
+            ctx.fillRect(0, 0, cv.width, cv.height);
+          } else {
+            ctx.beginPath();
+            ctx.rect(0, 0, cv.width, cv.height);
+            ctx.rect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
+            ctx.fill('evenodd');
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'square';
+            const s = 15, o = 1.5, x1 = annCropBox.x, x2 = annCropBox.x + annCropBox.w, y1 = annCropBox.y, y2 = annCropBox.y + annCropBox.h;
+            ctx.beginPath();
+            ctx.moveTo(x1 + o, y1 + s); ctx.lineTo(x1 + o, y1 + o); ctx.lineTo(x1 + s, y1 + o);
+            ctx.moveTo(x2 - s, y1 + o); ctx.lineTo(x2 - o, y1 + o); ctx.lineTo(x2 - o, y1 + s);
+            ctx.moveTo(x1 + o, y2 - s); ctx.lineTo(x1 + o, y2 - o); ctx.lineTo(x1 + s, y2 - o);
+            ctx.moveTo(x2 - s, y2 - o); ctx.lineTo(x2 - o, y2 - o); ctx.lineTo(x2 - o, y2 - s);
+            ctx.stroke();
+          }
+          ctx.restore();
         }
       }
       function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
@@ -3995,22 +4105,47 @@
         $('ann-save').onclick = async () => {
           if (annCommitText) annCommitText();
           const img = $('img-modal-img'), cv = document.createElement('canvas');
-          cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+          let fW = img.naturalWidth, fH = img.naturalHeight, cX = 0, cY = 0;
+          if (annCropBox) {
+            fW = Math.round(annCropBox.w); fH = Math.round(annCropBox.h);
+            cX = Math.round(annCropBox.x); cY = Math.round(annCropBox.y);
+          }
+          cv.width = fW; cv.height = fH;
           const ctx = cv.getContext('2d');
-          ctx.drawImage(img, 0, 0);
+          ctx.drawImage(img, -cX, -cY);
           const aCv = $('ann-canvas');
           annRedraw(); /* strip selection overlay from saved image */
-          ctx.drawImage(aCv, 0, 0);
+          ctx.drawImage(aCv, -cX, -cY);
           const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
           const o = images.find(x => x.id === modalItemId);
           if (o && blob) {
             if (!o.origBlob) o.origBlob = o.blob;
             o.blob = blob;
+            if (annCropBox) {
+              function shift(pts) { pts.forEach(p => { p.x -= cX; p.y -= cY; }); }
+              [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+                arr.forEach(e => {
+                  if (e.type === 'free') shift(e.pts);
+                  else if (e.type === 'text') { e.x1 -= cX; e.y1 -= cY; }
+                  else { e.x1 -= cX; e.y1 -= cY; e.x2 -= cX; e.y2 -= cY; }
+                });
+              });
+              const imgW = img.naturalWidth, imgH = img.naturalHeight;
+              if (cX === 0 && cY === 0 && fW === imgW && fH === imgH) {
+                 delete o.cropBox;
+              } else {
+                 o.cropBox = { x: cX, y: cY, w: fW, h: fH };
+              }
+              annCropBox = null;
+            }
             o.annHistory = JSON.parse(JSON.stringify(annHistory));
-            if (annHistory.length === 0) {
+            o.rotation = annCurrentRotation;
+            if (annHistory.length === 0 && annCurrentRotation === 0 && !o.cropBox) {
               o.blob = o.origBlob;
               delete o.origBlob;
               delete o.annHistory;
+              delete o.rotation;
+              delete o.cropBox;
             }
             await idbPut('images', o);
             const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`);
@@ -4018,6 +4153,36 @@
             isDirty = true; triggerSave(); SysLogger.info('Anotação guardada');
           }
           annDeactivate();
+        };
+        $('ann-rotate-btn').onclick = async () => {
+          if (annCommitText) annCommitText();
+          const img = $('img-modal-img');
+          const w = img.naturalWidth, h = img.naturalHeight;
+          const tempCv = document.createElement('canvas');
+          tempCv.width = h; tempCv.height = w;
+          const tempCtx = tempCv.getContext('2d');
+          tempCtx.translate(h/2, w/2);
+          tempCtx.rotate(Math.PI/2);
+          tempCtx.drawImage(img, -w/2, -h/2);
+          const newU = tempCv.toDataURL('image/png');
+          
+          function rot(pts) { pts.forEach(p => { const nx = h - p.y, ny = p.x; p.x = nx; p.y = ny; }); }
+          [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+            arr.forEach(e => {
+              if (e.type === 'free') rot(e.pts);
+              else if (e.type === 'text') { const nx = h - e.y1, ny = e.x1; e.x1 = nx; e.y1 = ny; }
+              else {
+                const nx1 = h - e.y1, ny1 = e.x1, nx2 = h - e.y2, ny2 = e.x2;
+                e.x1 = nx1; e.y1 = ny1; e.x2 = nx2; e.y2 = ny2;
+              }
+            });
+          });
+          annCurrentRotation = (annCurrentRotation + 90) % 360;
+          await new Promise(r => { img.onload = r; img.src = newU; });
+          const cv = $('ann-canvas');
+          cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+          setAnnDirty(true);
+          annRenderAll();
         };
         $('ann-undo').onclick = () => annDoUndo();
         $('ann-redo').onclick = () => annDoRedo();
@@ -4127,6 +4292,27 @@
             } else {
               annSelectedIdx = -1;
               annRenderAll();
+            }
+            return;
+          }
+          if (annTool === 'crop') {
+            const p = annCanvasXY(e);
+            annStart = p;
+            annDraggingCrop = true;
+            if (!annCropBox) {
+              annCropHandle = 'br';
+              annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
+            } else {
+              const hr = 20, {x, y, w, h} = annCropBox;
+              if (Math.hypot(p.x - x, p.y - y) < hr) annCropHandle = 'tl';
+              else if (Math.hypot(p.x - (x + w), p.y - y) < hr) annCropHandle = 'tr';
+              else if (Math.hypot(p.x - x, p.y - (y + h)) < hr) annCropHandle = 'bl';
+              else if (Math.hypot(p.x - (x + w), p.y - (y + h)) < hr) annCropHandle = 'br';
+              else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) annCropHandle = 'move';
+              else {
+                annCropHandle = 'br';
+                annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
+              }
             }
             return;
           }
@@ -4252,6 +4438,33 @@
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
         window.addEventListener('pointermove', e => {
+          if (!annActive) return;
+          if (annDraggingCrop) {
+            const p = annCanvasXY(e);
+            const dx = p.x - annStart.x, dy = p.y - annStart.y;
+            annStart = p;
+            if (annCropHandle === 'tl') { annCropBox.x += dx; annCropBox.y += dy; annCropBox.w -= dx; annCropBox.h -= dy; }
+            else if (annCropHandle === 'tr') { annCropBox.y += dy; annCropBox.w += dx; annCropBox.h -= dy; }
+            else if (annCropHandle === 'bl') { annCropBox.x += dx; annCropBox.w -= dx; annCropBox.h += dy; }
+            else if (annCropHandle === 'br') { annCropBox.w += dx; annCropBox.h += dy; }
+            else if (annCropHandle === 'move') { annCropBox.x += dx; annCropBox.y += dy; }
+            if (annCropBox.w < 0) { annCropBox.x += annCropBox.w; annCropBox.w = Math.abs(annCropBox.w); annCropHandle = (annCropHandle === 'tl') ? 'tr' : (annCropHandle === 'tr') ? 'tl' : (annCropHandle === 'bl') ? 'br' : (annCropHandle === 'br') ? 'bl' : 'move'; }
+            if (annCropBox.h < 0) { annCropBox.y += annCropBox.h; annCropBox.h = Math.abs(annCropBox.h); annCropHandle = (annCropHandle === 'tl') ? 'bl' : (annCropHandle === 'bl') ? 'tl' : (annCropHandle === 'tr') ? 'br' : (annCropHandle === 'br') ? 'tr' : 'move'; }
+            const cw = $('ann-canvas').width, ch = $('ann-canvas').height;
+            if (annCropHandle === 'move') {
+              if (annCropBox.x < 0) annCropBox.x = 0;
+              if (annCropBox.y < 0) annCropBox.y = 0;
+              if (annCropBox.x + annCropBox.w > cw) annCropBox.x = cw - annCropBox.w;
+              if (annCropBox.y + annCropBox.h > ch) annCropBox.y = ch - annCropBox.h;
+            } else {
+              if (annCropBox.x < 0) { annCropBox.w += annCropBox.x; annCropBox.x = 0; }
+              if (annCropBox.y < 0) { annCropBox.h += annCropBox.y; annCropBox.y = 0; }
+              if (annCropBox.x + annCropBox.w > cw) annCropBox.w = cw - annCropBox.x;
+              if (annCropBox.y + annCropBox.h > ch) annCropBox.h = ch - annCropBox.y;
+            }
+            annRenderAll();
+            return;
+          }
           // Fase 3: redimensionamento via alças
           if (annResizing && annActive) {
             if (!annResizeRafId) {
@@ -4348,6 +4561,13 @@
           annScheduledPaint();
         });
         window.addEventListener('pointerup', e => {
+          if (!annActive) return;
+          if (annDraggingCrop) {
+            annDraggingCrop = false;
+            if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
+            annRenderAll();
+            return;
+          }
           // Fase 3: terminar redimensionamento
           if (annResizing) {
             if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
@@ -4679,9 +4899,11 @@
         if (sysColors.tAccent) {
           document.documentElement.style.setProperty('--title-accent-color', sysColors.tAccent);
           document.documentElement.style.setProperty('--title-accent-opacity', '1');
+          document.documentElement.style.setProperty('--title-accent-weight', '600');
         } else {
           document.documentElement.style.removeProperty('--title-accent-color');
           document.documentElement.style.removeProperty('--title-accent-opacity');
+          document.documentElement.style.removeProperty('--title-accent-weight');
         }
         if (sysColors.tEnd) document.documentElement.style.setProperty('--title-end-color', sysColors.tEnd);
         else document.documentElement.style.removeProperty('--title-end-color');
