@@ -32,6 +32,8 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 ### Corrigido
 
+**Performance mobile — deleção de arquivos:** eliminado freeze ao apagar múltiplos itens. `renderTrash()`, `updateCounters()` e `updateBtns()` consolidados num único ciclo com debounce de 50ms via `scheduleUIUpdate`; `triggerSave()` chamado uma única vez no fim desse ciclo. Transações IndexedDB em `deleteSessionId` e `purgeExpired` consolidadas por store em batch via `idbDelBatch` (uma transação em vez de N individuais).
+
 **Reordenação no Mobile** — Restaurado o scroll vertical nativo em dispositivos de toque nas listas de imagens e documentos através de `touch-action: pan-y`. Um temporizador de toque longo (`LONG_PRESS_DELAY = 500ms`) foi introduzido para distinguir a rolagem da página do gesto intencional de arrastar e reordenar. Ao expirar o tempo, o scroll nativo é dinamicamente desabilitado no item (`touch-action: none`) para permitir a reordenação precisa, sendo restaurado ao final do gesto.
 
 ---

@@ -3327,8 +3327,33 @@
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
       const idbAll = s => idbTx(s, 'readonly', st => st.getAll());
       const idbDel = (s, id) => idbTx(s, 'readwrite', st => st.delete(id));
+      function idbDelBatch(store, ids) { return new Promise((res, rej) => { if (!ids.length) { res(); return; } const tx = _db.transaction(store, 'readwrite'), st = tx.objectStore(store); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.oncomplete = () => res(); tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete error')) }; ids.forEach(id => st.delete(id)) }) }
+      let _uiUpdateTimer = null; function scheduleUIUpdate() { if (_uiUpdateTimer) return; _uiUpdateTimer = setTimeout(() => { _uiUpdateTimer = null; renderTrash(); updateCounters(); updateBtns(); if (isDirty) triggerSave(); }, 50) }
       function idbIdx(store, idx, val) { return new Promise((res, rej) => { const tx = _db.transaction(store, 'readonly'); tx.onabort = () => rej(tx.error || new Error('Transaction aborted')); tx.onerror = () => rej(tx.error || new Error('Transaction error')); const r = tx.objectStore(store).index(idx).getAll(val); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
-      async function purgeExpired() { if (!TOKEN_AUTO_PURGE_HOURS) return; const cut = Date.now() - TOKEN_AUTO_PURGE_HOURS * 3600 * 1000, all = await idbAll('sessions'); for (const s of all) { if (s.updatedAt < cut) { try { for (const i of await idbIdx('images', 'sessionId', s.id)) await idbDel('images', i.id); for (const d of await idbIdx('documents', 'sessionId', s.id)) await idbDel('documents', d.id); for (const r of await idbIdx('removed_images', 'sessionId', s.id)) await idbDel('removed_images', r.id); try { for (const r of await idbIdx('removed_documents', 'sessionId', s.id)) await idbDel('removed_documents', r.id) } catch (e) { SysLogger.warn('purgeExpired removed_documents: ' + e.message) } await idbDel('sessions', s.id); SysLogger.info('Sessão expirada: ' + s.id) } catch(e) { SysLogger.warn('Erro ao purgar sessão ' + s.id + ': ' + e.message) } } } }
+      async function purgeExpired() {
+        if (!TOKEN_AUTO_PURGE_HOURS) return;
+        const cut = Date.now() - TOKEN_AUTO_PURGE_HOURS * 3600 * 1000, all = await idbAll('sessions');
+        for (const s of all) {
+          if (s.updatedAt < cut) {
+            try {
+              const imgIds = (await idbIdx('images', 'sessionId', s.id)).map(x => x.id);
+              await idbDelBatch('images', imgIds);
+              const docIds = (await idbIdx('documents', 'sessionId', s.id)).map(x => x.id);
+              await idbDelBatch('documents', docIds);
+              try {
+                const remImgIds = (await idbIdx('removed_images', 'sessionId', s.id)).map(x => x.id);
+                await idbDelBatch('removed_images', remImgIds);
+              } catch (e) { SysLogger.warn('purgeExpired removed_images: ' + e.message) }
+              try {
+                const remDocIds = (await idbIdx('removed_documents', 'sessionId', s.id)).map(x => x.id);
+                await idbDelBatch('removed_documents', remDocIds);
+              } catch (e) { SysLogger.warn('purgeExpired removed_documents: ' + e.message) }
+              await idbDel('sessions', s.id);
+              SysLogger.info('Sessão expirada: ' + s.id);
+            } catch(e) { SysLogger.warn('Erro ao purgar sessão ' + s.id + ': ' + e.message) }
+          }
+        }
+      }
 
       /* ═══ SESSION MANAGER ═══ */
       let _ensurePromise = null;
@@ -3363,8 +3388,8 @@
       async function captureDoc(blob, name, type) { await ensureSession(); let baseName = name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: docs.length, addedAt: Date.now() }; await idbPut('documents', o); docs.push(o); renderDoc(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Documento capturado: ' + finalName) }
 
       /* ═══ DELETE / RESTORE ═══ */
-      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
-      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
+      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
+      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; delete o.removedAt; o.order = images.length; let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); await idbDel('removed_images', id); await idbPut('images', o); renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); closeImgModal() };
       window.restoreDoc = async function (id) { const idx = removedDocs.findIndex(x => x.id === id); if (idx < 0) return; const o = removedDocs.splice(idx, 1)[0]; delete o.removedAt; let baseName = o.name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } o.name = finalName; o.order = docs.length; docs.push(o); await idbDel('removed_documents', id); await idbPut('documents', o); renderDoc(o); $('doc-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
       window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el) { el.value = newVal } };
@@ -4585,7 +4610,41 @@
       /* ═══ SIDEBAR ═══ */
       async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
       window.openSession = async function (id) { if (isDirty) await triggerSave(); await loadSession(id); renderSbSessions(); if (window.closeMobileSidebar) window.closeMobileSidebar() };
-      window.deleteSessionId = async function (id) {/* V17: Capture neighbor BEFORE deletion for auto-navigation */const allBefore = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); const idx = allBefore.findIndex(s => s.id === id); const neighbor = allBefore[idx + 1] || allBefore[idx - 1] || null; for (const i of await idbIdx('images', 'sessionId', id)) await idbDel('images', i.id); for (const d of await idbIdx('documents', 'sessionId', id)) await idbDel('documents', d.id); try { for (const r of await idbIdx('removed_images', 'sessionId', id)) await idbDel('removed_images', r.id) } catch (e) { SysLogger.warn('deleteSessionId removed_images: ' + e.message) }; try { for (const r of await idbIdx('removed_documents', 'sessionId', id)) await idbDel('removed_documents', r.id) } catch (e) { SysLogger.warn('deleteSessionId removed_documents: ' + e.message) } await idbDel('sessions', id); if (id === sessId) { if (neighbor) {/* Auto-navigate to adjacent session */await loadSession(neighbor.id); renderSbSessions() } else {/* No sessions left — pristine empty state */sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = []; const tg = $('thumb-grid'); if (tg) tg.innerHTML = ''; const dl = $('doc-list'); if (dl) dl.innerHTML = ''; const ie = $('img-empty'); if (ie) ie.style.display = ''; const de = $('doc-empty'); if (de) de.style.display = ''; $('session-name').value = ''; $('session-user').value = ''; $('session-pc').value = ''; updateCounters(); updateBtns(); updateBtnTitles(); renderTrash(); renderSbSessions() } } else { renderSbSessions() } };
+      window.deleteSessionId = async function (id) {
+        /* V17: Capture neighbor BEFORE deletion for auto-navigation */
+        const allBefore = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt);
+        const idx = allBefore.findIndex(s => s.id === id);
+        const neighbor = allBefore[idx + 1] || allBefore[idx - 1] || null;
+        const imgIds = (await idbIdx('images', 'sessionId', id)).map(x => x.id);
+        const docIds = (await idbIdx('documents', 'sessionId', id)).map(x => x.id);
+        await idbDelBatch('images', imgIds);
+        await idbDelBatch('documents', docIds);
+        try {
+          const remImgIds = (await idbIdx('removed_images', 'sessionId', id)).map(x => x.id);
+          await idbDelBatch('removed_images', remImgIds);
+        } catch (e) { SysLogger.warn('deleteSessionId removed_images: ' + e.message) }
+        try {
+          const remDocIds = (await idbIdx('removed_documents', 'sessionId', id)).map(x => x.id);
+          await idbDelBatch('removed_documents', remDocIds);
+        } catch (e) { SysLogger.warn('deleteSessionId removed_documents: ' + e.message) }
+        await idbDel('sessions', id);
+        if (id === sessId) {
+          if (neighbor) {
+            /* Auto-navigate to adjacent session */
+            await loadSession(neighbor.id);
+            renderSbSessions();
+          } else {
+            /* No sessions left — pristine empty state */
+            sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = [];
+            const tg = $('thumb-grid'); if (tg) tg.innerHTML = '';
+            const dl = $('doc-list'); if (dl) dl.innerHTML = '';
+            const ie = $('img-empty'); if (ie) ie.style.display = '';
+            const de = $('doc-empty'); if (de) de.style.display = '';
+            $('session-name').value = ''; $('session-user').value = ''; $('session-pc').value = '';
+            updateCounters(); updateBtns(); updateBtnTitles(); renderTrash(); renderSbSessions();
+          }
+        } else { renderSbSessions() }
+      };
 
       /* ═══ FILE PICKERS ═══ */
       function initPickers() { $('file-img-input').onchange = async e => { for (const f of Array.from(e.target.files)) await captureImg(f); e.target.value = '' }; $('file-doc-input').onchange = async e => { for (const f of Array.from(e.target.files)) { if (f.type.startsWith('image/')) await captureImg(f); else await captureDoc(f, f.name, f.type) } e.target.value = '' } }
