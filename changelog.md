@@ -30,6 +30,10 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 **Logótipo e Favicon** — O ícone de câmara da barra de topo foi substituído por um novo SVG autónomo: fundo escuro `#1a1a1a`, quatro cantos em L (3 brancos + 1 com gradiente verde→amarelo no canto inferior direito). O favicon foi adicionado ao `<head>` como `<link rel="icon">` SVG em base64. O CSS de `#tb-brand-icon` deixou de usar `background: var(--accent)` transitional e passou a `background: #1a1a1a` fixo com `overflow: hidden`; a função de sincronização de cor de destaque deixou de aplicar inline style ao ícone — o logo é agora visualmente independente das personalizações de cor do utilizador.
 
+### Corrigido
+
+**Reordenação no Mobile** — Restaurado o scroll vertical nativo em dispositivos de toque nas listas de imagens e documentos através de `touch-action: pan-y`. Um temporizador de toque longo (`LONG_PRESS_DELAY = 500ms`) foi introduzido para distinguir a rolagem da página do gesto intencional de arrastar e reordenar. Ao expirar o tempo, o scroll nativo é dinamicamente desabilitado no item (`touch-action: none`) para permitir a reordenação precisa, sendo restaurado ao final do gesto.
+
 ---
 
 ## [V24] — 2026-06-01

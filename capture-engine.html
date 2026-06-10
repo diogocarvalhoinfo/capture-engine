@@ -660,7 +660,7 @@
     }
 
     .t-item, .d-item {
-      touch-action: none;
+      touch-action: pan-y;
       -webkit-user-drag: none;
       user-select: none
     }
@@ -2247,14 +2247,14 @@
 
       .t-item {
         pointer-events: auto;
-        touch-action: none;
+        touch-action: pan-y;
         cursor: pointer;
         width: 100%
       }
 
       .t-wrap {
         pointer-events: auto;
-        touch-action: none;
+        touch-action: pan-y;
         width: 100%;
         cursor: pointer
       }
@@ -4399,11 +4399,13 @@
         // - os outros itens fluem naturalmente a' volta do placeholder;
         // - so ao soltar e' que o item assume a posicao final (encaixa no placeholder).
         const DRAG_THRESHOLD = 6;
+        const LONG_PRESS_DELAY = 500;
 
         [tg, dl].forEach(container => {
           const itemSel = container === tg ? '.t-item' : '.d-item';
           let dragEl = null, ph = null, pointerId = null, active = false;
           let startX = 0, startY = 0, grabDX = 0, grabDY = 0, w = 0, h = 0;
+          let longPressTimer = null;
 
           function makePlaceholder(refRect) {
             const p = document.createElement('div');
@@ -4495,6 +4497,8 @@
             const movedEl = dragEl;
             const placeholder = ph;
             dragEl = null; ph = null; active = false; pointerId = null;
+            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            if (movedEl) movedEl.style.touchAction = '';
             if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // foi so um clique
 
             // encaixa o item real no lugar do placeholder
@@ -4532,9 +4536,48 @@
             if (!item || !container.contains(item)) return;
             if (e.target.closest('input, textarea, button, .t-del, .d-del')) return;
             dragEl = item; pointerId = e.pointerId; startX = e.clientX; startY = e.clientY; active = false;
-            container.addEventListener('pointermove', onMove);
-            window.addEventListener('pointerup', onUp);
-            window.addEventListener('pointercancel', onUp);
+
+            if (e.pointerType === 'touch') {
+              if (longPressTimer) clearTimeout(longPressTimer);
+              const onTouchMoveCheck = ev => {
+                if (Math.hypot(ev.clientX - startX, ev.clientY - startY) > DRAG_THRESHOLD) {
+                  cleanupTouchCheck();
+                }
+              };
+              const cleanupTouchCheck = () => {
+                if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+                container.removeEventListener('pointermove', onTouchMoveCheck);
+              };
+              window.addEventListener('pointerup', cleanupTouchCheck, { once: true });
+              window.addEventListener('pointercancel', cleanupTouchCheck, { once: true });
+              container.addEventListener('pointermove', onTouchMoveCheck);
+
+              longPressTimer = setTimeout(() => {
+                container.removeEventListener('pointermove', onTouchMoveCheck);
+                active = true;
+                if (dragEl) {
+                  dragEl.style.touchAction = 'none';
+                  const r = dragEl.getBoundingClientRect();
+                  w = r.width; h = r.height;
+                  const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
+                  ph = makePlaceholder(r);
+                  container.insertBefore(ph, dragEl.nextSibling);
+                  dragEl.style.width = w + 'px';
+                  dragEl.style.height = h + 'px';
+                  dragEl.classList.add('dragging');
+                  positionFloat(startX, startY);
+                  try { dragEl.setPointerCapture(pointerId) } catch (_) {}
+                }
+                container.addEventListener('pointermove', onMove);
+              }, LONG_PRESS_DELAY);
+
+              window.addEventListener('pointerup', onUp);
+              window.addEventListener('pointercancel', onUp);
+            } else {
+              container.addEventListener('pointermove', onMove);
+              window.addEventListener('pointerup', onUp);
+              window.addEventListener('pointercancel', onUp);
+            }
           });
         });
       }
