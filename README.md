@@ -522,7 +522,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
 - Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
 - Verifique se o browser tem permissão para acessar o clipboard (aparece uma notificação)
-- Ctrl+V aceita apenas 1 ficheiro por colagem — limitação do browser (clipboardData expõe no máximo 1 ficheiro via paste). Para múltiplos ficheiros, arrastar diretamente para a zona de Imagens ou Documentos.
+- Ctrl+V suporta múltiplos ficheiros copiados do Explorer em simultâneo (Ctrl+C nos ficheiros → Ctrl+V na aplicação).
 
 ### O botão PDF está desativado
 - O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
