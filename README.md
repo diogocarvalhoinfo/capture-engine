@@ -324,6 +324,8 @@ O painel de administração não é visível por padrão. Para ativá-lo:
 
 O modo administrador não persiste entre aberturas — tem de ser ativado de novo cada vez que abre a aplicação.
 
+6 cliques no logo dentro de 3 segundos (janela deslizante — cliques com mais de 3 s são descartados). Enquanto o modo admin está ativo, 3 cliques rápidos em menos de 1 segundo desativam-no.
+
 ### 6.2 O Visual Builder
 
 O Visual Builder é o painel de configuração. Está dividido em três abas:
@@ -456,6 +458,39 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 
 ---
 
+## Integridade e limites para uso probatório
+
+O Capture Engine é adequado para **recolha organizada e documentação** de evidências digitais, mas não constitui por si só uma cadeia de custódia forense verificável.
+
+**O que a ferramenta garante:**
+- Timestamp de criação e última atividade registado por sessão (gerado pelo browser do dispositivo)
+- Armazenamento local isolado — os dados não saem do dispositivo sem ação explícita do utilizador
+- Exportação ZIP com os ficheiros originais sem reprocessamento adicional
+
+**O que a ferramenta não garante:**
+- Integridade criptográfica — não há hash, assinatura digital nem timestamping independente
+- Imutabilidade — os dados no IndexedDB são editáveis pelo utilizador e pelo próprio browser
+- Rastreabilidade de cadeia de custódia — não há registo de acessos ou modificações
+- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP para preservar os ficheiros originais
+
+Para uso em processos judiciais ou auditorias reguladas, complementar com procedimentos de custódia externos (hash independente dos ficheiros exportados, registo de acesso, etc.).
+
+---
+
+## Acessibilidade
+
+**Estado atual (V25):**
+- Navegação por teclado: parcialmente suportada nos controlos principais
+- Rácios de contraste WCAG: verificados para a cor de destaque principal (ver `design-tokens.md §1`)
+- Leitores de ecrã: não testados formalmente
+- ARIA e ordem de foco: não auditados
+
+**Conformidade declarada:** nenhuma conformidade formal com WCAG 2.1 ou EN 301 549 foi auditada nesta versão.
+
+Para implementações em setor público, bancário ou saúde onde a acessibilidade seja requisito regulatório, recomenda-se avaliação independente antes da adoção.
+
+---
+
 ## 8. Limitações conhecidas
 
 | Limitação | Detalhe |
@@ -487,6 +522,7 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
 - Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
 - Verifique se o browser tem permissão para acessar o clipboard (aparece uma notificação)
+- Ctrl+V aceita apenas 1 ficheiro por colagem — limitação do browser (clipboardData expõe no máximo 1 ficheiro via paste). Para múltiplos ficheiros, arrastar diretamente para a zona de Imagens ou Documentos.
 
 ### O botão PDF está desativado
 - O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
