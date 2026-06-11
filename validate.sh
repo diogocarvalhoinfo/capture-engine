@@ -142,6 +142,84 @@ else
   printf '[SKIP] %-52s (node nao instalado)\n' "Sintaxe JavaScript"
 fi
 
+# 10) Heuristica de complexidade ciclomatica (apenas WARN)
+if command -v python >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1; then
+  PY_BIN="python"
+  command -v python3 >/dev/null 2>&1 && PY_BIN="python3"
+  
+  $PY_BIN -c '
+import sys, re
+
+try:
+    with open(sys.argv[1], "r", encoding="utf-8") as f:
+        html = f.read()
+except Exception:
+    sys.exit(0)
+
+scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, flags=re.DOTALL)
+js = "\n".join(scripts)
+
+func_pattern = re.compile(r"\b(?:async\s+)?function(?:\s+(\w+))?\s*\(|(\w+)\s*=\s*(?:async\s+)?function\s*\(|(\w+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|\w+)\s*=>")
+
+functions = []
+for match in func_pattern.finditer(js):
+    name = match.group(1) or match.group(2) or match.group(3) or "anonymous"
+    start_idx = match.end()
+    
+    brace_start = js.find("{", start_idx)
+    if brace_start == -1: continue
+    
+    snippet = js[start_idx:brace_start]
+    if "function" in snippet or ";" in snippet:
+        continue
+
+    depth = 0
+    in_string = False
+    str_char = ""
+    end_idx = -1
+    for i in range(brace_start, len(js)):
+        c = js[i]
+        if in_string:
+            if c == str_char and js[i-1] != "\\\\":
+                in_string = False
+            continue
+            
+        if c in ("\"", "\x27", "`"):
+            in_string = True
+            str_char = c
+            continue
+            
+        if c == "{": depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                end_idx = i + 1
+                break
+                
+    if end_idx != -1:
+        body = js[brace_start:end_idx]
+        kw_count = len(re.findall(r"\b(if|else|for|while|switch|case)\b|\?|&&|\|\|", body))
+        functions.append((name, kw_count))
+
+limit = 15
+warns = [f for f in functions if limit < f[1] <= 100]
+
+if warns:
+    seen = set()
+    for w in warns:
+        if w not in seen:
+            msg = f"Funcao \x27{w[0]}\x27 com CC {w[1]}"
+            print(f"[WARN] {msg.ljust(52)} (limite {limit})")
+            seen.add(w)
+else:
+    label = "Heuristica CC"
+    print(f"[PASS] {label.ljust(52)} (limite {limit})")
+
+' "$FILE"
+else
+  printf "[SKIP] %-52s (python nao instalado)\n" "Heuristica CC"
+fi
+
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="
 if [ "$FAIL" -eq 0 ]; then
