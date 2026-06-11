@@ -1,6 +1,6 @@
 # Changelog · Capture Engine
 
-> Registro de todas as versões. Cada entrada explica **o que mudou**, **porquê mudou**, e **o impacto real** para o usuário.
+> Histórico de versões desde a V7 (base da arquitetura atual; V1–V6 anteriores à arquitetura Quine). Cada entrada explica **o que mudou**, **porquê mudou**, e **o impacto real** para o usuário.
 > Formato: `### Adicionado` — nova funcionalidade. `### Modificado` — comportamento existente alterado. `### Corrigido` — bug eliminado.
 
 ---
@@ -52,7 +52,7 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 ## [V24] — 2026-06-01
 
-Ferramenta de Texto da anotação: suporte a **texto multilinha** e **redimensionamento ao vivo** do tamanho da fonte, com o texto a ficar achatado na imagem exatamente como aparece no editor (WYSIWYG).
+Ferramenta de Texto da anotação: suporte a **texto multilinha** e **redimensionamento ao vivo** do tamanho da fonte, com o texto a ficar achatado na imagem exatamente como aparece no editor (WYSIWYG — What You See Is What You Get).
 
 ### Adicionado
 

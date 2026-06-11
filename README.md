@@ -115,7 +115,7 @@ Uma **IIFE** é um padrão JavaScript onde todo o código está encapsulado numa
 **FOUC** é o flash momentâneo de conteúdo sem estilo que aparece antes de o JavaScript carregar (ex: fundo branco num usuário de dark mode). O Capture Engine tem proteção anti-FOUC: aplica o tema antes de qualquer pintura da tela.
 
 ### EMA (Exponential Moving Average)
-**EMA** (média móvel exponencial) é um filtro de suavização usado no Desenho Livre: cada novo ponto do traço é misturado com o anterior por um fator α (α=0.35), reduzindo o tremor em tempo real sem atrasar perceptivelmente o traço.
+**EMA** (média móvel exponencial) é um filtro de suavização usado no Desenho Livre: cada novo ponto do traço é misturado com o anterior por um fator α (α=0.35), reduzindo o tremor em tempo real sem atrasar perceptivelmente o traço. // calibrado empiricamente — não alterar sem validação manual
 
 ### Estado Pristine
 O estado inicial e limpo da interface. Acontece quando abre a aplicação ou apaga a última sessão. Significa que a interface está vazia, campos limpos, e não há ainda nenhuma sessão ativa gravada na base de dados.
@@ -209,7 +209,7 @@ Ao clicar numa imagem, abre um modal com visualizador completo.
 ### 5.3 Anotação de imagens
 
 Motor de anotação (V24→V25):
-- 6 ferramentas: traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar
+- 8 ferramentas: traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Rotação 90°, Crop
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
@@ -377,11 +377,11 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 |---|---|---|
 | `TOKEN_TITLE_START` | `'Capture '` | Primeira parte do nome no topo (cor normal, negrito). O espaço final é intencional. |
 | `TOKEN_TITLE_ACCENT` | `'Engine'` | Segunda parte (na cor de destaque, mais transparente) |
-| `TOKEN_TITLE_END` | `''` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo "Texto Final" no VB. |
+| `TOKEN_TITLE_END` | `''` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo "Texto Final" no VB. Exemplo de white-label: 'Capture Engine Pro' — onde 'Pro' ocuparia o terceiro span com cor de destaque independente |
 | `TOKEN_TITLE_START_COLOR` | `''` | Cor da 1.ª parte do título (vazio = usa a cor normal do texto) |
 | `TOKEN_TITLE_ACCENT_COLOR` | `''` | Cor da 2.ª parte do título (vazio = usa a cor de destaque) |
 | `TOKEN_TITLE_END_COLOR` | `''` | Cor da 3.ª parte do título (vazio = usa a cor normal do texto) |
-| `TOKEN_MAIN_COLOR` | `'#0ea5e9'` | Cor principal da interface |
+| `TOKEN_MAIN_COLOR` | `'#e86b2e'` | Cor principal da interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `''` | Cor do texto sobre a cor principal (vazio = automático) |
 | `TOKEN_FOOTER_TEXT` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | Texto do rodapé |
 | `TOKEN_SHOW_SESSION_USER` | `true` | Mostra/oculta o Campo 1 (User) |
@@ -431,7 +431,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 | **Zero dependências externas** | Sem CDNs, sem bibliotecas remotas, sem Google Fonts — nada carregado da internet |
 | **Isolado / Offline** | Funciona 100% offline; nenhum dado sai do dispositivo |
 | **Sanitização de inputs** | Todo o texto inserido pelo usuário é sanitizado antes de ser apresentado (proteção XSS) |
-| **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados. Diretivas ativas: `default-src 'self' blob: data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';` |
+| **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados. Diretivas ativas: `default-src 'self' blob: data:; script-src 'unsafe-inline' (necessário: todo CSS e JS está inline por contrato de arquivo único; o Quine gera novos arquivos e invalidaria nonces a cada export); style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';` |
 | **Admin Gate oculto** | O painel de admin requer 6 cliques no logo — invisível e inatingível acidentalmente |
 | **Sem registro** | Nenhum dado de utilização, telemetria ou analytics |
 | **Sem cookies** | Usa IndexedDB e localStorage do browser (sem cookies de sessão) |
@@ -474,7 +474,7 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 ## 9. Resolução de problemas
 
 ### A aplicação não abre ou mostra página em branco
-- Verifique se está a usar Chrome 90+, Edge 90+, ou Firefox 90+
+- Verifique se está a usar Chrome 90+, Edge 90+, ou Firefox 151.0.4 testado
 - Experimente abrir diretamente com duplo clique no `capture-engine.html`
 - Em alguns sistemas, arquivos HTML locais precisam de permissão — verifique as configurações de segurança do browser
 
@@ -485,7 +485,7 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 
 ### O Ctrl+V não cola nada
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
-- Em mobile, use o botão flutuante de colar (FAB) no canto inferior direito
+- Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
 - Verifique se o browser tem permissão para acessar o clipboard (aparece uma notificação)
 
 ### O botão PDF está desativado
@@ -504,11 +504,11 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP). O administrador pode configurar `TOKEN_MAX_IMG_DIMENSION` para reduzir o tamanho de cada imagem antes de ser gravada — consultar o Visual Builder → aba Captura.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
-- **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do browser, numa base partilhada por **perfil de browser** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; no Firefox e no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo browser** e as sessões reaparecem.
+- **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do browser, numa base partilhada por **perfil de browser** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML no Firefox; no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo browser** e as sessões reaparecem.
 - **O que NÃO afeta o acesso aos dados** (confirmado por teste): o **nome** do arquivo, a **pasta**, o **disco/pen**, a **versão** (uma versão antiga vê as sessões da nova — todas usam a mesma base `CaptureEngineDB`) e até caminhos com espaços ou caracteres especiais. Tudo isto continua a encontrar os dados, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (origem/perfil diferente): **janela anônima/privada**, **outro perfil** do browser, **outro browser** (Edge vs Chrome têm bases separadas), e abrir **de dentro de um ZIP** sem extrair.
 - **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, abrir a mesma conta/perfil **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
-- **Implicação para ambientes isolados (ex.: VDI):** como os dados vivem no perfil local daquela máquina/ambiente, sessões criadas dentro da VDI de um cliente ficam **isoladas** nessa VDI; sessões criadas no perfil local pessoal ficam todas juntas nesse perfil. *(Nota: ambientes com "roaming de perfil" gerenciados pela TI poderiam fazer os dados seguir o usuário entre máquinas — confirmar com a equipe de TI se for o caso.)*
+- **Implicação para ambientes isolados (ex.: VDI (Virtual Desktop Infrastructure)):** como os dados vivem no perfil local daquela máquina/ambiente, sessões criadas dentro da VDI de um cliente ficam **isoladas** nessa VDI; sessões criadas no perfil local pessoal ficam todas juntas nesse perfil. *(Nota: ambientes com "roaming de perfil" gerenciados pela TI poderiam fazer os dados seguir o usuário entre máquinas — confirmar com a equipe de TI se for o caso.)*
 - Recuperação técnica de último recurso (requer conhecimentos): separador *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
 
 > **A forma confiável de não perder nada é exportar (PDF ou ZIP) o que for importante.** Não há backup automático — é uma decisão de design (privacidade).
@@ -517,8 +517,8 @@ O Capture Engine pode ser aberto em várias abas do mesmo browser — todas comp
 
 ## 10. Perguntas frequentes
 
-**O meu arquivo HTML tem perto de 200KB. É normal?**
-Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ~198KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
+**O meu arquivo HTML tem ≈ 345 KB. É normal?**
+Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 345 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do browser apaga tudo. Exporte os dados importantes.
@@ -527,7 +527,7 @@ Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automat
 Sim — abra diretamente o `capture-engine.html` no browser.
 
 **Posso usar em Firefox?**
-Sim, com uma ressalva. O Firefox 90+ é suportado para capturar, anotar e exportar. Porém, o comportamento de **compartilhamento e recuperação de dados** entre arquivos `file://` (descrito na §9) só foi verificado formalmente em Chrome/Edge — no Firefox **não foi testado formalmente** e pode variar (ver §11). Para uso com requisitos de recuperação de histórico, prefira Chrome ou Edge. A forma confiável de não perder nada em qualquer browser é exportar (PDF/ZIP).
+Sim. Firefox 151.0.4 — suporte completo, testado manualmente; versão mínima abaixo de 151.0.4 não verificada.
 
 **Posso ter múltiplas versões do Capture Engine abertas ao mesmo tempo?**
 Sim. Pode abrir várias abas no mesmo browser (todas compartilham a mesma base de dados local) ou versões diferentes em browsers diferentes (ex: uma no Edge e outra no Firefox, cada uma com a sua própria base). A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
@@ -549,13 +549,14 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 ## 11. Requisitos
 
 ### Requisitos mínimos
-- **Chrome 90+ / Edge 90+** — suporte completo, testado formalmente (Windows 11, Edge 148 / Chrome 148)
-- **Firefox 151+** — suporte verificado (151.0.3, 64-bit, Windows). IndexedDB, captura, anotação e Export funcionam corretamente. Partilha de dados entre arquivos `file://` confirmada por teste manual
+- **Chrome 90+ / Edge 90+** — suporte completo, testado em Chrome 148 / Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
+- **Firefox 151.0.4** — suporte completo, testado manualmente; versão mínima abaixo de 151.0.4 não verificada
+  - ⚠️ IndexedDB no Firefox persiste no perfil do browser — dados criados no Firefox não são visíveis no Chrome e vice-versa (origens distintas)
 - **Safari** — suporte parcial; não testado formalmente. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine; outros comportamentos não verificados
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com browser moderno
 
-> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) — são os únicos com comportamento verificado por testes reais. Firefox é agora também verificado para uso geral.
+> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) ou Firefox 151.0.4 testado.
 
 ### Matriz de compatibilidade
 
@@ -563,7 +564,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 |---|---|---|---|---|---|
 | **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
-| **Firefox** | 151.0.3, Windows | ✅ Verificado | ✅ Verificado | ✅ Verificado | ⚠️ Não testado formalmente |
+| **Firefox** | 151.0.4 testado | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML |
 | **Safari** | — | ⚠️ Parcial | ⚠️ Não testado | ⚠️ Pode falhar (CORS) | ⚠️ Não testado |
 
 **Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
@@ -578,10 +579,10 @@ capture-engine/              ← raiz do repositório
 ├── index.html               ← Redirect para GitHub Pages (abre capture-engine.html)
 ├── LICENSE                  ← Licença MIT (Diogo Carvalho)
 ├── README.md                ← Este guia (início aqui)
-├── changelog.md             ← Histórico completo de versões e alterações
+├── changelog.md             ← Histórico de versões desde a V7 (base da arquitetura atual; V1–V6 anteriores à arquitetura Quine)
 ├── agents.md                ← Guia operacional para desenvolvedores e agentes IA
 ├── design-tokens.md         ← Especificação completa do design system
-└── validate.sh              ← Script de validação estática pré-commit
+└── validate.sh              ← Script de validação estática manual — executar antes de cada commit (não há hook git configurado no repositório)
 ```
 
 **Qual arquivo distribuir aos usuários?**
@@ -680,6 +681,10 @@ init()
 | `documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `order`, `addedAt` | `sessionId`, `order` |
 | `removed_images` | `id` | `sessionId`, `blob`, `label`, `removedAt` | `sessionId` |
 | `removed_documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `removedAt` | `sessionId` |
+
+**Campos adicionais em imagens com edição ativa:**
+- `rotation`: tipo número, graus de rotação acumulada, padrão `0`
+- `cropBox`: objeto `{x, y, w, h}` em pixels relativos, ou `null` quando sem crop ativo
 
 **Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos User/Equipamento/Nome guarda imediatamente.
 

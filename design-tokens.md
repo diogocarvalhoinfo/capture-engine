@@ -39,9 +39,9 @@ A paleta tem dois grupos:
 | `--border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
 | `--text` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
 | `--text-muted` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
-| `--accent` | `#0ea5e9` | Cor de destaque primária (Tailwind sky-500) — botões, links, elementos ativos |
-| `--accent-fg` | `#ffffff` | Texto legível sobre fundo accent — branco sobre `#0ea5e9` tem ratio ~3.1:1 (WCAG AA para texto grande/negrito ≥3:1; abaixo do mínimo para texto pequeno normal ≥4.5:1). Para texto pequeno, ajustar via `TOKEN_ACCENT_FG_OVERRIDE`. |
-| `--accent-hover` | `#0284c7` | Accent escurecido para hover (Tailwind sky-600) |
+| `--accent` | `#e86b2e` | Cor de destaque principal personalizada — botões, links, elementos ativos |
+| `--accent-fg` | `#ffffff` | Texto legível sobre fundo accent — contraste calculado para #e86b2e — verificar WCAG AA se aplicado em texto de corpo |
+| `--accent-hover` | `#d4450f` | Accent escurecido para hover |
 | `--color-green` | `#22c55e` | Sucesso, confirmação, estado "Gravado" |
 | `--color-red` | `#ef4444` | Erro, remoção, ações destrutivas |
 | `--color-yellow` | `#eab308` | Aviso, expiração próxima |
@@ -157,7 +157,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Inicial (vazio = herda cor do texto) |
 | `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto em Destaque (vazio = herda cor accent) |
 | `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Final (vazio = herda cor do texto) |
-| `TOKEN_MAIN_COLOR` | `string` | `'#0ea5e9'` | ✅ | Interface → color picker principal |
+| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color picker principal |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color picker de texto |
 | `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → "Texto do Rodapé" |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → toggle "Campo 1" |
@@ -412,7 +412,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `annTool` | `'rect'` | Ferramenta ativa: `rect` / `circle` / `arrow` / `free` / `text` |
+| `annTool` | `'rect'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `text` |
 | `annSizeIdx` | `1` (2px) | Índice em `ANN_SIZES` — espessura de linha |
 | `annTextSizeIdx` | `2` (24px) | Índice em `ANN_TEXT_SIZES` — tamanho de fonte |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
