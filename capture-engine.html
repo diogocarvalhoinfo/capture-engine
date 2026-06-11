@@ -2914,6 +2914,7 @@
               <line x1="2" y1="12" x2="22" y2="12"/>
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
+          <div class="ann-sep"></div>
           <button class="ann-btn" id="ann-rotate-btn" title="Rodar 90°"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
             </svg></button>
@@ -3501,16 +3502,16 @@
             e.preventDefault();
             if (e.shiftKey) {
               // Ctrl+Shift+Z = Redo
-              annDoRedo();
+              annDoRedo().catch(()=>{});
             } else {
               // Ctrl+Z = Undo
-              annDoUndo();
+              annDoUndo().catch(()=>{});
             }
             return;
           }
           if (e.key.toLowerCase() === 'y') {
             e.preventDefault();
-            annDoRedo();
+            annDoRedo().catch(()=>{});
             return;
           }
         }
@@ -3745,7 +3746,11 @@
         annUndoStack = [];
         annRedoStack = [];
         for (let _i = 0; _i < annHistory.length; _i++) {
-          annUndoStack.push(JSON.parse(JSON.stringify(annHistory.slice(0, _i))));
+          annUndoStack.push({
+            h: JSON.parse(JSON.stringify(annHistory.slice(0, _i))),
+            rot: annCurrentRotation,
+            crop: null
+          });
         }
         while (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift();
         const btnSave = $('ann-save');
@@ -3754,6 +3759,8 @@
         const cv = $('ann-canvas');
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
         cv.style.display = 'block';
+        // Carregar fundo limpo (origBlob sem anotações baked) para edição
+        await annLoadCleanBg();
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
@@ -3763,6 +3770,14 @@
       }
       function annDeactivate() {
         annActive = false; annDrawing = false; annSelectedIdx = -1; annHoverIdx = -1; // reset por segurança
+        // Restaurar imagem baked como fundo (para o modo de visualização)
+        const _restoreO = images.find(x => x.id === modalItemId);
+        if (_restoreO) {
+          const _rimg = $('img-modal-img');
+          const _ru = URL.createObjectURL(_restoreO.blob);
+          _rimg.onload = () => URL.revokeObjectURL(_ru);
+          _rimg.src = _ru;
+        }
         setAnnDirty(annIsDirty);
         if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
         annSmoothLast = null;
@@ -3803,16 +3818,18 @@
              _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
              const cx = o.cropBox.x, cy = o.cropBox.y;
              function shift(pts) { pts.forEach(p => { p.x += cx; p.y += cy; }); }
-             [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+             [annHistory, ...annUndoStack.map(s => s.h), ...annRedoStack.map(s => s.h)].forEach(arr => {
                 arr.forEach(e => {
                    if (e.type === 'free') shift(e.pts);
                    else if (e.type === 'text') { e.x1 += cx; e.y1 += cy; }
                    else { e.x1 += cx; e.y1 += cy; e.x2 += cx; e.y2 += cy; }
                 });
              });
+             annPushUndo();
              annCropBox = { x: cx, y: cy, w: o.cropBox.w, h: o.cropBox.h };
              annRenderAll();
           } else if (!annCropBox && _cv && _cv.width) {
+             annPushUndo();
              annCropBox = { x: 0, y: 0, w: _cv.width, h: _cv.height };
              annRenderAll();
           }
@@ -3824,7 +3841,7 @@
              _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
              const cx = o.cropBox.x, cy = o.cropBox.y;
              function shift(pts) { pts.forEach(p => { p.x -= cx; p.y -= cy; }); }
-             [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+             [annHistory, ...annUndoStack.map(s => s.h), ...annRedoStack.map(s => s.h)].forEach(arr => {
                 arr.forEach(e => {
                    if (e.type === 'free') shift(e.pts);
                    else if (e.type === 'text') { e.x1 -= cx; e.y1 -= cy; }
@@ -3992,7 +4009,13 @@
       }
       // Fase 5 — Novo sistema Undo/Redo por snapshots de estado completo
       // annCloneState: deep clone perfeito (shapes sao POJOs, JSON round-trip e seguro)
-      function annCloneState() { return JSON.parse(JSON.stringify(annHistory)); }
+      function annCloneState() {
+        return {
+          h: JSON.parse(JSON.stringify(annHistory)),
+          rot: annCurrentRotation,
+          crop: annCropBox ? JSON.parse(JSON.stringify(annCropBox)) : null
+        };
+      }
       // annCommitUndo: grava snapshot ANTES de uma mutacao; limpa redoStack (intencao nova do utilizador)
       function annCommitUndo(snap) {
         annUndoStack.push(snap);
@@ -4001,23 +4024,81 @@
       }
       // atalho conveniente: captura o estado atual e enfia no undoStack
       function annPushUndo() { annCommitUndo(annCloneState()); }
+      // Carrega o fundo limpo (origBlob sem anotações baked) no img-modal-img.
+      // Usa annCurrentRotation e annCropBox para determinar a vista correcta.
+      async function annLoadCleanBg() {
+        const o = images.find(x => x.id === modalItemId);
+        if (!o || !o.origBlob) return;
+        const img = $('img-modal-img'), _cv = $('ann-canvas');
+        if (!img || !_cv) return;
+        let bgBlob = o.origBlob;
+        if (annCurrentRotation > 0) bgBlob = await getRotatedBlob(o.origBlob, annCurrentRotation);
+        // Se NÃO está em modo crop mas a imagem tem cropBox persistido,
+        // recortar o fundo limpo para corresponder à região recortada
+        if (!annCropBox && o.cropBox) {
+          const _ti = new Image();
+          const _tu = URL.createObjectURL(bgBlob);
+          await new Promise(r => { _ti.onload = () => { URL.revokeObjectURL(_tu); r(); }; _ti.src = _tu; });
+          const _tc = document.createElement('canvas');
+          _tc.width = Math.round(o.cropBox.w); _tc.height = Math.round(o.cropBox.h);
+          _tc.getContext('2d').drawImage(_ti, -Math.round(o.cropBox.x), -Math.round(o.cropBox.y));
+          bgBlob = await new Promise(r => _tc.toBlob(r, 'image/png'));
+        }
+        const u = URL.createObjectURL(bgBlob);
+        await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+        _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
+      }
       // annDoUndo / annDoRedo — sem casos especiais, simetricos
-      function annDoUndo() {
+      async function annDoUndo() {
         if (!annUndoStack.length) return;
         annRedoStack.push(annCloneState()); // guarda estado atual para redo
         const _prev = annUndoStack.pop();
-        annHistory.splice(0, annHistory.length, ..._prev); // mutar NO LUGAR — nunca reatribuir
+        const prevCrop = annCropBox;
+        const prevRot = annCurrentRotation;
+        annHistory.splice(0, annHistory.length, ..._prev.h); // mutar NO LUGAR — nunca reatribuir
+        annCropBox = _prev.crop ? JSON.parse(JSON.stringify(_prev.crop)) : null;
+        annCurrentRotation = _prev.rot;
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
+        // Coordinate shift: crop→no-crop unshift
+        if (prevCrop && !annCropBox) {
+          const cx = prevCrop.x, cy = prevCrop.y;
+          annHistory.forEach(e => {
+            if (e.type === 'free') e.pts.forEach(p => { p.x -= cx; p.y -= cy; });
+            else if (e.type === 'text') { e.x1 -= cx; e.y1 -= cy; }
+            else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
+          });
+        }
+        // Recarregar fundo limpo se estado visual mudou (rotação ou crop)
+        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
+          await annLoadCleanBg();
+        }
         setAnnDirty(true); annRenderAll();
       }
-      function annDoRedo() {
+      async function annDoRedo() {
         if (!annRedoStack.length) return;
         annUndoStack.push(annCloneState()); // guarda estado atual para undo
         const _next = annRedoStack.pop();
-        annHistory.splice(0, annHistory.length, ..._next); // mutar NO LUGAR — nunca reatribuir
+        const prevCrop = annCropBox;
+        const prevRot = annCurrentRotation;
+        annHistory.splice(0, annHistory.length, ..._next.h); // mutar NO LUGAR — nunca reatribuir
+        annCropBox = _next.crop ? JSON.parse(JSON.stringify(_next.crop)) : null;
+        annCurrentRotation = _next.rot;
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
+        // Coordinate shift: crop→no-crop unshift
+        if (prevCrop && !annCropBox) {
+          const cx = prevCrop.x, cy = prevCrop.y;
+          annHistory.forEach(e => {
+            if (e.type === 'free') e.pts.forEach(p => { p.x -= cx; p.y -= cy; });
+            else if (e.type === 'text') { e.x1 -= cx; e.y1 -= cy; }
+            else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
+          });
+        }
+        // Recarregar fundo limpo se estado visual mudou (rotação ou crop)
+        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
+          await annLoadCleanBg();
+        }
         setAnnDirty(true); annRenderAll();
       }
       function annHideTextInput() {
@@ -4123,7 +4204,7 @@
             o.blob = blob;
             if (annCropBox) {
               function shift(pts) { pts.forEach(p => { p.x -= cX; p.y -= cY; }); }
-              [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+              [annHistory, ...annUndoStack.map(s => s.h), ...annRedoStack.map(s => s.h)].forEach(arr => {
                 arr.forEach(e => {
                   if (e.type === 'free') shift(e.pts);
                   else if (e.type === 'text') { e.x1 -= cX; e.y1 -= cY; }
@@ -4166,8 +4247,9 @@
           tempCtx.drawImage(img, -w/2, -h/2);
           const newU = tempCv.toDataURL('image/png');
           
+          const _rotSnap = annCloneState();
           function rot(pts) { pts.forEach(p => { const nx = h - p.y, ny = p.x; p.x = nx; p.y = ny; }); }
-          [annHistory, ...annUndoStack, ...annRedoStack].forEach(arr => {
+          [annHistory, ...annUndoStack.map(s => s.h), ...annRedoStack.map(s => s.h)].forEach(arr => {
             arr.forEach(e => {
               if (e.type === 'free') rot(e.pts);
               else if (e.type === 'text') { const nx = h - e.y1, ny = e.x1; e.x1 = nx; e.y1 = ny; }
@@ -4178,14 +4260,15 @@
             });
           });
           annCurrentRotation = (annCurrentRotation + 90) % 360;
+          annCommitUndo(_rotSnap);
           await new Promise(r => { img.onload = r; img.src = newU; });
           const cv = $('ann-canvas');
           cv.width = img.naturalWidth; cv.height = img.naturalHeight;
           setAnnDirty(true);
           annRenderAll();
         };
-        $('ann-undo').onclick = () => annDoUndo();
-        $('ann-redo').onclick = () => annDoRedo();
+        $('ann-undo').onclick = () => annDoUndo().catch(()=>{});
+        $('ann-redo').onclick = () => annDoRedo().catch(()=>{});
         // Color swatches — mousedown.preventDefault impede blur no text input
         document.querySelectorAll('.ann-swatch').forEach(b => {
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });

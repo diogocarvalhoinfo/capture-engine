@@ -24,11 +24,13 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 **Polimentos de UX (Anotação)** — o botão direito do mouse permite agarrar e mover anotações em qualquer ferramenta (sem desenhar, suprimindo o menu nativo). O ícone "T" fica azul (cor primária) quando a ferramenta de texto está ativa OU quando uma anotação de texto encontra-se selecionada (`.ann-txt-selected`). A seleção anterior limpa automaticamente ao confirmar ou trocar para texto.
 
-**Rotação de imagem 90°** — Novo botão "90°" na toolbar do editor. Rotação não-destrutiva em incrementos de 90°: `origBlob` permanece intacto e na orientação original; o campo `rotation` (0|90|180|270) regista o desvio no IndexedDB. As coordenadas das anotações existentes são recalculadas matematicamente para acompanhar a rotação. Limitação conhecida: a rotação em si ainda não é desfazível via Ctrl+Z (fora das pilhas de undo/redo).
+**Rotação de imagem 90°** — Novo botão "90°" na toolbar do editor. Rotação não-destrutiva em incrementos de 90°: `origBlob` permanece intacto e na orientação original; o campo `rotation` (0|90|180|270) regista o desvio no IndexedDB. As coordenadas das anotações existentes são recalculadas matematicamente para acompanhar a rotação.
 
-**Recorte de imagem (Crop)** — Nova ferramenta de crop no editor com máscara escurecida (60%) e 4 alças em "L" nos cantos. Não-destrutivo: o recorte é guardado como `cropBox` no IndexedDB sem alterar `origBlob`. Ao reabrir a ferramenta, o canvas expande para a imagem original com a caixa a marcar o recorte anterior, permitindo reajustar ou recuperar áreas cortadas. As coordenadas das anotações são ajustadas em tempo real. Limitação conhecida: o crop ainda não é desfazível via Ctrl+Z (fora das pilhas de undo/redo); a reversão faz-se reabrindo a ferramenta de crop.
+**Recorte de imagem (Crop)** — Nova ferramenta de crop no editor com máscara escurecida (60%) e 4 alças em "L" nos cantos. Não-destrutivo: o recorte é guardado como `cropBox` no IndexedDB sem alterar `origBlob`. Ao reabrir a ferramenta, o canvas expande para a imagem original com a caixa a marcar o recorte anterior, permitindo reajustar ou recuperar áreas cortadas. As coordenadas das anotações são ajustadas em tempo real.
 
 ### Modificado
+
+**Separador Visual (Anotação)** — Adicionada uma barra vertical (`|`) na barra de ferramentas do modo edição, separando os botões de ferramentas de desenho dos botões de acções estruturais (Rodar 90° e Recortar).
 
 **Desfazer e Refazer (Modelo Snapshots de Estado)** — o sistema de undo/redo foi integralmente reescrito. Substitui a antiga pilha única baseada em eventos (que causava bugs de ordem ao intercalar ações) por um modelo de snapshots completos com dupla pilha (`annUndoStack` / `annRedoStack`, teto de 50). Toda mutação altera a fonte única (`annHistory`). Ações contínuas de mover/redimensionar só persistem se houve mudança efetiva (flags `_dragDirty` / `_resizeDirty`). Ao reentrar numa imagem salva, o histórico é "semeado" iterativamente, permitindo desfazer todas as ações até revelar a imagem original sem anotações.
 
@@ -37,6 +39,10 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 **Cor de destaque `--accent`** — valor final ajustado para `#e86b2e` (laranja suavizado -10% em relação ao `#e65616` inicial), aplicado em `--accent` e `TOKEN_MAIN_COLOR`. `--accent-hover` actualizado de `#0284c7` para `#d4450f`. Cor hardcoded em `#ann-text-input::selection` (2 ocorrências) actualizada para `rgba(230, 86, 22, 0.32)` em consistência.
 
 ### Corrigido
+
+**Integração do Crop e Rotação no Desfazer (Undo/Redo)** — As ferramentas de corte e rotação passaram a integrar corretamente o sistema de snapshots. O motor agora deteta mudanças estruturais ao navegar no histórico (via Ctrl+Z ou botões) e recarrega instantaneamente a versão limpa (`origBlob`) com os parâmetros correspondentes de rotação e corte. Resolvido o bug onde reverter até à base ao abrir a sessão mantinha um recorte fantasma ativo.
+
+**Prevenção do Ecrã Branco ("White Flash") no Carregamento** — O arquivo `index.html` (responsável pelo redirecionamento automático) foi reestruturado com CSS e script embutidos. O tema escuro (`dark mode`) é detetado de forma síncrona (verificando o `localStorage` e as preferências do sistema) antes de a página renderizar, eliminando completamente o piscar branco antes da abertura do motor.
 
 **Performance mobile — deleção de arquivos:** eliminado freeze ao apagar múltiplos itens. `renderTrash()`, `updateCounters()` e `updateBtns()` consolidados num único ciclo com debounce de 50ms via `scheduleUIUpdate`; `triggerSave()` chamado uma única vez no fim desse ciclo. Transações IndexedDB em `deleteSessionId` e `purgeExpired` consolidadas por store em batch via `idbDelBatch` (uma transação em vez de N individuais).
 
