@@ -4716,23 +4716,30 @@
             e.preventDefault();
             const items = e.clipboardData?.items;
             if (!items) return;
+            // Via 1: ficheiros copiados do sistema operativo (suporta múltiplos)
+            const dtFiles = Array.from(e.clipboardData.files || []);
+            if (dtFiles.length > 0) {
+              for (const f of dtFiles) {
+                if (f.type.startsWith('image/')) await captureImg(f);
+                else await captureDoc(f, f.name, f.type);
+              }
+              document.body.focus(); return;
+            }
+            // Via 2: items (screenshots, imagens do clipboard, sem ficheiros reais)
             const arr = Array.from(items);
             let fileCount = 0;
-            // Passagem 1: todas as imagens (sem break — captura múltiplas)
             for (const it of arr) {
               if (it.type.startsWith('image/')) {
                 const b = it.getAsFile();
                 if (b) { await captureImg(b); fileCount++; }
               }
             }
-            // Passagem 2: todos os ficheiros não-imagem (sem break — captura múltiplos)
             for (const it of arr) {
               if (it.kind === 'file' && !it.type.startsWith('image/')) {
                 const f = it.getAsFile();
                 if (f) { await captureDoc(f, f.name, f.type); fileCount++; }
               }
             }
-            // Passagem 3: texto puro — apenas se nenhum ficheiro foi processado
             if (fileCount === 0) {
               const txt = e.clipboardData.getData('text/plain');
               if (txt && txt.trim()) {
