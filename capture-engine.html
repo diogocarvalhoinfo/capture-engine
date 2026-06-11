@@ -4708,7 +4708,70 @@
       }
 
       /* ═══ CLIPBOARD HANDLER ═══ */
-      function initClipboard() { document.addEventListener('paste', async function (e) { try { const ae = document.activeElement; if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return; e.preventDefault(); const items = e.clipboardData?.items; if (!items) return; let handled = false; const arr = []; for (let i = 0; i < items.length; i++)arr.push(items[i]); for (const it of arr) { if (it.type.startsWith('image/')) { const b = it.getAsFile(); if (b) { await captureImg(b); handled = true; break } } } if (!handled) { for (const it of arr) { if (it.kind === 'file' && !it.type.startsWith('image/')) { const f = it.getAsFile(); if (f) { await captureDoc(f, f.name, f.type); handled = true } } } } if (!handled) { const txt = e.clipboardData.getData('text/plain'); if (txt && txt.trim()) { const b = new Blob([txt], { type: 'text/plain' }); await captureDoc(b, 'texto-1.txt', 'text/plain') } } document.body.focus() } catch (err) { SysLogger.error('Erro no paste: ' + err.message) } }, { passive: false }); const fab = $('mobile-paste-fab'); if (fab) { fab.onclick = async () => { try { const items = await navigator.clipboard.read(); let handled = false; for (const it of items) { if (it.types.some(t => t.startsWith('image/'))) { const type = it.types.find(t => t.startsWith('image/')); const blob = await it.getType(type); const extForType = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }; const ext = extForType[type] || 'png'; const f = new File([blob], `imagem.${ext}`, { type }); await captureImg(f); handled = true; break } } if (!handled) { const txt = await navigator.clipboard.readText(); if (txt && txt.trim()) { const b = new Blob([txt], { type: 'text/plain' }); await captureDoc(b, 'texto-1.txt', 'text/plain') } } } catch (err) { SysLogger.error('Erro ao aceder ao clipboard: ' + err.message) } } } }
+      function initClipboard() {
+        document.addEventListener('paste', async function (e) {
+          try {
+            const ae = document.activeElement;
+            if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;
+            e.preventDefault();
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            const arr = Array.from(items);
+            let fileCount = 0;
+            // Passagem 1: todas as imagens (sem break — captura múltiplas)
+            for (const it of arr) {
+              if (it.type.startsWith('image/')) {
+                const b = it.getAsFile();
+                if (b) { await captureImg(b); fileCount++; }
+              }
+            }
+            // Passagem 2: todos os ficheiros não-imagem (sem break — captura múltiplos)
+            for (const it of arr) {
+              if (it.kind === 'file' && !it.type.startsWith('image/')) {
+                const f = it.getAsFile();
+                if (f) { await captureDoc(f, f.name, f.type); fileCount++; }
+              }
+            }
+            // Passagem 3: texto puro — apenas se nenhum ficheiro foi processado
+            if (fileCount === 0) {
+              const txt = e.clipboardData.getData('text/plain');
+              if (txt && txt.trim()) {
+                const b = new Blob([txt], { type: 'text/plain' });
+                await captureDoc(b, 'texto-1.txt', 'text/plain');
+              }
+            }
+            document.body.focus();
+          } catch (err) { SysLogger.error('Erro no paste: ' + err.message); }
+        }, { passive: false });
+
+        const fab = $('mobile-paste-fab');
+        if (fab) {
+          fab.onclick = async () => {
+            try {
+              const items = await navigator.clipboard.read();
+              let handled = false;
+              for (const it of items) {
+                if (it.types.some(t => t.startsWith('image/'))) {
+                  const type = it.types.find(t => t.startsWith('image/'));
+                  const blob = await it.getType(type);
+                  const extForType = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+                  const ext = extForType[type] || 'png';
+                  const f = new File([blob], `imagem.${ext}`, { type });
+                  await captureImg(f);
+                  handled = true;
+                }
+              }
+              if (!handled) {
+                const txt = await navigator.clipboard.readText();
+                if (txt && txt.trim()) {
+                  const b = new Blob([txt], { type: 'text/plain' });
+                  await captureDoc(b, 'texto-1.txt', 'text/plain');
+                }
+              }
+            } catch (err) { SysLogger.error('Erro ao aceder ao clipboard: ' + err.message); }
+          };
+        }
+      }
 
       /* ═══ DRAG-DROP FILES ═══ */
       function initDragDrop() { ['img-zone', 'doc-zone'].forEach(zId => { const z = $(zId); z.addEventListener('dragover', e => { e.preventDefault(); if (document.querySelector('.dragging')) return; const t = e.dataTransfer.types; if (t && t.includes('Files')) z.classList.add('drag-over') }); z.addEventListener('dragleave', e => { if (!z.contains(e.relatedTarget)) z.classList.remove('drag-over') }); z.addEventListener('drop', async e => { e.preventDefault(); z.classList.remove('drag-over'); if (document.querySelector('.dragging')) return; const txt = e.dataTransfer.getData('text/plain'); if (txt && (txt.startsWith('img_') || txt.startsWith('doc_'))) return; const files = e.dataTransfer.files; if (!files.length) return; for (const f of files) { if (f.type.startsWith('image/')) await captureImg(f); else await captureDoc(f, f.name, f.type) } }) }); document.addEventListener('dragleave', e => { if (!e.clientX && !e.clientY) document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')) }); document.addEventListener('drop', e => document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))) }
