@@ -23,6 +23,7 @@
 # =============================================================================
 
 set -u
+export LC_ALL=C.UTF-8
 FILE="${1:-capture-engine.html}"
 PASS=0
 FAIL=0
@@ -140,6 +141,35 @@ if command -v node >/dev/null 2>&1; then
   fi
 else
   printf '[SKIP] %-52s (node nao instalado)\n' "Sintaxe JavaScript"
+fi
+
+# 11) Cross-check: TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)
+COLOR_HTML=$(grep -oP "const TOKEN_MAIN_COLOR\s*=\s*'\K[^']+" "$FILE" 2>/dev/null | head -1)
+COLOR_DOCS=$(grep "TOKEN_MAIN_COLOR" design-tokens.md 2>/dev/null | grep -oP "'\K[^']+" | head -1)
+if [ -z "$COLOR_HTML" ]; then
+  printf "[WARN] %-52s %s\n" "TOKEN_MAIN_COLOR no HTML" "(regex sem resultado — verificar)"
+elif [ -z "$COLOR_DOCS" ]; then
+  printf "[WARN] %-52s %s\n" "TOKEN_MAIN_COLOR em design-tokens.md" "(regex sem resultado — verificar)"
+elif [ "$COLOR_HTML" != "$COLOR_DOCS" ]; then
+  printf "[FAIL] %-52s %s\n" "TOKEN_MAIN_COLOR: divergencia detectada" "(HTML='$COLOR_HTML' vs docs='$COLOR_DOCS')"
+  FAIL=$((FAIL+1))
+else
+  printf "[PASS] %-52s %s\n" "TOKEN_MAIN_COLOR consistente (HTML=docs)" "($COLOR_HTML)"
+  PASS=$((PASS+1))
+fi
+
+# 12) Cross-check: ferramentas de anotação documentadas no README.md
+ANN_FAIL=0
+for TOOL in "Rotação" "Crop" "selecionar" "traço livre" "retângulo" "círculo" "seta"; do
+  if ! grep -qi "$TOOL" README.md 2>/dev/null; then
+    printf "[FAIL] %-52s %s\n" "Ferramenta ausente do README.md:" "'$TOOL'"
+    FAIL=$((FAIL+1))
+    ANN_FAIL=$((ANN_FAIL+1))
+  fi
+done
+if [ "$ANN_FAIL" -eq 0 ]; then
+  printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "(7/7)"
+  PASS=$((PASS+1))
 fi
 
 # 10) Heuristica de complexidade ciclomatica (apenas WARN)

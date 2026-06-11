@@ -1288,7 +1288,10 @@ Substituir `VERSAO_ANTERIOR` pelo número real (ex: `V23`). Confrontar cada resu
 
 Nunca assumir que as substituições foram completas sem verificar.
 
-> **Nota sobre o `validate.sh`:** o script **não** tem número de versão hardcoded — a verificação #8 auto-detecta a versão a partir do boot message (`Capture Engine Vxx Ready`) e confirma que essa mesma versão aparece nas 3 referências de produto do HTML (comentário do Visual Builder, badge e console). Por isso o `validate.sh` **não precisa de ser editado** no version bump; pelo contrário, **correr `validate.sh` após o bump apanha** os 3 locais caso algum tenha ficado por substituir (a verificação #8 dá `FAIL` se a versão do boot message não bater com o badge/comentário VB).
+**Commit atómico obrigatório:**
+Todos os arquivos alterados no version bump (`capture-engine.html`, `changelog.md`, `README.md`, `design-tokens.md`, `agents.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
+
+> **Nota sobre o `validate.sh`:** o script **não** tem número de versão hardcoded — a verificação #8 auto-detecta a versão a partir do boot message (`Capture Engine Vxx Ready`) e confirma que essa mesma versão aparece nas 3 referências de produto do HTML (comentário do Visual Builder, badge e console). Por isso o `validate.sh` **não precisa de ser editado** no version bump; pelo contrário, **correr `validate.sh` após o bump apanha** os 3 locais caso algum tenha ficado por substituir (a verificação #8 dá `FAIL` se a versão do boot message não bater com o badge/comentário VB). Adicionalmente, o `validate.sh` verifica automaticamente (checks #11 e #12): consistência de `TOKEN_MAIN_COLOR` entre HTML e `design-tokens.md`, e presença das 7 ferramentas de anotação no `README.md`. Qualquer deriva nestes dois eixos aparece como `[FAIL]` antes do commit.
 
 ---
 
