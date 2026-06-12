@@ -172,6 +172,16 @@ if [ "$ANN_FAIL" -eq 0 ]; then
   PASS=$((PASS+1))
 fi
 
+# 13) Cross-check: guard de purge TOKEN_AUTO_PURGE_HOURS presente no HTML
+PURGE_GUARD=$(grep -c "if (!TOKEN_AUTO_PURGE_HOURS) return" "$FILE" 2>/dev/null || echo 0)
+if [ "$PURGE_GUARD" -eq 0 ]; then
+  printf "[FAIL] %-52s %s\n" "Guard purge TOKEN_AUTO_PURGE_HOURS ausente" "(risco destrutivo: valor 0 apagaria todas as sessoes)"
+  FAIL=$((FAIL+1))
+else
+  printf "[PASS] %-52s %s\n" "Guard purge TOKEN_AUTO_PURGE_HOURS presente" "($PURGE_GUARD ocorrencia/s)"
+  PASS=$((PASS+1))
+fi
+
 # 10) Heuristica de complexidade ciclomatica (apenas WARN)
 if command -v python >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1; then
   PY_BIN="python"

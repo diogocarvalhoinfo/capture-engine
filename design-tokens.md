@@ -166,7 +166,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → "Rótulo — Campo 2" |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
-| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Captura → horas até purge. **⚠️ Valor 0 é destrutivo** — apaga todas as sessões na próxima abertura (cutoff = `Date.now() - 0`). Para purge infrequente usar valor alto (ex: `8760` = 1 ano). |
+| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Captura → horas até purge automático. **ℹ️ Valor 0 desativa o purge** (guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — nenhuma sessão é apagada). Para purge infrequente mas ativo, usar valor alto (ex: `8760` = 1 ano). |
 | `TOKEN_DEBUG_MODE` | `bool` | `true` | ❌ | Sem UI — desativado automaticamente em Export User |
 
 ### Notas sobre tokens específicos
