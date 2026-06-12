@@ -173,12 +173,24 @@ if [ "$ANN_FAIL" -eq 0 ]; then
 fi
 
 # 13) Cross-check: guard de purge TOKEN_AUTO_PURGE_HOURS presente no HTML
-PURGE_GUARD=$(grep -c "if (!TOKEN_AUTO_PURGE_HOURS) return" "$FILE" 2>/dev/null || echo 0)
+PURGE_GUARD=$(grep -c "if (!TOKEN_AUTO_PURGE_HOURS) return" "$FILE" 2>/dev/null | tr -d '\r')
+PURGE_GUARD=${PURGE_GUARD:-0}
 if [ "$PURGE_GUARD" -eq 0 ]; then
   printf "[FAIL] %-52s %s\n" "Guard purge TOKEN_AUTO_PURGE_HOURS ausente" "(risco destrutivo: valor 0 apagaria todas as sessoes)"
   FAIL=$((FAIL+1))
 else
   printf "[PASS] %-52s %s\n" "Guard purge TOKEN_AUTO_PURGE_HOURS presente" "($PURGE_GUARD ocorrencia/s)"
+  PASS=$((PASS+1))
+fi
+
+# 14) Cross-check: nenhum TOKEN_* declarado com aspas duplas (contrato do Quine)
+DQ_TOKENS=$(grep -cP 'const TOKEN_[A-Z_]+\s*=\s*"' "$FILE" 2>/dev/null | tr -d '\r')
+DQ_TOKENS=${DQ_TOKENS:-0}
+if [ "$DQ_TOKENS" -ne 0 ]; then
+  printf "[FAIL] %-52s %s\n" "TOKEN_* com aspas duplas detectado" "($DQ_TOKENS — Quine exige aspas simples)"
+  FAIL=$((FAIL+1))
+else
+  printf "[PASS] %-52s %s\n" "Tokens declarados com aspas simples" "(contrato Quine OK)"
   PASS=$((PASS+1))
 fi
 

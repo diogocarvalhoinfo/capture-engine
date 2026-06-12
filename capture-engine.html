@@ -5235,7 +5235,7 @@
         // Live footer preview — atualiza #footer-credits enquanto se edita (espelha {YEAR} do applyTokens)
         $('cfg-footer-text').addEventListener('input', (e) => {
           const fc = $('footer-credits');
-          if (fc) fc.textContent = (e.target.value || '').replace('{YEAR}', new Date().getFullYear());
+          if (fc) fc.textContent = (e.target.value || '').replace(/\{YEAR\}/g, new Date().getFullYear());
           isDirty = true;
         });
 
@@ -5312,7 +5312,7 @@
         $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
         $('cfg-equip-label').placeholder = '';
         $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
-        const footerYear = TOKEN_FOOTER_TEXT.replace('{YEAR}', new Date().getFullYear());
+        const footerYear = TOKEN_FOOTER_TEXT.replace(/\{YEAR\}/g, new Date().getFullYear());
         $('session-user').placeholder = TOKEN_USER_LABEL || 'User';
         $('session-pc').placeholder = TOKEN_EQUIP_LABEL || 'Equipamento';
         const fc = $('footer-credits');
@@ -5380,7 +5380,7 @@
       let PRISTINE_HTML = null;
       const BOOT_HTML = document.documentElement.outerHTML;
       async function capturePristine() { try { const r = await fetch(location.href); if (r.ok) PRISTINE_HTML = await r.text(); else throw new Error('fetch fail') } catch (e) { PRISTINE_HTML = BOOT_HTML; SysLogger.warn('Quine fallback: BOOT_HTML') } }
-      function sanitizeForQuine(s) { return String(s).replace(/'/g, "\\'").replace(/ADMIN_BUTTONS_START/g, 'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g, 'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g, 'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g, 'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g, 'ADM​IN_JS_START').replace(/ADMIN_JS_END/g, 'ADM​IN_JS_END').replace(/EXPORT MODAL/g, 'EXP​ORT MODAL').replace(/FIM EXPORT MODAL/g, 'FIM EXP​ORT MODAL') }
+      function sanitizeForQuine(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/ADMIN_BUTTONS_START/g, 'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g, 'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g, 'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g, 'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g, 'ADM​IN_JS_START').replace(/ADMIN_JS_END/g, 'ADM​IN_JS_END').replace(/EXPORT MODAL/g, 'EXP​ORT MODAL').replace(/FIM EXPORT MODAL/g, 'FIM EXP​ORT MODAL') }
       window.exportFile = async function (isUser) {
         closeExportModal(); if (!PRISTINE_HTML) { SysLogger.error('PRISTINE_HTML not available'); return } let html = PRISTINE_HTML; const cor = sanitizeForQuine(sysColors.main); const fg = sysColors.fg ? sanitizeForQuine(sysColors.fg) : ''; const ts = sanitizeForQuine($('cfg-title-start').value); const ta = sanitizeForQuine($('cfg-title-accent').value); const showU = $('cfg-show-user').checked; const showP = $('cfg-show-pc').checked; const uLbl = sanitizeForQuine(_vbLabelDirty.user ? $('cfg-user-label').value : TOKEN_USER_LABEL); const eLbl = sanitizeForQuine(_vbLabelDirty.equip ? $('cfg-equip-label').value : TOKEN_EQUIP_LABEL); const fText = sanitizeForQuine($('cfg-footer-text').value); const rawJq = parseFloat($('cfg-jpeg-quality')?.value ?? '92'); const jq = isFinite(rawJq) ? Math.min(0.95, Math.max(0.70, rawJq / 100)) : 0.92; const maxD = document.querySelector('input[name="cfg-max-dim"]:checked')?.value || '0'; const purge = document.querySelector('input[name="cfg-purge"]:checked')?.value || '48'; html = html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, () => "const TOKEN_MAIN_COLOR = '" + cor + "'"); html = html.replace(/const TOKEN_ACCENT_FG_OVERRIDE\s*=\s*'[^']*'/, () => "const TOKEN_ACCENT_FG_OVERRIDE = '" + fg + "'"); html = html.replace(/const TOKEN_TITLE_START\s*=\s*'[^']*'/, () => "const TOKEN_TITLE_START = '" + ts + "'"); html = html.replace(/const TOKEN_TITLE_ACCENT\s*=\s*'[^']*'/, () => "const TOKEN_TITLE_ACCENT = '" + ta + "'");
         const te = sanitizeForQuine($('cfg-title-end').value);
