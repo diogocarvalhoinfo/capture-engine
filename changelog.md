@@ -30,6 +30,11 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 ### Modificado
 
+**Refinamento de Ícones PWA e Favicon — impacto: coerência visual e fundo isolado**
+- O SVG do `<link rel="icon">` teve a sua caixa de fundo removida e *viewBox* aumentada, adaptando agora a cor do ícone (`#000000` ou `#ffffff`) aos temas claro e escuro do sistema operativo.
+- O fundo embutido dos ícones PWA no `manifest.json` e do `apple-touch-icon` foi convertido do antigo cinzento (`#1a1a1a`) para preto puro (`#000000`), preservando rigorosamente a transparência original nos cantos exteriores e a suavização nas arestas da forma.
+- Valor de `theme_color` e `background_color` globais (HTML e manifest) fixados em preto puro (`#000000`) para imersão nativa em PWA.
+
 **Separador Visual (Anotação)** — Adicionada uma barra vertical (`|`) na barra de ferramentas do modo edição, separando os botões de ferramentas de desenho dos botões de acções estruturais (Rodar 90° e Recortar).
 
 **Desfazer e Refazer (Modelo Snapshots de Estado)** — o sistema de undo/redo foi integralmente reescrito. Substitui a antiga pilha única baseada em eventos (que causava bugs de ordem ao intercalar ações) por um modelo de snapshots completos com dupla pilha (`annUndoStack` / `annRedoStack`, teto de 50). Toda mutação altera a fonte única (`annHistory`). Ações contínuas de mover/redimensionar só persistem se houve mudança efetiva (flags `_dragDirty` / `_resizeDirty`). Ao reentrar numa imagem salva, o histórico é "semeado" iterativamente, permitindo desfazer todas as ações até revelar a imagem original sem anotações.
