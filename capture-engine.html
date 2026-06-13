@@ -18,7 +18,7 @@
   <meta name="msapplication-TileColor" content="#1a1a1a">
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' blob: data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Capture Engine</title>
   <style>
     /* ═══ CSS VARIABLES — LIGHT MODE ═══ */
@@ -52,17 +52,6 @@
       --color-yellow: #eab308;
       --top-bar-h: 64px;
       --thumb-size: 140px;
-    }
-
-    /* === SCROLLBAR: oculta em mobile (aspeto app nativo) === */
-    @media (max-width: 768px) {
-      * {
-        scrollbar-width: none;       /* Firefox */
-        -ms-overflow-style: none;    /* IE / Edge legacy */
-      }
-      *::-webkit-scrollbar {
-        display: none;               /* Chrome / Safari / Opera */
-      }
     }
 
     /* ═══ DARK MODE ═══ */
@@ -216,6 +205,25 @@
 
     *::-webkit-scrollbar-thumb:hover {
       background: var(--text-muted)
+    }
+
+    /* ═══ MOBILE: scrollbar oculta + sem zoom (aspeto app nativo) ═══ */
+    @media (max-width: 768px) {
+      *, *::-webkit-scrollbar {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+      *::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+      input, textarea, select {
+        font-size: 16px !important;
+      }
+      * {
+        touch-action: manipulation;
+      }
     }
 
     /* ═══ DARK MODE ICONS ═══ */
