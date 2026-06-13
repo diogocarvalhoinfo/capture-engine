@@ -5386,7 +5386,7 @@
       /* ═══ QUINE ENGINE ═══ */
       /* ADMIN_JS_START */
       let PRISTINE_HTML = null;
-      const BOOT_HTML = document.documentElement.outerHTML;
+      const BOOT_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
       async function capturePristine() { try { const r = await fetch(location.href); if (r.ok) PRISTINE_HTML = await r.text(); else throw new Error('fetch fail') } catch (e) { PRISTINE_HTML = BOOT_HTML; SysLogger.warn('Quine fallback: BOOT_HTML') } }
       function sanitizeForQuine(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/ADMIN_BUTTONS_START/g, 'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g, 'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g, 'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g, 'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g, 'ADM​IN_JS_START').replace(/ADMIN_JS_END/g, 'ADM​IN_JS_END').replace(/EXPORT MODAL/g, 'EXP​ORT MODAL').replace(/FIM EXPORT MODAL/g, 'FIM EXP​ORT MODAL') }
       window.exportFile = async function (isUser) {
