@@ -662,6 +662,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `initVbSync()` | `() → void` | Regista todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Fallback: `SESSAO-SEM-TITULO`. Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. Usada por `updateBtnTitles()`. |
 
+> **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado e o default (`48` para purge, `0` para max-dim) permanece — o reexport usa esse default, não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de utilizador.
+
 ### Funções do Modal de Imagem
 
 | Função | O que faz | Notas |
