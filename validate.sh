@@ -194,13 +194,32 @@ else
   PASS=$((PASS+1))
 fi
 
-# 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-21)
+# 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-22)
 # Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
-CHECKS_NUMERADOS=21
+CHECKS_NUMERADOS=22
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
   printf "[WARN] %-52s %s\n" "Contagem de checks em agents.md desfasada" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
+fi
+
+# 16) ZT1: cada token substituido pelo exportFile tem exatamente 1 declaracao real
+# (String.replace sem /g pega so a 1a ocorrencia — >1 declaracao = substituicao silenciosamente errada)
+ZT1_FAIL=0
+ZT1_TOKENS=$(grep -oP 'html\.replace\(/const \KTOKEN_[A-Z_]+' "$FILE" 2>/dev/null | sort -u)
+for ZT in $ZT1_TOKENS; do
+  ZN=$(grep -cP "^\s*const $ZT\s*=" "$FILE" 2>/dev/null | tr -d '\r')
+  ZN=${ZN:-0}
+  if [ "$ZN" -ne 1 ]; then
+    printf "[FAIL] %-52s %s\n" "Token com declaracao ambigua: $ZT" "($ZN declaracoes, esperado 1)"
+    FAIL=$((FAIL+1))
+    ZT1_FAIL=$((ZT1_FAIL+1))
+  fi
+done
+if [ "$ZT1_FAIL" -eq 0 ]; then
+  ZT1_COUNT=$(echo "$ZT1_TOKENS" | grep -c . )
+  printf "[PASS] %-52s %s\n" "Cada token substituido tem 1 declaracao" "($ZT1_COUNT tokens)"
+  PASS=$((PASS+1))
 fi
 
 # 10) Heuristica de complexidade ciclomatica (apenas WARN)

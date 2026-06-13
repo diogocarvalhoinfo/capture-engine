@@ -1014,7 +1014,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 21 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
+O `validate.sh` executa 22 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1023,7 +1023,7 @@ O `validate.sh` executa 21 verificações mecânicas baseadas em regex/grep, gar
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-**Os 21 Checks de Validação:**
+**Os 22 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função presente: window.exportFile**: Garante a existência do ponto de entrada do Quine.
@@ -1046,6 +1046,7 @@ O `validate.sh` executa 21 verificações mecânicas baseadas em regex/grep, gar
 19. **Ferramentas de anotação no README (7/7)**: confirma que as 7 ferramentas estão documentadas. FAIL = ferramenta não documentada.
 20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
 21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
+22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).
 
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
