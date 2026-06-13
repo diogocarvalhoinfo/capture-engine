@@ -40,6 +40,8 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 ### Corrigido
 
+**Refazer (Redo) sobrevive a salvar+reabrir (D12)** — o `annRedoStack` passou a ser persistido no IndexedDB (`o.annRedoStack`), restaurado por `annActivate` e gravado por `ann-save`. Antes, a pilha de refazer ficava apenas em memória e era zerada ao reabrir, pelo que o redo nunca funcionava depois de salvar. Corrigido também o caso em que desfazer o **único** desenho da imagem disparava o "reset total" do `ann-save` e apagava o redo recém-gravado — agora o reset só ocorre se `annRedoStack` também estiver vazio. Sem bump de schema IndexedDB (campo a nível de registro). **Limitação conhecida:** redo que atravessa rotação/crop é aproximado, pela mesma razão que a semeadura do undo achata `rot`/`crop`.
+
 **Integração do Crop e Rotação no Desfazer (Undo/Redo)** — As ferramentas de corte e rotação passaram a integrar corretamente o sistema de snapshots. O motor agora deteta mudanças estruturais ao navegar no histórico (via Ctrl+Z ou botões) e recarrega instantaneamente a versão limpa (`origBlob`) com os parâmetros correspondentes de rotação e corte. Resolvido o bug onde reverter até à base ao abrir a sessão mantinha um recorte fantasma ativo.
 
 **Prevenção do Ecrã Branco ("White Flash") no Carregamento** — O arquivo `index.html` (responsável pelo redirecionamento automático) foi reestruturado com CSS e script embutidos. O tema escuro (`dark mode`) é detetado de forma síncrona (verificando o `localStorage` e as preferências do sistema) antes de a página renderizar, eliminando completamente o piscar branco antes da abertura do motor.

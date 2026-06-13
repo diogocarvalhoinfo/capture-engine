@@ -716,7 +716,7 @@ init()
 | Tabela | Chave primária | Campos principais | Índices |
 |---|---|---|---|
 | `sessions` | `id` | `name`, `user`, `pc`, `createdAt`, `updatedAt`, `exported` | `createdAt` |
-| `images` | `id` | `sessionId`, `blob`, `label`, `order`, `addedAt` (+ `origBlob`, `annHistory` em imagens anotadas) | `sessionId`, `order` |
+| `images` | `id` | `sessionId`, `blob`, `label`, `order`, `addedAt` (+ `origBlob`, `annHistory`, `annRedoStack` em imagens anotadas) | `sessionId`, `order` |
 | `documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `order`, `addedAt` | `sessionId`, `order` |
 | `removed_images` | `id` | `sessionId`, `blob`, `label`, `removedAt` | `sessionId` |
 | `removed_documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `removedAt` | `sessionId` |
@@ -724,6 +724,7 @@ init()
 **Campos adicionais em imagens com edição ativa:**
 - `rotation`: tipo número, graus de rotação acumulada, padrão `0`
 - `cropBox`: objeto `{x, y, w, h}` em pixels relativos, ou `null` quando sem crop ativo
+- `annRedoStack`: array de snapshots de refazer persistido (até 50) — faz o redo sobreviver a salvar+reabrir
 
 **Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos User/Equipamento/Nome guarda imediatamente.
 
