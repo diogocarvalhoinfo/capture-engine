@@ -3737,7 +3737,7 @@
         annInitialState = JSON.stringify(annHistory);
         setAnnDirty(false);
         annUndoStack = [];
-        annRedoStack = [];
+        annRedoStack = (o && o.annRedoStack) ? JSON.parse(JSON.stringify(o.annRedoStack)) : [];
         for (let _i = 0; _i < annHistory.length; _i++) {
           annUndoStack.push({
             h: JSON.parse(JSON.stringify(annHistory.slice(0, _i))),
@@ -4213,11 +4213,13 @@
               annCropBox = null;
             }
             o.annHistory = JSON.parse(JSON.stringify(annHistory));
+            o.annRedoStack = JSON.parse(JSON.stringify(annRedoStack));
             o.rotation = annCurrentRotation;
-            if (annHistory.length === 0 && annCurrentRotation === 0 && !o.cropBox) {
+            if (annHistory.length === 0 && annRedoStack.length === 0 && annCurrentRotation === 0 && !o.cropBox) {
               o.blob = o.origBlob;
               delete o.origBlob;
               delete o.annHistory;
+              delete o.annRedoStack;
               delete o.rotation;
               delete o.cropBox;
             }
