@@ -536,7 +536,7 @@ r.onupgradeneeded = e => {
 | Campo | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
 | `id` | string | ✅ | ID único gerado por `genId('sess')` — chave primária |
-| `name` | string | ❌ | Nome da sessão digitado pelo usuário (vazio = usa fallback #XXXX) |
+| `name` | string | ❌ | Nome da sessão derivado de `session-user` + `session-pc` (maiúsculas, separados por `-`, via initSessionSync). Ambos vazios = usa fallback #XXXX |
 | `user` | string | ❌ | Valor do Campo 1 (ex: "João Silva") |
 | `pc` | string | ❌ | Valor do Campo 2 (ex: "PC-001") |
 | `createdAt` | number | ✅ | Timestamp Unix (ms) da criação — imutável após criação |
@@ -1014,7 +1014,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 17 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
+O `validate.sh` executa 21 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1023,7 +1023,7 @@ O `validate.sh` executa 17 verificações mecânicas baseadas em regex/grep, gar
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-**Os 17 Checks de Validação:**
+**Os 21 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função presente: window.exportFile**: Garante a existência do ponto de entrada do Quine.
@@ -1042,6 +1042,10 @@ O `validate.sh` executa 17 verificações mecânicas baseadas em regex/grep, gar
 15. **README.md versao consistente**: Verifica a mesma detecção cruzada no `README.md`.
 16. **agents.md versao consistente**: Verifica a mesma detecção cruzada no `agents.md`.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
+18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
+19. **Ferramentas de anotação no README (7/7)**: confirma que as 7 ferramentas estão documentadas. FAIL = ferramenta não documentada.
+20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
+21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
 
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.

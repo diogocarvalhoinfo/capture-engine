@@ -298,7 +298,7 @@ Cada abertura do Capture Engine começa com uma sessão nova em branco. A interf
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.
 
 **Identificação de sessão:**
-- **Nome da sessão** — campo de texto livre no topo da sidebar esquerda
+- **Nome da sessão** — derivado automaticamente dos campos de Identificação (USER e EQUIPAMENTO, em maiúsculas, separados por hífen). Os rótulos dos dois campos são configuráveis no Visual Builder.
 - **Campo User** — nome do usuário que está a trabalhar (configurável)
 - **Campo Equipamento** — nome do computador ou equipamento (configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
@@ -500,7 +500,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** de momento isto acontece sem aviso visível na tela — o erro só fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `agents.md §14` para verificar o uso real. |
+| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as novas capturas não estão a ser guardadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `agents.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do browser (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do browser. |
 | **GIF animados — comportamento por export** | O export **ZIP** inclui o arquivo GIF original com a animação intacta. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira frame — a animação perde-se. Se precisar preservar a animação, use sempre o export ZIP. |
 
@@ -509,7 +509,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 ## 9. Resolução de problemas
 
 ### A aplicação não abre ou mostra página em branco
-- Verifique se está a usar Chrome 90+, Edge 90+, ou Firefox 151.0.4 testado
+- Verifique se está a usar Chrome 90+, Edge 90+, ou Firefox 151.0.4
 - Experimente abrir diretamente com duplo clique no `capture-engine.html`
 - Em alguns sistemas, arquivos HTML locais precisam de permissão — verifique as configurações de segurança do browser
 
@@ -535,7 +535,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
 
 ### As minhas capturas desapareceram depois de fechar o browser
-- O mais provável é esgotamento silencioso da quota de armazenamento do browser. Quando o IndexedDB fica sem espaço, a gravação falha silenciosamente — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o browser, a memória é liberada e o item desaparece.
+- O mais provável é esgotamento da quota de armazenamento do browser. Quando o IndexedDB fica sem espaço, a gravação falha e um banner vermelho de aviso aparece no topo da aplicação — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o browser, a memória é liberada e o item desaparece.
 - **Como confirmar:** abra as DevTools (F12) → separador Console → procure erros com a palavra `quota` ou `storage`.
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP). O administrador pode configurar `TOKEN_MAX_IMG_DIMENSION` para reduzir o tamanho de cada imagem antes de ser gravada — consultar o Visual Builder → aba Captura.
 
@@ -592,7 +592,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com browser moderno
 
-> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) ou Firefox 151.0.4 testado.
+> Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) ou Firefox 151.0.4.
 
 ### Matriz de compatibilidade
 
@@ -600,10 +600,12 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 |---|---|---|---|---|---|
 | **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
-| **Firefox** | 151.0.4 testado | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML |
+| **Firefox** | 151.0.4, Windows | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Safari** | — | ⚠️ Parcial | ⚠️ Não testado | ⚠️ Pode falhar (CORS) | ⚠️ Não testado |
 
 **Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
+
+> **Nota (Firefox):** O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do browser, independentes do ficheiro.
 
 ---
 

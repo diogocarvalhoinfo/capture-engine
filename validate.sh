@@ -194,6 +194,15 @@ else
   PASS=$((PASS+1))
 fi
 
+# 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-21)
+# Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
+CHECKS_NUMERADOS=21
+DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
+DOC_COUNT=${DOC_COUNT:-0}
+if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
+  printf "[WARN] %-52s %s\n" "Contagem de checks em agents.md desfasada" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
+fi
+
 # 10) Heuristica de complexidade ciclomatica (apenas WARN)
 if command -v python >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1; then
   PY_BIN="python"
