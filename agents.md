@@ -466,6 +466,8 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 ## 6. IndexedDB — Schema Completo
 
 **Nome da base de dados:** `CaptureEngineDB`
+
+> **Escopo de armazenamento (origem):** o IndexedDB é particionado por **origem** = protocolo + host + porta. A mesma `CaptureEngineDB` aberta via `file://`, `http://localhost:8080` e `https://<user>.github.io` são **três bases distintas e isoladas** — sem partilha entre elas, mesmo no mesmo perfil de browser. Dentro de `file://`, o caminho do arquivo não altera a origem (mesma base). Decorre disto que distribuir a ferramenta hospedada vs como arquivo local resulta em históricos separados.
 **Versão do schema:** `2`
 
 > **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V25+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
