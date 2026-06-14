@@ -497,7 +497,7 @@ r.onupgradeneeded = e => {
 
 **Caso B — Alterar campos de uma store existente (requer migração de dados)**
 
-Por exemplo, adicionar o campo `tags` à store `images`. Os registos existentes não têm `tags` — é necessário iterar e reescrever:
+Por exemplo, adicionar o campo `tags` à store `images`. Os registros existentes não têm `tags` — é necessário iterar e reescrever:
 
 ```js
 // Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
@@ -517,7 +517,7 @@ r.onupgradeneeded = e => {
   req.onsuccess = ev => {
     for (const record of ev.target.result) {
       if (record.tags === undefined) {
-        record.tags = []; // valor padrão para registos existentes
+        record.tags = []; // valor padrão para registros existentes
         imgStore.put(record);
       }
     }
@@ -665,7 +665,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `initVbSync()` | `() → void` | Regista todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Fallback: `SESSAO-SEM-TITULO`. Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. Usada por `updateBtnTitles()`. |
 
-> **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado e o default (`48` para purge, `0` para max-dim) permanece — o reexport usa esse default, não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de utilizador.
+> **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado e o default (`48` para purge, `0` para max-dim) permanece — o reexport usa esse default, não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de usuário.
 
 ### Funções do Modal de Imagem
 
@@ -766,7 +766,7 @@ ativar arrasto:
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
 | `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap rodado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
-| `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o editor de texto (`#ann-text-input`, um `<textarea>` multilinha) no canvas, com B/I sync e `line-height = fontSize escalado × ANN_TEXT_LINE_RATIO`. **Enter insere nova linha**; a confirmação acontece no blur (clicar fora), ao clicar noutro ponto do canvas, e no botão Confirmar; `Escape` cancela. Chama `annAutosizeText()` ao abrir | `prefill` opcional para reedição via dblclick |
+| `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o editor de texto (`#ann-text-input`, um `<textarea>` multilinha) no canvas, com B/I sync e `line-height = fontSize escalado × ANN_TEXT_LINE_RATIO`. **Enter insere nova linha**; a confirmação acontece no blur (clicar fora), ao clicar em outro ponto do canvas, e no botão Confirmar; `Escape` cancela. Chama `annAutosizeText()` ao abrir | `prefill` opcional para reedição via dblclick |
 | `annAutosizeText()` | Faz o `<textarea>` de texto crescer em altura (`scrollHeight`) e largura (linha mais longa medida com `measureText` na fonte escalada, + 4px). Necessário porque `wrap="off"` não quebra linhas automaticamente | Chamada em `oninput`, ao abrir o editor (`annShowTextInput`) e após cada resize ao vivo pelos botões −/+ |
 | `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
 | `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
@@ -1148,7 +1148,7 @@ A validação tem **duas partes**:
 ### Parte A — Verificações sem browser
 
 **Segurança:**
-- [ ] `escapeHTML()` aplicado a todos os dados do utilizador inseridos via `innerHTML`
+- [ ] `escapeHTML()` aplicado a todos os dados do usuário inseridos via `innerHTML`
 - [ ] `sanitizeForQuine()` aplicado antes de tokens serem injetados no arquivo exportado
 - [ ] Sem `eval()`, `Function()`, ou `document.write()`
 
@@ -1265,7 +1265,7 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), 
 
 2. **`changelog.md`** — 1 inserção (não substituição):
    - Adicionar nova entrada no topo: `## [VERSAO_NOVA] — YYYY-MM-DD`
-   - As referências `VERSAO_ANTERIOR` existentes no changelog são **registos históricos — não se substituem**.
+   - As referências `VERSAO_ANTERIOR` existentes no changelog são **registros históricos — não se substituem**.
 
 3. **`README.md`** — 2 substituições:
    - Título principal: `# Capture Engine · VERSAO_ANTERIOR` → `VERSAO_NOVA`
@@ -1350,9 +1350,9 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 
 1. Abra qualquer cópia da ferramenta no perfil correcto e pressione **F12** (DevTools).
 2. Navegue até **Application** (Chrome/Edge) ou **Storage** (Firefox) → **IndexedDB** → **CaptureEngineDB**.
-3. Clique em **`images`** ou **`documents`** para ver os registos. Cada linha é um item.
+3. Clique em **`images`** ou **`documents`** para ver os registros. Cada linha é um item.
 4. Para exportar um arquivo individual:
-   - Clique no registo pretendido para o expandir.
+   - Clique no registro pretendido para o expandir.
    - Localize o campo **`blob`** — aparece como `Blob {size: XXXXX, type: "image/png"}`.
    - Clique com o botão direito no valor do blob → **"Save as..."** (Chrome/Edge) ou copie via console (ver abaixo).
 5. Se a opção "Save as" não estiver disponível, use o console (tab **Console**):
@@ -1388,7 +1388,7 @@ navigator.storage.estimate().then(e =>
 ```
 Se o uso estiver acima de 80%, a quota pode estar causando falhas silenciosas. **Solucao:** exportar (PDF/ZIP) e apagar sessoes antigas no historico.
 
-**Listar sessoes com nome, utilizador e data** (identificar qual sessao extrair antes de usar o script abaixo):
+**Listar sessoes com nome, usuário e data** (identificar qual sessao extrair antes de usar o script abaixo):
 ```js
 const req = indexedDB.open('CaptureEngineDB', 2);
 req.onsuccess = e => {

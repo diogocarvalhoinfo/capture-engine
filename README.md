@@ -464,16 +464,16 @@ O Capture Engine é adequado para **recolha organizada e documentação** de evi
 
 **O que a ferramenta garante:**
 - Timestamp de criação e última atividade registado por sessão (gerado pelo browser do dispositivo)
-- Armazenamento local isolado — os dados não saem do dispositivo sem ação explícita do utilizador
-- Exportação ZIP com os ficheiros originais sem reprocessamento adicional
+- Armazenamento local isolado — os dados não saem do dispositivo sem ação explícita do usuário
+- Exportação ZIP com os arquivos originais sem reprocessamento adicional
 
 **O que a ferramenta não garante:**
 - Integridade criptográfica — não há hash, assinatura digital nem timestamping independente
-- Imutabilidade — os dados no IndexedDB são editáveis pelo utilizador e pelo próprio browser
-- Rastreabilidade de cadeia de custódia — não há registo de acessos ou modificações
-- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP para preservar os ficheiros originais
+- Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio browser
+- Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
+- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP para preservar os arquivos originais
 
-Para uso em processos judiciais ou auditorias reguladas, complementar com procedimentos de custódia externos (hash independente dos ficheiros exportados, registo de acesso, etc.).
+Para uso em processos judiciais ou auditorias reguladas, complementar com procedimentos de custódia externos (hash independente dos arquivos exportados, registro de acesso, etc.).
 
 ---
 
@@ -482,7 +482,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 **Estado atual (V25):**
 - Navegação por teclado: parcialmente suportada nos controlos principais
 - Rácios de contraste WCAG: verificados para a cor de destaque principal (ver `design-tokens.md §1`)
-- Leitores de ecrã: não testados formalmente
+- Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: não auditados
 
 **Conformidade declarada:** nenhuma conformidade formal com WCAG 2.1 ou EN 301 549 foi auditada nesta versão.
@@ -523,7 +523,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
 - Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
 - Verifique se o browser tem permissão para acessar o clipboard (aparece uma notificação)
-- Ctrl+V suporta múltiplos ficheiros copiados do Explorer em simultâneo (Ctrl+C nos ficheiros → Ctrl+V na aplicação).
+- Ctrl+V suporta múltiplos arquivos copiados do Explorer em simultâneo (Ctrl+C nos arquivos → Ctrl+V na aplicação).
 
 ### O botão PDF está desativado
 - O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
@@ -607,7 +607,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 
 **Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
 
-> **Nota (Firefox):** O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do browser, independentes do ficheiro.
+> **Nota (Firefox):** O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do browser, independentes do arquivo.
 
 ---
 
