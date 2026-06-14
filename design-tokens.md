@@ -364,15 +364,15 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 | Estado | Borda |
 |---|---|
 | **Repouso** | `1px solid var(--border-strong)` — sempre visível, cinzenta |
-| **Hover** | `border-color: var(--accent)` — transição suave para azul |
+| **Hover** | `border-color: var(--accent)` — transição suave para a cor accent |
 | **Regra** | A borda **nunca desaparece**. Elimina layout shift. |
 
 ### Botões de Export ZIP em Modo ZIP Ativo (`.btn-zip-cta`)
 
 | Estado | Borda |
 |---|---|
-| **Repouso** | `1px solid var(--accent)` — azul permanente |
-| **Hover** | Fundo sutil `rgba(14,165,233,0.06)` + texto mais escuro |
+| **Repouso** | `1px solid var(--accent)` — accent permanente |
+| **Hover** | Fundo sutil `color-mix(in srgb, var(--accent) 6%, transparent)` + texto mais escuro |
 | **Regra** | A borda accent **não desaparece** ao sair com o cursor. |
 
 ### Chips de Modo (Auto / A4 Vertical / A4 Horizontal)

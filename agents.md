@@ -147,7 +147,7 @@ No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_E
 **Formato dos tokens:**
 ```js
 // O regex do Quine aceita espaços, e devem ser mantidos para legibilidade:
-const TOKEN_MAIN_COLOR = '#0ea5e9';
+const TOKEN_MAIN_COLOR = '#e86b2e';
 ```
 
 > **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex ancorado à sintaxe de declaração (ex: `/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/`). Isto garante que apenas a declaração seja substituída, prevenindo a corrupção acidental da string em contextos de comentário, log ou código (ex: `console.log("TOKEN_MAIN_COLOR")`). Adicionalmente, `sanitizeForQuine()` insere zero-width spaces (U+200B) nos valores dos campos editáveis antes de serializar o HTML, impedindo que texto digitado pelo usuário coincida acidentalmente com os marcadores de estrutura do Quine (ex.: `ADMIN_EDIT_START`).
@@ -775,7 +775,7 @@ ativar arrasto:
 
 | Comportamento | Descrição e Invariantes |
 |---|---|
-| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica azul (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
+| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica na cor de destaque/accent (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
 | **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** permite agarrar e mover imediatamente, não importando qual a ferramenta ativa (nunca desenha e suprime o menu de contexto nativo). |
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto). A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
