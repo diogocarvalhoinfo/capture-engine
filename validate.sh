@@ -196,7 +196,7 @@ fi
 
 # 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-22)
 # Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
-CHECKS_NUMERADOS=22
+CHECKS_NUMERADOS=25
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -298,6 +298,31 @@ else:
 ' "$FILE"
 else
   printf "[SKIP] %-52s (python nao instalado)\n" "Heuristica CC"
+fi
+
+# 23) Inventario de z-index: o conjunto deve ser exatamente o documentado
+#     em design-tokens.md §4 / agents.md §2.2. Falha se surgir valor novo
+#     ou se um documentado desaparecer.
+ZEXPECTED="10 50 100 200 300 1999 2000 9999 99999"
+ZFOUND=$(grep -oE "z-index: *[0-9]+" "$FILE" | grep -oE "[0-9]+" | sort -n | uniq | tr '\n' ' ' | sed 's/ *$//')
+check_eq "z-index: conjunto = documentado" "$ZEXPECTED" "$ZFOUND"
+
+# 24) Duracoes de animacao vs design-tokens.md §5 (valores fixos esperados).
+AEXP="fadeIn=0.2s fadeInTab=0.25s modalIn=0.2s spin=0.65s"
+AGOT=""
+for a in fadeIn fadeInTab modalIn spin; do
+  d=$(grep -oE "animation: *${a} [0-9.]+s" "$FILE" | grep -oE "[0-9.]+s" | head -1)
+  AGOT="$AGOT $a=$d"
+done
+AGOT=$(echo "$AGOT" | sed 's/^ *//')
+check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
+
+# 25) Tamanho do arquivo (admin) na faixa documentada no README §10 (~300KB).
+SZ=$(wc -c < "$FILE" | tr -d ' ')
+if [ "$SZ" -ge 280000 ] && [ "$SZ" -le 340000 ]; then
+  printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~300KB)" "$SZ"; PASS=$((PASS+1));
+else
+  printf '[FAIL] %-52s (%s, esperado 280000-340000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi
 
 echo
