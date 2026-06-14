@@ -215,6 +215,7 @@ Motor de anotação (V24→V25):
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
+  - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações continuam a voltar para a posição exata.
 
 Mobile (V25):
 - Desenho por toque funciona (Pointer Events nativos)

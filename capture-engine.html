@@ -4011,6 +4011,8 @@
       }
       // annCommitUndo: grava snapshot ANTES de uma mutacao; limpa redoStack (intencao nova do utilizador)
       function annCommitUndo(snap) {
+        const _top = annUndoStack[annUndoStack.length - 1];
+        if (_top && JSON.stringify(_top) === JSON.stringify(snap)) return; // ignora snapshot identico ao topo (acao sem efeito)
         annUndoStack.push(snap);
         if (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift(); // aplica teto
         annRedoStack.length = 0; // nova mutacao invalida o futuro

@@ -45,6 +45,8 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 ### Corrigido
 
+**Anotação/Docs — melhorias (D18):** dedupe de snapshots idênticos no undo (elimina passo de Desfazer sem efeito visível); limitação de undo/redo sobre crop/rotação pós-save documentada no README §5.3.
+
 **Quine/Export — correções (D17):** fallback BOOT_HTML deixa de fixar dark mode; export preserva TOKEN_MAX_IMG_DIMENSION/TOKEN_AUTO_PURGE_HOURS personalizados (radios desmarcados quando o valor não é um preset).
 
 **Documentação — correções de auditoria (D16):** tamanho do ficheiro, 9 níveis de z-index documentados, rdp reatribuído a V25, durações de animação, enum `crop`; `validate.sh` estendido a 25 checks (z-index, animações, tamanho).
