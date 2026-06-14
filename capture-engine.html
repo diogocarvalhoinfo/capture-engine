@@ -3805,7 +3805,7 @@
         if (t === 'crop') {
           if (o && o.cropBox && o.origBlob && !annCropBox) {
              let rBlob = o.origBlob;
-             if (o.rotation) rBlob = await getRotatedBlob(o.origBlob, o.rotation);
+             if (annCurrentRotation) rBlob = await getRotatedBlob(o.origBlob, annCurrentRotation); // D19: usar rotacao viva, nao a guardada (o.rotation), senao desfasa apos rotacoes sem salvar
              const u = URL.createObjectURL(rBlob);
              await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
              _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
@@ -4003,10 +4003,12 @@
       // Fase 5 — Novo sistema Undo/Redo por snapshots de estado completo
       // annCloneState: deep clone perfeito (shapes sao POJOs, JSON round-trip e seguro)
       function annCloneState() {
+        const _po = images.find(x => x.id === modalItemId);
         return {
           h: JSON.parse(JSON.stringify(annHistory)),
           rot: annCurrentRotation,
-          crop: annCropBox ? JSON.parse(JSON.stringify(annCropBox)) : null
+          crop: annCropBox ? JSON.parse(JSON.stringify(annCropBox)) : null,
+          pcrop: (_po && _po.cropBox) ? JSON.parse(JSON.stringify(_po.cropBox)) : null
         };
       }
       // annCommitUndo: grava snapshot ANTES de uma mutacao; limpa redoStack (intencao nova do utilizador)
@@ -4053,6 +4055,8 @@
         annHistory.splice(0, annHistory.length, ..._prev.h); // mutar NO LUGAR — nunca reatribuir
         annCropBox = _prev.crop ? JSON.parse(JSON.stringify(_prev.crop)) : null;
         annCurrentRotation = _prev.rot;
+        // D19: restaurar crop persistido (o.cropBox) quando o snapshot o capturou; a rotacao altera-o fora do annCropBox
+        if ('pcrop' in _prev) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_prev.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_prev.pcrop)); else delete _ro.cropBox; } }
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
@@ -4079,6 +4083,8 @@
         annHistory.splice(0, annHistory.length, ..._next.h); // mutar NO LUGAR — nunca reatribuir
         annCropBox = _next.crop ? JSON.parse(JSON.stringify(_next.crop)) : null;
         annCurrentRotation = _next.rot;
+        // D19: restaurar crop persistido (o.cropBox) quando o snapshot o capturou; a rotacao altera-o fora do annCropBox
+        if ('pcrop' in _next) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_next.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_next.pcrop)); else delete _ro.cropBox; } }
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
@@ -4256,6 +4262,24 @@
               }
             });
           });
+          // D19: transformar a caixa de crop pela mesma rotacao 90 CW, mantendo
+          // o.cropBox no espaco da base ja rotacionada (invariante de annLoadCleanBg).
+          if (annCropBox) {
+            // Caso A: em modo crop, a img exibida e a base cheia rotacionada -> BH = h
+            const _cb = annCropBox;
+            annCropBox = { x: h - (_cb.y + _cb.h), y: _cb.x, w: _cb.h, h: _cb.w };
+          } else {
+            // Caso B: crop salvo fora do modo crop -> BH = altura da base cheia na rotacao actual (de origBlob)
+            const _o = images.find(x => x.id === modalItemId);
+            if (_o && _o.cropBox && _o.origBlob) {
+              const _ob = new Image();
+              const _ou = URL.createObjectURL(_o.origBlob);
+              await new Promise(r => { _ob.onload = () => { URL.revokeObjectURL(_ou); r(); }; _ob.src = _ou; });
+              const _BH = (annCurrentRotation % 180 === 0) ? _ob.naturalHeight : _ob.naturalWidth;
+              const _cb = _o.cropBox;
+              _o.cropBox = { x: _BH - (_cb.y + _cb.h), y: _cb.x, w: _cb.h, h: _cb.w };
+            }
+          }
           annCurrentRotation = (annCurrentRotation + 90) % 360;
           annCommitUndo(_rotSnap);
           await new Promise(r => { img.onload = r; img.src = newU; });
