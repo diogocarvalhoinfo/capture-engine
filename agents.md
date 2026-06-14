@@ -771,7 +771,7 @@ ativar arrasto:
 | `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
 | `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
 | `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exatamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no salvamento final do traço via `annDrawShape`. **Não chamar diretamente** — usar `annDrawShape` ou `annRedraw`. |
-| `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | REMOVIDA na V26 — função Ramer-Douglas-Peucker nunca ativada no fluxo de desenho desde V23; removida por decisão do mantenedor. Se suavização de traço livre for necessária em versão futura, reimplementar em contexto com decisão documentada. |
+| `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | Inativa no fluxo de desenho desde a V23 (nunca chamada); a função órfã foi removida fisicamente do código na V25 (commit D3), por decisão do mantenedor. Se suavização de traço livre for necessária em versão futura, reimplementar em contexto com decisão documentada. |
 
 ### Motor de Anotação — Seleção, Edição e Desfazer
 

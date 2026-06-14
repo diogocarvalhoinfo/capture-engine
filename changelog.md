@@ -22,7 +22,7 @@ Anotação iterativa: motor de interação enriquecido com suporte completo a se
 
 **Edição de Propriedades Pós-Desenho** — com uma anotação selecionada, os botões da barra de ferramentas alteram diretamente o objeto em vez de apenas mudar o próximo traço. Os botões −/+ ajustam a espessura ou tamanho de fonte, e a paleta altera a cor atual. Os níveis de espessura foram expandidos para seis opções: `[1, 2, 4, 6, 8, 12]`.
 
-**Polimentos de UX (Anotação)** — o botão direito do mouse permite agarrar e mover anotações em qualquer ferramenta (sem desenhar, suprimindo o menu nativo). O ícone "T" fica azul (cor primária) quando a ferramenta de texto está ativa OU quando uma anotação de texto encontra-se selecionada (`.ann-txt-selected`). A seleção anterior limpa automaticamente ao confirmar ou trocar para texto.
+**Polimentos de UX (Anotação)** — o botão direito do mouse permite agarrar e mover anotações em qualquer ferramenta (sem desenhar, suprimindo o menu nativo). O ícone "T" fica na cor de destaque (accent) quando a ferramenta de texto está ativa OU quando uma anotação de texto encontra-se selecionada (`.ann-txt-selected`). A seleção anterior limpa automaticamente ao confirmar ou trocar para texto.
 
 **Rotação de imagem 90°** — Novo botão "90°" na toolbar do editor. Rotação não-destrutiva em incrementos de 90°: `origBlob` permanece intacto e na orientação original; o campo `rotation` (0|90|180|270) regista o desvio no IndexedDB. As coordenadas das anotações existentes são recalculadas matematicamente para acompanhar a rotação.
 

@@ -137,11 +137,11 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 | Animação | O que faz | Duração | Onde é usada |
 |---|---|---|---|
 | `spin` | Rotação contínua | Contínua | Spinner nos botões PDF/ZIP durante o processamento |
-| `fadeIn` | Entrada com opacidade 0→1 | 150ms | Novos thumbnails e documentos ao serem adicionados |
+| `fadeIn` | Entrada com opacidade 0→1 | 200ms | Novos thumbnails e documentos ao serem adicionados |
 | `modalIn` | Escala `0.96→1` + opacidade | 200ms | Entrada suave de todos os modais |
-| `fadeInTab` | Opacidade rápida | 150ms | Transição entre abas do Visual Builder |
+| `fadeInTab` | Opacidade rápida | 250ms | Transição entre abas do Visual Builder |
 
-*Todas as animações são curtas (150–300ms) e sem inércia. O objetivo é dar feedback imediato — não criar uma experiência cinematográfica que atrase a interação.*
+*Todas as animações são curtas (200–250ms) e sem inércia. O objetivo é dar feedback imediato — não criar uma experiência cinematográfica que atrase a interação.*
 
 ---
 
@@ -412,7 +412,7 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `annTool` | `'rect'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `text` |
+| `annTool` | `'rect'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `text` / `crop` |
 | `annSizeIdx` | `1` (2px) | Índice em `ANN_SIZES` — espessura de linha |
 | `annTextSizeIdx` | `2` (24px) | Índice em `ANN_TEXT_SIZES` — tamanho de fonte |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
