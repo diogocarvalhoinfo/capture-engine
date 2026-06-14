@@ -122,13 +122,22 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 ## 4. Z-Index Stack — Quem fica à frente de quem
 
-| Camada | Z-index | O que está aqui |
-|---|---|---|
-| Base | `0` | Conteúdo normal (grelha de thumbs, lista de documentos, painéis) |
-| Banner | `1000` | Banners de aviso (ex: "Restaurar sessão anterior?") |
-| Modal overlay | `9999` | Modais de imagem, texto, anotação — nada pode ficar à frente |
+A pilha **não é uma escala global única** — os valores estão agrupados por *stacking context*. Valores baixos (10–300) só competem dentro do seu próprio contexto (ex.: controles internos do modal de imagem); os altos (9999, 99999) são globais.
 
-*Por que apenas 3 níveis?* Uma stack com dezenas de valores é fonte constante de bugs. Três níveis bem definidos eliminam ambiguidade. **Não adicionar novos valores sem documentar aqui e em `agents.md`.**
+| Nível | Z-index | Onde / propósito | Contexto |
+|---|---|---|---|
+| Base | `0` (implícito) | Conteúdo normal (grelha, listas, painéis) | global |
+| Local | `10` | Empilhamento local: placeholders de arrasto, pequenos overlays | local |
+| Arrasto | `50` | Item a ser arrastado (`.t-item/.d-item.dragging`) acima dos vizinhos | local |
+| Controles do modal de imagem | `100` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
+| Overlay de texto da anotação | `200` | `#ann-text-overlay` sobre o canvas | dentro do modal |
+| Botão apagar anotação | `300` | Botão `✕` acima do overlay de texto | dentro do modal |
+| Backdrop da sidebar mobile | `1999` | `#sb-mobile-overlay` (fundo escurecido) | mobile |
+| Sidebar mobile | `2000` | `#sidebar` acima do seu próprio backdrop | mobile |
+| Modais | `9999` | `.modal-overlay`, `.sb-overlay`, `#mobile-paste-fab` | global |
+| Banners críticos | `99999` | Quota/armazenamento — **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
+
+**Regra de governança:** qualquer novo valor de `z-index` deve ser adicionado **a esta tabela, ao `agents.md §2.2` e ao conjunto permitido no `validate.sh`** (que falha se aparecer valor não documentado).
 
 ---
 

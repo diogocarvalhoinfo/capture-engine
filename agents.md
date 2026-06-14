@@ -233,9 +233,13 @@ body.dark { --bg: #121212; }
 
 > **Exceção permitida:** `initTheme()` em JavaScript *pode* usar `window.matchMedia('prefers-color-scheme')` como fallback na primeira abertura (antes de o usuário ter definido preferência). O JS lê o OS, aplica a classe, e a partir daí o CSS faz o resto.
 
-**Z-index stack (apenas 3 níveis — não adicionar outros sem documentar aqui):**
-- `9999` → Modais (imagem, texto, anotação)
-- `1000` → Banners (restaurar sessão)
+**Z-index stack (9 níveis reais — agrupados por stacking context; não adicionar outros sem documentar aqui, em `design-tokens.md §4` e no `validate.sh`):**
+- `99999` → Banners críticos de quota/armazenamento (acima dos modais, de propósito)
+- `9999` → Modais (`.modal-overlay`, `.sb-overlay`, `#mobile-paste-fab`)
+- `2000` / `1999` → Sidebar mobile e o seu backdrop
+- `300` / `200` / `100` → Controles internos do modal de imagem (apagar / overlay de texto / zoom+setas)
+- `50` → Item em arrasto
+- `10` → Empilhamento local (placeholders, pequenos overlays)
 - `0` → Conteúdo base
 
 ---
