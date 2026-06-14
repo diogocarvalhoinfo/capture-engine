@@ -941,7 +941,7 @@ Estas variáveis existem no scope do IIFE e representam o estado em memória da 
 | `_vbLabelDirty` | object | `{user: bool, equip: bool}` — track se o admin editou rótulos no VB |
 | `sysColors` | object | Cores atuais `{main, fg, tStart, tAccent, tEnd}`. `main`/`fg` são a cor principal e a cor do texto sobre ela (usadas no contraste automático YIQ — modelo de luminância que decide texto preto ou branco sobre a cor de fundo); `tStart`/`tAccent`/`tEnd` são as cores dos 3 spans de título (vazio = herda do contexto). Inicializado a partir de `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Lido por `applyTokens()`/`initVbSync()` e exportado pelo Quine. |
 | `annActive` | boolean | `true` = modo de anotação ativo |
-| `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `text` |
+| `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `text` \| `crop` |
 | `annHistory` | array | Fonte única da verdade das formas atuais no canvas; cada entrada: `{type, x1, y1, ...}` |
 | `annUndoStack` | array | Pilha de snapshots compostos `{h, rot, crop}`: `h` = deep clone de `annHistory`, `rot` = `annCurrentRotation`, `crop` = deep clone de `annCropBox` ou `null`. O formato composto permite restaurar rotação e recorte além das anotações. Máximo `ANN_HISTORY_MAX` (50) |
 | `annRedoStack` | array | Pilha de snapshots para refazer; limpa sempre que uma nova ação gera um undo |
