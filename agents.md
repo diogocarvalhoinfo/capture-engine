@@ -1088,7 +1088,7 @@ document.getElementById('app-logo').style.display = TOKEN_SHOW_LOGO ? '' : 'none
 **Passo 3 — Integrar no Visual Builder** (se editável pelo admin):
 - Adicionar campo HTML na aba correta do modal VB
 - Registrar handler em `initVbSync()` seguindo o padrão dos campos existentes
-- Sincronizar em `syncVbFromTokens()` para refletir o valor atual no VB
+- Sincronizar em `applyTokens()` para refletir o valor atual no VB
 
 **Passo 4 — Quine cobre automaticamente:** `sanitizeForQuine()` processa todos os `TOKEN_*` por regex — nenhuma alteração necessária nessa função.
 
