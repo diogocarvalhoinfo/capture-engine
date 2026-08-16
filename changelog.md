@@ -63,6 +63,10 @@ A investigação mostrou que a maioria **não é violação nenhuma**. A paleta 
 
 A tabela fecha com a regra para quem editar depois: cor literal nova fora da lista é violação; se for necessária, acrescenta-se a linha com justificação.
 
+**Banner de armazenamento indisponível ganhou botão de fechar (D34):** o banner é `position:fixed` em `top:0` e cobre **43,6px** — o suficiente para esconder por completo o logo, o alternador de tema e o botão de histórico, medido no browser. O de quota tem ✕ e permite recuperar esse acesso; este não tinha, pelo que a barra de topo ficava obstruída **durante toda a sessão, sem saída**.
+
+A justificação anterior — «a condição é permanente, não há ação que a resolva» — explica por que não há remédio a sugerir, mas não justifica tornar a obstrução irremovível. São coisas distintas: o aviso continua impossível de **ignorar** (aparece a cada abertura, em vermelho, no topo), e deixa de ser impossível de **remover** depois de lido. Acrescentado o mesmo ✕ do banner de quota — 24×24, confirmado idêntico por medição —, e o banner passa de 43,6 para 48px pela mesma razão que o outro.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---
