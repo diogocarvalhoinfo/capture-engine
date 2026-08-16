@@ -365,7 +365,7 @@ imagem-1 → imagem-1-1            ❌
 
 ### 3.1 Nomes de Sessões sem Título
 
-Sessões sem nome digitado recebem um identificador cronológico com zeros à esquerda: `#0001`, `#0002`, etc. O número reflete a ordem de criação absoluta — não a posição atual na lista.
+Sessões sem nome digitado recebem um identificador cronológico com zeros à esquerda: `#0001`, `#0002`, etc. O número é a **posição da sessão entre as que existem no momento**, ordenadas por `createdAt` (`sortedOldest.findIndex(...) + 1`) — não há contador persistido. Consequência: apagar ou purgar uma sessão mais antiga **renumera** as seguintes, pelo que o identificador não é estável ao longo do tempo. Não usar como referência externa. (Até à V26 este parágrafo dizia «ordem de criação absoluta», o que sugeria estabilidade que o código não dá.)
 
 ---
 
@@ -547,7 +547,7 @@ r.onupgradeneeded = e => {
 | `pc` | string | ❌ | Valor do Campo 2 (ex: "PC-001") |
 | `createdAt` | number | ✅ | Timestamp Unix (ms) da criação — imutável após criação |
 | `updatedAt` | number | ✅ | Timestamp Unix (ms) da última atividade — atualizado a cada save |
-| `exported` | boolean | ✅ | Definido como `false` na criação; passa a `true` quando `exportFile()` é chamado (Export Admin ou User). campo persistido mas sem lógica dependente na versão atual; reservado para futura marcação visual de sessões exportadas — sem versão-alvo definida |
+| `exported` | boolean | ✅ | Definido como `false` em `createSession()` e **nunca alterado** — é a única ocorrência do campo em todo o código. Persistido mas inerte; reservado para futura marcação visual de sessões exportadas, sem versão-alvo definida. **Quem implementar essa marcação tem de escrever o lado da gravação também** — ele não existe. (Até à V26 esta célula afirmava que o campo «passa a `true` quando `exportFile()` é chamado»; nunca foi verdade.) |
 
 ### Tabela: `images`
 
@@ -603,7 +603,9 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o browser for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. O manipulador `tx.onerror` registra a exceção no console. A aplicação falha silenciosamente na interface para não causar pânico de UX (já que as gravações são assíncronas em background e a captura visual na grade acontece via URL local em memória temporária). A sessão já salva e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e, quando é `QuotaExceededError`, chamam `showQuotaBanner()` — que injeta um banner vermelho fixo no topo (`id="ce-quota-banner"`, z-index `99999`, criado em runtime e **não** presente no HTML estático). O banner avisa que as capturas deixaram de ser gravadas e recomenda exportação imediata; tem botão ✕ para fechar, e reaparece na falha seguinte porque o guard testa a existência do elemento. `SysLogger.error` regista a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
+
+> **Correção histórica:** até à V26 esta secção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia tanto o `README §8` como a `§2.2` deste documento, que já listava `99999` como «Banners críticos de quota/armazenamento». O banner existe desde a D9.
 
 **Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a cota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
 
@@ -683,7 +685,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | O que faz | Quando chamar |
 |---|---|---|
-| `capturePristine()` | Lê o código-fonte original via `fetch` ou `BOOT_HTML` | Apenas em `exportFile()` |
+| `capturePristine()` | Lê o código-fonte original via `fetch` ou `BOOT_HTML` e guarda em `PRISTINE_HTML` | **Uma vez, em `boot()`** — não em `exportFile()`, que apenas *lê* `PRISTINE_HTML` e aborta com `SysLogger.error` se ainda for `null`. (Até à V26 esta linha dizia «Apenas em `exportFile()`»; o diagrama do `README §13` sempre esteve certo.) |
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
@@ -756,7 +758,9 @@ ativar arrasto:
 
 **Algoritmo de geometria de repouso:** A posição final de cada item é calculada a partir de `offsetLeft`, `offsetTop`, `offsetWidth`, `offsetHeight` — coordenadas reais do DOM após reflow, não coordenadas salvas em memória. Isto garante que o snap é sempre preciso independentemente de redimensionamentos ou scroll ocorridos durante o arrasto.
 
-**Nota sobre o item `pointercancel`:** Cancela o arrasto e repõe o item na posição original sem persistir alterações — importante para gestos de scroll em mobile que começam com um toque.
+**Nota sobre o item `pointercancel`:** está registado com o **mesmo handler** do `pointerup` (`onUp`) — não existe caminho de reversão separado. O comportamento depende de o arrasto ter chegado a ativar:
+- **Gesto que nunca ativou** (`!wasActive` — abaixo do `DRAG_THRESHOLD`, ou long-press ainda a decorrer): sai por `return` antecipado, limpa o estado visual e **não persiste**. É este caso que protege os gestos de scroll em mobile que começam com um toque.
+- **Arrasto já ativo:** segue o mesmo caminho do `pointerup` — encaixa o item na posição do placeholder e **persiste a nova ordem** com `idbPut`. Um `pointercancel` a meio de um arrasto ativo confirma a reordenação, não a desfaz.
 
 ---
 
