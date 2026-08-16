@@ -48,6 +48,15 @@ Neutralizado com `\x3C` no lugar do `<`, nas duas formas (abertura e fecho). Esc
 - **Acessibilidade** — o cabeçalho «Estado atual (V25)» passou a «Estado avaliado na V25 (não reavaliado desde então)». Mudá-lo para V26 no bump alegaria uma reavaliação que não houve.
 - **Decisões D7 e D8** registadas no `agents.md §13`: apagar sessão sem confirmação, e Escape a descartar anotações. Ambas foram levantadas como achados nas auditorias e **confirmadas como intencionais pelo proprietário**. Ficam documentadas com justificação para não voltarem a ser reportadas como defeito — e com a nota de que não devem ser alteradas sem aprovação.
 
+**Banner de armazenamento indisponível alinhado ao de quota (D32):** existem **dois** banners críticos — `showQuotaBanner()` (quota esgotada) e `showStorageBanner()` (IndexedDB inacessível, ex.: janela privada). A D23 corrigiu apenas o primeiro e não reparou que tinha um gémeo, pelo que este manteve o emoji ⚠️, o travessão e `font-weight:600` em toda a linha. Agora seguem a mesma estrutura — diagnóstico em `<strong>`, hífen simples, consequência, remédio — e o mesmo vocabulário («gravadas», o verbo que a interface usa no estado «Gravado»):
+
+| | Texto |
+|---|---|
+| Quota | **Armazenamento cheio** - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico. |
+| Indisponível | **Armazenamento indisponível** - as capturas não serão gravadas. Verifique se o browser está em modo privado ou com restrições de armazenamento. |
+
+A diferença de tempo verbal é deliberada e informativa: «deixaram de ser gravadas» descreve gravação que existia e parou; «não serão gravadas» descreve gravação que nunca chega a acontecer. Montagem passou a `createElement`/`createTextNode`, sem `innerHTML`. O banner de armazenamento indisponível continua **sem botão de fechar**, ao contrário do de quota — a condição é permanente para a sessão e não há ação que a resolva sem reabrir o browser noutro modo.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---
