@@ -247,6 +247,8 @@ Itens removidos não são apagados imediatamente — vão para a **Trash Bar** (
 
 A lixeira persiste entre sessões — os itens removidos ficam até serem apagados definitivamente ou até a sessão expirar.
 
+> ⚠️ **AVISO CRÍTICO — a lixeira não cobre sessões inteiras:** a rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo o que estava na lixeira dela. Não há como desfazer. Antes de apagar uma sessão que possa ainda ser precisa, exporte-a (PDF ou ZIP).
+
 ---
 
 ### 5.6 Export PDF
