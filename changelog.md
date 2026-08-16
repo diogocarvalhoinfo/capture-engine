@@ -9,6 +9,10 @@
 
 Versão de correção, originada de duas auditorias independentes sobre a V25. O achado central: o **Export User nunca produziu um arquivo funcional** — defeito presente desde pelo menos a V11 e nunca detectado, porque a validação estática cobre o arquivo de administrador e não o produto do export.
 
+### Corrigido
+
+**`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
+
 ---
 
 ## [V25] - 2026-06-06

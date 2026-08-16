@@ -196,7 +196,7 @@ fi
 
 # 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-22)
 # Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
-CHECKS_NUMERADOS=25
+CHECKS_NUMERADOS=26
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
