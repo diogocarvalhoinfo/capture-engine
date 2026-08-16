@@ -1069,6 +1069,29 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
 
+#### Pontos de maior risco de regressão (estado na V26)
+
+Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos** — é o mapa de onde uma edição tem maior probabilidade de partir alguma coisa, e não é coincidência que as divergências entre código e documentação encontradas nas auditorias da V26 se concentrassem nestas mesmas funções.
+
+| CC | Função | Motor |
+|---|---|---|
+| 47 | `initReorder` | Reordenação (Pointer Events + FLIP) |
+| 34 | `annSetTool` | Anotação — troca de ferramenta, entrada/saída do crop |
+| 30 | *(anónima)* | — |
+| 29 | `initVbSync` | Visual Builder |
+| 29 | `annShowTextInput` | Anotação — editor de texto |
+| 28 | `initClipboard` | Captura (Ctrl+V) |
+| 26 | `applyTokens` | Tokens e tema |
+| 22 | `generatePDF` | Motor PDF |
+| 21 | *(anónima)* | — |
+| 20 | `onclick` | — |
+| 17 | `updateStatusBar` · `annDrawShape` | Barra de estado · Anotação |
+| 16 | `loadSession` · `generateZIP` | Sessões · Motor ZIP |
+
+**Como usar isto:** antes de editar qualquer função desta tabela, leia a secção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
+
+> **Nota:** a heurística conta pontos de decisão, não complexidade real percebida. Uma função pode ter CC alto por ter muitos ramos triviais. A tabela ordena risco relativo, não é veredicto de qualidade. Regenerar com `bash validate.sh` após alterações significativas.
+
 ---
 
 ### Exemplos Práticos de Extensão
