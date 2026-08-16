@@ -325,6 +325,16 @@ else
   printf '[FAIL] %-52s (%s, esperado 280000-340000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi
 
+# 26) ZIP: flag de codificacao UTF-8 (bit 11 = 0x0800 do general purpose bit
+#     flag) tem de estar escrito nos DOIS cabecalhos gerados por buildZIP:
+#     local file header e central directory. Os nomes ja sao codificados em
+#     UTF-8 por ENC.encode(); sem este flag o descompressor e' obrigado a
+#     ler os bytes como CP437/ANSI e os acentos saem ilegiveis no Windows
+#     (APPNOTE.TXT 4.4.4). Ver changelog D21.
+ZLOC=$(grep -c "0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0" "$FILE")
+ZCEN=$(grep -c "0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0" "$FILE")
+check_eq "ZIP: flag UTF-8 (bit 11) nos 2 cabecalhos" "1 1" "$ZLOC $ZCEN"
+
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="
 if [ "$FAIL" -eq 0 ]; then

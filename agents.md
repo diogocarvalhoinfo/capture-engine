@@ -706,7 +706,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 | Função | O que faz | Notas |
 |---|---|---|
 | `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem no formato original (extensão por MIME). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
-| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`. |
+| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`.<br><br>**Codificação dos nomes (não alterar sem ler isto):** os nomes são escritos em UTF-8 por `ENC.encode()`, e o **bit 11 (`0x0800`) do *general purpose bit flag*** é ativado nos **dois** cabeçalhos para o declarar (APPNOTE.TXT §4.4.4). Os dois andam sempre juntos: com o bit a `0`, o descompressor é obrigado a ler os bytes como CP437/ANSI e qualquer nome com acentos sai ilegível (`Diagnóstico` → `Diagn+¦stico`). O `validate.sh` check #26 protege esta invariante. Ver D21. |
 
 ### Motor de Reordenação (`initReorder`)
 
@@ -1023,7 +1023,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 25 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
+O `validate.sh` executa 26 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1032,7 +1032,7 @@ O `validate.sh` executa 25 verificações mecânicas baseadas em regex/grep, gar
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-**Os 25 Checks de Validação:**
+**Os 26 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função presente: window.exportFile**: Garante a existência do ponto de entrada do Quine.
@@ -1059,6 +1059,7 @@ O `validate.sh` executa 25 verificações mecânicas baseadas em regex/grep, gar
 23. **Inventário de z-index**: o conjunto deve ser exatamente o documentado em design-tokens.md §4. Falha se surgir valor novo ou se um documentado desaparecer.
 24. **Durações de animação**: compara o CSS com os valores do design-tokens.md §5 (valores fixos esperados).
 25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está na faixa documentada no README §10 (~280–340 KB) como tripwire.
+26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
 
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.

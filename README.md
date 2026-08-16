@@ -284,6 +284,10 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 - Documentos em todos os formatos
 - Nomes de arquivo limpos baseados nas legendas/nomes definidos (ex: `imagem-1.png`, `relatorio.pdf`)
 
+**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11), que é o que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos corretamente. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
+
+> ℹ️ **Nota:** até à V25 os nomes eram gravados em UTF-8 mas sem essa declaração no cabeçalho, o que fazia os acentos aparecerem trocados (`Diagn+¦stico`) ao abrir o ZIP; e a legenda de imagem convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
+
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
 - **Imagens Separadas** — inclui tudo como arquivos individuais
