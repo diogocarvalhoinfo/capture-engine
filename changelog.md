@@ -81,6 +81,10 @@ Não é uma lista de defeitos — o próprio script classifica estes avisos como
 
 Acompanha a nota de que a heurística conta pontos de decisão e não complexidade percebida — ordena risco relativo, não emite veredicto de qualidade — e a instrução de regenerar a tabela após alterações significativas.
 
+**Documentação — limites do motor ZIP declarados (D38):** `buildZIP` escreve o formato ZIP clássico, sem ZIP64: a contagem de entradas no EOCD usa `u16(files.length)` e os tamanhos e deslocamentos usam `u32`. Os limites reais são portanto **65.535 arquivos** e **~4 GB** por arquivo e no total. As funções `u16`/`u32` aplicam máscaras (`v & 0xFF`, `(v >> 8) & 0xFF`…), pelo que um valor acima do limite **trunca em silêncio**: o ZIP seria gerado e descarregado, mas corrompido, sem erro na interface nem no console.
+
+A probabilidade é baixa — a memória do browser esgota-se ao montar o pacote muito antes de se atingirem esses números. Fica declarado na secção de Limitações precisamente por a falha ser silenciosa, que é o critério que a secção existe para cobrir. Nenhuma alteração de código: implementar ZIP64 não se justifica para um limite que a plataforma torna inalcançável.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---
