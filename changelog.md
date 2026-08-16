@@ -67,6 +67,12 @@ A tabela fecha com a regra para quem editar depois: cor literal nova fora da lis
 
 A justificação anterior — «a condição é permanente, não há ação que a resolva» — explica por que não há remédio a sugerir, mas não justifica tornar a obstrução irremovível. São coisas distintas: o aviso continua impossível de **ignorar** (aparece a cada abertura, em vermelho, no topo), e deixa de ser impossível de **remover** depois de lido. Acrescentado o mesmo ✕ do banner de quota — 24×24, confirmado idêntico por medição —, e o banner passa de 43,6 para 48px pela mesma razão que o outro.
 
+**Acessibilidade — os dois primeiros atributos ARIA do produto (D35):** o levantamento mostrou que o `capture-engine.html` tinha **zero** `role`, `aria-label`, `aria-live` ou `aria-hidden`. A lacuna não era pontual nos banners — era total. Acrescentados `role="alert"` aos dois banners críticos e `aria-label="Fechar aviso"` aos respetivos botões ✕ (que continham apenas o glifo, sem nome acessível).
+
+O critério para parar aqui e não ir mais longe: os banners são as **únicas** mensagens que aparecem sem ação do usuário e que sinalizam risco de perda de dados. Sem `role="alert"`, um leitor de tela não os anuncia — o usuário não fica a saber que as capturas deixaram de ser gravadas. É o ponto de maior retorno por atributo em todo o produto. Qualquer coisa além disso seria uma passagem completa de acessibilidade, que é trabalho de outra dimensão.
+
+O `README` foi atualizado para declarar **exatamente** o que existe — uma tabela com os dois `role` e os dois `aria-label`, e a frase «nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário». A honestidade da declaração de acessibilidade é um ponto forte do projeto e não podia ser diluída por uma melhoria parcial.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---

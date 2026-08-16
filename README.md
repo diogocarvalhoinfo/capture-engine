@@ -488,7 +488,16 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - Navegação por teclado: parcialmente suportada nos controlos principais
 - Rácios de contraste WCAG: verificados para a cor de destaque principal (ver `design-tokens.md §1`)
 - Leitores de tela: não testados formalmente
-- ARIA e ordem de foco: não auditados
+- ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
+
+**ARIA — o que existe, exatamente (V26):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
+
+| Onde | Atributo | Porquê |
+|---|---|---|
+| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não fica a saber que as capturas deixaram de ser gravadas |
+| Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
+
+Nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário.
 
 **Conformidade declarada:** nenhuma conformidade formal com WCAG 2.1 ou EN 301 549 foi auditada nesta versão.
 
