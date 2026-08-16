@@ -1052,7 +1052,7 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 16. **agents.md versao consistente**: Verifica a mesma detecção cruzada no `agents.md`.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
 18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
-19. **Ferramentas de anotação no README (7/7)**: confirma que as 7 ferramentas estão documentadas. FAIL = ferramenta não documentada.
+19. **Ferramentas de anotação no README (8/8)**: confirma que as 8 afordâncias do editor (7 valores de `annTool` + o botão Rotação 90°) estão documentadas no `README.md`. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
 20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
 21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
 22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).

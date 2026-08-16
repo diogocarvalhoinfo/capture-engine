@@ -160,7 +160,8 @@ fi
 
 # 12) Cross-check: ferramentas de anotação documentadas no README.md
 ANN_FAIL=0
-for TOOL in "Rotação" "Crop" "selecionar" "traço livre" "retângulo" "círculo" "seta"; do
+ADMIN_TOOLS_ESPERADAS=8
+for TOOL in "traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop"; do
   if ! grep -qi "$TOOL" README.md 2>/dev/null; then
     printf "[FAIL] %-52s %s\n" "Ferramenta ausente do README.md:" "'$TOOL'"
     FAIL=$((FAIL+1))
@@ -168,7 +169,7 @@ for TOOL in "Rotação" "Crop" "selecionar" "traço livre" "retângulo" "círcul
   fi
 done
 if [ "$ANN_FAIL" -eq 0 ]; then
-  printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "(7/7)"
+  printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "($ADMIN_TOOLS_ESPERADAS/$ADMIN_TOOLS_ESPERADAS)"
   PASS=$((PASS+1))
 fi
 
