@@ -89,6 +89,20 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 
 *Em dark mode, os fundos usam `rgba` com opacidade ~0.08 — a cor semântica fica sobreposta ao fundo escuro com baixa saturação, em vez de um bloco de cor sólido.*
 
+### 2.1 Cores literais fora do sistema de tokens — exceções declaradas
+
+O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, cores escritas como literais no `capture-engine.html`. **Todas são intencionais**, e estão listadas aqui para que auditorias automáticas e revisões futuras parem de as reportar como violação — um `grep` por `background:#` não distingue intenção de esquecimento, e duas auditorias independentes já as assinalaram.
+
+| Cor | Onde | Por que é literal |
+|---|---|---|
+| `#b91c1c` | Fundo dos banners críticos `#ce-quota-banner` e `#ce-storage-banner` | Vermelho de alerta escolhido para estes dois avisos. Não corresponde a `--color-red` (`#ef4444`), que é mais claro; o tom mais escuro foi preferido para o bloco de fundo sólido de largura total. Não tem token próprio por decisão do proprietário. |
+| `#ef4444` `#f97316` `#22c55e` `#eab308` e restantes swatches | Atributos `data-color` da paleta de anotação | **Não são cor de interface — são dados.** O valor é gravado dentro do objeto de anotação no IndexedDB e usado depois para redesenhar a forma. Uma `var(--x)` ficaria persistida como texto no banco, ou exigiria resolução no momento da escrita. Têm de ser literais. |
+| `#ef4444` `#22c55e` `#eab308` | Strings de estilo do `SysLogger` (`console.log('%c…')`) | O console do DevTools **não resolve** custom properties da página. Não há alternativa técnica. |
+| `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
+| `#fff` | Texto sobre os fundos vermelhos acima | Branco puro sobre alerta sólido; não há token de branco puro no sistema (o `--text` nunca é `#ffffff`, por decisão documentada na §1). |
+
+> **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
+
 ---
 
 ## 3. Layout e Forma

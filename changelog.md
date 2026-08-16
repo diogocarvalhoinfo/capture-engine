@@ -57,6 +57,12 @@ Neutralizado com `\x3C` no lugar do `<`, nas duas formas (abertura e fecho). Esc
 
 A diferença de tempo verbal é deliberada e informativa: «deixaram de ser gravadas» descreve gravação que existia e parou; «não serão gravadas» descreve gravação que nunca chega a acontecer. Montagem passou a `createElement`/`createTextNode`, sem `innerHTML`. O banner de armazenamento indisponível continua **sem botão de fechar**, ao contrário do de quota — a condição é permanente para a sessão e não há ação que a resolva sem reabrir o browser noutro modo.
 
+**Documentação — cores literais declaradas como exceções (D33):** nova secção `design-tokens.md §2.1` a listar todas as cores escritas como literais no HTML, com a justificação de cada uma. **Sem alteração de código nem de pixel.** O motivo é cortar um ciclo: as duas auditorias desta versão reportaram estas ocorrências como violação do contrato de Design Tokens, e qualquer auditoria futura repetiria — um `grep` por `background:#` não distingue intenção de esquecimento.
+
+A investigação mostrou que a maioria **não é violação nenhuma**. A paleta de anotação não é cor de interface, é **dado**: o valor é gravado dentro do objeto de anotação no IndexedDB e reutilizado para redesenhar a forma, pelo que uma `var()` ficaria persistida como texto no banco. As cores do `SysLogger` vivem em strings de `console.log('%c…')`, e o console do DevTools não resolve custom properties. Restavam os banners (`#b91c1c`, sem token próprio) e o `#ann-cancel` — este último notável por o botão adjacente `#ann-save` usar `var(--color-green)`, o que expõe a inconsistência de escrita, ainda que o resultado renderizado seja idêntico ao do token. **Ambos mantidos por decisão do proprietário**, agora com o porquê registado.
+
+A tabela fecha com a regra para quem editar depois: cor literal nova fora da lista é violação; se for necessária, acrescenta-se a linha com justificação.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---
