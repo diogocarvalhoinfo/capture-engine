@@ -1,4 +1,4 @@
-# Agents · Capture Engine V25
+# Agents · Capture Engine V26
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -1440,4 +1440,4 @@ req2.onsuccess = e => {
 
 ---
 
-*Capture Engine V25 · Regras Operacionais para Agentes*
+*Capture Engine V26 · Regras Operacionais para Agentes*

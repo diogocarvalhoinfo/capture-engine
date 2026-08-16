@@ -1,4 +1,4 @@
-# Capture Engine · V25
+# Capture Engine · V26
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -802,7 +802,7 @@ flowchart LR
 
 ---
 
-*Capture Engine V25 · Single-file · zero dependências · 100% offline*
+*Capture Engine V26 · Single-file · zero dependências · 100% offline*
 
 ---
 

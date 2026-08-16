@@ -5,6 +5,12 @@
 
 ---
 
+## [V26] — 2026-08-16
+
+Versão de correção, originada de duas auditorias independentes sobre a V25. O achado central: o **Export User nunca produziu um arquivo funcional** — defeito presente desde pelo menos a V11 e nunca detectado, porque a validação estática cobre o arquivo de administrador e não o produto do export.
+
+---
+
 ## [V25] - 2026-06-06
 
 - Mobile: desenho por toque via Pointer Events + touch-action:none no canvas de anotação
