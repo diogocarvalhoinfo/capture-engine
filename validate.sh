@@ -196,7 +196,7 @@ fi
 
 # 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-22)
 # Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
-CHECKS_NUMERADOS=26
+CHECKS_NUMERADOS=27
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -334,6 +334,63 @@ fi
 ZLOC=$(grep -c "0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0" "$FILE")
 ZCEN=$(grep -c "0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0" "$FILE")
 check_eq "ZIP: flag UTF-8 (bit 11) nos 2 cabecalhos" "1 1" "$ZLOC $ZCEN"
+
+# 27) Export User: o artefato podado tem de AVALIAR sem lancar excecao.
+#     Aplica os 4 regex de remocao do exportFile e corre o JS resultante num
+#     shim de DOM onde getElementById devolve null para os IDs removidos.
+#     Comparativo de propósito: so FALHA se o User abortar E o Admin nao —
+#     assim, IDs criados em runtime (que sao null nos dois) nao dao falso
+#     positivo, e um shim defeituoso reprova nos dois e e' detectado.
+#     Cobre codigo sincrono de nivel de modulo; init() e' async e nao corre aqui.
+#     Esta e' a classe de defeito da D25 (Export User que nunca inicializava).
+if command -v node >/dev/null 2>&1; then
+  EU=$(node -e '
+    const fs=require("fs"), vm=require("vm");
+    const bruto=fs.readFileSync(process.argv[1],"utf8");
+    const podar=h=>h
+      .replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,"")
+      .replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,"")
+      .replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,"")
+      .replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,"");
+    const el=()=>new Proxy(function(){},{get:(t,p)=>{
+      if(p==="value"||p==="textContent"||p==="innerHTML")return "";
+      if(p==="children")return [];
+      if(p===Symbol.toPrimitive)return ()=>"";
+      return el();},set:()=>true,apply:()=>el()});
+    function corre(h){
+      const ids=new Set([...h.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
+      const js=[...h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).sort((a,b)=>b.length-a.length)[0];
+      if(!js)return "sem-script";
+      const doc={getElementById:i=>(ids.has(i)?el():null),querySelector:()=>null,
+        querySelectorAll:()=>[],createElement:()=>el(),addEventListener:()=>{},
+        documentElement:el(),body:el(),head:el()};
+      const ctx={document:doc,
+        window:{matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener(){}},
+        localStorage:{getItem:()=>null,setItem(){},removeItem(){}},
+        indexedDB:{open:()=>({addEventListener(){}})},
+        navigator:{storage:{},userAgent:"node"},TextEncoder,TextDecoder,
+        Blob:function(){},URL:{createObjectURL:()=>"",revokeObjectURL(){}},
+        setTimeout,setInterval,clearTimeout,clearInterval,
+        console:{log(){},warn(){},error(){},info(){}},
+        requestAnimationFrame:()=>0,Image:function(){},FileReader:function(){}};
+      ctx.window.document=doc; ctx.self=ctx.globalThis=ctx.window;
+      try{vm.createContext(ctx);new vm.Script(js).runInContext(ctx,{timeout:15000});return "OK";}
+      catch(e){return "ABORTOU: "+e.message.slice(0,58);}
+    }
+    const admin=corre(bruto), user=corre(podar(bruto));
+    if(admin!=="OK") console.log("SHIM|"+admin);
+    else if(user!=="OK") console.log("FALHA|"+user);
+    else console.log("OK|artefato User avalia sem excecao");
+  ' "$FILE" 2>/dev/null)
+  case "${EU%%|*}" in
+    OK)    printf '[PASS] %-52s (%s)\n' "Export User inicializa" "${EU#*|}"; PASS=$((PASS+1));;
+    FALHA) printf '[FAIL] %-52s %s\n' "Export User NAO inicializa" "${EU#*|}"; FAIL=$((FAIL+1));;
+    SHIM)  printf '[WARN] %-52s %s\n' "Export User: shim reprovou tambem no Admin" "${EU#*|}";;
+    *)     printf '[SKIP] %-52s (node nao produziu resultado)\n' "Export User inicializa";;
+  esac
+else
+  printf '[SKIP] %-52s (node nao instalado)\n' "Export User inicializa"
+fi
 
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="

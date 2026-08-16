@@ -5122,6 +5122,7 @@
       const _vbLabelDirty = { user: false, equip: false };
       window.openSettingsModal = function () {
         const o = $('vb-overlay');
+        if (!o) return;
         o.classList.add('open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
@@ -5131,7 +5132,8 @@
       };
 
       window.closeSettingsModal = function () {
-        $('vb-overlay').classList.remove('open');
+        const _vbOv = $('vb-overlay');
+        if (_vbOv) _vbOv.classList.remove('open');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         if (window._deactivateAdmin) window._deactivateAdmin();
@@ -5139,14 +5141,24 @@
           triggerSave();
         }
       };
-      window.closeExportModal = function () { $('export-overlay').classList.remove('open') };
+      window.closeExportModal = function () { const o = $('export-overlay'); if (o) o.classList.remove('open') };
 
       let _expOverlayMdOnBackdrop = false;
-      $('export-overlay').addEventListener('mousedown', function (e) { _expOverlayMdOnBackdrop = (e.target === this) });
-      $('export-overlay').onclick = function (e) { if (e.target === this && _expOverlayMdOnBackdrop) closeExportModal(); _expOverlayMdOnBackdrop = false };
+      /* Guarda obrigatoria: #export-overlay vive no bloco do modal de export, removido
+         no Export User. Sem ela, getElementById devolve null e o TypeError aborta o
+         IIFE inteiro (ver D25). Nao escrever o nome literal do marcador neste
+         comentario: o check 1 do validate.sh conta ocorrencias e falharia. */
+      const _expOv = $('export-overlay');
+      if (_expOv) {
+        _expOv.addEventListener('mousedown', function (e) { _expOverlayMdOnBackdrop = (e.target === this) });
+        _expOv.onclick = function (e) { if (e.target === this && _expOverlayMdOnBackdrop) closeExportModal(); _expOverlayMdOnBackdrop = false };
+      }
 
       /* ═══ LIVE SYNC ENGINE ═══ */
       function initVbSync() {
+        /* O Visual Builder inteiro vive no bloco ADMIN_EDIT, removido no Export User.
+           Sem este early return, boot() aborta e a app nunca inicializa (ver D25). */
+        if (!$('cfg-cor-principal')) return;
         // Main color input
         $('cfg-cor-principal').addEventListener('input', (e) => {
           sysColors.main = e.target.value;
@@ -5328,35 +5340,46 @@
         updateThemeColor();
 
         // Programmatically populate DOM inputs with live token values at boot
-        $('cfg-cor-principal').value = sysColors.main;
-        $('cfg-cor-hex').value = sysColors.main.toUpperCase();
-        $('cfg-cor-fg').value = sysColors.fg || '#ffffff';
-        $('cfg-fg-hex').value = sysColors.fg ? sysColors.fg.toUpperCase() : '';
+        /* Os campos cfg-* vivem no bloco ADMIN_EDIT, removido no Export User.
+           Guardados por grupo, e nao com early return, porque estao intercalados
+           com trabalho de que o usuario final depende (sysColors, placeholders,
+           rodape). Um return aqui deixaria a app sem tema nem rotulos (ver D25). */
+        const _vbPresente = !!$('cfg-cor-principal');
+        if (_vbPresente) {
+          $('cfg-cor-principal').value = sysColors.main;
+          $('cfg-cor-hex').value = sysColors.main.toUpperCase();
+          $('cfg-cor-fg').value = sysColors.fg || '#ffffff';
+          $('cfg-fg-hex').value = sysColors.fg ? sysColors.fg.toUpperCase() : '';
 
-        $('cfg-title-start').value = TOKEN_TITLE_START;
-        $('cfg-title-accent').value = TOKEN_TITLE_ACCENT;
-        $('cfg-title-end').value = TOKEN_TITLE_END;
+          $('cfg-title-start').value = TOKEN_TITLE_START;
+          $('cfg-title-accent').value = TOKEN_TITLE_ACCENT;
+          $('cfg-title-end').value = TOKEN_TITLE_END;
+        }
         sysColors.tStart = TOKEN_TITLE_START_COLOR;
         sysColors.tAccent = TOKEN_TITLE_ACCENT_COLOR;
         sysColors.tEnd = TOKEN_TITLE_END_COLOR;
         applySwatchVisuals();
         updateThemeColor();
 
-        $('cfg-show-user').checked = TOKEN_SHOW_SESSION_USER;
-        $('cfg-show-pc').checked = TOKEN_SHOW_SESSION_PC;
-        $('cfg-user-label').value = TOKEN_USER_LABEL || 'User';
-        $('cfg-user-label').placeholder = '';
-        $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
-        $('cfg-equip-label').placeholder = '';
-        $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
+        if (_vbPresente) {
+          $('cfg-show-user').checked = TOKEN_SHOW_SESSION_USER;
+          $('cfg-show-pc').checked = TOKEN_SHOW_SESSION_PC;
+          $('cfg-user-label').value = TOKEN_USER_LABEL || 'User';
+          $('cfg-user-label').placeholder = '';
+          $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
+          $('cfg-equip-label').placeholder = '';
+          $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
+        }
         const footerYear = TOKEN_FOOTER_TEXT.replace(/\{YEAR\}/g, new Date().getFullYear());
         $('session-user').placeholder = TOKEN_USER_LABEL || 'User';
         $('session-pc').placeholder = TOKEN_EQUIP_LABEL || 'Equipamento';
         const fc = $('footer-credits');
         if (fc) fc.textContent = footerYear;
 
-        $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
-        $('cfg-jpeg-label').textContent = Math.round(TOKEN_JPEG_QUALITY * 100) + '%';
+        if (_vbPresente) {
+          $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
+          $('cfg-jpeg-label').textContent = Math.round(TOKEN_JPEG_QUALITY * 100) + '%';
+        }
 
         const rDim = document.querySelector(`input[name="cfg-max-dim"][value="${TOKEN_MAX_IMG_DIMENSION}"]`);
         if (rDim) rDim.checked = true;
@@ -5386,6 +5409,11 @@
 
       /* ═══ ADMIN GATE ═══ */
       function initAdminGate() {
+        /* Os botoes admin vivem no bloco ADMIN_BUTTONS, removido no Export User.
+           Sem gate nao ha o que instalar, e a linha final desta funcao
+           ($('btn-admin-save').onclick) abortaria o boot() (ver D25).
+           closeSettingsModal ja testa window._deactivateAdmin antes de o chamar. */
+        if (!$('btn-admin-config')) return;
         let clicks = [], adminOn = false;
         function deactivateAdmin() {
           adminOn = false; clicks = [];

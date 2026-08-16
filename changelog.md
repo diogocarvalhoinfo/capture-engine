@@ -11,6 +11,18 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**Export User produzia um arquivo que não inicializava (D25):** o artefato gerado pelo Export User — a cópia distribuída aos usuários finais — nunca chegou a funcionar. `exportFile(isUser=true)` remove os blocos `ADMIN_BUTTONS`, `ADMIN_EDIT`, `ADMIN_JS` e o do modal de export, mas o JavaScript que referencia esses elementos permanecia sem guarda em quatro pontos do arranque. O primeiro, `$('export-overlay').addEventListener(...)`, está em nível de módulo: `getElementById` devolvia `null`, o `TypeError` abortava o IIFE inteiro e `init()` nunca era chamado.
+
+**Sintoma para o usuário final:** a interface renderizava por completo — logo, painéis, botões, e a barra de estado a dizer «Pronto» —, mas nada respondia. Sem base de dados, sem captura, sem export, sem erro visível. Pior do que uma página em branco, porque não sinalizava a avaria.
+
+**Idade do defeito:** testando o artefato podado em cada versão histórica, aborta em **V11, V14, V15, V17, V18, V20, V21, V22, V23, V24 e V25**. Nunca funcionou. Na V11 abortava noutro ponto (`$('vb-overlay')`), pelo que a classe de defeito é anterior.
+
+**Correção:** guardas de nulo nos quatro pontos, com estratégias diferentes conforme o contexto. `initVbSync()` e `initAdminGate()` recebem *early return* — são inteiramente admin, e sem os elementos não há nada a instalar. `applyTokens()` **não** pode ter early return: as escritas em `cfg-*` estão intercaladas com trabalho de que o usuário final depende (`sysColors`, `updateThemeColor()`, placeholders dos campos de sessão, rodapé), e sair cedo deixaria a app sem tema nem rótulos — por isso os três grupos de campos foram guardados individualmente com `_vbPresente`. Os handlers de `#export-overlay` e `#vb-overlay` recebem guarda local.
+
+**Por que passou 15 versões despercebido:** o `validate.sh` valida o arquivo de administrador, nunca o produto do export; e a sintaxe do artefato podado é válida, pelo que até um check de sintaxe passaria — o defeito só aparece ao resolver IDs contra o DOM já podado. O checklist manual (`agents.md §11 Parte B`) manda verificar «Export User → o arquivo abre sem erros no console», mas exige gerar o artefato e abri-lo, passo que não era executado.
+
+**Guard contra regressão:** novo check #27 no `validate.sh`. Aplica os mesmos 4 regex e avalia o JS num shim de DOM. É **comparativo** — só falha se o User abortar e o Admin não —, o que elimina falsos positivos de IDs criados em runtime e denuncia um shim defeituoso em vez de o deixar passar. Teria apanhado isto na V11.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---

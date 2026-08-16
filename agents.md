@@ -1023,7 +1023,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 26 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
+O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1032,7 +1032,7 @@ O `validate.sh` executa 26 verificações mecânicas baseadas em regex/grep, gar
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-**Os 26 Checks de Validação:**
+**Os 27 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função presente: window.exportFile**: Garante a existência do ponto de entrada do Quine.
@@ -1060,6 +1060,7 @@ O `validate.sh` executa 26 verificações mecânicas baseadas em regex/grep, gar
 24. **Durações de animação**: compara o CSS com os valores do design-tokens.md §5 (valores fixos esperados).
 25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está na faixa documentada no README §10 (~280–340 KB) como tripwire.
 26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
+27. **Export User inicializa**: aplica os 4 regex de remoção do `exportFile` e avalia o JS resultante num shim de DOM onde `getElementById` devolve `null` para os IDs removidos. **É comparativo:** só dá FAIL se o artefato User abortar **e** o Admin não — assim, IDs criados em runtime (que são `null` nos dois) não geram falso positivo, e um shim defeituoso reprova nos dois e é sinalizado como `[WARN]`. Cobre código síncrono de nível de módulo; `init()` é `async` e não corre neste ambiente. FAIL = a cópia distribuída aos usuários finais não inicializa (ver D25).
 
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
