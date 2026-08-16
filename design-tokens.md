@@ -203,9 +203,13 @@ Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempr
 > **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O standard HTML define que valores fora de `[0, 1]` fazem o browser usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceitos sem erro — apenas produzem os artefatos ou o desperdício de espaço documentados acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
-Se definido (ex: `1920`), qualquer imagem com dimensão superior é redimensionada antes de ser armazenada. Útil em ambientes onde o armazenamento é limitado. O redimensionamento preserva a proporção (aspect ratio).
+Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido (ex: `1920`), qualquer imagem com dimensão superior é reduzida ao gerar o PDF, preservando a proporção. É lido num único ponto do código — `imgToJPEG()`, chamada exclusivamente por `generatePDF()`.
 
-> **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem é armazenada tal como está.
+> ⚠️ **Importante — não reduz o armazenamento:** `captureImg()` grava sempre o blob **original**, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
+>
+> Até à V26, esta secção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Optou-se por corrigir a documentação e não o código — redimensionar na captura destruiria o original de forma irreversível, o que numa ferramenta de recolha de provas é perda de evidência.
+
+> **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem entra no PDF tal como está.
 
 ### Como o Quine usa estes tokens
 

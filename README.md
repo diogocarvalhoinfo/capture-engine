@@ -209,7 +209,7 @@ Ao clicar numa imagem, abre um modal com visualizador completo.
 ### 5.3 Anotação de imagens
 
 Motor de anotação (V24→V25):
-- 8 ferramentas: traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Rotação 90°, Crop
+- 8 botões no editor: **7 ferramentas** — traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Crop — e **1 ação**, Rotação 90°. A distinção é técnica: as 7 ferramentas são valores de `annTool` e ficam ativas até se escolher outra; a rotação executa e termina, sem estado ativo
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
@@ -396,7 +396,7 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_USER_LABEL` | `''` | Rótulo do Campo 1 (vazio = usa "User") |
 | `TOKEN_EQUIP_LABEL` | `''` | Rótulo do Campo 2 (vazio = usa "Equipamento") |
 | `TOKEN_JPEG_QUALITY` | `0.92` | Qualidade de compressão JPEG no export PDF |
-| `TOKEN_MAX_IMG_DIMENSION` | `0` | Dimensão máxima de imagens (0 = sem limite) |
+| `TOKEN_MAX_IMG_DIMENSION` | `0` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
 | `TOKEN_AUTO_PURGE_HOURS` | `48` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
 | `TOKEN_DEBUG_MODE` | `true` | Logs na consola do browser (desativado em Export User) |
 
@@ -484,7 +484,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## Acessibilidade
 
-**Estado atual (V25):**
+**Estado avaliado na V25** (não reavaliado desde então)**:**
 - Navegação por teclado: parcialmente suportada nos controlos principais
 - Rácios de contraste WCAG: verificados para a cor de destaque principal (ver `design-tokens.md §1`)
 - Leitores de tela: não testados formalmente
@@ -543,7 +543,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 ### As minhas capturas desapareceram depois de fechar o browser
 - O mais provável é esgotamento da quota de armazenamento do browser. Quando o IndexedDB fica sem espaço, a gravação falha e um banner vermelho de aviso aparece no topo da aplicação — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o browser, a memória é liberada e o item desaparece.
 - **Como confirmar:** abra as DevTools (F12) → separador Console → procure erros com a palavra `quota` ou `storage`.
-- **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP). O administrador pode configurar `TOKEN_MAX_IMG_DIMENSION` para reduzir o tamanho de cada imagem antes de ser gravada — consultar o Visual Builder → aba Captura.
+- **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP) e apague no histórico as sessões que já não precisa. **Não existe forma de reduzir o espaço que cada captura ocupa** — as imagens são sempre gravadas no formato original. O `TOKEN_MAX_IMG_DIMENSION` do Visual Builder reduz as imagens apenas na geração do PDF, não no armazenamento, e por isso não previne este problema.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
 - **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do browser, numa base partilhada por **perfil de browser** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML no Firefox; no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo browser** e as sessões reaparecem.
