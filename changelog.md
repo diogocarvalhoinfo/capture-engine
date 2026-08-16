@@ -85,6 +85,12 @@ Acompanha a nota de que a heurística conta pontos de decisão e não complexida
 
 A probabilidade é baixa — a memória do browser esgota-se ao montar o pacote muito antes de se atingirem esses números. Fica declarado na secção de Limitações precisamente por a falha ser silenciosa, que é o critério que a secção existe para cobrir. Nenhuma alteração de código: implementar ZIP64 não se justifica para um limite que a plataforma torna inalcançável.
 
+**Checklist — prova de vida obrigatória do Export User (D39):** o `agents.md §11 Parte B` já mandava abrir a cópia exportada, mas todos os seus itens verificavam o que devia estar **ausente** — botões de admin, Visual Builder, logs no console. **Um artefato morto satisfaz os três trivialmente.** Foi exatamente assim que a D25 sobreviveu 15 versões: o checklist era cumprido por um arquivo que não funcionava.
+
+Substituído por um procedimento de 7 passos que não pode ser satisfeito por um arquivo inerte, com dois passos de **presença** que são o núcleo: colar uma imagem e confirmar que aparece na grade, e escrever no campo User, recarregar, e confirmar que a sessão está no histórico. Acompanha a explicação de por que a inspeção visual não basta — no defeito D25 a interface renderizava por completo, incluindo a barra de estado a dizer «Pronto», porque isso é HTML estático; só a interação revela que nada está ligado.
+
+Acrescentado também um aviso no `§12` (Protocolo de Version Bump), que é onde se olha ao fechar uma release: nenhuma versão está pronta sem esta prova. E a nota de que o novo check #27 do `validate.sh` apanha esta classe de defeito automaticamente, mas cobre apenas código síncrono de nível de módulo — `init()` é `async` e não corre nesse ambiente, pelo que **não substitui** o teste manual.
+
 **`validate.sh` — contador de checks desfasado (D24):** o script tem um mecanismo de autoconsistência (`CHECKS_NUMERADOS`) que compara o número de checks implementados com o número declarado no `agents.md §10` e emite `[WARN]` se divergirem. Ao introduzir o check #26 na D21, o `agents.md` foi atualizado para 26 mas o contador ficou em 25, pelo que o repositório em estado limpo passou a emitir `[WARN] Contagem de checks em agents.md desfasada (doc=26, real=25)`. Contador alinhado. **Como passou despercebido:** as verificações da própria D21 filtraram os `[WARN]` para reduzir ruído — o aviso caiu exatamente no filtro que o deveria ter mostrado.
 
 ---

@@ -1266,8 +1266,26 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] PDF gera com imagens; fica **desativado** quando há documentos na sessão
 - [ ] ZIP empacota imagens + documentos
 - [ ] **Export Admin** → a cópia mantém o painel de administração e a capacidade de re-exportar
-- [ ] **Export User** → a cópia **não** tem botões de admin, Visual Builder, nem logs no console
-- [ ] Abrir a cópia exportada e confirmar que as configurações (cor, nome, rodapé) foram aplicadas
+
+---
+
+#### Prova de vida do Export User — obrigatória em toda a release
+
+> ⚠️ **AVISO CRÍTICO — este é o teste que faltou durante 15 versões:** entre a V11 e a V25, o Export User produziu um arquivo que **nunca inicializava** (ver changelog D25). Não foi detectado porque o `validate.sh` valida o arquivo de administrador e nunca o produto do export, e porque os itens antigos deste checklist verificavam apenas o que devia estar **ausente** (botões de admin, Visual Builder, logs) — condições que um artefato morto satisfaz trivialmente. **Nunca substituir este bloco por verificações de ausência.**
+
+Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca com o `capture-engine.html` de desenvolvimento:
+
+1. [ ] Fazer **Export User** pela aplicação e guardar o arquivo
+2. [ ] Abrir esse arquivo no browser e pressionar **F12 → Console**
+3. [ ] **Zero erros no console.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25 — o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal
+4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
+5. [ ] **A sessão persiste:** escrever no campo User, recarregar a página, e confirmar que a sessão está no histórico
+6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
+7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
+
+> **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25 a interface renderizava por completo — logo, painéis, botões, e a barra de estado a dizer «Pronto» — porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
+
+> ℹ️ **Nota:** o `validate.sh` check #27 simula o strip e apanha esta classe de defeito automaticamente, mas cobre apenas código síncrono de nível de módulo — `init()` é `async` e não corre nesse ambiente. **Não substitui esta prova de vida.**
 
 **Multi-aba:**
 - [ ] Abrir o arquivo numa segunda aba do mesmo browser → **carrega normalmente** (sem tela de erro vermelha); ambas as abas funcionam e compartilham a mesma base de dados
@@ -1336,6 +1354,8 @@ Nunca assumir que as substituições foram completas sem verificar.
 
 **Commit atómico obrigatório:**
 Todos os arquivos alterados no version bump (`capture-engine.html`, `changelog.md`, `README.md`, `design-tokens.md`, `agents.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
+
+> ⚠️ **AVISO CRÍTICO — nenhuma versão está pronta sem a prova de vida do Export User:** antes de considerar a release fechada, execute a «Prova de vida do Export User» da Seção 11, Parte B. Gerar o artefato, abri-lo, e confirmar que **funciona** — não apenas que não tem botões de admin. Foi a ausência deste passo que deixou o Export User quebrado da V11 à V25 sem que ninguém notasse. Custa dois minutos.
 
 > **Nota sobre o `validate.sh`:** o script **não** tem número de versão hardcoded — a verificação #8 auto-detecta a versão a partir do boot message (`Capture Engine Vxx Ready`) e confirma que essa mesma versão aparece nas 3 referências de produto do HTML (comentário do Visual Builder, badge e console). Por isso o `validate.sh` **não precisa de ser editado** no version bump; pelo contrário, **correr `validate.sh` após o bump apanha** os 3 locais caso algum tenha ficado por substituir (a verificação #8 dá `FAIL` se a versão do boot message não bater com o badge/comentário VB). Adicionalmente, o `validate.sh` verifica automaticamente (checks #11 e #12): consistência de `TOKEN_MAIN_COLOR` entre HTML e `design-tokens.md`, e presença das 7 ferramentas de anotação no `README.md`. Qualquer deriva nestes dois eixos aparece como `[FAIL]` antes do commit.
 
