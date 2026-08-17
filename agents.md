@@ -563,7 +563,7 @@ r.onupgradeneeded = e => {
 | `sessionId` | string | ✅ | ID da sessão a que pertence |
 | `blob` | Blob | ✅ | Dados binários da imagem (PNG, JPEG, WEBP, GIF) |
 | `label` | string | ✅ | Nome/legenda da imagem (ex: `imagem-1`) — único dentro da sessão |
-| `order` | number | ✅ | Posição na grade (0-based) — define a ordem de exibição e export |
+| `order` | number | ✅ | Posição na grade — define a ordem de exibição e export. **Único, mas não necessariamente contíguo.** Novos valores vêm de `nextOrder(arr)` = `max(order)+1`, nunca de `arr.length`: `delImg`/`delDoc` não renumeram os restantes, pelo que o `length` colidiria com um `order` existente (ver D45). As lacunas são normais e desaparecem no primeiro reordenamento, que renumera densamente |
 | `addedAt` | number | ✅ | Timestamp Unix (ms) de quando foi capturada |
 | `origBlob` | Blob | ❌ | Imagem **original** antes da anotação. Criada por `ann-save` na primeira vez que se confirma uma anotação; usada por `annActivate` como fundo do canvas ao reeditar. Removida (e `blob` reposto ao original) se todas as anotações forem apagadas **e não houver redo pendente** (`annRedoStack` vazio). Presente apenas em imagens anotadas. |
 | `annHistory` | array | ❌ | Stack de formas anotadas (`{type, x1, y1, ...}`) persistida com a imagem para reedição posterior (anotação **não-destrutiva**). Presente apenas em imagens anotadas; removida quando fica vazia. |

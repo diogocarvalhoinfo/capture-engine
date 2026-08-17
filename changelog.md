@@ -31,6 +31,20 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 
 Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da secção probatória, e a descrição do `generateZIP` no `agents.md §7`, que agora regista explicitamente que a função nunca lê `origBlob`. Acrescentado um `AVISO CRÍTICO` na secção probatória com a consequência prática: **o original de uma imagem editada não é recuperável por nenhuma via da interface**, pelo que quem precise de integridade pixel-a-pixel tem de exportar o ZIP **antes** de editar.
 
+**Ordem dos itens deixava de ser determinística após apagar (D45):** os quatro sítios que atribuem `order` — `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc` — usavam `arr.length`. Mas `delImg`/`delDoc` fazem `splice` do array **sem renumerar os restantes**, pelo que o `length` volta a coincidir com um `order` que ainda existe.
+
+Com A(0), B(1), C(2), apagar o B deixa `length = 2` — e tanto restaurar o B como **capturar uma imagem nova** atribui `order = 2`, colidindo com o C. O `loadSession` ordena por `a.order - b.order`, e o empate resolve-se de forma diferente da ordem que estava no ecrã: **a ordem mudava sozinha ao reabrir a sessão**, e o PDF/ZIP exportado seguia a que estivesse em memória.
+
+**Reproduzido em browser real** antes da correção: grade em `imagem-1, imagem-3, imagem-2`; após recarregar, `imagem-1, imagem-2, imagem-3`. No IndexedDB, `imagem-2(order=2)` e `imagem-3(order=2)`.
+
+O gatilho mais provável não é apagar+restaurar — é **apagar e colar outra imagem**, que é rotina. E os documentos tinham exatamente o mesmo defeito.
+
+**Correção:** helper `nextOrder(arr)` que devolve `max(order) + 1`, usado nos quatro sítios. Escolhido em vez de renumerar no delete por duas razões: renumerar exigiria N escritas separadas, **não atómicas** (`idbPut` não agrupa), e uma falha a meio — o modo de falha mais documentado desta app é esgotamento de quota — deixaria exatamente as ordens duplicadas que se pretendia corrigir; e o custo de apagar um item passaria a ser proporcional ao tamanho da sessão. O `max+1` escreve **um** registo e nunca colide.
+
+As ordens ficam esparsas (`0, 3, 2, 4` no teste), o que é inofensivo: o `sort` não se importa com lacunas, e o motor de reordenação já renumera densamente (`obj.order = i`) a cada arrasto, pelo que qualquer lacuna desaparece no primeiro reordenamento.
+
+**Verificado:** com o cenário completo — apagar do meio, restaurar, e capturar uma quarta imagem — zero ordens duplicadas, e a ordem passou a ser idêntica antes e depois de reabrir a sessão.
+
 **Quine — o re-export produzia um arquivo morto quando um token continha apóstrofo (D40):** as 11 regexes de substituição de tokens de texto no `exportFile` usavam `'[^']*'`, padrão que **para no primeiro apóstrofo mesmo quando escapado**. O `sanitizeForQuine` escapa corretamente (`'` → `\'`), pelo que a **primeira** geração saía válida; mas ao re-exportar a partir dela, a regex encontrava o `\'` dentro da string e cortava a declaração a meio.
 
 **Reproduzido de ponta a ponta em browser real**, com o `exportFile` da própria aplicação. Com o rodapé `Perícia d'Almeida - {YEAR}`:
