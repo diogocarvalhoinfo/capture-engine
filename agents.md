@@ -150,7 +150,7 @@ No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_E
 const TOKEN_MAIN_COLOR = '#e86b2e';
 ```
 
-> **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex ancorado à sintaxe de declaração (ex: `/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/`). Isto garante que apenas a declaração seja substituída, prevenindo a corrupção acidental da string em contextos de comentário, log ou código (ex: `console.log("TOKEN_MAIN_COLOR")`). Adicionalmente, `sanitizeForQuine()` insere zero-width spaces (U+200B) nos valores dos campos editáveis antes de serializar o HTML, impedindo que texto digitado pelo usuário coincida acidentalmente com os marcadores de estrutura do Quine (ex.: `ADMIN_EDIT_START`).
+> **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex ancorado à sintaxe de declaração (ex: `/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/` — o padrão do valor **tem de conhecer escapes**; ver o aviso crítico na `§1.3`). Isto garante que apenas a declaração seja substituída, prevenindo a corrupção acidental da string em contextos de comentário, log ou código (ex: `console.log("TOKEN_MAIN_COLOR")`). Adicionalmente, `sanitizeForQuine()` insere zero-width spaces (U+200B) nos valores dos campos editáveis antes de serializar o HTML, impedindo que texto digitado pelo usuário coincida acidentalmente com os marcadores de estrutura do Quine (ex.: `ADMIN_EDIT_START`).
 
 **Regra:** Qualquer alteração ao arquivo deve preservar todos os comment markers intactos e todas as funções Quine funcionais.
 

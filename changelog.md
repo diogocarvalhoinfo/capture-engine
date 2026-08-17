@@ -31,6 +31,10 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 
 Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da secção probatória, e a descrição do `generateZIP` no `agents.md §7`, que agora regista explicitamente que a função nunca lê `origBlob`. Acrescentado um `AVISO CRÍTICO` na secção probatória com a consequência prática: **o original de uma imagem editada não é recuperável por nenhuma via da interface**, pelo que quem precise de integridade pixel-a-pixel tem de exportar o ZIP **antes** de editar.
 
+**`agents.md §1.2` exibia o padrão de regex que a D40 eliminou (D48):** a nota «Proteção de colisão do regex» dava como exemplo `/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/` — exatamente o padrão que mata o artefato na segunda geração de export, e que o aviso crítico da `§1.3`, **27 linhas abaixo**, declara «sempre errado aqui». O documento contradizia-se dentro da mesma secção de leitura obrigatória, e o lado errado era o que um agente lê primeiro.
+
+A D40 corrigiu o código e acrescentou o aviso na `§1.3`, mas não olhou para o exemplo da `§1.2`. Mesma classe da D30 e da D42: corrigir onde se procurou, não onde não se procurou. Verificado por comparação mecânica — o exemplo da doc e a regex do `exportFile` são agora byte a byte idênticos, e não resta nenhum outro exemplo com o padrão antigo na documentação.
+
 **`validate.sh` — elimina a fragilidade que a D46 deixou (D47):** a D46 resolveu o furo cortando a linha em `A distinção é técnica`. Funcionava, mas acoplava o check a uma frase editorial: se alguém reescrevesse essa frase, o corte deixava de acontecer e o check **regressava em silêncio** ao comportamento defeituoso da D41 — voltaria a deixar passar a remoção de `Rotação`. Mesmo padrão que já mordeu três vezes: procurar num âmbito que contém texto irrelevante.
 
 **Corrigida a estrutura, não o parser.** A linha do `README §5.3` foi dividida: a enumeração fica sozinha, e a explicação passou para a linha seguinte, indentada como sub-item. O check deixou de precisar de recortar seja o que for — lê a linha e ela contém apenas a lista.
