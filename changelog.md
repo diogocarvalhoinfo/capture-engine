@@ -31,6 +31,12 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 
 Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da secção probatória, e a descrição do `generateZIP` no `agents.md §7`, que agora regista explicitamente que a função nunca lê `origBlob`. Acrescentado um `AVISO CRÍTICO` na secção probatória com a consequência prática: **o original de uma imagem editada não é recuperável por nenhuma via da interface**, pelo que quem precise de integridade pixel-a-pixel tem de exportar o ZIP **antes** de editar.
 
+**`validate.sh` — o check de ferramentas ainda tinha um furo (D46):** a D41 restringiu a busca à linha que enumera as afordâncias, resolvendo o caso de `texto`. Mas a linha continua, depois da enumeração, com prosa explicativa que **repete termos**: «…a distinção é técnica: as 7 ferramentas são valores de `annTool`… **a rotação** executa e termina». Resultado: remover `— e **1 ação**, Rotação 90°.` da enumeração continuava a dar `[PASS] (8/8)`.
+
+Foi o mesmo defeito da D29 reintroduzido à escala da linha — procurar num âmbito que contém texto irrelevante que casa. Encontrado pela quarta auditoria, que testou exatamente essa mutação.
+
+**Correção:** a linha passa a ser cortada em `A distinção é técnica`, restringindo a busca à enumeração propriamente dita. Verificado com quatro mutações — intacto (PASS), sem `texto` (FAIL), sem `Rotação 90°` (FAIL), sem `Crop` (FAIL) —, cada uma a acusar o termo correto.
+
 **Ordem dos itens deixava de ser determinística após apagar (D45):** os quatro sítios que atribuem `order` — `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc` — usavam `arr.length`. Mas `delImg`/`delDoc` fazem `splice` do array **sem renumerar os restantes**, pelo que o `length` volta a coincidir com um `order` que ainda existe.
 
 Com A(0), B(1), C(2), apagar o B deixa `length = 2` — e tanto restaurar o B como **capturar uma imagem nova** atribui `order = 2`, colidindo com o C. O `loadSession` ordena por `a.order - b.order`, e o empate resolve-se de forma diferente da ordem que estava no ecrã: **a ordem mudava sozinha ao reabrir a sessão**, e o PDF/ZIP exportado seguia a que estivesse em memória.

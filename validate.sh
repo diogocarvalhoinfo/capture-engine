@@ -171,7 +171,10 @@ if [ -z "$ANN_LINHA" ]; then
   printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'botões no editor' nao encontrada)"
   FAIL=$((FAIL+1))
 else
-  ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
+  # Corta a linha ANTES da prosa explicativa: o texto apos "A distincao e tecnica"
+  # repete termos ("a rotacao executa e termina..."), o que fazia o check passar
+  # mesmo com a ferramenta removida da enumeracao. Ver D46.
+  ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md | sed 's/A distinção é técnica.*//')
   for TOOL in "${ANN_TOOLS[@]}"; do
     if ! printf '%s' "$ANN_TEXTO" | grep -qi -- "$TOOL"; then
       printf "[FAIL] %-52s %s\n" "Ferramenta ausente da lista no README.md:" "'$TOOL'"
