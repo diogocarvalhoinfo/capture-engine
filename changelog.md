@@ -15,6 +15,12 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 A procura passou a ser feita **na linha que enumera as afordâncias** («botões no editor»), e a contagem deriva do próprio array (`${#ANN_TOOLS[@]}`). Demonstrado: removendo `texto (negrito B / itálico I)` da lista, o check agora dá `[FAIL] Ferramenta ausente da lista no README.md: 'texto'` — antes dava `[PASS] (8/8)`. Acrescentado também um FAIL para o caso de a própria linha desaparecer do README.
 
+**Documentação — três divergências que a D30 não apanhou (D42):**
+
+- **`agents.md §4` e `§7`, `createSession()`** — ambas diziam «Apenas em `init()` e `ensureSession()`». O `init()` **não** o chama: a única chamada está em `ensureSession()`. A afirmação contradizia a própria `§4`, que descreve o arranque como estado pristine **sem sessão criada**.
+- **`agents.md §14`** — o cabeçalho do diagnóstico de quota ainda dizia «capturas desaparecem ao reabrir **sem aviso na UI**». A D30 corrigiu a afirmação equivalente na `§6` e não viu esta. A interface avisa desde a D9, com o banner vermelho.
+- **`agents.md §6`** — dizia que itens na lixeira «**não têm** campo `order`». Têm: `delImg`/`delDoc` fazem `splice` e acrescentam `removedAt`, sem apagar o `order`. O que é verdade é que a lixeira **ordena por `removedAt`** e ignora aquele valor.
+
 **Quine — o re-export produzia um arquivo morto quando um token continha apóstrofo (D40):** as 11 regexes de substituição de tokens de texto no `exportFile` usavam `'[^']*'`, padrão que **para no primeiro apóstrofo mesmo quando escapado**. O `sanitizeForQuine` escapa corretamente (`'` → `\'`), pelo que a **primeira** geração saía válida; mas ao re-exportar a partir dela, a regex encontrava o `\'` dentro da string e cortava a declaração a meio.
 
 **Reproduzido de ponta a ponta em browser real**, com o `exportFile` da própria aplicação. Com o rodapé `Perícia d'Almeida - {YEAR}`:

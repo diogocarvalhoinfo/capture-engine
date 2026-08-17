@@ -412,7 +412,7 @@ init() → interface em branco (Pristine State)
 | **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
 | **Apagar sessão ATIVA com vizinha** | Capturar `neighbor` *antes* da deleção: `allBefore[idx+1] \|\| allBefore[idx-1]`. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
 | **Apagar sessão ATIVA sem vizinha** | Reset completo: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos zerados. **Não criar nova sessão.** |
-| **`createSession()` diretamente** | Apenas em `init()` e `ensureSession()`. Nunca chamar em `deleteSessionId()` ou handlers de evento. |
+| **`createSession()` diretamente** | Apenas em `ensureSession()`. Nunca chamar em `deleteSessionId()` ou handlers de evento. |
 
 > **Porquê nunca criar sessão em `deleteSessionId`?** Porque o usuário que apaga a última sessão está a decidir ter uma interface vazia. Criar uma sessão automática seria ignorar a intenção do usuário — e causaria um loop onde apagar sempre gerava uma sessão nova no histórico.
 
@@ -594,7 +594,7 @@ Mesmos campos das tabelas ativas, com adição de:
 |---|---|---|
 | `removedAt` | number | Timestamp Unix (ms) de quando foi movido para a lixeira |
 
-**Nota:** Items na lixeira **não têm** campo `order` — a lixeira ordena por `removedAt`.
+**Nota:** a lixeira **ordena por `removedAt`**, não por `order`. O campo `order` continua presente nos registos movidos para a lixeira — `delImg`/`delDoc` fazem `splice` do array e acrescentam `removedAt`, sem apagar o `order` anterior. Até à V26 esta nota dizia que os itens «não têm» o campo; têm, apenas não é usado para os ordenar. O valor antigo é ignorado no restauro, que atribui uma ordem nova.
 
 ### Chaves de LocalStorage
 
@@ -627,7 +627,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | Assinatura | O que faz | Quando chamar |
 |---|---|---|---|
-| `createSession()` | `async () → void` | Cria sessão nova em branco e atualiza `sessId`/`sessObj` | Apenas em `init()` e `ensureSession()` |
+| `createSession()` | `async () → void` | Cria sessão nova em branco e atualiza `sessId`/`sessObj` | Apenas em `ensureSession()` |
 | `ensureSession()` | `async () → void` | Confirma sessão se não existe; usa mutex `_ensurePromise` | Antes de qualquer captura (chamada por `captureImg`/`captureDoc`) |
 | `loadSession(id)` | `async (string) → void` | Carrega sessão do IndexedDB para memória e renderiza | Ao navegar para sessão existente |
 | `saveSession()` | `async () → void` | Persiste sessão atual no IndexedDB | Pelo auto-save e `triggerSave()` |
@@ -1437,7 +1437,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
    ```
    Este script faz download de todas as imagens da store. Para documentos, substituir `'images'` por `'documents'` e `item.label` por `item.name`.
 
-**Diagnosticar quota esgotada** (capturas desaparecem ao reabrir sem aviso na UI):
+**Diagnosticar quota esgotada** (confirmar o uso real quando o banner vermelho de armazenamento aparece — ver `§6`; a interface **avisa**, ao contrário do que esta secção afirmava até à V26):
 ```js
 // No console (F12 -> Console):
 navigator.storage.estimate().then(e =>
