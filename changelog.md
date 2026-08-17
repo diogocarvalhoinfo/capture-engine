@@ -35,6 +35,12 @@ Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da s
 
 A D40 corrigiu o código e acrescentou o aviso na `§1.3`, mas não olhou para o exemplo da `§1.2`. Mesma classe da D30 e da D42: corrigir onde se procurou, não onde não se procurou. Verificado por comparação mecânica — o exemplo da doc e a regex do `exportFile` são agora byte a byte idênticos, e não resta nenhum outro exemplo com o padrão antigo na documentação.
 
+**`README §8` — «preserva o PNG original intacto» era ambíguo (D49):** a quarta auditoria classificou esta frase como `Alto`, por contradizer a D44. **Testado e rebaixado para `Baixo`.**
+
+A frase vive na linha sobre **transparência**, contrastando PDF (que achata com fundo branco) com ZIP. Medido com um PNG de 20.000 pixéis transparentes: sem anotar, o ZIP devolve o arquivo **byte a byte idêntico**; depois de anotar, o `origBlob` continua preservado e igual ao original, e **a transparência sobrevive ao re-encode** (19.754 pixéis com alfa 0). O que a frase afirma no seu contexto — ZIP não achata a transparência — é verdade, e continua verdade em imagens editadas.
+
+O resíduo legítimo era a palavra «intacto», ambígua quanto a bytes. Reescrita para declarar as duas coisas separadamente: a transparência preserva-se sempre; a igualdade byte a byte só em imagens não editadas. Fica registado que a classificação `Alto` foi testada antes de ser aceite — a auditoria leu a frase fora do contexto em que ela vive.
+
 **`validate.sh` — elimina a fragilidade que a D46 deixou (D47):** a D46 resolveu o furo cortando a linha em `A distinção é técnica`. Funcionava, mas acoplava o check a uma frase editorial: se alguém reescrevesse essa frase, o corte deixava de acontecer e o check **regressava em silêncio** ao comportamento defeituoso da D41 — voltaria a deixar passar a remoção de `Rotação`. Mesmo padrão que já mordeu três vezes: procurar num âmbito que contém texto irrelevante.
 
 **Corrigida a estrutura, não o parser.** A linha do `README §5.3` foi dividida: a enumeração fica sozinha, e a explicação passou para a linha seguinte, indentada como sub-item. O check deixou de precisar de recortar seja o que for — lê a linha e ela contém apenas a lista.
