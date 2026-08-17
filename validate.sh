@@ -158,19 +158,31 @@ else
   PASS=$((PASS+1))
 fi
 
-# 12) Cross-check: ferramentas de anotação documentadas no README.md
+# 12) Cross-check: ferramentas de anotação documentadas no README.md.
+#     Procura na LINHA que enumera as afordâncias do editor, nao no README
+#     inteiro: termos como "texto" ocorrem dezenas de vezes noutros contextos,
+#     e o check passava mesmo com a ferramenta removida da lista (ver D41).
+#     A contagem exibida deriva do proprio array — nao ha constante a
+#     dessincronizar-se se a lista mudar.
+ANN_TOOLS=("traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop")
 ANN_FAIL=0
-ADMIN_TOOLS_ESPERADAS=8
-for TOOL in "traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop"; do
-  if ! grep -qi "$TOOL" README.md 2>/dev/null; then
-    printf "[FAIL] %-52s %s\n" "Ferramenta ausente do README.md:" "'$TOOL'"
-    FAIL=$((FAIL+1))
-    ANN_FAIL=$((ANN_FAIL+1))
+ANN_LINHA=$(grep -n "botões no editor" README.md 2>/dev/null | head -1 | cut -d: -f1)
+if [ -z "$ANN_LINHA" ]; then
+  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'botões no editor' nao encontrada)"
+  FAIL=$((FAIL+1))
+else
+  ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
+  for TOOL in "${ANN_TOOLS[@]}"; do
+    if ! printf '%s' "$ANN_TEXTO" | grep -qi -- "$TOOL"; then
+      printf "[FAIL] %-52s %s\n" "Ferramenta ausente da lista no README.md:" "'$TOOL'"
+      FAIL=$((FAIL+1))
+      ANN_FAIL=$((ANN_FAIL+1))
+    fi
+  done
+  if [ "$ANN_FAIL" -eq 0 ]; then
+    printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "(${#ANN_TOOLS[@]}/${#ANN_TOOLS[@]})"
+    PASS=$((PASS+1))
   fi
-done
-if [ "$ANN_FAIL" -eq 0 ]; then
-  printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "($ADMIN_TOOLS_ESPERADAS/$ADMIN_TOOLS_ESPERADAS)"
-  PASS=$((PASS+1))
 fi
 
 # 13) Cross-check: guard de purge TOKEN_AUTO_PURGE_HOURS presente no HTML
