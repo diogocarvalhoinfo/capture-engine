@@ -175,6 +175,10 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 
 > **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) são exportados com a aspa escapada — o arquivo resultante é sintaticamente correto em JavaScript, mas quem inspecionar o HTML manualmente verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correto e esperado.
 
+> ⚠️ **AVISO CRÍTICO — as regexes de substituição têm de conhecer escapes:** escapar o apóstrofo em `sanitizeForQuine` só resolve **metade** do problema. Da V11 à V26 as 11 regexes de token de texto usavam `'[^']*'`, que **para no primeiro apóstrofo, mesmo escapado**. Consequência: o artefato da 1.ª geração ficava correto, mas ao **re-exportar a partir dele** o padrão cortava a declaração a meio e produzia `SyntaxError` — aplicação completamente morta, sem uma única função global. Corrigido na D40 com `'(?:[^'\\]|\\.)*'`, que consome pares escapados como unidade.
+>
+> **Ao editar `exportFile`:** qualquer regex nova que capture um valor de token entre aspas simples tem de usar este padrão. `'[^']*'` é sempre errado aqui — funciona uma geração e parte a seguinte, o que o torna especialmente traiçoeiro: passa em qualquer teste que exporte só uma vez.
+
 **Nunca usar:**
 - `eval()` — executa código arbitrário
 - `Function()` — equivalente a eval

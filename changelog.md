@@ -11,6 +11,22 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**Quine — o re-export produzia um arquivo morto quando um token continha apóstrofo (D40):** as 11 regexes de substituição de tokens de texto no `exportFile` usavam `'[^']*'`, padrão que **para no primeiro apóstrofo mesmo quando escapado**. O `sanitizeForQuine` escapa corretamente (`'` → `\'`), pelo que a **primeira** geração saía válida; mas ao re-exportar a partir dela, a regex encontrava o `\'` dentro da string e cortava a declaração a meio.
+
+**Reproduzido de ponta a ponta em browser real**, com o `exportFile` da própria aplicação. Com o rodapé `Perícia d'Almeida - {YEAR}`:
+
+| | Antes da D40 | Depois |
+|---|---|---|
+| Geração 1 | viva, rodapé correto | viva |
+| Geração 2 | **morta** — `SyntaxError`, zero funções globais | viva |
+| Geração 3 | — | viva |
+
+A declaração corrompida era `const TOKEN_FOOTER_TEXT = 'Perícia d\'Almeida - {YEAR}'Almeida - {YEAR}';`. Por ser erro de sintaxe no parse, o bloco `<script>` inteiro não compilava: nem as funções declaradas antes do ponto de falha existiam — pior que a D25. O sintoma visível era o rodapé mostrar o valor **padrão** em vez do configurado, sinal de que o `applyTokens` nunca correra.
+
+**Correção:** as 11 regexes passaram a `'(?:[^'\\]|\\.)*'`, que consome pares escapados como unidade. Verificado com apóstrofo isolado, barra invertida, ambos combinados, barra no fim da string e `{YEAR}` — todos sobrevivem a duas gerações com o valor exato preservado.
+
+**Idade:** o padrão `'[^']*'` existe desde que há substituição de tokens. A cadeia de re-export nunca foi testada com um valor que contivesse apóstrofo — e o `agents.md §1.3` afirmava explicitamente que este caso funcionava, dando `O'Brien Tools` como exemplo. Funcionava uma geração. A nota foi corrigida com o aviso de que `'[^']*'` é sempre errado neste contexto, precisamente por passar em qualquer teste que exporte só uma vez.
+
 **Export User produzia um arquivo que não inicializava (D25):** o artefato gerado pelo Export User — a cópia distribuída aos usuários finais — nunca chegou a funcionar. `exportFile(isUser=true)` remove os blocos `ADMIN_BUTTONS`, `ADMIN_EDIT`, `ADMIN_JS` e o do modal de export, mas o JavaScript que referencia esses elementos permanecia sem guarda em quatro pontos do arranque. O primeiro, `$('export-overlay').addEventListener(...)`, está em nível de módulo: `getElementById` devolvia `null`, o `TypeError` abortava o IIFE inteiro e `init()` nunca era chamado.
 
 **Sintoma para o usuário final:** a interface renderizava por completo — logo, painéis, botões, e a barra de estado a dizer «Pronto» —, mas nada respondia. Sem base de dados, sem captura, sem export, sem erro visível. Pior do que uma página em branco, porque não sinalizava a avaria.
