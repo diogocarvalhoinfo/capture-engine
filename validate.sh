@@ -171,10 +171,17 @@ if [ -z "$ANN_LINHA" ]; then
   printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'botões no editor' nao encontrada)"
   FAIL=$((FAIL+1))
 else
-  # Corta a linha ANTES da prosa explicativa: o texto apos "A distincao e tecnica"
-  # repete termos ("a rotacao executa e termina..."), o que fazia o check passar
-  # mesmo com a ferramenta removida da enumeracao. Ver D46.
-  ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md | sed 's/A distinção é técnica.*//')
+  ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
+  # A linha tem de conter APENAS a enumeracao. A prosa explicativa vive na linha
+  # seguinte, indentada, porque repete termos ("a rotacao executa e termina...") e
+  # faria o check passar com a ferramenta removida da lista — foi o furo da D41,
+  # apanhado na D46. Se as duas linhas voltarem a ser fundidas, falha aqui em vez
+  # de degradar em silencio. Ver D47.
+  if printf '%s' "$ANN_TEXTO" | grep -qi "A distinção é técnica"; then
+    printf "[FAIL] %-52s %s\n" "Linha das ferramentas tem prosa misturada" "(mover a explicacao para a linha seguinte)"
+    FAIL=$((FAIL+1))
+    ANN_FAIL=$((ANN_FAIL+1))
+  fi
   for TOOL in "${ANN_TOOLS[@]}"; do
     if ! printf '%s' "$ANN_TEXTO" | grep -qi -- "$TOOL"; then
       printf "[FAIL] %-52s %s\n" "Ferramenta ausente da lista no README.md:" "'$TOOL'"

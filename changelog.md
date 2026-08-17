@@ -31,6 +31,14 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 
 Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da secção probatória, e a descrição do `generateZIP` no `agents.md §7`, que agora regista explicitamente que a função nunca lê `origBlob`. Acrescentado um `AVISO CRÍTICO` na secção probatória com a consequência prática: **o original de uma imagem editada não é recuperável por nenhuma via da interface**, pelo que quem precise de integridade pixel-a-pixel tem de exportar o ZIP **antes** de editar.
 
+**`validate.sh` — elimina a fragilidade que a D46 deixou (D47):** a D46 resolveu o furo cortando a linha em `A distinção é técnica`. Funcionava, mas acoplava o check a uma frase editorial: se alguém reescrevesse essa frase, o corte deixava de acontecer e o check **regressava em silêncio** ao comportamento defeituoso da D41 — voltaria a deixar passar a remoção de `Rotação`. Mesmo padrão que já mordeu três vezes: procurar num âmbito que contém texto irrelevante.
+
+**Corrigida a estrutura, não o parser.** A linha do `README §5.3` foi dividida: a enumeração fica sozinha, e a explicação passou para a linha seguinte, indentada como sub-item. O check deixou de precisar de recortar seja o que for — lê a linha e ela contém apenas a lista.
+
+Para a fragilidade não voltar por outra via, o check passou também a **verificar a estrutura**: se a prosa reaparecer na linha da enumeração, falha com `Linha das ferramentas tem prosa misturada (mover a explicacao para a linha seguinte)`. A degradação silenciosa converteu-se em falha alta com instrução.
+
+Verificado com cinco mutações: intacto (PASS), sem `texto` (FAIL), sem `Rotação 90°` (FAIL), sem `Crop` (FAIL), e prosa refundida na mesma linha (FAIL, com a mensagem estrutural).
+
 **`validate.sh` — o check de ferramentas ainda tinha um furo (D46):** a D41 restringiu a busca à linha que enumera as afordâncias, resolvendo o caso de `texto`. Mas a linha continua, depois da enumeração, com prosa explicativa que **repete termos**: «…a distinção é técnica: as 7 ferramentas são valores de `annTool`… **a rotação** executa e termina». Resultado: remover `— e **1 ação**, Rotação 90°.` da enumeração continuava a dar `[PASS] (8/8)`.
 
 Foi o mesmo defeito da D29 reintroduzido à escala da linha — procurar num âmbito que contém texto irrelevante que casa. Encontrado pela quarta auditoria, que testou exatamente essa mutação.
