@@ -243,9 +243,10 @@ Itens removidos não são apagados imediatamente — vão para a **Trash Bar** (
 |---|---|
 | **Ver itens removidos** | Clicar na barra "Removidos" na parte inferior |
 | **Restaurar item** | Abrir o item na lixeira → botão "Restaurar" |
-| **Apagar definitivamente** | Dentro do modal do item → botão de apagar permanente |
 
-A lixeira persiste entre sessões — os itens removidos ficam até serem apagados definitivamente ou até a sessão expirar.
+A lixeira persiste entre sessões — os itens removidos ficam lá até serem restaurados ou até a sessão expirar.
+
+> ℹ️ **Nota:** não existe «apagar definitivamente» na lixeira. Um item removido sai de lá por uma de duas vias: **restauro**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo a lixeira). Até à V26 esta secção descrevia um botão de apagar permanente que nunca existiu na interface.
 
 > ⚠️ **AVISO CRÍTICO — a lixeira não cobre sessões inteiras:** a rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo o que estava na lixeira dela. Não há como desfazer. Antes de apagar uma sessão que possa ainda ser precisa, exporte-a (PDF ou ZIP).
 

@@ -21,6 +21,8 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 - **`agents.md §14`** — o cabeçalho do diagnóstico de quota ainda dizia «capturas desaparecem ao reabrir **sem aviso na UI**». A D30 corrigiu a afirmação equivalente na `§6` e não viu esta. A interface avisa desde a D9, com o banner vermelho.
 - **`agents.md §6`** — dizia que itens na lixeira «**não têm** campo `order`». Têm: `delImg`/`delDoc` fazem `splice` e acrescentam `removedAt`, sem apagar o `order`. O que é verdade é que a lixeira **ordena por `removedAt`** e ignora aquele valor.
 
+**`README §5.5` — botão de apagar definitivo que nunca existiu (D43):** a tabela da Lixeira documentava «Apagar definitivamente · Dentro do modal do item → botão de apagar permanente». Verificado no browser: o modal de um item na lixeira tem exatamente três botões — `Fechar`, `Restaurar` e `Download`. Não há apagar permanente em lado nenhum da interface. Linha removida e substituída por uma nota a declarar as duas únicas vias de saída da lixeira: restauro ou expiração da sessão.
+
 **Quine — o re-export produzia um arquivo morto quando um token continha apóstrofo (D40):** as 11 regexes de substituição de tokens de texto no `exportFile` usavam `'[^']*'`, padrão que **para no primeiro apóstrofo mesmo quando escapado**. O `sanitizeForQuine` escapa corretamente (`'` → `\'`), pelo que a **primeira** geração saía válida; mas ao re-exportar a partir dela, a regex encontrava o `\'` dentro da string e cortava a declaração a meio.
 
 **Reproduzido de ponta a ponta em browser real**, com o `exportFile` da própria aplicação. Com o rodapé `Perícia d'Almeida - {YEAR}`:
