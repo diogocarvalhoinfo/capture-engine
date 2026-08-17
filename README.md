@@ -282,10 +282,15 @@ Gera um PDF com uma imagem por página.
 Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP.
 
 **O que é incluído:**
-- Imagens em PNG (no formato original, sem recompressão)
+- Imagens **não anotadas** em PNG, byte a byte iguais ao original, sem recompressão
+- Imagens **anotadas, rodadas ou recortadas** como PNG novo, com as edições incorporadas (ver nota abaixo)
 - GIF animados no formato original, com animação intacta
 - Documentos em todos os formatos
 - Nomes de arquivo limpos baseados nas legendas/nomes definidos (ex: `imagem-1.png`, `relatorio.pdf`)
+
+> ⚠️ **Importante — o ZIP leva a imagem que você vê, não a que colou:** assim que uma imagem é **anotada, rodada ou recortada**, o que segue no ZIP é a versão editada — um PNG novo, gerado a partir do canvas, com as edições já incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
+>
+> A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no browser (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
 
 **Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11), que é o que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos corretamente. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
 
@@ -473,13 +478,16 @@ O Capture Engine é adequado para **recolha organizada e documentação** de evi
 **O que a ferramenta garante:**
 - Timestamp de criação e última atividade registado por sessão (gerado pelo browser do dispositivo)
 - Armazenamento local isolado — os dados não saem do dispositivo sem ação explícita do usuário
-- Exportação ZIP com os arquivos originais sem reprocessamento adicional
+- Exportação ZIP **de imagens não editadas** com os arquivos originais, byte a byte, sem reprocessamento
 
 **O que a ferramenta não garante:**
 - Integridade criptográfica — não há hash, assinatura digital nem timestamping independente
 - Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio browser
 - Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
-- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP para preservar os arquivos originais
+- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP de imagens não editadas para preservar os arquivos originais
+- **Exportação ZIP de imagens editadas:** anotar, rodar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no browser, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
+
+> ⚠️ **AVISO CRÍTICO — o original de uma imagem editada não é recuperável depois:** esta é a limitação mais relevante para uso probatório. Não existe caminho na interface que exporte o arquivo tal como foi capturado depois de ele ser anotado. Se a integridade pixel-a-pixel do material original for exigida, **exporte o ZIP imediatamente após a captura**, antes de qualquer edição, e guarde esse arquivo como referência.
 
 Para uso em processos judiciais ou auditorias reguladas, complementar com procedimentos de custódia externos (hash independente dos arquivos exportados, registro de acesso, etc.).
 

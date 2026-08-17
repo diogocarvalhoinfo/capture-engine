@@ -23,6 +23,14 @@ A procura passou a ser feita **na linha que enumera as afordâncias** («botões
 
 **`README §5.5` — botão de apagar definitivo que nunca existiu (D43):** a tabela da Lixeira documentava «Apagar definitivamente · Dentro do modal do item → botão de apagar permanente». Verificado no browser: o modal de um item na lixeira tem exatamente três botões — `Fechar`, `Restaurar` e `Download`. Não há apagar permanente em lado nenhum da interface. Linha removida e substituída por uma nota a declarar as duas únicas vias de saída da lixeira: restauro ou expiração da sessão.
 
+**Documentação — o ZIP não leva o original de imagens editadas (D44):** o `README`, na secção de uso probatório, garantia «Exportação ZIP com os arquivos originais sem reprocessamento adicional». É verdade para imagens não editadas — verificado, os bytes do ZIP são idênticos aos do arquivo capturado. É **falso** assim que a imagem é anotada, rodada ou recortada: o `ann-save` regenera o PNG a partir do canvas, e o `generateZIP` lê `img.blob`, nunca `origBlob`.
+
+**O que a investigação corrigiu numa auditoria anterior:** um dos relatórios classificou isto como `Crítico`, descrevendo-o como perda silenciosa de evidência — o original desapareceria. **Não desaparece.** Medido: numa imagem com anotação, o registo guarda `origBlob` com **exatamente** os bytes do original, ao lado do `blob` editado. O motor de anotação preserva-o corretamente para permitir reedição e desfazer. O achado é, portanto, `Médio` e de **contrato documental**, não de perda de dados.
+
+**Decisão do proprietário: corrigir a documentação, não o código.** Exportar o original em vez do editado seria errado — perderia as anotações, que são o trabalho de perícia. Incluir ambos no ZIP foi considerado e recusado. O comportamento atual mantém-se: o ZIP leva o que se vê.
+
+Ajustadas as três afirmações afetadas — a lista do `§5.7`, a garantia da secção probatória, e a descrição do `generateZIP` no `agents.md §7`, que agora regista explicitamente que a função nunca lê `origBlob`. Acrescentado um `AVISO CRÍTICO` na secção probatória com a consequência prática: **o original de uma imagem editada não é recuperável por nenhuma via da interface**, pelo que quem precise de integridade pixel-a-pixel tem de exportar o ZIP **antes** de editar.
+
 **Quine — o re-export produzia um arquivo morto quando um token continha apóstrofo (D40):** as 11 regexes de substituição de tokens de texto no `exportFile` usavam `'[^']*'`, padrão que **para no primeiro apóstrofo mesmo quando escapado**. O `sanitizeForQuine` escapa corretamente (`'` → `\'`), pelo que a **primeira** geração saía válida; mas ao re-exportar a partir dela, a regex encontrava o `\'` dentro da string e cortava a declaração a meio.
 
 **Reproduzido de ponta a ponta em browser real**, com o `exportFile` da própria aplicação. Com o rodapé `Perícia d'Almeida - {YEAR}`:
