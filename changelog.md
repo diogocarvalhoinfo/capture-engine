@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**`agents.md` — referência cruzada para informação inexistente (D57):** a descrição do check 25 dizia que o tamanho é validado «na faixa documentada no README §10 (~280–340 KB)». O README §10 dá apenas a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma — os limites `280000-340000` existem só no `validate.sh`. Passa a declarar os números e a dizer onde vivem, para que alterar o limiar não mande ninguém procurar um segundo sítio que não existe.
+
 **Changelog — a D32 contradizia a D34 dentro da mesma versão (D56):** a D32 declarava que o banner de armazenamento indisponível «continua **sem botão de fechar**»; a D34, mais abaixo na mesma secção, acrescentou-lhe o mesmo ✕. Lê-se bem como narrativa de duas iterações, mas quem consultar só a D32 fica com informação errada sobre o estado atual. A entrada passa a declarar-se superada e a apontar para a D34.
 
 **`agents.md §14` — o procedimento de recurso perdia o original (D55):** os dois scripts de extração de emergência descarregavam `item.blob` e nunca mencionavam `origBlob`. O `AVISO CRÍTICO` da D44 é exato ao falar da **interface**, mas o `§14` é o procedimento oficial *fora* da interface, escrito para «extrair os dados puros» quando o HTML estiver inoperável. Quem o executasse obtinha o PNG anotado. Ambos os scripts passam a extrair os dois blobs, com o original sufixado `-ORIGINAL`. Sintaxe dos snippets verificada com `node --check`.
