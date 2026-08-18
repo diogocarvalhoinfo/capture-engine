@@ -1070,11 +1070,15 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 3. **Função definida: capturePristine**: Idem. Garante que a função existe — **não** que a leitura do HTML original funcione; isso é a prova de vida da §11 Parte B.
 4. **Função definida: sanitizeForQuine**: Idem. Garante que a função existe — **não** que sanitize corretamente.
 5. **Função definida: escapeHTML**: Idem. Garante que a função existe — **não** que esteja aplicada em todos os pontos de entrada, que é o que «proteção XSS» exigiria. Um check de presença não pode sustentar essa promessa; a cobertura real é matéria da §1.3.
+
+> ⚠️ **O que os checks 2 a 5 provam, e o que não provam (D67).** Provam que a **sintaxe de definição não desapareceu** do arquivo. Não provam que a função corre — isso é a prova de vida da `§11 Parte B` e o check 27. E não distinguem código de comentário: uma definição escrita dentro de um comentário satisfaz o check. Isto é um limite **declarado, não um descuido**. Remover comentários de forma fiável exigiria um parser de JavaScript: o arquivo contém literais de regex com aspas lá dentro (`/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`) e comentários com apóstrofos em português, e **ambos partem qualquer scanner ingénuo** — foi assim que a D54 corrompeu a contagem de complexidade. Escrever mais um scanner frágil para fechar este furo seria repetir o defeito que o projeto passa a vida a corrigir.
 6. **Span de titulo: ui-title-start**: Verifica o span obrigatório do título (parte 1).
 7. **Span de titulo: ui-title-accent**: Verifica o span obrigatório do título (parte 2).
 8. **Span de titulo: ui-title-end**: Verifica o span obrigatório do título (parte 3).
 9. **APIs proibidas (eval/Function/write)**: Conta a ocorrência destas APIs. Deve ser estritamente 0 para mitigar riscos de segurança.
 10. **Recursos externos http(s) (zero-dep)**: Bloqueia injeção de dependências externas (`cdn`, `googleapis`, `href="http...`). Deve ser 0 para garantir funcionamento 100% offline.
+
+> **Nota (D67):** este check visa **construtos de carregamento**, não a string `http`. As substrings nuas `cdn.` e `googleapis` foram removidas: faziam o check reprovar sobre prosa inocente — um comentário a dizer «não usar `cdn.` de terceiros» dava `[FAIL]` — e não acrescentavam deteção nenhuma. Medido: as 7 formas da matriz continuam todas apanhadas sem elas, incluindo `href='//cdn.foo/x.css'`, que casa pela forma protocol-relative.
 11. **Cabecalho de licenca MIT presente**: Verifica presença obrigatória dos direitos de autor do Capture Engine.
 12. **TOKEN_SUBTITLE removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
 13. **Modo PDF 'exact' removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).

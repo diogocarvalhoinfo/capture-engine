@@ -43,6 +43,14 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**`validate.sh` — três defeitos nos checks que a ronda anterior endureceu (D67):** a D58 e a D59 melhoraram checks reais, mas cada uma deixou um defeito próprio, e a quinta auditoria reproduziu os três.
+
+- **Falsos positivos sobre prosa (M1).** O padrão da D58 herdou do antigo as substrings nuas `cdn.` e `googleapis`. Um comentário a dizer «não usar `cdn.` de terceiros» dava `[FAIL]`. **Medido antes de remover:** as 7 formas da matriz continuam todas apanhadas sem elas — incluindo `href='//cdn.foo/x.css'`, que casa pela forma protocol-relative — e os 3 casos de prosa passam a `[PASS]`. As substrings não detetavam nada que a estrutura não detetasse já.
+- **O escape do ponto era um no-op (M2).** A D59 escreveu `sed 's/\./\./g'`, que substitui ponto por ponto. O `window.exportFile` entrava na regex com o ponto por escapar, onde casava qualquer caractere. Reproduzido: `windowZexportFile` satisfazia o check. Passou a ser feito em Python com `re.escape` — e agora `windowZexportFile` dá `[FAIL]`.
+- **A contagem exibida era de linhas, não de ocorrências (B7).** `grep -cE` conta linhas; com o JS em linhas longas o número era sempre `1`, sugerindo uma unicidade que não estava a ser verificada. Reproduzido: duas definições de `escapeHTML` na mesma linha exibiam `(1)`; agora exibem `(2)`.
+
+**Um furo que ficou por fechar, de propósito.** A auditoria mostrou que uma definição escrita **dentro de um comentário** satisfaz os checks 2 a 5. Tentei fechá-lo removendo comentários antes de casar, e o removedor falhou — pela mesma razão que já mordeu a D54: este arquivo tem literais de regex com aspas lá dentro e comentários com apóstrofos, e ambos partem qualquer scanner ingénuo. **Escrever mais um scanner frágil para fechar o furo seria repetir o defeito que passamos a vida a corrigir.** O limite fica declarado na `§10` do `agents.md`: estes checks provam que a sintaxe de definição não desapareceu, não que a função corre — isso é a prova de vida da `§11 Parte B` e o check 27.
+
 **A prova de vida das D63/D64 não declarava o protocolo em que correu (D66):** os números registados — `316.308` bytes, md5 `eab02cb0`, idênticos em três gerações — foram medidos com a aplicação servida por `http://127.0.0.1`. O `README §10` declara que a ferramenta «foi desenhada para uso local (protocolo `file://`)» e o `§4` manda «fazer duplo clique em `capture-engine.html`». **Medi os dois:**
 
 | Protocolo | Export Admin | md5 | G1 = G2 = G3 |

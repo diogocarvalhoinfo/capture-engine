@@ -25,6 +25,10 @@
 set -u
 export LC_ALL=C.UTF-8
 FILE="${1:-capture-engine.html}"
+
+# Interpretador python usado por varios checks (definido cedo: o check 2 ja precisa).
+PY_BIN="python"
+command -v python3 >/dev/null 2>&1 && PY_BIN="python3"
 PASS=0
 FAIL=0
 
@@ -55,18 +59,33 @@ M=$(grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDI
 check_eq "Comment markers (linhas grep)" 11 "$M"
 
 # 2) Funcoes essenciais do Quine DEFINIDAS (nao apenas mencionadas).
-#    Antes contava ocorrencias do nome com grep -c: uma mencao em comentario ou
-#    numa chamada satisfazia o check, e "Funcao presente" passava a significar
-#    "o nome aparece algures". Agora casa a sintaxe de definicao — declaracao
-#    (function nome(), com ou sem async) ou atribuicao (nome = function), que
-#    e' como window.exportFile esta escrita. Ver D59.
+#    Casa a sintaxe de definicao — declaracao (function nome(), com ou sem
+#    async) ou atribuicao (nome = function), que e como window.exportFile esta
+#    escrita. Antes contava ocorrencias do NOME, e uma mencao em comentario ou
+#    numa chamada bastava para dar PASS.
+#
+#    LIMITE CONHECIDO, declarado de proposito (ver D67): isto NAO distingue
+#    codigo de comentario. Uma definicao escrita dentro de um comentario
+#    satisfaz o check. Remover comentarios de forma fiavel exigiria um parser
+#    de JS — o ficheiro tem literais de regex com aspas dentro, que partem
+#    qualquer scanner ingenuo (foi assim que a D54 corrompeu a contagem de
+#    complexidade). O que este check prova e que a definicao NAO desapareceu;
+#    que ela CORRE e materia da prova de vida da §11 Parte B e do check 27.
+#
+#    O escape do ponto e a contagem sao feitos em python: o sed equivalente
+#    e no-op neste ambiente e o grep -c conta LINHAS, nao ocorrencias — com o
+#    JS em linhas longas o numero exibido era sempre 1.
 for fn in "window.exportFile" "capturePristine" "sanitizeForQuine" "escapeHTML"; do
-  FNE=$(printf '%s' "$fn" | sed 's/\./\./g')
-  C=$(grep -cE "(async[[:space:]]+)?function[[:space:]]+${FNE}[[:space:]]*\(|${FNE}[[:space:]]*=[[:space:]]*(async[[:space:]]+)?function" "$FILE")
-  if [ "$C" -ge 1 ]; then printf '[PASS] %-52s (%s)
-' "Funcao definida: $fn" "$C"; PASS=$((PASS+1));
-  else printf '[FAIL] %-52s (0)
-' "Funcao NAO DEFINIDA: $fn"; FAIL=$((FAIL+1)); fi
+  C=$($PY_BIN - "$FILE" "$fn" <<'PYDEF'
+import sys, re
+src = open(sys.argv[1], encoding="utf-8").read()
+nome = re.escape(sys.argv[2])
+pad = r"(?:async\s+)?function\s+" + nome + r"\s*\(|" + nome + r"\s*=\s*(?:async\s+)?function"
+print(len(re.findall(pad, src)))
+PYDEF
+)
+  if [ "${C:-0}" -ge 1 ]; then printf '[PASS] %-52s (%s)\n' "Funcao definida: $fn" "$C"; PASS=$((PASS+1));
+  else printf '[FAIL] %-52s (0)\n' "Funcao NAO DEFINIDA: $fn"; FAIL=$((FAIL+1)); fi
 done
 
 # 3) Os 3 spans do titulo existem.
@@ -85,7 +104,12 @@ check_eq "APIs proibidas (eval/Function/write)" 0 "$BAD"
 #    legitimamente http(s) no comentario de licenca e no xmlns do SVG inline, e
 #    nenhum dos dois e' carregado. Cobre aspas simples e duplas, url() em CSS,
 #    @import, fetch/importScripts, e URLs protocol-relative (//host). Ver D58.
-EXT=$(grep -cE "(src|href)[[:space:]]*=[[:space:]]*[\"'](https?:)?//|url\([[:space:]]*[\"']?(https?:)?//|@import[[:space:]]+[\"']?(https?:)?//|fetch\([[:space:]]*[\"'](https?:)?//|importScripts\(|cdn\.|googleapis" "$FILE")
+#    As substrings nuas "cdn." e "googleapis" foram removidas na D67: faziam o
+#    check reprovar sobre prosa inocente (um comentario a dizer "nao usar cdn.
+#    de terceiros" dava FAIL) e nao acrescentavam detecao nenhuma — medido, as
+#    7 formas da matriz continuam todas apanhadas sem elas, incluindo
+#    href='//cdn.foo/x.css', que casa pela forma protocol-relative.
+EXT=$(grep -cE "(src|href)[[:space:]]*=[[:space:]]*[\"'](https?:)?//|url\([[:space:]]*[\"']?(https?:)?//|@import[[:space:]]+[\"']?(https?:)?//|fetch\([[:space:]]*[\"'](https?:)?//|importScripts\(" "$FILE")
 check_eq "Recursos externos http(s) (zero-dep)" 0 "$EXT"
 
 # 6) Cabecalho de licenca presente no arquivo distribuido.
