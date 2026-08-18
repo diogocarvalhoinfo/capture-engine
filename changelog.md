@@ -63,6 +63,30 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**O PDF gerado dentro do ZIP ignorava o layout A4 escolhido (D74):** achado da sétima auditoria — a primeira que **executou** o produto em vez de o ler. É o primeiro defeito de comportamento encontrado em várias rondas, e estava num caminho que nenhuma auditoria documental podia ver.
+
+**Causa.** O layout vivia num global, `let pdfFmt = 'auto'`, escrito **apenas** pelo handler do botão PDF e lido pelo `generatePDF`. O `generateZIP(true)` chama `generatePDF(true)` e **nunca escrevia o global** — usava o que lá estivesse. O resultado dependia da ordem das ações do usuário:
+
+| Com «Vertical» selecionado | Páginas obtidas | |
+|---|---|---|
+| ZIP **sem** ter premido o botão PDF antes | `HORIZONTAL, VERTICAL` | ignorou a escolha, saiu em `auto` |
+| ZIP **depois** de premir o botão PDF | `VERTICAL, VERTICAL` | correto, mas por acidente |
+| PDF direto | `VERTICAL, VERTICAL` | sempre correto |
+
+Reproduzido pelos botões reais da interface, com o `Imagens.pdf` extraído do ZIP e os `/MediaBox` lidos página a página.
+
+**Correção.** O global desapareceu. O layout passa a ser lido no momento em que o PDF é gerado, por uma função única `lerLayoutPDF()` que ambos os caminhos usam. Deixa de haver estado a atravessar dois fluxos que deviam ser independentes.
+
+**Validação — os três layouts pelos dois caminhos**, com uma imagem paisagem e uma retrato:
+
+```
+Vertical    esperado V,V  |  PDF direto V,V  |  PDF no ZIP V,V   OK
+Horizontal  esperado H,H  |  PDF direto H,H  |  PDF no ZIP H,H   OK
+Auto        esperado H,V  |  PDF direto H,V  |  PDF no ZIP H,V   OK
+```
+
+O modo `auto` continua a decidir por imagem — paisagem em horizontal, retrato em vertical —, que é o comportamento que a interface promete.
+
 **`agents.md §12` não mencionava tags, e a V26 saiu sem uma (D73):** o repositório etiqueta cada versão desde a v1 — tags leves, `vNN` em minúsculas, apontando para o commit em que o HTML passa a declarar a versão. A **v25 foi a última criada**, e ficou assim durante **118 commits**.
 
 O protocolo de version bump tem 5.318 caracteres, passo 0 obrigatório com `grep` preventivo, lista exata de substituições por ficheiro, verificação posterior, commit atómico e o aviso da prova de vida. **Não tinha uma única menção a `git tag`.** Seguimo-lo à letra na V26 e na V27, e a lacuna passou nas duas.
