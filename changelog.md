@@ -11,6 +11,10 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**`agents.md` — a CSP existia no produto e não existia na doc de leitura obrigatória (D50):** o `capture-engine.html` traz uma metatag `Content-Security-Policy` desde antes desta versão. O `README` descreve-a em três sítios; o `agents.md` — o documento que um agente lê **antes de editar** — não a mencionava nenhuma vez. Quem acrescentasse um recurso externo veria o browser recusá-lo sem encontrar na doc a razão.
+
+Acrescentada à `§1.4` a metatag verbatim, uma tabela por diretiva, e o aviso que motiva a entrada: **`connect-src 'self'` é o que mantém o Quine vivo.** O `capturePristine()` faz `fetch(location.href)`; apertar essa diretiva para `'none'` não produz erro visível — o `fetch` falha, a função cai no fallback `BOOT_HTML`, e o export continua a produzir um arquivo estruturalmente válido, mas desatualizado. O `validate.sh` não apanha essa falha, precisamente por o artefato continuar válido. **Sem alteração de código nem de pixel.**
+
 **`validate.sh` — o check de ferramentas passou a poder reprovar (D41):** a D29 declarou este check corrigido, mas a correção era ineficaz e as três auditorias apanharam-no. Dois defeitos: procurava cada termo no **README inteiro** com `grep -qi`, e a palavra «texto» ocorre 27 vezes noutros contextos — logo o termo mais importante nunca podia falhar; e a contagem exibida vinha de `ADMIN_TOOLS_ESPERADAS=8`, uma constante à parte que podia dessincronizar-se da lista.
 
 A procura passou a ser feita **na linha que enumera as afordâncias** («botões no editor»), e a contagem deriva do próprio array (`${#ANN_TOOLS[@]}`). Demonstrado: removendo `texto (negrito B / itálico I)` da lista, o check agora dá `[FAIL] Ferramenta ausente da lista no README.md: 'texto'` — antes dava `[PASS] (8/8)`. Acrescentado também um FAIL para o caso de a própria linha desaparecer do README.

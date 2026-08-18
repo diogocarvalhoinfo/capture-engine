@@ -194,6 +194,29 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 - Nenhuma chamada a APIs externas
 - Persistência apenas em `localStorage` e `IndexedDB` (mecanismos do browser, sem servidor)
 
+#### A CSP que torna estas regras executáveis
+
+As regras acima não dependem de disciplina do programador — estão impostas por uma metatag no cabeçalho do `capture-engine.html` (linha 19):
+
+```html
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self' blob: data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';">
+```
+
+| Diretiva | O que impõe |
+|---|---|
+| `default-src 'self' blob: data:` | Nenhum recurso de outra origem carrega. É a §1.1 aplicada pelo browser. |
+| `script-src 'unsafe-inline'` | Permite o JS inline — **consequência estrutural** do single-file, não comodidade. Não há `'self'`: um `<script src>` externo não carregaria nem que alguém o acrescentasse. |
+| `style-src 'unsafe-inline'` | O mesmo para o CSS inline. |
+| `img-src blob: data:` | As capturas vivem como `blob:`/`data:`. Uma `<img src="https://…">` é bloqueada. |
+| `connect-src 'self'` | **Não mexer sem ler o parágrafo seguinte.** |
+
+> ⚠️ **`connect-src 'self'` é o que mantém o Quine vivo.** O `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo (§1.2). Apertar esta diretiva para `'none'` não produz erro visível: o `fetch` falha, a função cai no fallback `BOOT_HTML`, e o export continua a funcionar — a exportar uma cópia desatualizada do arquivo. É uma falha silenciosa que o `validate.sh` não apanha, porque o artefato produzido continua estruturalmente válido.
+
+**Ao acrescentar qualquer recurso novo:** a CSP bloqueia primeiro e o sintoma aparece na consola, não na interface. Antes de concluir que «o recurso não funciona», confirme na consola se foi a CSP que o recusou — e, se foi, a resposta correta é quase sempre embutir o recurso, não relaxar a diretiva.
+
+O `README.md` §Segurança documenta o mesmo para o público externo, incluindo por que `'unsafe-inline'` não é aqui a fraqueza que costuma ser.
+
 ---
 
 ## 2. Convenções de Código
