@@ -7,7 +7,7 @@
 
 ## [V27] — 2026-08-18
 
-Versão aberta para receber trabalho novo. A V26 fechou com **50 correções** (D21–D70) originadas de **cinco auditorias independentes** de zero confiança; a secção dessa versão tornou-se longa demais para se percorrer, e foi essa a razão principal para abrir esta.
+Versão aberta para receber trabalho novo. A V26 fechou com **50 entradas numeradas** (D21–D70) originadas de **cinco auditorias independentes** de zero confiança. ⚠️ **«50 correções» seria impreciso, e a sexta auditoria apanhou-o:** a maioria corrige defeitos, mas algumas são declarações documentais (D33, D38, D39), registos de validação (D63, D64) ou triagens que decidem **não** corrigir (D70). A secção dessa versão ocupa 36% do changelog inteiro, e foi essa a razão principal para abrir esta.
 
 ### Modificado
 
@@ -63,6 +63,13 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**Quatro achados da sexta auditoria, todos sobre o texto desta própria ronda (D72):** nenhum toca no produto. A auditoria reproduziu ao byte tudo o que era mensurável — os dois pontos fixos do Quine, o Export User, as contagens do bump — e o que sobrou foram imprecisões na forma como descrevi o que fiz.
+
+- **O furo que declarei na D67 era mais estreito do que o real (B-1).** Escrevi «uma definição escrita dentro de um **comentário** satisfaz o check». Medido: uma definição dentro de uma **string literal** também satisfaz. O âmbito correto é **qualquer ocorrência textual em contexto não executado**. A decisão de não remendar mantém-se — escrever outro scanner sobre um arquivo com literais de regex e apóstrofos repetiria o defeito —, mas **uma limitação declarada só protege quem a lê se estiver bem medida**, e esta estava sub-declarada.
+- **A `§2.1` dizia que o `index.html` tem 14 linhas (B-2).** Tem 15.
+- **«50 correções» era impreciso (B-3).** Corrigido acima, na abertura desta versão.
+- **O cabeçalho da D69 dizia «três imprecisões» sobre quatro bullets (M-1).** Verificado antes de aceitar: a quinta auditoria arquivou o **M6 como um só achado** («Resíduos da D60 **e** duas numerações»), pelo que três achados em quatro pontos estava certo — o que faltava era dizê-lo. A classificação da sexta auditoria é ambiguidade real, mas não o erro de contagem que descreve. Estrutura tornada explícita em vez de o número trocado.
+
 **Triagem dos cinco `Baixo` da quinta auditoria — três corrigidos, dois declarados (D70):**
 
 **Corrigidos.**
@@ -78,7 +85,7 @@ Zero erros de consola em qualquer das cinco aberturas.
 - **O guard de prosa do check 19 depende de uma frase editorial (B1).** Medido: das duas linhas de prosa que seguem a enumeração, só a que diz «A distinção é técnica» contém um termo da lista (`Rotação`), e é exatamente essa que o guard vigia — **hoje não há furo**. Fundir a outra não abre nada. Não foi remendado porque seria a **sexta** iteração no mesmo check, contando as duas correções que o meu próprio remendo anterior precisou. A correção certa é estrutural — derivar os termos do HTML em vez de os manter numa lista à parte — e fica registada no `agents.md` para quem lá voltar.
 - **O banner de quota não aparece no ramo de throw síncrono do `put` (B6).** A própria auditoria rebaixou este achado em vez de contradizer a D54: erros de quota chegam **sempre** pela transação, que é o caminho assíncrono, e esse funciona. O ramo síncrono transporta `DataCloneError` e `InvalidStateError`, para os quais um banner de «armazenamento cheio» seria a mensagem errada. Acrescentar código para um caminho que não transporta o erro que o banner descreve não se justifica.
 
-**`agents.md` — três imprecisões na documentação de leitura obrigatória (D69):**
+**`agents.md` — três achados, corrigidos em quatro pontos (D69):** M5, M6 e B8 da quinta auditoria. São quatro bullets para três achados porque o **M6 foi arquivado como um só** — «Resíduos da D60 **e** duas numerações de checks em conflito» — e aqui vai separado nas suas duas partes, ambas etiquetadas `(M6)`.
 
 - **A semântica do `BOOT_HTML` estava invertida (M5).** Dois avisos técnicos da `§1.2` diziam que, sem ele ou com um servidor dinâmico, «o Quine exportaria **o DOM mutado pelo runtime** (com contadores atualizados, legendas editadas)». Nenhum dos cenários produz isso. O DOM é lido **uma única vez**, no arranque — `documentElement.outerHTML` ocorre exatamente uma vez no arquivo — e é precisamente isso que o `BOOT_HTML` é. Com um servidor dinâmico exportar-se-ia o que o servidor devolveu; sem `BOOT_HTML` e com o `fetch` a falhar, o `PRISTINE_HTML` ficaria `null` e o export **abortaria** pelo guard `if (!PRISTINE_HTML) … return`. A formulação apresentava o `BOOT_HTML` como defesa contra a mutação do DOM quando ele **é** a serialização do DOM: o que o protege é o *momento* em que é tirado.
 - **Resíduo da D60 (M6).** A `§12` ainda dizia «presença das **7 ferramentas** de anotação»; o array testado tem 8 entradas, o script imprime `(8/8)`, e a `§10` do mesmo documento já dizia 8. A D60 atualizou a `§10` e a âncora do `validate.sh` e não chegou à `§12` — **sexta ocorrência** de corrigir onde se procurou.

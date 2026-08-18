@@ -64,13 +64,14 @@ check_eq "Comment markers (linhas grep)" 11 "$M"
 #    escrita. Antes contava ocorrencias do NOME, e uma mencao em comentario ou
 #    numa chamada bastava para dar PASS.
 #
-#    LIMITE CONHECIDO, declarado de proposito (ver D67): isto NAO distingue
-#    codigo de comentario. Uma definicao escrita dentro de um comentario
-#    satisfaz o check. Remover comentarios de forma fiavel exigiria um parser
-#    de JS — o ficheiro tem literais de regex com aspas dentro, que partem
+#    LIMITE CONHECIDO, declarado de proposito (ver D67, precisado na D72): isto
+#    NAO distingue codigo de contexto nao executado. Uma definicao escrita
+#    dentro de um comentario OU de uma string literal satisfaz o check --
+#    ambas medidas. Remover comentarios de forma fiavel exigiria um parser
+#    de JS: o ficheiro tem literais de regex com aspas dentro, que partem
 #    qualquer scanner ingenuo (foi assim que a D54 corrompeu a contagem de
 #    complexidade). O que este check prova e que a definicao NAO desapareceu;
-#    que ela CORRE e materia da prova de vida da §11 Parte B e do check 27.
+#    que ela CORRE e materia da prova de vida da secao 11 Parte B e do check 27.
 #
 #    O escape do ponto e a contagem sao feitos em python: o sed equivalente
 #    e no-op neste ambiente e o grep -c conta LINHAS, nao ocorrencias — com o
