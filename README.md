@@ -1,4 +1,4 @@
-# Capture Engine · V26
+# Capture Engine · V27
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -504,7 +504,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
-**ARIA — o que existe, exatamente (V26):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
+**ARIA — o que existe, exatamente (remedido na V27):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
 
 | Onde | Atributo | Porquê |
 |---|---|---|
@@ -827,7 +827,7 @@ flowchart LR
 
 ---
 
-*Capture Engine V26 · Single-file · zero dependências · 100% offline*
+*Capture Engine V27 · Single-file · zero dependências · 100% offline*
 
 ---
 

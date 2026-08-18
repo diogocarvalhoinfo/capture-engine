@@ -5,6 +5,26 @@
 
 ---
 
+## [V27] — 2026-08-18
+
+Versão aberta para receber trabalho novo. A V26 fechou com **50 correções** (D21–D70) originadas de **cinco auditorias independentes** de zero confiança; a secção dessa versão tornou-se longa demais para se percorrer, e foi essa a razão principal para abrir esta.
+
+### Modificado
+
+**Version bump V26 → V27 (D71).** Sem alteração de comportamento: só os identificadores de versão. Seguido o `§12` do `agents.md`, incluindo o passo 0 obrigatório — localizar **todas** as 26 ocorrências de `V26` e classificar cada uma antes de substituir qualquer.
+
+- **11 substituídas:** as 3 referências de produto no `capture-engine.html` (comentário do Visual Builder, badge, mensagem de boot), títulos e rodapés dos 3 documentos, e as 2 declarações de estado descritas abaixo.
+- **15 mantidas:** todas as referências históricas — «Até à V26 esta secção afirmava…», «Da V11 à V26 as 11 regexes…», «Medido na V26: 316.308 bytes», o cabeçalho `## [V26]` e o corpo dessa versão. Substituí-las apagaria o registo de quando cada coisa aconteceu.
+
+**As duas declarações de estado foram remedidas, não datadas às cegas.** O precedente está registado na própria V26: o cabeçalho de acessibilidade passou a «Estado avaliado na V25 (não reavaliado desde então)» porque «mudá-lo para V26 no bump alegaria uma reavaliação que não houve». Para não repetir isso por omissão, verifiquei as duas antes de lhes tocar:
+
+- **`README` — contagem ARIA.** Medido: exatamente **2** `setAttribute('role', …)` e **2** `setAttribute('aria-label', …)`, e **zero** outros atributos ARIA em todo o arquivo. A afirmação mantém-se verdadeira, e passa a dizer «remedido na V27».
+- **`agents.md §10` — tabela de complexidade.** Comparadas as 13 funções nomeadas da tabela com o que o `validate.sh` reporta agora: **zero divergências**. Passa a «remedidos na V27».
+
+A verificação do `§12` — `grep -rn "V26"` após o bump — deve devolver apenas referências históricas. O check 8 do `validate.sh` confirma automaticamente que as 3 referências de produto do HTML concordam entre si.
+
+---
+
 ## [V26] — 2026-08-16
 
 Versão de correção, originada de quatro auditorias independentes sobre a V25. O achado central: o **Export User nunca produziu um arquivo funcional** — defeito presente desde pelo menos a V11 e nunca detectado, porque a validação estática cobre o arquivo de administrador e não o produto do export.

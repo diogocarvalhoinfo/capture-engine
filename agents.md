@@ -1,4 +1,4 @@
-# Agents · Capture Engine V26
+# Agents · Capture Engine V27
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -1102,7 +1102,7 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
 
-#### Pontos de maior risco de regressão (estado na V26)
+#### Pontos de maior risco de regressão (remedidos na V27)
 
 Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos** — é o mapa de onde uma edição tem maior probabilidade de partir alguma coisa, e não é coincidência que as divergências entre código e documentação encontradas nas auditorias da V26 se concentrassem nestas mesmas funções.
 
@@ -1562,4 +1562,4 @@ req2.onsuccess = e => {
 
 ---
 
-*Capture Engine V26 · Regras Operacionais para Agentes*
+*Capture Engine V27 · Regras Operacionais para Agentes*
