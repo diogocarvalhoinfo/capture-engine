@@ -63,6 +63,23 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**Teste manual do proprietário fecha a lista de cobertura da sétima auditoria (D76):** a auditoria de execução terminou o relatório a declarar honestamente o que **não** tinha conseguido testar. O proprietário verificou esses itens à mão, na aplicação, e **passaram todos**:
+
+| Item que a auditoria declarou por testar | Verificado manualmente |
+|---|---|
+| Captura por **arrastar e largar** | ✅ |
+| Captura por **`Ctrl+V`** | ✅ |
+| **Rotação** de imagem | ✅ |
+| **Desenho** de anotações | ✅ |
+| **Desfazer / Refazer** | ✅ |
+| **Fechar, reabrir e refazer** | ✅ |
+
+A auditoria usou os `input[type=file]` para injetar imagens, que partilham as funções a jusante mas **não exercitam as camadas de extração** do clipboard nem do arrastar-largar — foi por isso que as declarou fora de cobertura. Ficam agora cobertas por verificação humana.
+
+**Por que isto é registado.** Aconteceu hoje o oposto: a sétima auditoria classificou como `Alto` um comportamento que era a decisão **D8** do proprietário, porque a instrução que recebeu a proibia de ler documentação e ela não tinha como saber. Uma lacuna de cobertura que ninguém regista como fechada volta a aparecer como achado. Este registo existe para que a próxima ronda não repita o percurso — e para que fique claro que estes seis itens foram exercitados por uma pessoa, não por um harness.
+
+**Continua por testar**, e sem verificação de ninguém até hoje: alças de redimensionamento e arrasto de anotações já inseridas, gestos de toque, e reordenação de miniaturas.
+
 **Dois `Baixo` da sétima auditoria, triados sem alterar código (D75):**
 
 - **Cor e espessura transitam entre imagens sem reposição — não é defeito.** A auditoria anotou «esperado `#ef4444` vermelho por defeito», mas esse «esperado» não sai do produto nem da documentação: **nenhum documento promete que a cor volta ao padrão**. Manter a ferramenta escolhida entre documentos é o comportamento normal de qualquer editor, e serve melhor quem anota dezenas de imagens em série. Fechado como comportamento correto.
