@@ -54,11 +54,19 @@ echo
 M=$(grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" "$FILE")
 check_eq "Comment markers (linhas grep)" 11 "$M"
 
-# 2) Funcoes essenciais do Quine presentes.
+# 2) Funcoes essenciais do Quine DEFINIDAS (nao apenas mencionadas).
+#    Antes contava ocorrencias do nome com grep -c: uma mencao em comentario ou
+#    numa chamada satisfazia o check, e "Funcao presente" passava a significar
+#    "o nome aparece algures". Agora casa a sintaxe de definicao — declaracao
+#    (function nome(), com ou sem async) ou atribuicao (nome = function), que
+#    e' como window.exportFile esta escrita. Ver D59.
 for fn in "window.exportFile" "capturePristine" "sanitizeForQuine" "escapeHTML"; do
-  C=$(grep -c "$fn" "$FILE")
-  if [ "$C" -ge 1 ]; then printf '[PASS] %-52s (%s)\n' "Funcao presente: $fn" "$C"; PASS=$((PASS+1));
-  else printf '[FAIL] %-52s (0)\n' "Funcao AUSENTE: $fn"; FAIL=$((FAIL+1)); fi
+  FNE=$(printf '%s' "$fn" | sed 's/\./\./g')
+  C=$(grep -cE "(async[[:space:]]+)?function[[:space:]]+${FNE}[[:space:]]*\(|${FNE}[[:space:]]*=[[:space:]]*(async[[:space:]]+)?function" "$FILE")
+  if [ "$C" -ge 1 ]; then printf '[PASS] %-52s (%s)
+' "Funcao definida: $fn" "$C"; PASS=$((PASS+1));
+  else printf '[FAIL] %-52s (0)
+' "Funcao NAO DEFINIDA: $fn"; FAIL=$((FAIL+1)); fi
 done
 
 # 3) Os 3 spans do titulo existem.

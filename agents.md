@@ -1066,10 +1066,10 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 **Os 27 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
-2. **Função presente: window.exportFile**: Garante a existência do ponto de entrada do Quine.
-3. **Função presente: capturePristine**: Garante a leitura do HTML original.
-4. **Função presente: sanitizeForQuine**: Garante a sanitização dos tokens.
-5. **Função presente: escapeHTML**: Garante a proteção XSS.
+2. **Função definida: window.exportFile**: Casa a **sintaxe de definição** (`nome = function`), não a mera ocorrência do nome. Garante que o ponto de entrada do Quine existe como função.
+3. **Função definida: capturePristine**: Idem. Garante que a função existe — **não** que a leitura do HTML original funcione; isso é a prova de vida da §11 Parte B.
+4. **Função definida: sanitizeForQuine**: Idem. Garante que a função existe — **não** que sanitize corretamente.
+5. **Função definida: escapeHTML**: Idem. Garante que a função existe — **não** que esteja aplicada em todos os pontos de entrada, que é o que «proteção XSS» exigiria. Um check de presença não pode sustentar essa promessa; a cobertura real é matéria da §1.3.
 6. **Span de titulo: ui-title-start**: Verifica o span obrigatório do título (parte 1).
 7. **Span de titulo: ui-title-accent**: Verifica o span obrigatório do título (parte 2).
 8. **Span de titulo: ui-title-end**: Verifica o span obrigatório do título (parte 3).
