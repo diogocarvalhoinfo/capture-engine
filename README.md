@@ -286,7 +286,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 **O que é incluído:**
 - Imagens **não anotadas** em PNG, byte a byte iguais ao original, sem recompressão
 - Imagens **anotadas, rodadas ou recortadas** como PNG novo, com as edições incorporadas (ver nota abaixo)
-- GIF animados no formato original, com animação intacta
+- GIF animados **não editados** no formato original, com a animação intacta — anotar, rodar ou recortar converte-os num PNG estático, tal como qualquer outra imagem (ver a nota abaixo)
 - Documentos em todos os formatos
 - Nomes de arquivo limpos baseados nas legendas/nomes definidos (ex: `imagem-1.png`, `relatorio.pdf`)
 

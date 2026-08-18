@@ -43,6 +43,12 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**`README §5.7` — a garantia do GIF que sobreviveu à D53 (D65):** a D53 corrigiu a mesma garantia na tabela de **Limitações** e deixou-a intacta na lista de funcionalidades do `§5.7`, três secções acima. A linha dizia «GIF animados no formato original, com animação intacta», sem qualquer ressalva — e contradizia a linha imediatamente anterior, que já declara «Imagens **anotadas, rodadas ou recortadas** como PNG novo».
+
+O que torna esta ocorrência instrutiva é a entrada da própria D53, que escreveu «**Quarta ocorrência do mesmo padrão desta versão: corrigir onde se procurou**» — e voltou a fazê-lo na mesma frase em que o declarava. É a **quinta**. A varredura de irmãos foi feita sobre a tabela de Limitações e não sobre o documento.
+
+Verificado que o comportamento em si está correto: a extensão no ZIP deriva de `img.blob.type`, portanto um GIF anotado sai nomeado `.png` e não como um `.gif` estático mal rotulado. O defeito era exclusivamente da garantia escrita.
+
 **`README` — a mecânica da CSP estava descrita ao contrário (D62):** a linha atribuía o bloqueio de scripts externos ao `default-src`. O resultado afirmado está certo, mas pela razão oposta: quando o `script-src` está declarado, substitui o `default-src` para scripts, e como não nomeia nenhuma origem de URL — nem sequer a própria — recusa tudo o que não seja inline. É **mais** restritivo do que o `default-src` sozinho daria. A D50 documentou a mecânica correta no `agents.md`; esta entrada alinha o README, que até aqui divergia dele.
 
 **`README` — o custo do `origBlob` faltava onde mais importa (D61):** a secção que ensina a gerir quota afirma «não existe forma de reduzir o espaço que cada captura ocupa», o que é verdade para a captura. Omitia que confirmar a primeira anotação, rotação ou recorte acrescenta um **segundo** blob ao mesmo registo — o original preservado para poder desfazer — aproximadamente duplicando o custo. É informação relevante precisamente na secção sobre quota.
