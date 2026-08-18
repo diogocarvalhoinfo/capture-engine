@@ -11,6 +11,14 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**Reordenação — o ecrã podia mentir sobre o que ficou gravado (D54):** o `initReorder` persiste a nova ordem com um `await idbPut` por registo, sem `try/catch`. A escrita não é atómica: se falhar a meio, o array em memória já está renumerado enquanto o IndexedDB ficou misto.
+
+**Uma correção à classificação da auditoria:** ela descreveu o achado como «sem haver `catch` a sinalizá-la». A sinalização existe — o `idbTx` chama `showQuotaBanner()` e rejeita, uma camada abaixo de todos os chamadores. O utilizador **é** avisado. O defeito residual é outro e mais subtil: a rejeição ficava sem tratamento e a vista continuava a mostrar uma ordem que não sobreviveria à recarga.
+
+Acrescentado `try/catch` que regista o erro e recarrega a sessão, repondo a vista a partir do que ficou mesmo gravado. **Reproduzido em browser real:** com o `put` do IndexedDB a lançar `QuotaExceededError`, o `catch` dispara, a base fica intacta em `[0,1,2]` e o ecrã volta a coincidir com ela. No caminho feliz o arrasto persiste e sobrevive à recarga, sem ordens duplicadas.
+
+**Uma armadilha descoberta ao fazer isto, agora documentada no `§10`:** o medidor de complexidade do `validate.sh` não ignora comentários e trata o apóstrofo como abertura de string. O comentário que escrevi tinha três apóstrofos e a contagem **desceu** de 47 para 38 — acrescentar código e ver o CC baixar é o sintoma. Reescrito sem apóstrofos, aparecem os valores reais: `initReorder` 47→48 e `onUp` 15→16, ambos atualizados na tabela.
+
 **`README` — a garantia do GIF sobreviveu à D44 (D53):** a D44 enumerou três sítios onde o ZIP prometia o original e corrigiu os três. Esta linha, na tabela de **Limitações**, garantia «O export ZIP inclui o arquivo GIF original com a animação intacta». Falso depois de anotar: o `ann-save` regenera a imagem em PNG a partir do canvas. Verificado que a extensão no ZIP vem de `img.blob.type`, portanto o arquivo sai corretamente nomeado `.png` — o defeito é só a garantia, não um ficheiro mal rotulado. A linha passa a separar os dois estados: sem edição e depois de editar. Quarta ocorrência do mesmo padrão desta versão: corrigir onde se procurou.
 
 **Visual Builder — a copy contradizia a D31 no sítio onde ela mais importa (D52):** o campo «Dimensão máxima» descrevia-se como «Redimensionar imagens maiores que o limite». A D31 corrigiu três documentos e deixou intacto o texto que o administrador lê **enquanto configura**. Reproduzido: o `TOKEN_MAX_IMG_DIMENSION` só é lido dentro de `imgToJPEG`, e `imgToJPEG` só existe dentro de `generatePDF` — o token nunca toca no armazenamento. Era exatamente o cenário que a D31 descreveu: «um administrador que o configurasse para reduzir consumo de disco não obtinha redução nenhuma». Passa a «Reduz as imagens acima do limite ao gerar o PDF; não afeta o que fica guardado». Verificado em browser real.

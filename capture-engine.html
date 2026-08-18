@@ -4957,7 +4957,23 @@
             const ordered = [];
             items.forEach((el, i) => { const obj = arr.find(x => x.id === el.dataset.id); if (obj) { obj.order = i; ordered.push(obj) } });
             if (isImg) images = ordered; else docs = ordered;
-            for (const o of ordered) await idbPut(store, o);
+            /* A ordem fica escrita registo a registo: idbPut nao agrupa, logo esta
+               sequencia NAO tem atomicidade. Se falhar a meio (o modo de falha
+               documentado desta app fica no esgotamento de quota), o array em memoria
+               ja esta renumerado enquanto o IndexedDB ficou misto, e o ecra passaria a
+               mostrar uma ordem que nao sobrevive a recarga. O banner de quota ja vem
+               do idbTx, uma camada abaixo; o que falta aqui fica em nao deixar o ecra
+               mentir. Recarregar a sessao repoe a vista a partir do que ficou gravado.
+               NOTA: sem apostrofos neste comentario. O medidor de complexidade do
+               validate.sh nao ignora comentarios e trata o apostrofo como abertura de
+               string; um numero impar deles corrompe a contagem de chavetas. Ver D54. */
+            try {
+              for (const o of ordered) await idbPut(store, o);
+            } catch (e) {
+              SysLogger.error('Reordenacao: falha ao persistir a ordem; a repor a vista a partir do IndexedDB', e);
+              if (sessId) await loadSession(sessId);
+              return;
+            }
             isDirty = true; triggerSave();
           }
 

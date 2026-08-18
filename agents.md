@@ -1102,7 +1102,7 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 
 | CC | Função | Motor |
 |---|---|---|
-| 47 | `initReorder` | Reordenação (Pointer Events + FLIP) |
+| 48 | `initReorder` | Reordenação (Pointer Events + FLIP) |
 | 34 | `annSetTool` | Anotação — troca de ferramenta, entrada/saída do crop |
 | 30 | *(anónima)* | — |
 | 29 | `initVbSync` | Visual Builder |
@@ -1113,10 +1113,12 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 | 21 | *(anónima)* | — |
 | 20 | `onclick` | — |
 | 17 | `updateStatusBar` · `annDrawShape` | Barra de estado · Anotação |
-| 16 | `loadSession` · `generateZIP` | Sessões · Motor ZIP |
+| 16 | `loadSession` · `generateZIP` · `onUp` | Sessões · Motor ZIP · Reordenação (fim do arrasto) |
 
 **Como usar isto:** antes de editar qualquer função desta tabela, leia a secção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
 
+> ⚠️ **Armadilha do medidor — apóstrofos em comentários.** O analisador de complexidade **não ignora comentários** e trata `'` como abertura de string. Um número ímpar de apóstrofos num comentário (fácil de escrever sem dar por isso: «e'», «d'») deixa o analisador dentro de uma string falsa e corrompe a contagem de chavetas a partir daí — funções passam a ser atribuídas ao nome errado e os valores **descem**. Sintoma: acrescentar código e ver o CC baixar. Aconteceu na D54 e custou uma investigação. Escreva comentários sem apóstrofos, ou em número par.
+>
 > **Nota:** a heurística conta pontos de decisão, não complexidade real percebida. Uma função pode ter CC alto por ter muitos ramos triviais. A tabela ordena risco relativo, não é veredicto de qualidade. Regenerar com `bash validate.sh` após alterações significativas.
 
 ---
