@@ -63,6 +63,14 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**`agents.md §12` não mencionava tags, e a V26 saiu sem uma (D73):** o repositório etiqueta cada versão desde a v1 — tags leves, `vNN` em minúsculas, apontando para o commit em que o HTML passa a declarar a versão. A **v25 foi a última criada**, e ficou assim durante **118 commits**.
+
+O protocolo de version bump tem 5.318 caracteres, passo 0 obrigatório com `grep` preventivo, lista exata de substituições por ficheiro, verificação posterior, commit atómico e o aviso da prova de vida. **Não tinha uma única menção a `git tag`.** Seguimo-lo à letra na V26 e na V27, e a lacuna passou nas duas.
+
+**Nenhuma das seis auditorias o apanhou** — e não por descuido delas: todas auditaram o projeto contra os seus próprios documentos declarados, e o que não está escrito não é procurado. Foi preciso o proprietário abrir a página de tags do GitHub e ver que a última era a `v25`.
+
+Criadas e enviadas `v26` (em `f788f3e`, o bump V25→V26) e `v27` (em `50f74c0`), seguindo a convenção existente — verifiquei que as v18–v25 são leves, não anotadas, e criei leves. O passo fica agora escrito no `§12`, com a verificação no remoto. **É o melhor exemplo desta versão de que a lacuna perigosa não é o passo mal executado, é o passo que não está escrito.**
+
 **Quatro achados da sexta auditoria, todos sobre o texto desta própria ronda (D72):** nenhum toca no produto. A auditoria reproduziu ao byte tudo o que era mensurável — os dois pontos fixos do Quine, o Export User, as contagens do bump — e o que sobrou foram imprecisões na forma como descrevi o que fiz.
 
 - **O furo que declarei na D67 era mais estreito do que o real (B-1).** Escrevi «uma definição escrita dentro de um **comentário** satisfaz o check». Medido: uma definição dentro de uma **string literal** também satisfaz. O âmbito correto é **qualquer ocorrência textual em contexto não executado**. A decisão de não remendar mantém-se — escrever outro scanner sobre um arquivo com literais de regex e apóstrofos repetiria o defeito —, mas **uma limitação declarada só protege quem a lê se estiver bem medida**, e esta estava sub-declarada.

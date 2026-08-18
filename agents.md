@@ -1409,6 +1409,26 @@ Nunca assumir que as substituições foram completas sem verificar.
 **Commit atómico obrigatório:**
 Todos os arquivos alterados no version bump (`capture-engine.html`, `changelog.md`, `README.md`, `design-tokens.md`, `agents.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
 
+**Criar e enviar a tag (obrigatório — foi esquecido na V26):**
+
+O repositório etiqueta cada versão. As tags são **leves** (não anotadas) e chamam-se `vNN` em minúsculas, apontando para o commit em que o HTML passa a declarar essa versão — normalmente o próprio commit do bump.
+
+```bash
+git tag v27 <sha-do-commit-do-bump>
+git push origin v27
+```
+
+Verificar que existe no remoto, e que a versão no HTML desse commit é a esperada:
+
+```bash
+git ls-remote --tags origin | grep v27
+git show v27:capture-engine.html | grep -o 'Capture Engine V[0-9]* Ready'
+```
+
+> ⚠️ **Por que este passo está escrito aqui.** A **V26 saiu sem tag** e ninguém deu por isso durante 118 commits, 50 entradas de changelog e **seis auditorias independentes** de zero confiança. Nenhuma o apanhou — não porque fossem descuidadas, mas porque **este protocolo não mencionava tags**, e uma auditoria contra um protocolo só encontra o que o protocolo manda procurar. Foi preciso o proprietário abrir a página de tags do GitHub e reparar que a última era a `v25`.
+>
+> É o exemplo mais claro que o projeto tem de que **a lacuna perigosa não é o passo mal executado — é o passo que não está escrito.** Ao acrescentar qualquer etapa nova a este protocolo, assuma que é a única defesa contra ela ser esquecida.
+
 > ⚠️ **AVISO CRÍTICO — nenhuma versão está pronta sem a prova de vida do Export User:** antes de considerar a release fechada, execute a «Prova de vida do Export User» da Seção 11, Parte B. Gerar o artefato, abri-lo, e confirmar que **funciona** — não apenas que não tem botões de admin. Foi a ausência deste passo que deixou o Export User quebrado da V11 à V25 sem que ninguém notasse. Custa dois minutos.
 
 > **Nota sobre o `validate.sh`:** o script **não** tem número de versão hardcoded — a verificação #8 auto-detecta a versão a partir do boot message (`Capture Engine Vxx Ready`) e confirma que essa mesma versão aparece nas 3 referências de produto do HTML (comentário do Visual Builder, badge e console). Por isso o `validate.sh` **não precisa de ser editado** no version bump; pelo contrário, **correr `validate.sh` após o bump apanha** os 3 locais caso algum tenha ficado por substituir (a verificação #8 dá `FAIL` se a versão do boot message não bater com o badge/comentário VB). Adicionalmente, o `validate.sh` verifica automaticamente a consistência de `TOKEN_MAIN_COLOR` entre o HTML e o `design-tokens.md`, e a presença das **8 afordâncias** de anotação no `README.md` — 7 ferramentas mais a ação de rodar; o script imprime `(8/8)`. ⚠️ **Cuidado com a numeração (D69):** os comentários internos do `validate.sh` numeram estes dois como `#11` e `#12`, enquanto a lista de 27 da `§10` os numera como **18** e **19**. São as mesmas verificações com dois números — ao citar um check, diga de que lista está a falar. Qualquer deriva nestes dois eixos aparece como `[FAIL]` antes do commit.
