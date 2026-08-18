@@ -108,18 +108,26 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 | `#1a1917` `#ffffff` | Cálculo YIQ de contraste (`fg = (yiq >= 128) ? … : …`) | Escolha de legibilidade sobre um acento **arbitrário** definido pelo usuário no Visual Builder — o resultado não é conhecido em tempo de escrita, portanto não pode vir de um token. Já descrito na §6; repetido aqui para que o `grep` desta secção não o reporte. |
 | `#35a800` `#ffd82b` | `stop-color` do `<linearGradient id="ce_accent">` no logo SVG inline | Stops de gradiente da identidade visual. SVG inline não resolve custom properties em `stop-color` de forma fiável entre browsers. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | Metatags lidas pelo browser e pelo sistema operativo **antes de o CSS existir**. Custom properties não se aplicam a metatags. |
+| `#fdfdfc` `#121212` | `index.html` — fundo do stub de redireção, claro e escuro | O `index.html` é uma página de 14 linhas que redireciona para o `capture-engine.html`. **Não pode usar o sistema de tokens**: pinta o fundo antes de a aplicação existir, para não haver um flash branco a caminho do modo escuro. O `#121212` coincide com o `--bg` escuro; o `#fdfdfc` é um branco-quente que não existe no sistema. |
 
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
 
 > **Como verificar que esta tabela continua completa** — a versão anterior enumerava 5 categorias e o código tinha 9; a lacuna sobreviveu a duas auditorias porque ninguém comparou as duas listas mecanicamente. O comando abaixo faz essa comparação e deve devolver vazio:
 >
 > ```bash
-> comm -23 \
->   <(grep -vE '^[[:space:]]*--[a-z-]+[[:space:]]*:' capture-engine.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u) \
->   <(sed -n '/^### 2.1/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> CODIGO=$(grep -hvE '^[[:space:]]*--[a-z-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> DOC=$(sed -n '/^### 2.1/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> echo "no codigo e nao declaradas:"; comm -23 <(echo "$CODIGO") <(echo "$DOC")
+> echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
 > ```
 >
-> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (`--bg: #1e1e1e`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
+> **As duas direções importam.** A primeira apanha cor nova por declarar; a segunda apanha entradas que ficaram para
+> trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
+> O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
+>
+> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--bg: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
+>
+> ⚠️ **Não escrever cores literais nesta secção fora da tabela** (D70). O comando abaixo lê a secção inteira: um hex citado numa nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
 >
 > Qualquer linha devolvida é uma cor no código que esta secção não declara.
 

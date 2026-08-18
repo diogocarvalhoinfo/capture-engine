@@ -1063,6 +1063,8 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
+> **Além dos 27 numerados há dois checks que só emitem `[WARN]` e não entram na contagem (D70):** a heurística de complexidade ciclomática (descrita abaixo) e um check de **contagem de checks**, que compara o número declarado nesta secção com o `CHECKS_NUMERADOS` do script e avisa se desfasarem. Este último existe porque a D24 corrigiu exatamente essa dessincronização; se acrescentar ou remover um check numerado, atualize os dois sítios ou o `[WARN]` fica permanente.
+
 **Os 27 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
@@ -1118,6 +1120,21 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 | 20 | `onclick` | — |
 | 17 | `updateStatusBar` · `annDrawShape` | Barra de estado · Anotação |
 | 16 | `loadSession` · `generateZIP` · `onUp` | Sessões · Motor ZIP · Reordenação (fim do arrasto) |
+
+> **Dois limites conhecidos que ficam por corrigir de propósito (D70).**
+>
+> **O guard de prosa do check 19 depende de uma frase editorial.** Ele dispara ao ver «A distinção é técnica» na linha
+> das ferramentas. Medido: das duas linhas de prosa que a seguem, só essa contém um termo da lista (`Rotação`), pelo
+> que é a única cuja fusão abriria um furo — e é exatamente a que o guard vigia. **Hoje não há furo.** Mas se alguém
+> reescrever essa frase, o guard fica cego e a fragilidade volta em silêncio. Não foi remendado porque seria a **sexta**
+> iteração no mesmo check (D29 → D41 → D46 → D47 → e duas correções ao próprio remendo), e o padrão de cada remendo
+> deixar uma aresta nova já está estabelecido. A correção certa, quando alguém lhe voltar, é **estrutural**: derivar os
+> termos esperados do próprio HTML (os 7 `data-tool` mais o botão de rodar) em vez de os manter numa lista à parte.
+>
+> **O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona.** O `_chkQ` do `idbTx` está ligado
+> aos handlers de erro da transação, que só correm no caminho assíncrono. Não foi corrigido porque erros de quota
+> chegam **sempre** pela transação; o ramo síncrono transporta outras coisas (`DataCloneError`, `InvalidStateError`),
+> para as quais um banner de armazenamento cheio seria a mensagem errada.
 
 **Como usar isto:** antes de editar qualquer função desta tabela, leia a secção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
 

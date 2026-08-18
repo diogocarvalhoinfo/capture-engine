@@ -43,6 +43,21 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**Triagem dos cinco `Baixo` da quinta auditoria — três corrigidos, dois declarados (D70):**
+
+**Corrigidos.**
+
+- **A verificação da `§2.1` era unidirecional (B2).** O comando `comm -23` apanhava cor no código por declarar, mas nunca entradas que ficassem para trás quando o código mudasse — a tabela podia apodrecer sem ninguém dar por isso. Passa a correr nas **duas direções**, e ambas devem devolver vazio.
+
+  A entrada obsoleta que a auditoria encontrou tem uma origem que vale a pena registar: **veio da minha própria nota a explicar o comando**, onde citei uma cor do modo escuro como exemplo. O comando lê a secção inteira, portanto o exemplo passou a contar como exceção declarada. **E reincidi ao corrigir:** a primeira versão do aviso «não escrever cores literais fora da tabela» citava o hex, voltando a poluir o comando que o aviso protege. A nota passa a descrever a cor em vez de a escrever.
+- **O `index.html` estava fora de qualquer verificação (B5).** É o outro arquivo distribuído e tem duas cores próprias. Agora entra no âmbito do comando, e as duas ficam declaradas com a razão: o stub pinta o fundo **antes de a aplicação existir**, para não haver flash branco a caminho do modo escuro, e por isso não pode usar tokens.
+- **Dois checks não constavam da lista (B3).** Além dos 27 numerados existem duas verificações que só emitem `[WARN]`: a heurística de complexidade e o check de contagem de checks — este último criado pela D24 justamente para apanhar dessincronização entre o script e a documentação, e que não estava documentado em lado nenhum.
+
+**Declarados, não corrigidos.**
+
+- **O guard de prosa do check 19 depende de uma frase editorial (B1).** Medido: das duas linhas de prosa que seguem a enumeração, só a que diz «A distinção é técnica» contém um termo da lista (`Rotação`), e é exatamente essa que o guard vigia — **hoje não há furo**. Fundir a outra não abre nada. Não foi remendado porque seria a **sexta** iteração no mesmo check, contando as duas correções que o meu próprio remendo anterior precisou. A correção certa é estrutural — derivar os termos do HTML em vez de os manter numa lista à parte — e fica registada no `agents.md` para quem lá voltar.
+- **O banner de quota não aparece no ramo de throw síncrono do `put` (B6).** A própria auditoria rebaixou este achado em vez de contradizer a D54: erros de quota chegam **sempre** pela transação, que é o caminho assíncrono, e esse funciona. O ramo síncrono transporta `DataCloneError` e `InvalidStateError`, para os quais um banner de «armazenamento cheio» seria a mensagem errada. Acrescentar código para um caminho que não transporta o erro que o banner descreve não se justifica.
+
 **`agents.md` — três imprecisões na documentação de leitura obrigatória (D69):**
 
 - **A semântica do `BOOT_HTML` estava invertida (M5).** Dois avisos técnicos da `§1.2` diziam que, sem ele ou com um servidor dinâmico, «o Quine exportaria **o DOM mutado pelo runtime** (com contadores atualizados, legendas editadas)». Nenhum dos cenários produz isso. O DOM é lido **uma única vez**, no arranque — `documentElement.outerHTML` ocorre exatamente uma vez no arquivo — e é precisamente isso que o `BOOT_HTML` é. Com um servidor dinâmico exportar-se-ia o que o servidor devolveu; sem `BOOT_HTML` e com o `fetch` a falhar, o `PRISTINE_HTML` ficaria `null` e o export **abortaria** pelo guard `if (!PRISTINE_HTML) … return`. A formulação apresentava o `BOOT_HTML` como defesa contra a mutação do DOM quando ele **é** a serialização do DOM: o que o protege é o *momento* em que é tirado.
