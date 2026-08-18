@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**Visual Builder — a copy contradizia a D31 no sítio onde ela mais importa (D52):** o campo «Dimensão máxima» descrevia-se como «Redimensionar imagens maiores que o limite». A D31 corrigiu três documentos e deixou intacto o texto que o administrador lê **enquanto configura**. Reproduzido: o `TOKEN_MAX_IMG_DIMENSION` só é lido dentro de `imgToJPEG`, e `imgToJPEG` só existe dentro de `generatePDF` — o token nunca toca no armazenamento. Era exatamente o cenário que a D31 descreveu: «um administrador que o configurasse para reduzir consumo de disco não obtinha redução nenhuma». Passa a «Reduz as imagens acima do limite ao gerar o PDF; não afeta o que fica guardado». Verificado em browser real.
+
 **`agents.md` — a CSP existia no produto e não existia na doc de leitura obrigatória (D50):** o `capture-engine.html` traz uma metatag `Content-Security-Policy` desde antes desta versão. O `README` descreve-a em três sítios; o `agents.md` — o documento que um agente lê **antes de editar** — não a mencionava nenhuma vez. Quem acrescentasse um recurso externo veria o browser recusá-lo sem encontrar na doc a razão.
 
 Acrescentada à `§1.4` a metatag verbatim, uma tabela por diretiva, e o aviso que motiva a entrada: **`connect-src 'self'` é o que mantém o Quine vivo.** O `capturePristine()` faz `fetch(location.href)`; apertar essa diretiva para `'none'` não produz erro visível — o `fetch` falha, a função cai no fallback `BOOT_HTML`, e o export continua a produzir um arquivo estruturalmente válido, mas desatualizado. O `validate.sh` não apanha essa falha, precisamente por o artefato continuar válido. **Sem alteração de código nem de pixel.**
