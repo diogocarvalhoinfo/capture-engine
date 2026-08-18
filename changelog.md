@@ -7,7 +7,25 @@
 
 ## [V26] — 2026-08-16
 
-Versão de correção, originada de duas auditorias independentes sobre a V25. O achado central: o **Export User nunca produziu um arquivo funcional** — defeito presente desde pelo menos a V11 e nunca detectado, porque a validação estática cobre o arquivo de administrador e não o produto do export.
+Versão de correção, originada de quatro auditorias independentes sobre a V25. O achado central: o **Export User nunca produziu um arquivo funcional** — defeito presente desde pelo menos a V11 e nunca detectado, porque a validação estática cobre o arquivo de administrador e não o produto do export.
+
+### Validação da release
+
+**Prova de vida do Export User — executada sobre o estado final (D63).** O `agents.md §12` torna-a obrigatória antes de fechar uma release. Na publicação da V26 foi conscientemente saltada, e a pendência ficou aberta enquanto entraram mais correções, várias delas em código. Corrida agora sobre o estado do commit `8708455`, com o artefato gerado pelo **botão Export da própria aplicação** — nunca com o `capture-engine.html` de desenvolvimento, como o procedimento exige.
+
+| Passo | Resultado |
+|---|---|
+| Export User pelo botão | `CAPTURE-ENGINE-06h21m-18-ago-2026.html`, 298.376 bytes |
+| Zero erros na consola | ✅ — assinatura do defeito D25 (`Cannot read properties of null`) **ausente** |
+| A aplicação responde | ✅ imagem colada aparece na grade |
+| A sessão persiste | ✅ campo User sobrevive à recarga |
+| Configurações aplicadas | ✅ rodapé `© 2026 • CAPTURE ENGINE • DIOGO CARVALHO`, acento `#e86b2e`, título |
+| Sem admin nem Visual Builder | ✅ `btn-admin-config`, `vb-overlay` e `export-overlay` todos ausentes |
+| Multi-aba | ✅ 2.ª aba carrega e responde; a 1.ª continua a aceitar imagens depois disso; ambas partilham a mesma base |
+
+Os passos de **interação** são os que o procedimento marca como não dispensáveis: no defeito D25 a interface renderizava por completo, porque isso é HTML estático, e só a interação revelava que nada estava ligado. O rodapé é o sinal mais informativo dos três de configuração — é escrito pelo `applyTokens`, a função que a D25 teve de corrigir com guardas por grupo em vez de `return` antecipado, precisamente por escrever coisas de administração e de utilizador de forma entrelaçada. Estar correto no artefato User mostra que essa correção continua de pé.
+
+**Duas correções ao próprio teste, na primeira passagem:** o passo das configurações devolveu `null` para o rodapé por o seletor estar errado — não estava a verificar coisa nenhuma —, e a linha «a 1.ª aba continua viva» era uma afirmação fixa, não uma medição. Ambos refeitos: o rodapé passou a ser comparado com o valor esperado do token, e a 1.ª aba prova estar viva por continuar a aceitar imagens **depois** de a 2.ª abrir.
 
 ### Corrigido
 
