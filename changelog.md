@@ -63,6 +63,17 @@ Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
+**Dois `Baixo` da sétima auditoria, triados sem alterar código (D75):**
+
+- **Cor e espessura transitam entre imagens sem reposição — não é defeito.** A auditoria anotou «esperado `#ef4444` vermelho por defeito», mas esse «esperado» não sai do produto nem da documentação: **nenhum documento promete que a cor volta ao padrão**. Manter a ferramenta escolhida entre documentos é o comportamento normal de qualquer editor, e serve melhor quem anota dezenas de imagens em série. Fechado como comportamento correto.
+- **`Desfazer` fica inerte depois de reabrir uma imagem — real, mas não corrigido.** Reproduzido: após reabrir, o botão apresenta-se `disabled=false`, opacidade `1` e cursor de mão, e dois cliques não mudam nem o canvas nem o IndexedDB. A causa está no `annActivate()`, que faz `annUndoStack = []` mas restaura o `annRedoStack` da persistência.
+
+  O comportamento em si é defensável — as anotações foram confirmadas ao guardar, e continua a ser possível selecionar e apagar. O problema é o botão não distinguir «não há nada para desfazer» de «não funciona». **Ao investigar a correção, ela caiu:** a barra de anotação tem três estados visuais (normal, `:hover`, `.active`) e **nenhum `disabled`** — desativar os botões deixá-los-ia idênticos, trocando uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado, que é decisão de design, não correção.
+
+  **Decisão do proprietário: fica como está**, registada como D9 na `§13` do `agents.md` para que a próxima auditoria não a reabra como achado novo.
+
+**Nota sobre o achado `Alto` da mesma auditoria que não era defeito:** ela classificou «`Escape` descarta anotações» como `Alto`. É a **decisão D8**, tomada nesta mesma versão. Reabriu-a porque a instrução que lhe dei a proibia de ler documentação — quis evitar que enchesse o relatório com achados documentais e, ao fazê-lo, tirei-lhe o contexto para distinguir decisão de defeito. **Para a próxima auditoria de execução:** «não *reportes* achados documentais, mas *lê* a `§13` antes de classificar comportamento».
+
 **O PDF gerado dentro do ZIP ignorava o layout A4 escolhido (D74):** achado da sétima auditoria — a primeira que **executou** o produto em vez de o ler. É o primeiro defeito de comportamento encontrado em várias rondas, e estava num caminho que nenhuma auditoria documental podia ver.
 
 **Causa.** O layout vivia num global, `let pdfFmt = 'auto'`, escrito **apenas** pelo handler do botão PDF e lido pelo `generatePDF`. O `generateZIP(true)` chama `generatePDF(true)` e **nunca escrevia o global** — usava o que lá estivesse. O resultado dependia da ordem das ações do usuário:
