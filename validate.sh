@@ -73,7 +73,11 @@ check_eq "APIs proibidas (eval/Function/write)" 0 "$BAD"
 
 # 5) Zero-dependencia: nenhum recurso externo carregado por http(s).
 #    (O unico fetch permitido e' fetch(location.href), que nao casa este padrao.)
-EXT=$(grep -cE "src=\"https?://|href=\"https?://|cdn\.|googleapis" "$FILE")
+#    Visa CONSTRUTOS DE CARREGAMENTO, nao a string "http": o ficheiro contem
+#    legitimamente http(s) no comentario de licenca e no xmlns do SVG inline, e
+#    nenhum dos dois e' carregado. Cobre aspas simples e duplas, url() em CSS,
+#    @import, fetch/importScripts, e URLs protocol-relative (//host). Ver D58.
+EXT=$(grep -cE "(src|href)[[:space:]]*=[[:space:]]*[\"'](https?:)?//|url\([[:space:]]*[\"']?(https?:)?//|@import[[:space:]]+[\"']?(https?:)?//|fetch\([[:space:]]*[\"'](https?:)?//|importScripts\(|cdn\.|googleapis" "$FILE")
 check_eq "Recursos externos http(s) (zero-dep)" 0 "$EXT"
 
 # 6) Cabecalho de licenca presente no arquivo distribuido.

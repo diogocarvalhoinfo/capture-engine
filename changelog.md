@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**`validate.sh` — o check de zero-dependência prometia mais do que cobria (D58):** o padrão antigo não detetava atributos com aspas simples, `url()` em CSS, `@import`, `fetch()` para URL externo, nem URLs protocol-relative. **Medido:** de sete formas de injetar um recurso externo, o padrão antigo apanhava **uma**; o novo apanha as sete. O padrão passa a visar **construtos de carregamento** e não a string `http` — necessário porque o arquivo contém legitimamente http(s) no comentário de licença e no `xmlns` do SVG inline, e nenhum dos dois é carregado. Continua a dar 0 no arquivo limpo. A CSP continua a ser a defesa real; o que estava errado era a promessa do rótulo.
+
 **`agents.md` — referência cruzada para informação inexistente (D57):** a descrição do check 25 dizia que o tamanho é validado «na faixa documentada no README §10 (~280–340 KB)». O README §10 dá apenas a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma — os limites `280000-340000` existem só no `validate.sh`. Passa a declarar os números e a dizer onde vivem, para que alterar o limiar não mande ninguém procurar um segundo sítio que não existe.
 
 **Changelog — a D32 contradizia a D34 dentro da mesma versão (D56):** a D32 declarava que o banner de armazenamento indisponível «continua **sem botão de fechar**»; a D34, mais abaixo na mesma secção, acrescentou-lhe o mesmo ✕. Lê-se bem como narrativa de duas iterações, mas quem consultar só a D32 fica com informação errada sobre o estado atual. A entrada passa a declarar-se superada e a apontar para a D34.
