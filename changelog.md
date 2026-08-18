@@ -11,7 +11,7 @@ Versão de correção, originada de quatro auditorias independentes sobre a V25.
 
 ### Validação da release
 
-**Prova de vida do Export User — executada sobre o estado final (D63).** O `agents.md §12` torna-a obrigatória antes de fechar uma release. Na publicação da V26 foi conscientemente saltada, e a pendência ficou aberta enquanto entraram mais correções, várias delas em código. Corrida agora sobre o estado do commit `8708455`, com o artefato gerado pelo **botão Export da própria aplicação** — nunca com o `capture-engine.html` de desenvolvimento, como o procedimento exige.
+**Prova de vida dos dois exports — executada sobre o estado final (D63, completada na D64).** O `agents.md §12` torna-a obrigatória antes de fechar uma release. Na publicação da V26 foi conscientemente saltada, e a pendência ficou aberta enquanto entraram mais correções, várias delas em código. Corrida agora sobre o estado do commit `8708455`, com o artefato gerado pelo **botão Export da própria aplicação** — nunca com o `capture-engine.html` de desenvolvimento, como o procedimento exige.
 
 | Passo | Resultado |
 |---|---|
@@ -26,6 +26,20 @@ Versão de correção, originada de quatro auditorias independentes sobre a V25.
 Os passos de **interação** são os que o procedimento marca como não dispensáveis: no defeito D25 a interface renderizava por completo, porque isso é HTML estático, e só a interação revelava que nada estava ligado. O rodapé é o sinal mais informativo dos três de configuração — é escrito pelo `applyTokens`, a função que a D25 teve de corrigir com guardas por grupo em vez de `return` antecipado, precisamente por escrever coisas de administração e de utilizador de forma entrelaçada. Estar correto no artefato User mostra que essa correção continua de pé.
 
 **Duas correções ao próprio teste, na primeira passagem:** o passo das configurações devolveu `null` para o rodapé por o seletor estar errado — não estava a verificar coisa nenhuma —, e a linha «a 1.ª aba continua viva» era uma afirmação fixa, não uma medição. Ambos refeitos: o rodapé passou a ser comparado com o valor esperado do token, e a 1.ª aba prova estar viva por continuar a aceitar imagens **depois** de a 2.ª abrir.
+
+**Export Admin e cadeia de re-export (D64).** A linha «Export Admin → a cópia mantém o painel de administração e a capacidade de re-exportar» do mesmo checklist **não tinha sido executada** quando a D63 foi registada; a lacuna foi apanhada pelo proprietário ao rever o registo. É a verificação mais relevante depois de alterações ao `capture-engine.html` — a **D40** existiu precisamente porque a segunda geração de export morria, e a D52 e a D54 desta ronda tocaram no arquivo.
+
+| | bytes | md5 |
+|---|---|---|
+| `capture-engine.html` (fonte) | 316.308 | `eab02cb0` |
+| Export Admin (G1) | 316.308 | `eab02cb0` |
+| Re-export a partir de G1 (G2) | 316.308 | `eab02cb0` |
+| Re-export a partir de G2 (G3) | 316.308 | `eab02cb0` |
+| Export User feito a partir de G1 | 298.376 | `394c5e28` |
+
+**O Export Admin é byte-idêntico à fonte, e mantém-se idêntico ao longo de três gerações encadeadas** — o Quine é um ponto fixo exato, sem deriva a acumular. Cada geração foi aberta em browser e exercitada com interação real, não apenas inspecionada: G1, G2 e G3 aceitam imagens, mantêm o painel de administração e a `window.exportFile`, e preservam rodapé e acento. O último passo cobre o caminho que um administrador percorre em produção: gerar o artefato de utilizador a partir de uma cópia já exportada — vivo, e sem `btn-admin-config`, `vb-overlay` ou `export-overlay`.
+
+Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
 
