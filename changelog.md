@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**`agents.md §14` — o procedimento de recurso perdia o original (D55):** os dois scripts de extração de emergência descarregavam `item.blob` e nunca mencionavam `origBlob`. O `AVISO CRÍTICO` da D44 é exato ao falar da **interface**, mas o `§14` é o procedimento oficial *fora* da interface, escrito para «extrair os dados puros» quando o HTML estiver inoperável. Quem o executasse obtinha o PNG anotado. Ambos os scripts passam a extrair os dois blobs, com o original sufixado `-ORIGINAL`. Sintaxe dos snippets verificada com `node --check`.
+
 **Reordenação — o ecrã podia mentir sobre o que ficou gravado (D54):** o `initReorder` persiste a nova ordem com um `await idbPut` por registo, sem `try/catch`. A escrita não é atómica: se falhar a meio, o array em memória já está renumerado enquanto o IndexedDB ficou misto.
 
 **Uma correção à classificação da auditoria:** ela descreveu o achado como «sem haver `catch` a sinalizá-la». A sinalização existe — o `idbTx` chama `showQuotaBanner()` e rejeita, uma camada abaixo de todos os chamadores. O utilizador **é** avisado. O defeito residual é outro e mais subtil: a rejeição ficava sem tratamento e a vista continuava a mostrar uma ordem que não sobreviveria à recarga.

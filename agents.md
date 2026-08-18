@@ -1452,10 +1452,19 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
      const store = tx.objectStore('images');
      store.getAll().onsuccess = ev => {
        ev.target.result.forEach((item, i) => {
-         const a = document.createElement('a');
-         a.href = URL.createObjectURL(item.blob);
-         a.download = (item.label || 'imagem-' + i) + '.png';
-         a.click();
+         // item.blob e' a imagem COMO ESTA: se foi anotada, rodada ou recortada,
+         // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
+         // edicao, e guarda o original intacto. Extrair ambos — este procedimento
+         // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
+         const base = item.label || 'imagem-' + i;
+         const saidas = [[item.blob, base]];
+         if (item.origBlob) saidas.push([item.origBlob, base + '-ORIGINAL']);
+         saidas.forEach(([blob, nome]) => {
+           const a = document.createElement('a');
+           a.href = URL.createObjectURL(blob);
+           a.download = nome + '.png';
+           a.click();
+         });
        });
      };
    };
@@ -1505,10 +1514,19 @@ req2.onsuccess = e => {
     .objectStore('images').index('sessionId');
   idx.getAll(SESSION_ID).onsuccess = ev => {
     ev.target.result.forEach((item, i) => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(item.blob);
-      a.download = (item.label || 'imagem-' + i) + '.png';
-      a.click();
+      // item.blob e' a imagem COMO ESTA: se foi anotada, rodada ou recortada,
+      // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
+      // edicao, e guarda o original intacto. Extrair ambos — este procedimento
+      // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
+      const base = item.label || 'imagem-' + i;
+      const saidas = [[item.blob, base]];
+      if (item.origBlob) saidas.push([item.origBlob, base + '-ORIGINAL']);
+      saidas.forEach(([blob, nome]) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nome + '.png';
+        a.click();
+      });
     });
   };
 };
