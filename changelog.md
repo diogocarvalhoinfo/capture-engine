@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**Changelog — a D32 contradizia a D34 dentro da mesma versão (D56):** a D32 declarava que o banner de armazenamento indisponível «continua **sem botão de fechar**»; a D34, mais abaixo na mesma secção, acrescentou-lhe o mesmo ✕. Lê-se bem como narrativa de duas iterações, mas quem consultar só a D32 fica com informação errada sobre o estado atual. A entrada passa a declarar-se superada e a apontar para a D34.
+
 **`agents.md §14` — o procedimento de recurso perdia o original (D55):** os dois scripts de extração de emergência descarregavam `item.blob` e nunca mencionavam `origBlob`. O `AVISO CRÍTICO` da D44 é exato ao falar da **interface**, mas o `§14` é o procedimento oficial *fora* da interface, escrito para «extrair os dados puros» quando o HTML estiver inoperável. Quem o executasse obtinha o PNG anotado. Ambos os scripts passam a extrair os dois blobs, com o original sufixado `-ORIGINAL`. Sintaxe dos snippets verificada com `node --check`.
 
 **Reordenação — o ecrã podia mentir sobre o que ficou gravado (D54):** o `initReorder` persiste a nova ordem com um `await idbPut` por registo, sem `try/catch`. A escrita não é atómica: se falhar a meio, o array em memória já está renumerado enquanto o IndexedDB ficou misto.
@@ -156,7 +158,7 @@ Neutralizado com `\x3C` no lugar do `<`, nas duas formas (abertura e fecho). Esc
 | Quota | **Armazenamento cheio** - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico. |
 | Indisponível | **Armazenamento indisponível** - as capturas não serão gravadas. Verifique se o browser está em modo privado ou com restrições de armazenamento. |
 
-A diferença de tempo verbal é deliberada e informativa: «deixaram de ser gravadas» descreve gravação que existia e parou; «não serão gravadas» descreve gravação que nunca chega a acontecer. Montagem passou a `createElement`/`createTextNode`, sem `innerHTML`. O banner de armazenamento indisponível continua **sem botão de fechar**, ao contrário do de quota — a condição é permanente para a sessão e não há ação que a resolva sem reabrir o browser noutro modo.
+A diferença de tempo verbal é deliberada e informativa: «deixaram de ser gravadas» descreve gravação que existia e parou; «não serão gravadas» descreve gravação que nunca chega a acontecer. Montagem passou a `createElement`/`createTextNode`, sem `innerHTML`. O banner de armazenamento indisponível ficou, **nesta iteração**, sem botão de fechar, ao contrário do de quota — a condição é permanente para a sessão e não há ação que a resolva sem reabrir o browser noutro modo. ⚠️ **Estado superado dentro da própria V26:** a D34, mais abaixo nesta secção, acrescentou-lhe o mesmo ✕. Quem consultar só esta entrada fica com informação errada sobre o estado atual. (D56)
 
 **Documentação — cores literais declaradas como exceções (D33):** nova secção `design-tokens.md §2.1` a listar as cores escritas como literais no HTML, com a justificação de cada uma. ⚠️ **Esta entrada dizia «todas as cores» e era falsa** — a secção cobria 5 categorias e o código tinha 9. Corrigido na D51, com a lacuna medida e um comando de verificação para impedir que se repita. **Sem alteração de código nem de pixel.** O motivo é cortar um ciclo: as duas auditorias desta versão reportaram estas ocorrências como violação do contrato de Design Tokens, e qualquer auditoria futura repetiria — um `grep` por `background:#` não distingue intenção de esquecimento.
 
