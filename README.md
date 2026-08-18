@@ -459,7 +459,8 @@ A CSP ativa inclui `script-src 'unsafe-inline'` e `style-src 'unsafe-inline'`. I
 
 - Toda a lógica JavaScript está inline no único arquivo HTML — sem `unsafe-inline`, o browser bloquearia o próprio script da aplicação.
 - Nonces e hashes são incompatíveis com o Quine Engine: o conteúdo do arquivo muda a cada Export, invalidando qualquer hash calculado no build.
-- A CSP ainda protege contra **scripts externos** (`default-src 'self'`), **recursos de rede** (`connect-src 'self'`) e **imagens externas** (`img-src blob: data:`).
+- A CSP ainda protege contra **scripts externos**, **recursos de rede** (`connect-src 'self'`) e **imagens externas** (`img-src blob: data:`).
+- O bloqueio de scripts externos vem do próprio `script-src 'unsafe-inline'`, e **não** do `default-src`: quando `script-src` está declarado, ele substitui o `default-src` para scripts, e como não nomeia nenhuma origem de URL — nem sequer `'self'` — recusa tudo o que não seja inline. O resultado é mais restritivo do que o `default-src` sozinho daria, e não menos.
 
 > Em scanners de segurança automáticos (OWASP ZAP, Lighthouse), `unsafe-inline` será marcado como aviso. O contexto acima explica por que é intencional neste modelo.
 

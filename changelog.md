@@ -11,6 +11,8 @@ Versão de correção, originada de duas auditorias independentes sobre a V25. O
 
 ### Corrigido
 
+**`README` — a mecânica da CSP estava descrita ao contrário (D62):** a linha atribuía o bloqueio de scripts externos ao `default-src`. O resultado afirmado está certo, mas pela razão oposta: quando o `script-src` está declarado, substitui o `default-src` para scripts, e como não nomeia nenhuma origem de URL — nem sequer a própria — recusa tudo o que não seja inline. É **mais** restritivo do que o `default-src` sozinho daria. A D50 documentou a mecânica correta no `agents.md`; esta entrada alinha o README, que até aqui divergia dele.
+
 **`README` — o custo do `origBlob` faltava onde mais importa (D61):** a secção que ensina a gerir quota afirma «não existe forma de reduzir o espaço que cada captura ocupa», o que é verdade para a captura. Omitia que confirmar a primeira anotação, rotação ou recorte acrescenta um **segundo** blob ao mesmo registo — o original preservado para poder desfazer — aproximadamente duplicando o custo. É informação relevante precisamente na secção sobre quota.
 
 **`README` — «8 botões no editor» (D60):** a taxonomia introduzida pela D31 (7 ferramentas + 1 ação) está correta e é a informação útil; a formulação é que era falsa. **Contado:** a barra de anotação tem 17 botões — os 7 `data-tool`, mais rodar, desfazer, refazer, espessura (dois), negrito, itálico, guardar, cancelar e alternar. Passa a «8 afordâncias de desenho», com uma linha a declarar os restantes controlos. A âncora do check 19 no `validate.sh` foi atualizada em conjunto, por depender desta frase. **Reverificados os três ramos do check:** remover a ação dá FAIL na Rotação, remover uma ferramenta dá FAIL no Crop, e apagar a linha dá FAIL de lista ausente.
