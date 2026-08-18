@@ -96,12 +96,32 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 | Cor | Onde | Por que é literal |
 |---|---|---|
 | `#b91c1c` | Fundo dos banners críticos `#ce-quota-banner` e `#ce-storage-banner` | Vermelho de alerta escolhido para estes dois avisos. Não corresponde a `--color-red` (`#ef4444`), que é mais claro; o tom mais escuro foi preferido para o bloco de fundo sólido de largura total. Não tem token próprio por decisão do proprietário. |
-| `#ef4444` `#f97316` `#22c55e` `#eab308` e restantes swatches | Atributos `data-color` da paleta de anotação | **Não são cor de interface — são dados.** O valor é gravado dentro do objeto de anotação no IndexedDB e usado depois para redesenhar a forma. Uma `var(--x)` ficaria persistida como texto no banco, ou exigiria resolução no momento da escrita. Têm de ser literais. |
+| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` — os 8 swatches, enumerados (**não escrever «e restantes»**: o comando de verificação no fim desta secção compara listas literais e um apanha-tudo torna-o cego) | Atributos `data-color` da paleta de anotação | **Não são cor de interface — são dados.** O valor é gravado dentro do objeto de anotação no IndexedDB e usado depois para redesenhar a forma. Uma `var(--x)` ficaria persistida como texto no banco, ou exigiria resolução no momento da escrita. Têm de ser literais. |
 | `#ef4444` `#22c55e` `#eab308` | Strings de estilo do `SysLogger` (`console.log('%c…')`) | O console do DevTools **não resolve** custom properties da página. Não há alternativa técnica. |
 | `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
-| `#fff` | Texto sobre os fundos vermelhos acima | Branco puro sobre alerta sólido; não há token de branco puro no sistema (o `--text` nunca é `#ffffff`, por decisão documentada na §1). |
+| `#ef4444` | `let annCurrentColor = '#ef4444'` | Cor inicial da anotação. **É dado, não interface** — mesma razão dos swatches: o valor é persistido no IndexedDB. |
+| `#fff` `#ffffff` | Texto e ícones sobre preenchimentos de cor sólida: banners críticos, `.btn-send:disabled`, `#btn-admin-save.admin-active`, `.spinner`, `.count-badge`, `.t-del`, `#trash-badge`, `.ann-swatch.active` | Branco puro sobre fundo saturado. Não há token de branco puro no sistema — o `--text` nunca é `#ffffff`, por decisão documentada na §1 — e usar `--text` aqui inverteria o contraste em modo claro. |
+| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `body:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--border-strong`, `#121212` = `--bg` do modo escuro): a coincidência é do valor, não da intenção. |
+| `#16a34a` | `#btn-admin-save.admin-active:hover` | Verde mais escuro para o estado hover. O estado base usa `var(--color-green)`; não existe token de variante escurecida no sistema. |
+| `#e86b2e` | Declaração do `TOKEN_MAIN_COLOR`; atributos `value=` dos inputs `#cfg-cor-hex` e `#cfg-cor-principal`; fallback quando `getComputedStyle(--accent)` devolve vazio | **É o valor padrão do próprio token** (§6). Um `var(--accent)` aqui seria circular: o `--accent` deriva deste valor. Os dois `value=` do Visual Builder têm de espelhar o padrão para o picker abrir na cor certa antes de qualquer JS correr. |
+| `#ffffff` `#1a1a1a` | `#tb-brand-icon svg` e a sua variante `body:not(.dark)` | Ícone da marca com cor fixa por tema, definida diretamente em vez de por token. |
+| `#1a1917` `#ffffff` | Cálculo YIQ de contraste (`fg = (yiq >= 128) ? … : …`) | Escolha de legibilidade sobre um acento **arbitrário** definido pelo usuário no Visual Builder — o resultado não é conhecido em tempo de escrita, portanto não pode vir de um token. Já descrito na §6; repetido aqui para que o `grep` desta secção não o reporte. |
+| `#35a800` `#ffd82b` | `stop-color` do `<linearGradient id="ce_accent">` no logo SVG inline | Stops de gradiente da identidade visual. SVG inline não resolve custom properties em `stop-color` de forma fiável entre browsers. |
+| `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | Metatags lidas pelo browser e pelo sistema operativo **antes de o CSS existir**. Custom properties não se aplicam a metatags. |
 
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
+
+> **Como verificar que esta tabela continua completa** — a versão anterior enumerava 5 categorias e o código tinha 9; a lacuna sobreviveu a duas auditorias porque ninguém comparou as duas listas mecanicamente. O comando abaixo faz essa comparação e deve devolver vazio:
+>
+> ```bash
+> comm -23 \
+>   <(grep -vE '^[[:space:]]*--[a-z-]+[[:space:]]*:' capture-engine.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u) \
+>   <(sed -n '/^### 2.1/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> ```
+>
+> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (`--bg: #1e1e1e`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
+>
+> Qualquer linha devolvida é uma cor no código que esta secção não declara.
 
 ---
 
