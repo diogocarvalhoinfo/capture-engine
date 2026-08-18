@@ -37,11 +37,22 @@ Os passos de **interação** são os que o procedimento marca como não dispens�
 | Re-export a partir de G2 (G3) | 316.308 | `eab02cb0` |
 | Export User feito a partir de G1 | 298.376 | `394c5e28` |
 
-**O Export Admin é byte-idêntico à fonte, e mantém-se idêntico ao longo de três gerações encadeadas** — o Quine é um ponto fixo exato, sem deriva a acumular. Cada geração foi aberta em browser e exercitada com interação real, não apenas inspecionada: G1, G2 e G3 aceitam imagens, mantêm o painel de administração e a `window.exportFile`, e preservam rodapé e acento. O último passo cobre o caminho que um administrador percorre em produção: gerar o artefato de utilizador a partir de uma cópia já exportada — vivo, e sem `btn-admin-config`, `vb-overlay` ou `export-overlay`.
+**Servido por `http(s)`, o Export Admin é byte-idêntico à fonte e mantém-se idêntico ao longo de três gerações encadeadas.** ⚠️ **A condição não é decorativa e faltava aqui — ver D66:** em `file://`, que o `README §10` declara ser o modo de uso pretendido, o `fetch` é bloqueado por CORS, o Quine exporta o `BOOT_HTML`, e o artefato sai com `316.354` bytes / `f94ac992` — HTML equivalente, re-serializado pelo browser. Também aí é ponto fixo (G1 = G2 = G3, todas vivas), mas **noutro ponto**. A tabela acima é a do protocolo `http(s)`. Cada geração foi aberta em browser e exercitada com interação real, não apenas inspecionada: G1, G2 e G3 aceitam imagens, mantêm o painel de administração e a `window.exportFile`, e preservam rodapé e acento. O último passo cobre o caminho que um administrador percorre em produção: gerar o artefato de utilizador a partir de uma cópia já exportada — vivo, e sem `btn-admin-config`, `vb-overlay` ou `export-overlay`.
 
 Zero erros de consola em qualquer das cinco aberturas.
 
 ### Corrigido
+
+**A prova de vida das D63/D64 não declarava o protocolo em que correu (D66):** os números registados — `316.308` bytes, md5 `eab02cb0`, idênticos em três gerações — foram medidos com a aplicação servida por `http://127.0.0.1`. O `README §10` declara que a ferramenta «foi desenhada para uso local (protocolo `file://`)» e o `§4` manda «fazer duplo clique em `capture-engine.html`». **Medi os dois:**
+
+| Protocolo | Export Admin | md5 | G1 = G2 = G3 |
+|---|---|---|---|
+| `http(s)` | 316.308 bytes | `eab02cb0` | sim, e igual à fonte |
+| `file://` | 316.354 bytes | `f94ac992` | sim, mas noutro ponto fixo |
+
+A causa está no `BOOT_HTML`, que é `'<!DOCTYPE html>' + document.documentElement.outerHTML` **capturado no arranque**. Em `file://` o `fetch(location.href)` é recusado por CORS, o `capturePristine()` cai no fallback, e o que se exporta é a serialização do DOM feita pelo browser: `<circle …/>` passa a `<circle …></circle>`, atributos multi-linha colapsam, 5509 linhas passam a 5442. **Não há deriva** — a segunda serialização de um DOM já serializado é idêntica à primeira, e confirmei G1 = G2 = G3 com as três gerações vivas, painel de administração presente, rodapé e acento corretos.
+
+Corrigido também o passo 3 do checklist da `§11 Parte B`, que exigia «zero erros no console» **sem exceção**. Em `file://` aparece sempre `Fetch API cannot load file:///…` seguido de `[CE] Quine fallback: BOOT_HTML`. O critério era impossível de cumprir no modo de uso declarado, o que convida a ignorá-lo — exatamente o oposto do que uma prova de vida obrigatória precisa. Passa a tolerar **esse par e mais nenhum**.
 
 **`README §5.7` — a garantia do GIF que sobreviveu à D53 (D65):** a D53 corrigiu a mesma garantia na tabela de **Limitações** e deixou-a intacta na lista de funcionalidades do `§5.7`, três secções acima. A linha dizia «GIF animados no formato original, com animação intacta», sem qualquer ressalva — e contradizia a linha imediatamente anterior, que já declara «Imagens **anotadas, rodadas ou recortadas** como PNG novo».
 

@@ -1306,11 +1306,15 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 
 1. [ ] Fazer **Export User** pela aplicação e guardar o arquivo
 2. [ ] Abrir esse arquivo no browser e pressionar **F12 → Console**
-3. [ ] **Zero erros no console.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25 — o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal
+3. [ ] **Zero erros no console — com uma exceção declarada.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25: o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal.
+   - **Exceção:** aberto por `file://` — que é o modo de uso pretendido (`README §10`) — aparece **sempre** um `Fetch API cannot load file:///…`, seguido de `[CE] Quine fallback: BOOT_HTML`. É o comportamento documentado na `§1.2`, não um defeito: o `fetch(location.href)` é bloqueado por CORS e o Quine cai no `BOOT_HTML`. **Este par é o único erro tolerado.** Qualquer outro reprova o passo.
+   - Servido por `http(s)` não deve aparecer erro nenhum, nem sequer esse.
 4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
 5. [ ] **A sessão persiste:** escrever no campo User, recarregar a página, e confirmar que a sessão está no histórico
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
+
+> ⚠️ **O protocolo em que corre a prova muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha e o Quine exporta o `BOOT_HTML`, que é `document.documentElement.outerHTML` capturado no arranque: HTML equivalente mas **re-serializado pelo browser** — tags SVG auto-fechadas passam a ter fecho explícito, atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registo que não diga qual protocolo usou não é reproduzível.
 
 > **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25 a interface renderizava por completo — logo, painéis, botões, e a barra de estado a dizer «Pronto» — porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
 
