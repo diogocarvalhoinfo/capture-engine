@@ -178,9 +178,9 @@ fi
 #     dessincronizar-se se a lista mudar.
 ANN_TOOLS=("traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop")
 ANN_FAIL=0
-ANN_LINHA=$(grep -n "botões no editor" README.md 2>/dev/null | head -1 | cut -d: -f1)
+ANN_LINHA=$(grep -n "afordâncias de desenho no editor" README.md 2>/dev/null | head -1 | cut -d: -f1)
 if [ -z "$ANN_LINHA" ]; then
-  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'botões no editor' nao encontrada)"
+  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'afordâncias de desenho no editor' nao encontrada)"
   FAIL=$((FAIL+1))
 else
   ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)

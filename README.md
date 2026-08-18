@@ -209,7 +209,8 @@ Ao clicar numa imagem, abre um modal com visualizador completo.
 ### 5.3 Anotação de imagens
 
 Motor de anotação (V24→V25):
-- 8 botões no editor: **7 ferramentas** — traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Crop — e **1 ação**, Rotação 90°
+- 8 afordâncias de desenho no editor: **7 ferramentas** — traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Crop — e **1 ação**, Rotação 90°
+  - A barra tem mais controlos além destes — desfazer/refazer, espessura do traço, negrito/itálico, guardar e cancelar. A contagem 8 refere-se ao que **desenha ou transforma** a imagem, não ao total de botões
   - A distinção é técnica: as 7 ferramentas são valores de `annTool` e ficam ativas até se escolher outra; a rotação executa e termina, sem estado ativo
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
