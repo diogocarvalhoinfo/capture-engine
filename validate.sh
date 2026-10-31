@@ -260,7 +260,7 @@ fi
 
 # 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
 # Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
-CHECKS_NUMERADOS=27
+CHECKS_NUMERADOS=28
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -457,6 +457,27 @@ if command -v node >/dev/null 2>&1; then
   esac
 else
   printf '[SKIP] %-52s (node nao instalado)\n' "Export User inicializa"
+fi
+
+# 28) CSS standard: stylelint with the reference config (.stylelintrc.json,
+#     an exact copy of stylelint/.stylelintrc.json in the prompts repository).
+#     Versions and command come from that folder's README. Needs npx (Node);
+#     the first run downloads the packages. Without npx: [SKIP].
+if command -v npx >/dev/null 2>&1; then
+  SL_OUT=$(npx --yes --script-shell "$(command -v bash)"     -p stylelint@17.16.0 -p stylelint-config-standard@40.0.0     -p stylelint-declaration-strict-value@1.12.1 -p postcss-html@2.0.0     -c 'stylelint --config-basedir "$(dirname "$(dirname "$(dirname "$(command -v stylelint)")")")" "**/*.{css,html}"' 2>&1)
+  SL_EXIT=$?
+  if [ "$SL_EXIT" -eq 0 ]; then
+    printf '[PASS] %-52s
+' "stylelint (modelo dos prompts)"; PASS=$((PASS+1));
+  else
+    printf '[FAIL] %-52s (codigo %s)
+' "stylelint (modelo dos prompts)" "$SL_EXIT"; FAIL=$((FAIL+1));
+    printf '%s
+' "$SL_OUT" | grep -E "✖|problem" | head -20
+  fi
+else
+  printf '[SKIP] %-52s (npx nao instalado)
+' "stylelint (modelo dos prompts)"
 fi
 
 echo
