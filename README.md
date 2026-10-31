@@ -219,7 +219,7 @@ Motor de anotação (V24→V25):
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
-- Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar num canto, mover no meio
+- Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
   - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações continuam a voltar para a posição exata.
