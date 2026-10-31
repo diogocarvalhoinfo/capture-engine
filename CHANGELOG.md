@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: cinco melhorias pedidas no uso diário. Uma imagem que o navegador não abre vai para «Documentos», o verde do PDF e do ZIP fica até a próxima ação, o zoom anda 1 %, as alças têm o mesmo tamanho na tela, e os tooltips do editor aparecem na hora.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Modificado
 
 - **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de separador e depois do Alt; some no clique seguinte.
