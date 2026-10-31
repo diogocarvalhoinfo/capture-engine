@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **Imagem que o navegador não abre vai para «Documentos».** Uma foto HEIC entrava em «Imagens», ficava quebrada, e o PDF dava erro. Agora todo arquivo passa por um teste: se o navegador não desenha a imagem, ela vai para «Documentos», sem alterações, e um aviso diz porquê. Uma sessão antiga com uma imagem assim passa-a para «Documentos» antes do PDF ou do ZIP. Medido no Edge 156: o HEIC novo e o de uma sessão da 28.0.1 vão para «Documentos», com a extensão `.heic`, sem erros.
+
 ## [28.0.1] - 2026-10-31
 
 Patch: corrige a descrição de uma linha do Visual Builder e o fim do README. O arquivo do botão «Download» passa a trazer a correção do Visual Builder.

@@ -680,6 +680,10 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | Assinatura | O que faz |
 |---|---|---|
+| `captureFile(f)` | `async (File) → void` | Porta de entrada de todo arquivo (botões, arrastar e colar). Uma imagem que o navegador desenha vai para `captureImg`; o resto, incluindo HEIC, TIFF e RAW, vai para `captureDoc`, com o nome e os bytes originais, e um aviso |
+| `canDrawImage(blob)` | `(Blob) → Promise<boolean>` | Abre a imagem e desenha-a num canvas de 1 × 1 px. É o mesmo caminho do `imgToJPEG` do PDF: o que passa aqui entra no PDF |
+| `moveUndrawableToDocs()` | `async () → number` | Antes do PDF e do ZIP, passa para «Documentos» as imagens que o navegador não desenha (sessões gravadas antes do `captureFile`). A extensão vem do tipo ou dos primeiros bytes (`sniffExt`) |
+| `showNotice(msg)` | `(string) → void` | Aviso no fundo da tela (`role="status"`), que some em 8 s ou com um clique |
 | `captureImg(blob)` | `async (Blob) → void` | Captura imagem: gera rótulo único, salva em IndexedDB, renderiza thumb |
 | `captureDoc(blob, name, type)` | `async (Blob, string, string) → void` | Captura documento: gera nome único, salva em IndexedDB, renderiza card |
 
@@ -875,6 +879,8 @@ Iterar items do clipboard (índice numérico, não for...of)
       │
       ├── Tipo image/* encontrado
       │         ↓
+      │   captureFile(f)        → canDrawImage(): o navegador desenha a imagem?
+      │         ↓                  não → captureDoc() e aviso (HEIC, TIFF, RAW)
       │   captureImg(blob)
       │         ↓
       │   ensureSession()       → cria sessão se não existe (com mutex)
