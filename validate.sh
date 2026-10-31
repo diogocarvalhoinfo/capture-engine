@@ -364,17 +364,20 @@ else
   printf "[SKIP] %-52s (python nao instalado)\n" "Heuristica CC"
 fi
 
-# 23) z-index inventory: the set must be exactly the documented one
-#     in design-tokens.md section 4 / AGENTS.md section 2.2. Fails if a new
-#     value appears or a documented one disappears.
+# 23) z-index inventory: every z-index uses a --z-* token, and the set of
+#     token values must be exactly the documented one (design-tokens.md
+#     section 4 / AGENTS.md section 2.2). Fails on a new value, a missing one,
+#     or a literal z-index anywhere in the file.
 ZEXPECTED="10 50 100 200 300 1999 2000 9999 99999"
-ZFOUND=$(grep -oE "z-index: *[0-9]+" "$FILE" | grep -oE "[0-9]+" | sort -n | uniq | tr '\n' ' ' | sed 's/ *$//')
-check_eq "z-index: conjunto = documentado" "$ZEXPECTED" "$ZFOUND"
+ZLIT=$(grep -oE "z-index: *[0-9]+" "$FILE" | wc -l | tr -d ' ')
+ZFOUND=$(grep -oE -- "--z-[a-z-]+: *[0-9]+" "$FILE" | grep -oE "[0-9]+$" | sort -n | uniq | tr '
+' ' ' | sed 's/ *$//')
+check_eq "z-index: tokens = documentado, 0 literais" "$ZEXPECTED|0" "$ZFOUND|$ZLIT"
 
 # 24) Animation durations vs design-tokens.md section 5 (fixed expected values).
-AEXP="fadeIn=0.2s fadeInTab=0.25s modalIn=0.2s spin=0.65s"
+AEXP="fade-in=0.2s fade-in-tab=0.25s modal-in=0.2s spin=0.65s"
 AGOT=""
-for a in fadeIn fadeInTab modalIn spin; do
+for a in fade-in fade-in-tab modal-in spin; do
   d=$(grep -oE "animation: *${a} [0-9.]+s" "$FILE" | grep -oE "[0-9.]+s" | head -1)
   AGOT="$AGOT $a=$d"
 done

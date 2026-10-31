@@ -1101,7 +1101,7 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
 21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
 22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).
-23. **Inventário de z-index**: o conjunto deve ser exatamente o documentado em design-tokens.md §4. Falha se surgir valor novo ou se um documentado desaparecer.
+23. **Inventário de z-index**: todo `z-index` usa um token `--z-*`, e o conjunto dos valores dos tokens deve ser exatamente o documentado em design-tokens.md §4. Falha se surgir valor novo, se um documentado desaparecer ou se houver um `z-index` literal.
 24. **Durações de animação**: compara o CSS com os valores do design-tokens.md §5 (valores fixos esperados).
 25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está entre **280.000 e 340.000 bytes**, como tripwire. A faixa é um limiar de validação e vive **apenas no `validate.sh`** — o README §10 dá só a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma. Ao alterar o limiar, altere-o no `validate.sh`; não há segundo sítio para sincronizar.
 26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
@@ -1414,6 +1414,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0083 | **Entradas antigas do changelog: as palavras seguem a tabela, as frases ficam** | As formas de Portugal e os anglicismos da lista são trocados também nas entradas `[V7]` a `[V27]`. As frases longas antigas ficam, porque são registro datado. Origem: auditoria de 2026-10-31, decisão 4. |
 | D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
 | D-0085 | **Comentários de código em inglês: o `validate.sh` já, o HTML depois** | Os comentários do HTML ficam perto dos marcadores do Quine e vão num plano próprio (F-0029, em «Pendentes»). Origem: auditoria de 2026-10-31, decisão 7. |
+| D-0086 | **O prefixo `-webkit-backdrop-filter` fica** | O Safari anterior à versão 18 só aplica o desfoque com o prefixo. É a única exceção ao stylelint, marcada com `stylelint-disable-next-line` na regra de `#zoom-ui`, `#img-nav-prev` e `#img-nav-next`. Origem: auditoria de 2026-10-31, passo 72 do plano. |
 
 ### Pendentes
 

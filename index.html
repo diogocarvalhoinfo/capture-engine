@@ -5,8 +5,16 @@
 <meta http-equiv="refresh" content="0; url=capture-engine.html">
 <link rel="canonical" href="capture-engine.html">
 <style>
-  html, body { margin: 0; height: 100%; background: #fdfdfc; }
-  html.dark body { background: #121212; }
+  :root { --color-background: #fdfdfc; }
+
+  html.dark { --color-background: #121212; }
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    background: var(--color-background);
+  }
 </style>
 </head>
 <body>

@@ -188,9 +188,9 @@ A pilha **não é uma escala global única** — os valores estão agrupados por
 | Animação | O que faz | Duração | Onde é usada |
 |---|---|---|---|
 | `spin` | Rotação contínua | Contínua | Spinner nos botões PDF/ZIP durante o processamento |
-| `fadeIn` | Entrada com opacidade 0→1 | 200ms | Novos thumbnails e documentos ao serem adicionados |
-| `modalIn` | Escala `0.96→1` + opacidade | 200ms | Entrada suave de todos os modais |
-| `fadeInTab` | Opacidade rápida | 250ms | Transição entre abas do Visual Builder |
+| `fade-in` | Entrada com opacidade 0→1 | 200ms | Novos thumbnails e documentos ao serem adicionados |
+| `modal-in` | Escala `0.96→1` + opacidade | 200ms | Entrada suave de todos os modais |
+| `fade-in-tab` | Opacidade rápida | 250ms | Transição entre abas do Visual Builder |
 
 *Todas as animações são curtas (200–250ms) e sem inércia. O objetivo é dar feedback imediato — não criar uma experiência cinematográfica que atrase a interação.*
 

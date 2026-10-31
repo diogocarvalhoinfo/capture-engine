@@ -42,7 +42,7 @@
       --color-warning-subtle: #faeeda;
       --color-warning-border: #ba7517;
       --color-warning-foreground: #412402;
-      --font-sans: 'Segoe UI', Arial, sans-serif;
+      --font-sans: 'Segoe UI', arial, sans-serif;
       --radius-badge: 0.1875rem;
       --radius-sm: 0.25rem;
       --radius-md: 0.375rem;
@@ -55,13 +55,47 @@
       --text-micro: 0.625rem;
       --text-caption: 0.6875rem;
       --text-xs: 0.75rem;
-      --text-code: 0.78125rem;
+      --text-code: calc(12.5rem / 16);
       --text-control: 0.8125rem;
       --text-sm: 0.875rem;
       --text-subtitle: 0.9375rem;
       --text-base: 1rem;
       --text-lg: 1.125rem;
       --text-xl: 1.25rem;
+      --color-white: #fff;
+      --color-green-600: #16a34a;
+      --color-orange-500: #f97316;
+      --color-blue-500: #3b82f6;
+      --color-purple-500: #a855f7;
+      --color-brand-icon-light: #1a1a1a;
+      --color-annotation-black: #1a1a1a;
+      --color-annotation-white: #f0f0f0;
+      --color-viewer-control: #2a2a2a;
+      --color-viewer-control-hover: #363636;
+      --color-viewer-control-border-hover: #555;
+      --color-viewer-control-foreground: #e0e0e0;
+      --color-viewer-active-foreground: #121212;
+      --radius-circle: 50%;
+      --radius-full: calc(infinity * 1px);
+      --shadow-card: 0 2px 8px rgb(0 0 0 / 2%);
+      --shadow-control: 0 2px 4px rgb(0 0 0 / 20%);
+      --shadow-swatch: 0 2px 4px rgb(0 0 0 / 15%);
+      --shadow-swatch-active: 0 0 0 1px rgb(0 0 0 / 40%);
+      --shadow-input-focus: 0 0 0 1px var(--color-primary);
+      --shadow-dragging: 0 12px 30px rgb(0 0 0 / 35%);
+      --shadow-sidebar: 0 12px 48px rgb(0 0 0 / 30%);
+      --shadow-settings: 0 10px 25px rgb(0 0 0 / 20%);
+      --shadow-modal: 0 24px 64px rgb(0 0 0 / 45%);
+      --shadow-viewer-zoom: 0 4px 12px rgb(0 0 0 / 15%);
+      --z-raised: 10;
+      --z-dragging: 50;
+      --z-viewer-controls: 100;
+      --z-viewer-text: 200;
+      --z-viewer-delete: 300;
+      --z-offcanvas-backdrop: 1999;
+      --z-offcanvas: 2000;
+      --z-modal: 9999;
+      --z-toast: 99999;
       --top-bar-h: 64px;
       --thumb-size: 140px;
     }
@@ -92,7 +126,7 @@
       }
     }
 
-    @keyframes fadeIn {
+    @keyframes fade-in {
       from {
         opacity: 0;
         transform: translateY(4px)
@@ -104,7 +138,7 @@
       }
     }
 
-    @keyframes modalIn {
+    @keyframes modal-in {
       from {
         opacity: 0;
         transform: scale(0.96)
@@ -116,7 +150,7 @@
       }
     }
 
-    @keyframes fadeInTab {
+    @keyframes fade-in-tab {
       from {
         opacity: 0;
         transform: translateY(4px)
@@ -129,7 +163,6 @@
     }
 
     @keyframes pulse {
-
       0%,
       100% {
         opacity: 1
@@ -185,20 +218,16 @@
       background: rgb(232 107 46 / 32%);
       color: inherit
     }
-    #ann-text-input::-moz-selection {
-      background: rgb(232 107 46 / 32%);
-      color: inherit
-    }
-
-    *:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px
-    }
 
     /* ═══ SCROLLBAR ═══ */
     * {
       scrollbar-width: thin;
       scrollbar-color: var(--color-border-strong) transparent
+    }
+
+    *:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px
     }
 
     *::-webkit-scrollbar {
@@ -225,14 +254,17 @@
         scrollbar-width: none !important;
         -ms-overflow-style: none !important;
       }
+
       *::-webkit-scrollbar {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
       }
+
       input, textarea, select {
         font-size: var(--text-base) !important;
       }
+
       * {
         touch-action: manipulation;
       }
@@ -267,6 +299,12 @@
       flex-shrink: 0
     }
 
+    .btn-send:disabled {
+      background: var(--color-border-strong);
+      color: var(--color-white);
+      cursor: not-allowed
+    }
+
     .btn-send:hover:not(:disabled) {
       opacity: 0.9
     }
@@ -275,17 +313,11 @@
       transform: scale(0.98)
     }
 
-    .btn-send:disabled {
-      background: var(--color-border-strong);
-      color: #fff;
-      cursor: not-allowed
-    }
-
     .btn-send svg {
       width: 14px;
       height: 14px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -319,7 +351,7 @@
     .action-btn {
       width: 40px;
       height: 40px;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       background: transparent;
       display: flex;
       align-items: center;
@@ -334,19 +366,19 @@
       background: rgb(0 0 0 / 5%)
     }
 
-    html.dark .action-btn:hover {
-      background: rgb(255 255 255 / 6%)
-    }
-
     .action-btn:active {
       transform: scale(0.92)
+    }
+
+    html.dark .action-btn:hover {
+      background: rgb(255 255 255 / 6%)
     }
 
     .action-btn svg {
       width: 18px;
       height: 18px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round
@@ -354,21 +386,21 @@
 
     #btn-admin-save.admin-active {
       background: var(--color-green-500) !important;
-      color: #fff !important;
+      color: var(--color-white) !important;
       animation: pulse 1.2s ease-in-out infinite !important
     }
 
     #btn-admin-save.admin-active:hover {
-      background: #16a34a !important;
-      color: #fff !important
+      background: var(--color-green-600) !important;
+      color: var(--color-white) !important
     }
 
     .spinner {
       width: 14px;
       height: 14px;
       border: 2px solid rgb(255 255 255 / 30%);
-      border-top-color: #fff;
-      border-radius: 50%;
+      border-top-color: var(--color-white);
+      border-radius: var(--radius-circle);
       animation: spin 0.65s linear infinite;
       flex-shrink: 0
     }
@@ -379,7 +411,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: calc(var(--spacing) * 7) calc(var(--spacing) * 16) calc(var(--spacing) * 2.5) calc(var(--spacing) * 16);
+      padding: calc(var(--spacing) * 7) calc(var(--spacing) * 16) calc(var(--spacing) * 2.5);
       height: auto;
       min-height: var(--top-bar-h);
       background: transparent;
@@ -391,7 +423,6 @@
       align-items: center;
       gap: calc(var(--spacing) * 3);
       user-select: none;
-      flex-shrink: 0;
       cursor: default;
       flex: 1
     }
@@ -405,16 +436,6 @@
       flex-shrink: 0
     }
 
-    #tb-brand-icon svg {
-      width: 48px;
-      height: 48px;
-      color: #fff
-    }
-
-    html:not(.dark) #tb-brand-icon svg {
-      color: #1a1a1a
-    }
-
     #tb-brand-name {
       font-size: var(--text-xl);
       font-weight: 600;
@@ -425,11 +446,13 @@
     #tb-brand-name #ui-title-start {
       color: var(--color-title-start, inherit)
     }
+
     #tb-brand-name #ui-title-accent {
       font-weight: var(--font-weight-title-accent, 400);
       opacity: var(--title-accent-opacity, 0.5);
       color: var(--color-title-accent, inherit)
     }
+
     #tb-brand-name #ui-title-end {
       font-weight: 600;
       opacity: 1;
@@ -460,7 +483,7 @@
 
     .sess-input:focus {
       border-color: var(--color-primary) !important;
-      box-shadow: 0 0 0 1px var(--color-primary)
+      box-shadow: var(--shadow-input-focus)
     }
 
     .sess-input::placeholder {
@@ -472,7 +495,6 @@
       align-items: center;
       justify-content: flex-end;
       gap: calc(var(--spacing) * 1.5);
-      flex-shrink: 0;
       flex: 1
     }
 
@@ -483,7 +505,7 @@
       overflow: hidden;
       min-height: 0;
       gap: calc(var(--spacing) * 4);
-      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 14.5) calc(var(--spacing) * 14.5) calc(var(--spacing) * 14.5)
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 14.5) calc(var(--spacing) * 14.5)
     }
 
     #right-col {
@@ -510,7 +532,7 @@
       background: var(--color-card);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      box-shadow: 0 2px 8px rgb(0 0 0 / 2%)
+      box-shadow: var(--shadow-card)
     }
 
     #block-imgs {
@@ -555,8 +577,8 @@
       height: 20px;
       padding: 0 calc(var(--spacing) * 1.5);
       background: var(--color-primary);
-      color: #fff;
-      border-radius: 99px;
+      color: var(--color-white);
+      border-radius: var(--radius-full);
       font-size: var(--text-caption);
       font-weight: 700;
       display: flex;
@@ -633,9 +655,9 @@
       height: 56px;
       background: var(--color-card);
       color: var(--color-muted-foreground);
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       box-shadow: none;
-      z-index: 9999;
+      z-index: var(--z-modal);
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -653,16 +675,6 @@
       transform: scale(0.95);
       color: var(--color-brand);
       border-color: var(--color-primary)
-    }
-
-    #mobile-paste-fab svg {
-      width: 24px;
-      height: 24px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round
     }
 
     @media (width <= 56.25rem) {
@@ -692,7 +704,7 @@
       background: var(--color-card);
       display: flex;
       flex-direction: column;
-      animation: fadeIn 0.2s ease-out;
+      animation: fade-in 0.2s ease-out;
       cursor: grab
     }
 
@@ -703,8 +715,11 @@
     }
 
     .t-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
       -webkit-user-drag: none;
-      user-drag: none;
       pointer-events: none
     }
 
@@ -717,11 +732,11 @@
     .t-item.dragging, .d-item.dragging {
       position: fixed;
       margin: 0;
-      z-index: 50;
+      z-index: var(--z-dragging);
       opacity: 0.95;
       transform: scale(0.75);
       transform-origin: top left;
-      box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
+      box-shadow: var(--shadow-dragging);
       border-radius: var(--radius-md);
       cursor: grabbing;
       transition: none;
@@ -747,13 +762,6 @@
       border-radius: var(--radius-md)
     }
 
-    .t-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block
-    }
-
     .t-overlay {
       position: absolute;
       inset: 0;
@@ -776,29 +784,26 @@
       right: -5px;
       width: 18px;
       height: 18px;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-white);
       background: var(--color-red-500);
       border: none;
       cursor: pointer;
-      z-index: 10;
+      z-index: var(--z-raised);
       opacity: 0;
       transition: all 0.15s;
       font-size: var(--text-micro);
       font-weight: bold;
-      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
+      box-shadow: var(--shadow-control)
     }
 
     .t-del::after {
       content: '';
       position: absolute;
-      top: -10px;
-      left: -10px;
-      right: -10px;
-      bottom: -10px
+      inset: -10px
     }
 
     .t-del:hover {
@@ -815,7 +820,7 @@
       right: -5px;
       width: 18px;
       height: 18px;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -823,19 +828,16 @@
       background: var(--color-primary);
       border: none;
       cursor: pointer;
-      z-index: 10;
+      z-index: var(--z-raised);
       opacity: 0;
       transition: all 0.15s;
-      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
+      box-shadow: var(--shadow-control)
     }
 
     .t-restore::after {
       content: '';
       position: absolute;
-      top: -10px;
-      left: -10px;
-      right: -10px;
-      bottom: -10px
+      inset: -10px
     }
 
     .t-restore:hover {
@@ -895,7 +897,7 @@
       border-radius: var(--radius-lg);
       font-size: var(--text-control);
       color: var(--color-foreground);
-      animation: fadeIn 0.2s ease-out;
+      animation: fade-in 0.2s ease-out;
       flex-shrink: 0;
       cursor: grab;
       transition: background-color 0.15s
@@ -935,7 +937,7 @@
 
     .d-input:focus {
       background: var(--color-card);
-      box-shadow: 0 0 0 1px var(--color-primary)
+      box-shadow: var(--shadow-input-focus)
     }
 
     .d-size {
@@ -970,7 +972,7 @@
       width: 14px;
       height: 14px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2.5;
       stroke-linecap: round
     }
@@ -986,7 +988,7 @@
       flex-direction: column;
       overflow-y: auto;
       padding: clamp(10px, 1.5vh, calc(var(--spacing) * 4)) calc(var(--spacing) * 3);
-      box-shadow: 0 2px 8px rgb(0 0 0 / 2%);
+      box-shadow: var(--shadow-card);
       gap: clamp(10px, 2vh, calc(var(--spacing) * 5));
       scrollbar-width: none;
       -ms-overflow-style: none
@@ -1009,10 +1011,6 @@
       flex: 0 1 34px
     }
 
-    #left-sidebar .sb-section-title {
-      flex-shrink: 0
-    }
-
     #sidebar {
       width: 52px;
       background: var(--color-card);
@@ -1022,7 +1020,7 @@
       display: flex;
       overflow: hidden;
       transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgb(0 0 0 / 2%)
+      box-shadow: var(--shadow-card)
     }
 
     #sidebar.expanded {
@@ -1044,14 +1042,6 @@
       color: var(--color-muted-foreground);
       cursor: pointer;
       padding: calc(var(--spacing) * 1)
-    }
-
-    #sb-mobile-close svg {
-      width: 20px;
-      height: 20px;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round
     }
 
     #sb-rail {
@@ -1088,7 +1078,7 @@
       width: 16px;
       height: 16px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round
@@ -1125,10 +1115,14 @@
       flex-shrink: 0
     }
 
+    #left-sidebar .sb-section-title {
+      flex-shrink: 0
+    }
+
     .sb-divider {
       height: 1px;
       background: var(--color-border);
-      margin: calc(var(--spacing) * 1.5) calc(var(--spacing) * 1.5);
+      margin: calc(var(--spacing) * 1.5);
       flex-shrink: 0
     }
 
@@ -1145,7 +1139,7 @@
       display: flex;
       align-items: center;
       gap: calc(var(--spacing) * 2);
-      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2);
+      padding: calc(var(--spacing) * 2);
       border-radius: var(--radius-sm);
       cursor: pointer;
       transition: background 0.12s
@@ -1181,12 +1175,12 @@
       user-select: none
     }
 
-    .sb-sess-item:hover .sb-sess-del {
-      opacity: 1
-    }
-
     .sb-sess-del:hover {
       color: var(--color-red-500)
+    }
+
+    .sb-sess-item:hover .sb-sess-del {
+      opacity: 1
     }
 
     #sb-chevron {
@@ -1208,7 +1202,7 @@
       max-height: 52px;
       overflow: hidden;
       transition: max-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), min-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-      box-shadow: 0 2px 8px rgb(0 0 0 / 2%);
+      box-shadow: var(--shadow-card);
       display: flex;
       flex-direction: column
     }
@@ -1276,7 +1270,7 @@
     .st-row1 .st-dot {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       background: var(--color-green-500);
       flex-shrink: 0;
       animation: pulse 3s ease-in-out infinite
@@ -1299,7 +1293,6 @@
     }
 
     @keyframes pulse {
-
       0%,
       100% {
         opacity: 1
@@ -1315,8 +1308,8 @@
       height: 20px;
       padding: 0 calc(var(--spacing) * 1.5);
       background: var(--color-red-500);
-      color: #fff;
-      border-radius: 99px;
+      color: var(--color-white);
+      border-radius: var(--radius-full);
       font-size: var(--text-caption);
       font-weight: 700;
       display: none;
@@ -1368,7 +1361,7 @@
       position: fixed;
       inset: 0;
       background: rgb(0 0 0 / 72%);
-      z-index: 9999;
+      z-index: var(--z-modal);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1389,8 +1382,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgb(0 0 0 / 45%);
-      animation: modalIn 0.2s ease-out
+      box-shadow: var(--shadow-modal);
+      animation: modal-in 0.2s ease-out
     }
 
     .modal-hdr {
@@ -1420,7 +1413,7 @@
       transform: translateY(-50%);
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1441,7 +1434,7 @@
       width: 16px;
       height: 16px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round
@@ -1452,7 +1445,7 @@
       position: fixed;
       inset: 0;
       background: rgb(0 0 0 / 85%);
-      z-index: 9999;
+      z-index: var(--z-modal);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1473,7 +1466,7 @@
       width: 90%;
       max-width: 480px;
       border-radius: var(--radius-xl);
-      box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
+      box-shadow: var(--shadow-settings);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -1497,12 +1490,12 @@
       color: var(--color-muted-foreground);
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.15s;
-      z-index: 10
+      z-index: var(--z-raised)
     }
 
     .sb-close:hover {
@@ -1513,7 +1506,7 @@
     .sb-close svg {
       width: 16px;
       height: 16px;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -1547,7 +1540,7 @@
     .sb-tabs {
       display: flex;
       gap: calc(var(--spacing) * 2);
-      margin: 0 calc(var(--spacing) * 8) calc(var(--spacing) * 6) calc(var(--spacing) * 8)
+      margin: 0 calc(var(--spacing) * 8) calc(var(--spacing) * 6)
     }
 
     .sb-tab {
@@ -1587,7 +1580,7 @@
 
     .sb-content-tab.active {
       display: flex;
-      animation: fadeInTab 0.25s ease-out
+      animation: fade-in-tab 0.25s ease-out
     }
 
     .sb-row {
@@ -1640,27 +1633,27 @@
       inset: 0;
       background-color: var(--color-border-strong);
       transition: .3s;
-      border-radius: 24px
+      border-radius: var(--radius-full)
     }
 
-    .toggle-slider:before {
+    .toggle-slider::before {
       position: absolute;
       content: "";
       height: 18px;
       width: 18px;
       left: 3px;
       bottom: 3px;
-      background-color: white;
+      background-color: var(--color-white);
       transition: .3s;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
+      border-radius: var(--radius-circle);
+      box-shadow: var(--shadow-control)
     }
 
     input:checked+.toggle-slider {
       background-color: var(--color-green-500)
     }
 
-    input:checked+.toggle-slider:before {
+    input:checked+.toggle-slider::before {
       transform: translateX(20px)
     }
 
@@ -1682,7 +1675,7 @@
       border-color: var(--color-primary) !important;
       background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--color-primary) !important
+      box-shadow: var(--shadow-input-focus) !important
     }
 
     /* ═══ EXPORT CARDS ═══ */
@@ -1719,7 +1712,7 @@
     .export-icon svg {
       width: 24px;
       height: 24px;
-      stroke: currentColor;
+      stroke: currentcolor;
       fill: none;
       stroke-width: 2;
       stroke-linecap: round;
@@ -1840,8 +1833,8 @@
       position: relative;
       width: 36px;
       height: 36px;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
+      border-radius: var(--radius-circle);
+      box-shadow: var(--shadow-swatch);
       flex-shrink: 0;
       overflow: hidden;
       background: var(--color-background);
@@ -1859,7 +1852,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       transition: background 0.2s ease
     }
 
@@ -1891,7 +1884,7 @@
       border-color: var(--color-primary) !important;
       background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--color-primary) !important
+      box-shadow: var(--shadow-input-focus) !important
     }
 
     .text-input-sm {
@@ -1914,7 +1907,7 @@
       border-color: var(--color-primary) !important;
       background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--color-primary) !important
+      box-shadow: var(--shadow-input-focus) !important
     }
 
     /* ═══ ANNOTATION TOOLBAR ═══ */
@@ -1949,7 +1942,7 @@
       width: 16px;
       height: 16px;
       fill: none;
-      stroke: currentColor;
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round
@@ -1966,7 +1959,7 @@
     .ann-swatch {
       width: 20px;
       height: 20px;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       border: 2px solid transparent;
       cursor: pointer;
       padding: 0;
@@ -1979,9 +1972,9 @@
     }
 
     .ann-swatch.active {
-      border-color: #fff;
+      border-color: var(--color-white);
       transform: scale(1.15);
-      box-shadow: 0 0 0 1px rgb(0 0 0 / 40%)
+      box-shadow: var(--shadow-swatch-active)
     }
 
     .ann-picker-wrap {
@@ -2000,11 +1993,10 @@
       width: 20px;
       height: 20px;
       border: none;
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       cursor: pointer;
       padding: 0;
       background: none;
-      -webkit-appearance: none;
       appearance: none
     }
 
@@ -2014,7 +2006,7 @@
 
     #ann-color::-webkit-color-swatch {
       border: none;
-      border-radius: 50%
+      border-radius: var(--radius-circle)
     }
 
     #ann-size {
@@ -2028,9 +2020,44 @@
       flex: 1
     }
 
+    #sb-mobile-close svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round
+    }
+
+    #mobile-paste-fab svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    #tb-brand-icon svg {
+      width: 48px;
+      height: 48px;
+      color: var(--color-white)
+    }
+
+    html:not(.dark) #tb-brand-icon svg {
+      color: var(--color-brand-icon-light)
+    }
+
+    #zoom-ui,
+    #img-nav-prev,
+    #img-nav-next {
+      /* stylelint-disable-next-line property-no-vendor-prefix -- Safari before 18 needs the prefix (D-0086) */
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px)
+    }
+
     /* ═══ RESPONSIVE ═══ */
     @media (width <= 56.25rem) {
-
       /* Allow page to scroll vertically on mobile */
       html,
       body {
@@ -2040,7 +2067,7 @@
 
       /* Top bar */
       #top-bar {
-        padding: calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+        padding: calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 2);
         min-height: auto
       }
 
@@ -2142,12 +2169,12 @@
         width: 90vw;
         max-width: 360px;
         height: 70vh;
-        z-index: 2000;
+        z-index: var(--z-offcanvas);
         transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
         margin: 0;
         border: 1px solid var(--color-border);
         border-radius: var(--radius-xl);
-        box-shadow: 0 12px 48px rgb(0 0 0 / 30%);
+        box-shadow: var(--shadow-sidebar);
         background: var(--color-card);
         opacity: 0;
         pointer-events: none
@@ -2164,7 +2191,7 @@
         position: fixed;
         inset: 0;
         background: rgb(0 0 0 / 50%);
-        z-index: 1999;
+        z-index: var(--z-offcanvas-backdrop);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s;
@@ -2299,7 +2326,7 @@
     /* ═══ RESPONSIVE HEIGHT (Small Laptops) ═══ */
     @media (height <= 50rem) and (width >= 56.3125rem) {
       #top-bar {
-        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 16) calc(var(--spacing) * 1) calc(var(--spacing) * 16);
+        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 16) calc(var(--spacing) * 1);
         min-height: 48px
       }
 
@@ -2318,7 +2345,7 @@
       }
 
       #main-layout {
-        padding: calc(var(--spacing) * 1) calc(var(--spacing) * 14.5) calc(var(--spacing) * 8) calc(var(--spacing) * 14.5);
+        padding: calc(var(--spacing) * 1) calc(var(--spacing) * 14.5) calc(var(--spacing) * 8);
         gap: calc(var(--spacing) * 3)
       }
 
@@ -2393,13 +2420,13 @@
     }
 
     #img-modal-overlay .modal-title {
-      color: #fff;
+      color: var(--color-white);
     }
 
     #img-modal-overlay .modal-close {
       background: rgb(255 255 255 / 8%);
-      color: #fff;
-      right: 0px;
+      color: var(--color-white);
+      right: 0;
     }
 
     #img-modal-overlay .modal-close:hover {
@@ -2414,21 +2441,21 @@
       background: rgb(255 255 255 / 6%);
       border: 1px solid rgb(255 255 255 / 10%);
       border-radius: var(--radius-lg);
-      margin: 0 0 calc(var(--spacing) * 3) 0;
-      color: #fff;
+      margin: 0 0 calc(var(--spacing) * 3);
+      color: var(--color-white);
       backdrop-filter: blur(10px);
     }
 
     #img-modal-overlay .ann-btn {
-      color: #e0e0e0;
-      background: #2a2a2a;
+      color: var(--color-viewer-control-foreground);
+      background: var(--color-viewer-control);
       border: 1px solid #3f3f3f;
     }
 
     #img-modal-overlay .ann-btn:hover {
-      color: #fff;
-      background: #363636;
-      border-color: #555;
+      color: var(--color-white);
+      background: var(--color-viewer-control-hover);
+      border-color: var(--color-viewer-control-border-hover);
     }
 
     #img-modal-overlay .ann-btn.active {
@@ -2439,15 +2466,15 @@
 
     #img-modal-overlay #ann-bold-btn.active,
     #img-modal-overlay #ann-italic-btn.active {
-      color: #121212;
-      background: #fff;
-      border-color: #fff;
+      color: var(--color-viewer-active-foreground);
+      background: var(--color-white);
+      border-color: var(--color-white);
     }
 
     #img-modal-overlay .ann-btn.active[data-tool="text"],
     #img-modal-overlay .ann-btn.ann-txt-selected {
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-white);
       border-color: var(--color-primary);
     }
 
@@ -2456,7 +2483,6 @@
     }
 
     @keyframes ann-alert {
-
       0%,
       100% {
         transform: scale(1);
@@ -2477,7 +2503,7 @@
 
     #img-modal-overlay #img-modal-dl {
       background: rgb(255 255 255 / 8%);
-      color: #fff;
+      color: var(--color-white);
       border: 1px solid rgb(255 255 255 / 15%);
     }
 
@@ -2502,7 +2528,7 @@
 
     @media (width <= 30rem) {
       #top-bar {
-        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3)
+        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 1.5)
       }
 
       #tb-brand-name {
@@ -2520,7 +2546,7 @@
       }
 
       #main-layout {
-        padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3) 0 calc(var(--spacing) * 3);
+        padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3) 0;
         gap: calc(var(--spacing) * 2.5)
       }
 
@@ -2543,6 +2569,7 @@
         width: 100%;
         justify-content: center;
       }
+
       #img-modal-ann-actions .ann-sep {
         display: none;
       }
@@ -2842,21 +2869,21 @@
           <canvas id="ann-canvas"
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
         </div>
-        <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:10">
+        <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:var(--z-raised)">
           <span id="img-modal-dims" style="font-size:var(--text-caption);color:rgb(255 255 255 / 60%)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
-          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
-          <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:#fff"><svg
+          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:var(--z-viewer-controls);box-shadow:var(--shadow-viewer-zoom)">
+          <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg></button>
           <span id="zoom-level"
-            style="color:#fff;font-size:var(--text-xs);font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
+            style="color:var(--color-white);font-size:var(--text-xs);font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
             title="Reset">100%</span>
-          <button class="action-btn" id="zoom-in" title="Aumentar Zoom" style="width:28px;height:28px;color:#fff"><svg
+          <button class="action-btn" id="zoom-in" title="Aumentar Zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -2864,13 +2891,13 @@
             </svg></button>
         </div>
         <!-- INLINE TEXT OVERLAY FOR ANNOTATION -->
-        <div id="ann-text-overlay" style="display:none;position:absolute;inset:0;z-index:200;pointer-events:none">
+        <div id="ann-text-overlay" style="display:none;position:absolute;inset:0;z-index:var(--z-viewer-text);pointer-events:none">
           <textarea id="ann-text-input" wrap="off" rows="1" autocomplete="off" spellcheck="false"
-            style="position:absolute;background:transparent;color:#fff;border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
+            style="position:absolute;background:transparent;color:var(--color-white);border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
         <!-- IMAGE NAVIGATION ARROWS -->
-        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 15%);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 15%);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 15%);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 15%);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <!-- FOOTER ACTIONS -->
       <div
@@ -2948,16 +2975,16 @@
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
           <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1);align-items:center">
-            <button class="ann-swatch active" data-color="#ef4444" style="background:#ef4444" title="Vermelho"></button>
-            <button class="ann-swatch" data-color="#f97316" style="background:#f97316" title="Laranja"></button>
-            <button class="ann-swatch" data-color="#eab308" style="background:#eab308" title="Amarelo"></button>
-            <button class="ann-swatch" data-color="#22c55e" style="background:#22c55e" title="Verde"></button>
-            <button class="ann-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Azul"></button>
-            <button class="ann-swatch" data-color="#a855f7" style="background:#a855f7" title="Roxo"></button>
+            <button class="ann-swatch active" data-color="#ef4444" style="background:var(--color-red-500)" title="Vermelho"></button>
+            <button class="ann-swatch" data-color="#f97316" style="background:var(--color-orange-500)" title="Laranja"></button>
+            <button class="ann-swatch" data-color="#eab308" style="background:var(--color-yellow-500)" title="Amarelo"></button>
+            <button class="ann-swatch" data-color="#22c55e" style="background:var(--color-green-500)" title="Verde"></button>
+            <button class="ann-swatch" data-color="#3b82f6" style="background:var(--color-blue-500)" title="Azul"></button>
+            <button class="ann-swatch" data-color="#a855f7" style="background:var(--color-purple-500)" title="Roxo"></button>
             <button class="ann-swatch" data-color="#1a1a1a"
-              style="background:#1a1a1a;border-color:rgb(120 120 120 / 50%)" title="Preto"></button>
+              style="background:var(--color-annotation-black);border-color:rgb(120 120 120 / 50%)" title="Preto"></button>
             <button class="ann-swatch" data-color="#f0f0f0"
-              style="background:#f0f0f0;border-color:rgb(120 120 120 / 50%)" title="Branco"></button>
+              style="background:var(--color-annotation-white);border-color:rgb(120 120 120 / 50%)" title="Branco"></button>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
               style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
@@ -2981,12 +3008,12 @@
               <polyline points="21 3 21 8 16 8" />
             </svg></button>
           <button class="ann-btn" id="ann-cancel" title="Cancelar"
-            style="background:#ef4444;color:#fff;border-color:#ef4444"><svg viewBox="0 0 24 24">
+            style="background:var(--color-red-500);color:var(--color-white);border-color:var(--color-red-500)"><svg viewBox="0 0 24 24">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="ann-save" title="Confirmar"
-            style="background:var(--color-green-500);border-color:var(--color-green-500);color:#fff"><svg viewBox="0 0 24 24">
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
               <polyline points="7 3 7 8 15 8" />
@@ -3070,7 +3097,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border, #0001);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:4px;margin-left:calc(var(--spacing) * 1.5)">V27</span>
+            style="font-size:var(--text-caption);background:var(--color-border, #0001);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">V27</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3368,8 +3395,8 @@
 
       /* ═══ INDEXEDDB ═══ */
       function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
-      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
-      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:var(--z-toast);background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:var(--z-toast);background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store), r = fn(st); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d));
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
@@ -3422,7 +3449,7 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').title = 'Exportar: ' + buildFilename('pdf'); $('btn-zip').title = 'Exportar: ' + buildFilename('zip') }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" title="Ver"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">✕</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" title="Ver"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">✕</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* ═══ RENDER DOC ═══ */
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
@@ -4747,7 +4774,7 @@
         _annDelBtnEl.textContent = '✕';
         // Sobrepõe apenas os valores que diferem do contexto das miniaturas:
         // opacity:1 (não precisa de :hover do pai), z-index alto (intra-modal)
-        _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:300;pointer-events:auto';
+        _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
         // Clicar no ✕: apaga a anotação seleccionada
         _annDelBtnEl.onclick = (e) => {
           e.stopPropagation();
