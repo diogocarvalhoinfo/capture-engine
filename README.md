@@ -356,8 +356,8 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 - Texto do rodapé (`{YEAR}` é substituído pelo ano atual)
 
 **Aba Histórico (Campos de Sessão):**
-- Identificação 1: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
-- Identificação 2: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
+- Primeiro campo: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
+- Segundo campo: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
 
 **Aba Captura:**
 - Qualidade do PDF (0.70 a 0.95 — afeta apenas a geração de PDF, não os originais)
@@ -407,10 +407,10 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_MAIN_COLOR` | Cor principal da interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | Cor do texto sobre a cor principal (vazio = automático) |
 | `TOKEN_FOOTER_TEXT` | Texto do rodapé |
-| `TOKEN_SHOW_SESSION_USER` | Mostra/oculta a Identificação 1 (User) |
-| `TOKEN_SHOW_SESSION_PC` | Mostra/oculta a Identificação 2 (Equipamento) |
-| `TOKEN_USER_LABEL` | Rótulo da Identificação 1 (vazio = usa "User") |
-| `TOKEN_EQUIP_LABEL` | Rótulo da Identificação 2 (vazio = usa "Equipamento") |
+| `TOKEN_SHOW_SESSION_USER` | Mostra/oculta o primeiro campo (User) |
+| `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o segundo campo (Equipamento) |
+| `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa "User") |
+| `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "Equipamento") |
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
 | `TOKEN_AUTO_PURGE_HOURS` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
