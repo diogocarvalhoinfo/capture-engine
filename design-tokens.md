@@ -264,10 +264,10 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color seletor principal |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color seletor de texto |
 | `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → "Texto do Rodapé" |
-| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → «Identificação 1», interruptor |
-| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → «Identificação 2», interruptor |
-| `TOKEN_USER_LABEL` | `string` | `''` | ✅ | Histórico → «Identificação 1», rótulo |
-| `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → «Identificação 2», rótulo |
+| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → «Primeiro campo», interruptor |
+| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → «Segundo campo», interruptor |
+| `TOKEN_USER_LABEL` | `string` | `''` | ✅ | Histórico → «Primeiro campo», rótulo |
+| `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → «Segundo campo», rótulo |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
 | `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Manutenção → «Limpeza automática» (8h, 24h, 48h, Nunca). **ℹ️ Valor 0 desativa o purge** (guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — nenhuma sessão é apagada). Valores suportados pelo Visual Builder: 8, 24, 48 (horas) e 0 (Nunca/desativado). Valores arbitrários editados à mão no token não são preservados pelo reexport do Visual Builder — ver a nota no README §7.4. |
