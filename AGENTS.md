@@ -1096,7 +1096,7 @@ O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep
 22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).
 23. **Inventário de z-index**: todo `z-index` usa um token `--z-*`, e o conjunto dos valores dos tokens deve ser exatamente o documentado em design-tokens.md §4. Falha se surgir valor novo, se um documentado desaparecer ou se houver um `z-index` literal.
 24. **Durações de animação**: compara o CSS com os valores do design-tokens.md §5 (valores fixos esperados).
-25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está entre **280.000 e 340.000 bytes**, como tripwire. A faixa é um limiar de validação e vive **apenas no `validate.sh`** — o README §10 dá só a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma. Ao alterar o limiar, altere-o no `validate.sh`; não há segundo sítio para sincronizar.
+25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está entre **280.000 e 340.000 bytes**, como tripwire. A faixa é um limiar de validação e vive **apenas no `validate.sh`** — o README §12 dá só a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma. Ao alterar o limiar, altere-o no `validate.sh`; não há segundo sítio para sincronizar.
 26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
 27. **Export User inicializa**: aplica os 4 regex de remoção do `exportFile` e avalia o JS resultante num shim de DOM onde `getElementById` devolve `null` para os IDs removidos. **É comparativo:** só dá FAIL se o artefato User abortar **e** o Admin não — assim, IDs criados em runtime (que são `null` nos dois) não geram falso positivo, e um shim defeituoso reprova nos dois e é sinalizado como `[WARN]`. Cobre código síncrono de nível de módulo; `init()` é `async` e não corre neste ambiente. FAIL = a cópia distribuída aos usuários finais não inicializa (ver D25).
 28. **stylelint (modelo dos prompts)**: roda o stylelint com o `.stylelintrc.json` da raiz, cópia exata de `stylelint/.stylelintrc.json` do repositório `diogo-engenharia-software-agentes`, nas versões do README dessa pasta. FAIL = um valor visual fora dos tokens ou uma escrita fora do `stylelint-config-standard`. Sem `npx`, dá `[SKIP]`; na primeira vez, o `npx` baixa os pacotes.
@@ -1183,7 +1183,7 @@ document.getElementById('app-logo').style.display = TOKEN_SHOW_LOGO ? '' : 'none
 **Passo 4 — Quine cobre automaticamente:** `sanitizeForQuine()` processa todos os `TOKEN_*` por regex — nenhuma alteração necessária nessa função.
 
 **Passo 5 — Atualizar docs:**
-- `README.md §6.4` — nova linha na tabela de tokens
+- `README.md §7.4` — nova linha na tabela de tokens
 - `design-tokens.md` — se for token de design visual
 - `CHANGELOG.md` — entrada na versão atual
 
@@ -1277,7 +1277,7 @@ A validação tem **duas partes**:
 - [ ] `annDrawShape` é função de draw pura — não contém `annIsDirty = true` nem manipulação do DOM (side effects pertencem ao caller)
 
 **Documentação:**
-- [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 13 do `README.md` foi atualizado
+- [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 15 do `README.md` foi atualizado
 - [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Seção 9
 - [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `README.md`, o `design-tokens.md` e o `AGENTS.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
 
@@ -1339,7 +1339,7 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 1. [ ] Fazer **Export User** pela aplicação e guardar o arquivo
 2. [ ] Abrir esse arquivo no browser e pressionar **F12 → Console**
 3. [ ] **Zero erros no console — com uma exceção declarada.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25: o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal.
-   - **Exceção:** aberto por `file://` — que é o modo de uso pretendido (`README §10`) — aparece **sempre** um `Fetch API cannot load file:///…`, seguido de `[CE] Quine fallback: BOOT_HTML`. É o comportamento documentado na `§1.2`, não um defeito: o `fetch(location.href)` é bloqueado por CORS e o Quine cai no `BOOT_HTML`. **Este par é o único erro tolerado.** Qualquer outro reprova o passo.
+   - **Exceção:** aberto por `file://` — que é o modo de uso pretendido (`README §12`) — aparece **sempre** um `Fetch API cannot load file:///…`, seguido de `[CE] Quine fallback: BOOT_HTML`. É o comportamento documentado na `§1.2`, não um defeito: o `fetch(location.href)` é bloqueado por CORS e o Quine cai no `BOOT_HTML`. **Este par é o único erro tolerado.** Qualquer outro reprova o passo.
    - Servido por `http(s)` não deve aparecer erro nenhum, nem sequer esse.
 4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
 5. [ ] **A sessão persiste:** escrever no campo User, recarregar a página, e confirmar que a sessão está no histórico
