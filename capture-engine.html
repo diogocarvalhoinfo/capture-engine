@@ -112,6 +112,26 @@
       --ease-in: cubic-bezier(0.4, 0, 1, 1);
       --ease-out: cubic-bezier(0, 0, 0.2, 1);
       --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+      --color-annotation-selection: rgb(232 107 46 / 32%);
+      --color-hover-overlay-dark: rgb(255 255 255 / 6%);
+      --color-hover-overlay: rgb(0 0 0 / 5%);
+      --color-spinner-track: rgb(255 255 255 / 30%);
+      --color-thumb-overlay: rgb(0 0 0 / 40%);
+      --color-modal-backdrop: rgb(0 0 0 / 72%);
+      --color-settings-backdrop: rgb(0 0 0 / 85%);
+      --color-offcanvas-backdrop: rgb(0 0 0 / 50%);
+      --color-viewer-backdrop: rgb(10 10 10 / 88%);
+      --color-viewer-surface: rgb(255 255 255 / 8%);
+      --color-viewer-close-hover: rgb(255 255 255 / 20%);
+      --color-viewer-toolbar: rgb(255 255 255 / 6%);
+      --color-viewer-border: rgb(255 255 255 / 10%);
+      --color-viewer-control-border: #3f3f3f;
+      --color-viewer-line: rgb(255 255 255 / 15%);
+      --color-viewer-muted-foreground: rgb(255 255 255 / 60%);
+      --color-viewer-surface-hover: rgb(255 255 255 / 18%);
+      --color-viewer-border-hover: rgb(255 255 255 / 30%);
+      --color-viewer-floating: rgb(25 25 25 / 70%);
+      --color-annotation-swatch-border: rgb(120 120 120 / 50%);
       --top-bar-h: 64px;
       --thumb-size: 140px;
     }
@@ -231,7 +251,7 @@
 
     /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
     #ann-text-input::selection {
-      background: rgb(232 107 46 / 32%);
+      background: var(--color-annotation-selection);
       color: inherit
     }
 
@@ -379,7 +399,7 @@
 
     .action-btn:hover {
       color: var(--color-foreground);
-      background: rgb(0 0 0 / 5%)
+      background: var(--color-hover-overlay)
     }
 
     .action-btn:active {
@@ -387,7 +407,7 @@
     }
 
     html.dark .action-btn:hover {
-      background: rgb(255 255 255 / 6%)
+      background: var(--color-hover-overlay-dark)
     }
 
     .action-btn svg {
@@ -414,7 +434,7 @@
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid rgb(255 255 255 / 30%);
+      border: 2px solid var(--color-spinner-track);
       border-top-color: var(--color-white);
       border-radius: var(--radius-circle);
       animation: spin var(--duration-spinner) linear infinite;
@@ -781,7 +801,7 @@
     .t-overlay {
       position: absolute;
       inset: 0;
-      background: rgb(0 0 0 / 40%);
+      background: var(--color-thumb-overlay);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1376,7 +1396,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgb(0 0 0 / 72%);
+      background: var(--color-modal-backdrop);
       z-index: var(--z-modal);
       display: none;
       align-items: center;
@@ -1460,7 +1480,7 @@
     .sb-overlay {
       position: fixed;
       inset: 0;
-      background: rgb(0 0 0 / 85%);
+      background: var(--color-settings-backdrop);
       z-index: var(--z-modal);
       display: flex;
       align-items: center;
@@ -2206,7 +2226,7 @@
         display: block;
         position: fixed;
         inset: 0;
-        background: rgb(0 0 0 / 50%);
+        background: var(--color-offcanvas-backdrop);
         z-index: var(--z-offcanvas-backdrop);
         opacity: 0;
         pointer-events: none;
@@ -2417,7 +2437,7 @@
 
     /* Image Modal Dark/Transparent Theme */
     #img-modal-overlay {
-      background: rgb(10 10 10 / 88%);
+      background: var(--color-viewer-backdrop);
     }
 
     #img-modal-overlay .modal-box {
@@ -2440,13 +2460,13 @@
     }
 
     #img-modal-overlay .modal-close {
-      background: rgb(255 255 255 / 8%);
+      background: var(--color-viewer-surface);
       color: var(--color-white);
       right: 0;
     }
 
     #img-modal-overlay .modal-close:hover {
-      background: rgb(255 255 255 / 20%);
+      background: var(--color-viewer-close-hover);
     }
 
     #img-modal-overlay #ann-viewport {
@@ -2454,8 +2474,8 @@
     }
 
     #img-modal-overlay #ann-toolbar {
-      background: rgb(255 255 255 / 6%);
-      border: 1px solid rgb(255 255 255 / 10%);
+      background: var(--color-viewer-toolbar);
+      border: 1px solid var(--color-viewer-border);
       border-radius: var(--radius-lg);
       margin: 0 0 calc(var(--spacing) * 3);
       color: var(--color-white);
@@ -2465,7 +2485,7 @@
     #img-modal-overlay .ann-btn {
       color: var(--color-viewer-control-foreground);
       background: var(--color-viewer-control);
-      border: 1px solid #3f3f3f;
+      border: 1px solid var(--color-viewer-control-border);
     }
 
     #img-modal-overlay .ann-btn:hover {
@@ -2495,7 +2515,7 @@
     }
 
     #img-modal-overlay .ann-sep {
-      background: rgb(255 255 255 / 15%);
+      background: var(--color-viewer-line);
     }
 
     @keyframes ann-alert {
@@ -2514,22 +2534,22 @@
     }
 
     #img-modal-overlay #img-modal-dims {
-      color: rgb(255 255 255 / 60%);
+      color: var(--color-viewer-muted-foreground);
     }
 
     #img-modal-overlay #img-modal-dl {
-      background: rgb(255 255 255 / 8%);
+      background: var(--color-viewer-surface);
       color: var(--color-white);
-      border: 1px solid rgb(255 255 255 / 15%);
+      border: 1px solid var(--color-viewer-line);
     }
 
     #img-modal-overlay #img-modal-dl:hover {
-      background: rgb(255 255 255 / 18%);
-      border-color: rgb(255 255 255 / 30%);
+      background: var(--color-viewer-surface-hover);
+      border-color: var(--color-viewer-border-hover);
     }
 
     #img-nav-prev:hover, #img-nav-next:hover {
-      background: rgb(255 255 255 / 18%) !important;
+      background: var(--color-viewer-surface-hover) !important;
     }
 
     /* Zoom & Pan Styles */
@@ -2886,11 +2906,11 @@
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
         </div>
         <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:var(--z-raised)">
-          <span id="img-modal-dims" style="font-size:var(--text-caption);color:rgb(255 255 255 / 60%)"></span>
+          <span id="img-modal-dims" style="font-size:var(--text-caption);color:var(--color-viewer-muted-foreground)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
-          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:var(--z-viewer-controls);box-shadow:var(--shadow-viewer-zoom)">
+          style="display:none;position:absolute;bottom:16px;background:var(--color-viewer-floating);border:1px solid var(--color-viewer-border);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:var(--z-viewer-controls);box-shadow:var(--shadow-viewer-zoom)">
           <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
@@ -2912,8 +2932,8 @@
             style="position:absolute;background:transparent;color:var(--color-white);border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
         <!-- IMAGE NAVIGATION ARROWS -->
-        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 15%);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:rgb(25 25 25 / 70%);border:1px solid rgb(255 255 255 / 15%);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:var(--color-viewer-floating);border:1px solid var(--color-viewer-line);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:var(--color-viewer-floating);border:1px solid var(--color-viewer-line);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <!-- FOOTER ACTIONS -->
       <div
@@ -2998,9 +3018,9 @@
             <button class="ann-swatch" data-color="#3b82f6" style="background:var(--color-blue-500)" title="Azul"></button>
             <button class="ann-swatch" data-color="#a855f7" style="background:var(--color-purple-500)" title="Roxo"></button>
             <button class="ann-swatch" data-color="#1a1a1a"
-              style="background:var(--color-annotation-black);border-color:rgb(120 120 120 / 50%)" title="Preto"></button>
+              style="background:var(--color-annotation-black);border-color:var(--color-annotation-swatch-border)" title="Preto"></button>
             <button class="ann-swatch" data-color="#f0f0f0"
-              style="background:var(--color-annotation-white);border-color:rgb(120 120 120 / 50%)" title="Branco"></button>
+              style="background:var(--color-annotation-white);border-color:var(--color-annotation-swatch-border)" title="Branco"></button>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
               style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
@@ -3113,7 +3133,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border, #0001);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">V27</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">V27</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
