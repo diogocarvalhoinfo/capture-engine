@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Adicionado
+
+- **stylelint do modelo no `validate.sh` (F-0013).** O `.stylelintrc.json` da raiz é cópia exata do modelo do repositório dos prompts, e o check 28 roda-o pelo `npx`, nas versões fixas. Uma cor literal numa regra dá FAIL (testado numa cópia com `color: red`). Sem `npx`, o check dá `[SKIP]`, e o projeto continua sem dependências.
+
 ### Modificado
 
 - **Fim de linha LF em qualquer computador (F-0010).** O `.gitattributes` do modelo entra na raiz. Antes, um clone no Windows saía com CRLF, e um bash que não aceita CRLF parava no `validate.sh`. Nenhum arquivo muda de conteúdo.

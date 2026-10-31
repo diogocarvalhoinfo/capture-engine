@@ -1,0 +1,49 @@
+{
+  "extends": [
+    "stylelint-config-standard"
+  ],
+  "plugins": [
+    "stylelint-declaration-strict-value"
+  ],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      [
+        "/color$/",
+        "background",
+        "fill",
+        "stroke",
+        "z-index",
+        "font-size",
+        "/^margin/",
+        "/^padding/",
+        "gap",
+        "row-gap",
+        "column-gap",
+        "border-radius",
+        "box-shadow",
+        "transition-duration",
+        "animation-duration"
+      ],
+      {
+        "ignoreValues": [
+          "currentcolor",
+          "transparent",
+          "inherit",
+          "initial",
+          "unset",
+          "none",
+          "0",
+          "auto"
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.html"
+      ],
+      "customSyntax": "postcss-html"
+    }
+  ]
+}
