@@ -140,7 +140,7 @@ Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospita
 2. Faça duplo clique no arquivo
 3. O arquivo abre no navegador padrão
 
-A versão online, no endereço do topo, funciona igual. Guarda as sessões numa base separada da do arquivo baixado (ver «A base é por origem», na §11).
+A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guarda as sessões numa base separada da do arquivo baixado (ver «A base é por origem», na §11).
 
 ### Fluxo básico de trabalho
 
