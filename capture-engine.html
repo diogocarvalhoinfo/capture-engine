@@ -67,7 +67,7 @@
     }
 
     /* ═══ DARK MODE ═══ */
-    body.dark {
+    html.dark {
       --color-background: #121212;
       --color-card: #1e1e1e;
       --color-border: rgb(51 51 51 / 50.2%);
@@ -239,11 +239,11 @@
     }
 
     /* ═══ DARK MODE ICONS ═══ */
-    body.dark #icon-moon {
+    html.dark #icon-moon {
       display: none
     }
 
-    body.dark #icon-sun {
+    html.dark #icon-sun {
       display: block !important
     }
 
@@ -334,7 +334,7 @@
       background: rgb(0 0 0 / 5%)
     }
 
-    body.dark .action-btn:hover {
+    html.dark .action-btn:hover {
       background: rgb(255 255 255 / 6%)
     }
 
@@ -411,7 +411,7 @@
       color: #fff
     }
 
-    body:not(.dark) #tb-brand-icon svg {
+    html:not(.dark) #tb-brand-icon svg {
       color: #1a1a1a
     }
 
@@ -2559,7 +2559,7 @@
 </head>
 
 <body>
-  <script>try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.body.classList.add('dark'); else if (!_t && window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark') } catch (e) { }</script>
+  <script>try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.documentElement.classList.add('dark'); else if (!_t && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark') } catch (e) { }</script>
 
   <!-- ═══ TOP BAR ═══ -->
   <div id="top-bar">
@@ -5089,7 +5089,7 @@
       function initPickers() { $('file-img-input').onchange = async e => { for (const f of Array.from(e.target.files)) await captureImg(f); e.target.value = '' }; $('file-doc-input').onchange = async e => { for (const f of Array.from(e.target.files)) { if (f.type.startsWith('image/')) await captureImg(f); else await captureDoc(f, f.name, f.type) } e.target.value = '' } }
 
       /* ═══ THEME ═══ */
-      function initTheme() { try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.body.classList.add('dark'); else if (_t === 'light') document.body.classList.remove('dark'); else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark') } catch (e) { } $('theme-btn').onclick = function () { document.body.classList.toggle('dark'); try { localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light') } catch (e) { } } }
+      function initTheme() { try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.documentElement.classList.add('dark'); else if (_t === 'light') document.documentElement.classList.remove('dark'); else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark') } catch (e) { } $('theme-btn').onclick = function () { document.documentElement.classList.toggle('dark'); try { localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') } catch (e) { } } }
 
       /* ═══ TRASH BAR ═══ */
       function initTrashBar() { $('trash-hdr').onclick = function () { const tb = $('trash-bar'); const isExp = tb.classList.toggle('expanded'); if (isExp) { tb.style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' } else { tb.style.maxHeight = '' } } }
@@ -5498,10 +5498,11 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
       /* ═══ QUINE ENGINE ═══ */
       /* ADMIN_JS_START */
       let PRISTINE_HTML = null;
-      const _hadDark = document.body.classList.contains('dark');
-      if (_hadDark) document.body.classList.remove('dark');
+      const _hadDark = document.documentElement.classList.contains('dark');
+      if (_hadDark) document.documentElement.classList.remove('dark');
+      if (_hadDark && !document.documentElement.classList.length) document.documentElement.removeAttribute('class');
       const BOOT_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-      if (_hadDark) document.body.classList.add('dark');
+      if (_hadDark) document.documentElement.classList.add('dark');
       async function capturePristine() { try { const r = await fetch(location.href); if (r.ok) PRISTINE_HTML = await r.text(); else throw new Error('fetch fail') } catch (e) { PRISTINE_HTML = BOOT_HTML; SysLogger.warn('Quine fallback: BOOT_HTML') } }
       function sanitizeForQuine(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/<(\/?script)/gi, '\\x3C$1').replace(/ADMIN_BUTTONS_START/g, 'ADM​IN_BUTTONS_START').replace(/ADMIN_BUTTONS_END/g, 'ADM​IN_BUTTONS_END').replace(/ADMIN_EDIT_START/g, 'ADM​IN_EDIT_START').replace(/ADMIN_EDIT_END/g, 'ADM​IN_EDIT_END').replace(/ADMIN_JS_START/g, 'ADM​IN_JS_START').replace(/ADMIN_JS_END/g, 'ADM​IN_JS_END').replace(/EXPORT MODAL/g, 'EXP​ORT MODAL').replace(/FIM EXPORT MODAL/g, 'FIM EXP​ORT MODAL') }
       window.exportFile = async function (isUser) {

@@ -678,7 +678,7 @@ capture-engine.html
 ├── <style>
 │   ├── Design tokens (variáveis CSS)
 │   ├── Light mode (:root)
-│   ├── Dark mode (body.dark)
+│   ├── Dark mode (html.dark)
 │   ├── Layout principal
 │   ├── Componentes (botões, modais, sidebar, cards)
 │   ├── Responsividade (56.25rem, 30rem)

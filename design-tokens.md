@@ -12,7 +12,7 @@ Um **design token** é um nome simbólico para um valor visual. Em vez de escrev
 
 1. **Consistência** — Mudar a cor principal em um lugar (`--color-primary`) muda em toda a interface automaticamente
 2. **Personalização via Quine** — O admin muda a cor pelo Visual Builder; o Quine Engine substitui o valor no arquivo exportado
-3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `body.dark` (dark); o CSS que usa os tokens não precisa saber em que modo está
+3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `html.dark` (dark); o CSS que usa os tokens não precisa saber em que modo está
 4. **Legibilidade** — `color: var(--color-muted-foreground)` diz o que faz; `color: #6b6a66` não
 
 **Dois tipos de tokens:**
@@ -46,7 +46,7 @@ A paleta tem dois grupos:
 | `--color-red-500` | `#ef4444` | Erro, remoção, ações destrutivas |
 | `--color-yellow-500` | `#eab308` | Aviso, expiração próxima |
 
-### Dark Mode (`body.dark`)
+### Dark Mode (`html.dark`)
 
 | Token | Hex | Nota |
 |---|---|---|
@@ -57,9 +57,9 @@ A paleta tem dois grupos:
 | `--color-foreground` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
 | `--color-muted-foreground` | `#9a9a9a` | Cinza médio para elementos secundários |
 
-> **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência salva em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controle total ao usuário.
+> **Regra do dark mode:** Ativa-se *exclusivamente* pela classe `dark` no `<html>`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência salva em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controle total ao usuário.
 
-> **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que aplica `body.dark` *antes* de qualquer pintura do DOM. Sem isto, o usuário em dark mode veria um flash branco ao abrir a app.
+> **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que põe a classe `dark` no `<html>` *antes* de qualquer pintura do DOM. Sem isto, o usuário em dark mode veria um flash branco ao abrir a app.
 
 ---
 
@@ -101,10 +101,10 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 | `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green-500)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red-500)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
 | `#ef4444` | `let annCurrentColor = '#ef4444'` | Cor inicial da anotação. **É dado, não interface** — mesma razão dos swatches: o valor é persistido no IndexedDB. |
 | `#fff` `#ffffff` | Texto e ícones sobre preenchimentos de cor sólida: banners críticos, `.btn-send:disabled`, `#btn-admin-save.admin-active`, `.spinner`, `.count-badge`, `.t-del`, `#trash-badge`, `.ann-swatch.active` | Branco puro sobre fundo saturado. Não há token de branco puro no sistema — o `--color-foreground` nunca é `#ffffff`, por decisão documentada na §1 — e usar `--color-foreground` aqui inverteria o contraste em modo claro. |
-| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `body:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--color-border-strong`, `#121212` = `--color-background` do modo escuro): a coincidência é do valor, não da intenção. |
+| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `html:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--color-border-strong`, `#121212` = `--color-background` do modo escuro): a coincidência é do valor, não da intenção. |
 | `#16a34a` | `#btn-admin-save.admin-active:hover` | Verde mais escuro para o estado hover. O estado base usa `var(--color-green-500)`; não existe token de variante escurecida no sistema. |
 | `#e86b2e` | Declaração do `TOKEN_MAIN_COLOR`; atributos `value=` dos inputs `#cfg-cor-hex` e `#cfg-cor-principal`; fallback quando `getComputedStyle(--color-primary)` devolve vazio | **É o valor padrão do próprio token** (§6). Um `var(--color-primary)` aqui seria circular: o `--color-primary` deriva deste valor. Os dois `value=` do Visual Builder têm de espelhar o padrão para o picker abrir na cor certa antes de qualquer JS correr. |
-| `#ffffff` `#1a1a1a` | `#tb-brand-icon svg` e a sua variante `body:not(.dark)` | Ícone da marca com cor fixa por tema, definida diretamente em vez de por token. |
+| `#ffffff` `#1a1a1a` | `#tb-brand-icon svg` e a sua variante `html:not(.dark)` | Ícone da marca com cor fixa por tema, definida diretamente em vez de por token. |
 | `#1a1917` `#ffffff` | Cálculo YIQ de contraste (`fg = (yiq >= 128) ? … : …`) | Escolha de legibilidade sobre um acento **arbitrário** definido pelo usuário no Visual Builder — o resultado não é conhecido em tempo de escrita, portanto não pode vir de um token. Já descrito na §6; repetido aqui para que o `grep` desta secção não o reporte. |
 | `#35a800` `#ffd82b` | `stop-color` do `<linearGradient id="ce_accent">` no logo SVG inline | Stops de gradiente da identidade visual. SVG inline não resolve custom properties em `stop-color` de forma fiável entre browsers. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | Metatags lidas pelo browser e pelo sistema operativo **antes de o CSS existir**. Custom properties não se aplicam a metatags. |

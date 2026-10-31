@@ -6,10 +6,10 @@
 <link rel="canonical" href="capture-engine.html">
 <style>
   html, body { margin: 0; height: 100%; background: #fdfdfc; }
-  body.dark { background: #121212; }
+  html.dark body { background: #121212; }
 </style>
 </head>
 <body>
-<script>try { const _t = localStorage.getItem('theme'); if (_t === 'dark' || (!_t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.body.classList.add('dark'); } catch (e) { }</script>
+<script>try { const _t = localStorage.getItem('theme'); if (_t === 'dark' || (!_t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); } catch (e) { }</script>
 </body>
 </html>

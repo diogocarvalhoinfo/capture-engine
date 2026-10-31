@@ -254,13 +254,13 @@ Cada zona tem a sua regra.
 
 **Motivo:** em `rem`, o texto acompanha o tamanho de letra escolhido no navegador. Com a letra padrão (16 px), cada valor dá o mesmo pixel que dava em `px`.
 
-**Dark mode via `body.dark`, nunca via media query CSS**
+**Tema escuro pela classe `dark` no `<html>`, nunca por media query no CSS**
 
-Porquê: O usuário pode ter o sistema em dark mode mas querer a app em light mode. A class `body.dark` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
+Porquê: O usuário pode ter o sistema em dark mode mas querer a app em light mode. A classe `dark` do `<html>` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
 
 ```css
 /* CORRETO — controlável pelo usuário */
-body.dark { --color-background: #121212; }
+html.dark { --color-background: #121212; }
 
 /* PROIBIDO — não permite override manual */
 @media (prefers-color-scheme: dark) { --color-background: #121212; }
