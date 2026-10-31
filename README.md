@@ -348,21 +348,21 @@ Para desativar, clique 3 vezes no logo em menos de 1 segundo. O modo administrad
 O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Histórico, Captura e Manutenção.
 
 **Aba Interface:**
-- Nome da ferramenta (texto inicial + texto em destaque)
-- Cor principal (color seletor)
-- Cor do texto sobre a cor principal (auto-detecção se vazio)
-- Texto do rodapé (`{YEAR}` é substituído pelo ano atual)
+- «Cor principal»: a cor de destaque, em hex ou pelo seletor de cor
+- «Cor do texto sobre destaque»: automática, ou escolhida à mão
+- «Texto inicial», «Texto em destaque» e «Texto final»: as três partes do nome no topo, cada uma com a sua cor
+- «Texto do rodapé»: `{YEAR}` vira o ano atual
 
-**Aba Histórico (Campos de Sessão):**
-- Primeiro campo: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
-- Segundo campo: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
+**Aba Histórico:**
+- «Primeiro campo»: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
+- «Segundo campo»: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
 
 **Aba Captura:**
-- Qualidade do PDF (0.70 a 0.95 — afeta apenas a geração de PDF, não os originais)
-- Dimensão máxima de redimensionamento de imagens (0 = sem limite)
+- «Qualidade do PDF»: de 70 a 95 %, só para o PDF; os originais não mudam
+- «Dimensão máxima»: ao gerar o PDF, reduz as imagens a 1920, 2560 ou 3840 px; «Original» não reduz, e o que fica guardado não muda
 
 **Aba Manutenção:**
-- Limpeza automática: remove as sessões sem uso há mais de 8 h, 24 h ou 48 h, ou nunca
+- «Limpeza automática»: remove as sessões sem uso há mais de 8 h, 24 h ou 48 h, ou «Nunca»
 
 **Nota importante:** As alterações feitas no Visual Builder são **temporárias** até ser feito um Export. Ao fechar e reabrir o arquivo, as configurações voltam ao padrão guardado no arquivo.
 
