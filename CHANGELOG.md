@@ -13,6 +13,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **`AGENTS.md` e `CHANGELOG.md` em maiúsculas (F-0009).** São arquivos de convenção, que as ferramentas procuram por esse nome. Os links, o `validate.sh` e o texto atual acompanham; as entradas antigas deste changelog ficam como estão.
 - **A versão sai dos títulos (F-0012).** O changelog é o dono da versão. O README ganha a linha «Versão» em «Requisitos», e o `validate.sh` compara-a com o changelog e com o HTML. Os títulos e os rodapés do README, do `AGENTS.md` e do `design-tokens.md` deixam de repetir a versão.
 - **Topo do changelog e critério de versão (F-0019, F-0003).** O changelog abre com as duas frases fixas e segue o Keep a Changelog. As versões passam a SemVer a partir de 28.0.0, com o critério no `AGENTS.md` §12 (D-0078). As entradas `[V7]` a `[V27]` ficam como estão.
+- **Topo do `AGENTS.md` e Seção 0 com título (F-0007, F-0019, F-0030).** O `AGENTS.md` abre com o título e a frase fixos. O índice apontava para uma «Seção 0» sem título; o texto dela ganha o título «0. Modelo mental». A contagem de linhas do HTML passa de «6000+» a «mais de 5000», o valor medido (5518).
 
 ## [V27] — 2026-08-18
 

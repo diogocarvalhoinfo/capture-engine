@@ -1,13 +1,12 @@
-# Agents · Capture Engine
+# Regras para agentes
 
-> Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
-> **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
+Regras para quem edita este projeto, pessoa ou IA, com o motivo de cada uma.
 
----
+Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa no `validate.sh` antes do commit.
 
 ## Índice
 
-- [Seção 0 — Modelo Mental](#0-modelo-mental--antes-das-regras)
+- [Seção 0 — Modelo mental](#0-modelo-mental)
 - [Seção 1 — Regras Absolutas](#1-regras-absolutas)
 - [Seção 2 — Convenções de Código](#2-convenções-de-código)
 - [Seção 3 — Unicidade de Nomes](#3-unicidade-de-nomes--prevenção-de-colisões-no-zip)
@@ -22,8 +21,6 @@
 - [Seção 12 — Versões e changelog](#12-versões-e-changelog)
 - [Seção 13 — Decisões de Design Documentadas](#13-decisões-de-design-documentadas)
 - [Seção 14 — Disaster Recovery Técnico](#14-disaster-recovery-técnico)
-
----
 
 ## Índice de Leitura por Perfil
 
@@ -59,11 +56,13 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
   **JetBrains / Sublime / outros:** desative a formatação automática de `.html` nas preferências do IDE.
 
   **Antigravity:** risco menor — agentes editam por código. Confirme que nenhum workflow com "format" está ativo para `.html`.
-- Use code folding para navegar (ex.: VS Code "Fold by Indentation"). O arquivo tem 6000+ linhas — sem folding a navegação é impraticável.
+- Use code folding para navegar (ex.: VS Code "Fold by Indentation"). O arquivo tem mais de 5000 linhas — sem folding a navegação é impraticável.
 - Extensões de browser que injetam no DOM (Grammarly, Adblockers, gerenciadores de senha, tradutores automáticos) podem corromper o snapshot do Quine (`BOOT_HTML` é capturado do `outerHTML` no boot). Para testes de desenvolvimento, use um perfil de browser sem extensões.
 - Sempre execute `validate.sh` após qualquer mudança no `capture-engine.html` e antes de qualquer commit.
 
 ---
+
+## 0. Modelo mental
 
 Antes de ler as regras, é necessário entender *por que* elas existem. As regras não são arbitrárias — cada uma protege um dos três contratos fundamentais do motor:
 
