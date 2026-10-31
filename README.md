@@ -351,7 +351,7 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 - «Cor principal»: a cor de destaque, em hex ou pelo seletor de cor
 - «Cor do texto sobre destaque»: automática, ou escolhida à mão
 - «Texto inicial», «Texto em destaque» e «Texto final»: as três partes do nome no topo, cada uma com a sua cor
-- «Texto do rodapé»: `{YEAR}` vira o ano atual
+- «Texto do rodapé»: `{YEAR}` vira o ano atual. É a marca da organização, e não substitui o aviso de copyright do código e do `LICENSE`
 
 **Aba Histórico:**
 - «Primeiro campo»: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
@@ -839,7 +839,3 @@ Projeto pessoal, sem contribuições externas (nem issues nem pull requests); a 
 Licença MIT: veja o [`LICENSE`](LICENSE).
 
 Diogo Carvalho ([@diogocarvalhoinfo](https://github.com/diogocarvalhoinfo)) · [diogocarvalhoinfo.com](https://diogocarvalhoinfo.com)
-
-Em linguagem simples: qualquer pessoa pode usar, copiar, alterar e distribuir a ferramenta, de graça, também em contexto profissional ou comercial. A única condição é manter o aviso de copyright («Diogo Carvalho») junto das cópias. O software é fornecido «como está», sem garantias.
-
-O administrador pode mudar o texto do rodapé da aplicação. Isso é marca da organização e não substitui o aviso de copyright no código e no `LICENSE`.
