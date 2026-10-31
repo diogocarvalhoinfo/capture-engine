@@ -257,6 +257,8 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 Gera um PDF com uma imagem por página.
 
+Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a próxima ação na página: um clique, uma tecla, colar ou arrastar. Ir a outra janela anexar o arquivo e voltar não tira o verde, por isso a última ação continua à vista.
+
 **Modos de página disponíveis:**
 
 | Modo | Comportamento |

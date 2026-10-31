@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de separador e depois do Alt; some no clique seguinte.
+
 ### Corrigido
 
 - **Imagem que o navegador não abre vai para «Documentos».** Uma foto HEIC entrava em «Imagens», ficava quebrada, e o PDF dava erro. Agora todo arquivo passa por um teste: se o navegador não desenha a imagem, ela vai para «Documentos», sem alterações, e um aviso diz porquê. Uma sessão antiga com uma imagem assim passa-a para «Documentos» antes do PDF ou do ZIP. Medido no Edge 156: o HEIC novo e o de uma sessão da 28.0.1 vão para «Documentos», com a extensão `.heic`, sem erros.
