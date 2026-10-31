@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **Descrição de «Cor do texto sobre destaque», no Visual Builder (F-0039).** Dizia «Automático via YIQ ou override manual». «YIQ» é um termo técnico que quem configura não conhece, e «override» está na lista de anglicismos. Passa a «Automática, pelo contraste com a cor principal, ou escolhida à mão».
+
 ## [28.0.0] - 2026-10-31
 
 Primeira versão em SemVer (D-0078). Põe o projeto no padrão dos prompts 4.11.0, a partir da auditoria de 2026-10-31. O que se vê só muda no aviso de armazenamento, no foco do teclado, nas camadas e nas durações.
