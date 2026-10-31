@@ -255,15 +255,15 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 
 | Token | Tipo | Valor padrão | Alterável no VB | Aba VB |
 |---|---|---|---|---|
-| `TOKEN_TITLE_START` | `string` | `'Capture '` | ✅ | Interface → "Texto Inicial" |
-| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | ✅ | Interface → "Texto em Destaque" |
-| `TOKEN_TITLE_END` | `string` | `''` | ✅ | Interface → "Texto Final" (terceira parte do título; espaços manuais) |
-| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Inicial (vazio = herda cor do texto) |
-| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto em Destaque (vazio = herda cor accent) |
-| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Final (vazio = herda cor do texto) |
+| `TOKEN_TITLE_START` | `string` | `'Capture '` | ✅ | Interface → «Texto inicial» |
+| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | ✅ | Interface → «Texto em destaque» |
+| `TOKEN_TITLE_END` | `string` | `''` | ✅ | Interface → «Texto final» (terceira parte do título; espaços manuais) |
+| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto inicial» (vazio = herda cor do texto) |
+| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto em destaque» (vazio = herda cor accent) |
+| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto final» (vazio = herda cor do texto) |
 | `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color seletor principal |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color seletor de texto |
-| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → "Texto do Rodapé" |
+| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → «Texto do rodapé» |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → «Primeiro campo», interruptor |
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → «Segundo campo», interruptor |
 | `TOKEN_USER_LABEL` | `string` | `''` | ✅ | Histórico → «Primeiro campo», rótulo |
