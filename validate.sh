@@ -124,42 +124,46 @@ check_eq "TOKEN_SUBTITLE removido" 0 "$SUB"
 EXACT=$(grep -c "'exact'" "$FILE")
 check_eq "Modo PDF 'exact' removido" 0 "$EXACT"
 
-# 8) Consistencia de versao no HTML. A versao actual e' AUTO-DETECTADA do boot
-#    message ('Capture Engine Vxx Ready') — nao ha numero de versao hardcoded
-#    aqui, por isso o script nao precisa de ser editado a cada version bump.
-#    Verifica que essa mesma versao aparece nas 3 referencias de produto:
-#    comentario VB, badge visual e console. (Refs historicas tipo "NOTA (Vxx)"
-#    sao ignoradas — so contam as 3 referencias de produto.)
-VER=$(grep -oE "Capture Engine V[0-9]+(\.[0-9]+)? Ready" "$FILE" | grep -oE "V[0-9]+(\.[0-9]+)?" | head -1)
+# 8) Version consistency inside the HTML. The version is read from the boot
+#    message ('Capture Engine <version> Ready'), so this script needs no edit on
+#    a version bump. The same version must appear in the 3 product references:
+#    Visual Builder comment, badge and console. Accepts V27 and SemVer (28.0.0).
+VPAT='(V[0-9]+|[0-9]+\.[0-9]+\.[0-9]+)'
+VER=$(grep -oE "Capture Engine $VPAT Ready" "$FILE" | grep -oE "$VPAT" | head -1)
 if [ -n "$VER" ]; then
-  VBC=$(grep -c "VISUAL BUILDER MODAL ($VER)" "$FILE")
-  BDG=$(grep -c ">$VER</span>" "$FILE")
+  VBC=$(grep -cF "VISUAL BUILDER MODAL ($VER)" "$FILE")
+  BDG=$(grep -cF ">$VER</span>" "$FILE")
   if [ "$VBC" -ge 1 ] && [ "$BDG" -ge 1 ]; then
-    printf '[PASS] %-52s (%s)\n' "Versao consistente no HTML (VB+badge+console)" "$VER"; PASS=$((PASS+1));
+    printf '[PASS] %-52s (%s)
+' "Versao consistente no HTML (VB+badge+console)" "$VER"; PASS=$((PASS+1));
   else
-    printf '[FAIL] %-52s (VB=%s badge=%s)\n' "Versao $VER inconsistente no HTML" "$VBC" "$BDG"; FAIL=$((FAIL+1));
+    printf '[FAIL] %-52s (VB=%s badge=%s)
+' "Versao $VER inconsistente no HTML" "$VBC" "$BDG"; FAIL=$((FAIL+1));
   fi
 else
-  printf '[FAIL] %-52s\n' "Sem boot message de versao (Capture Engine Vxx Ready)"; FAIL=$((FAIL+1)); fi
+  printf '[FAIL] %-52s
+' "Sem boot message de versao (Capture Engine <versao> Ready)"; FAIL=$((FAIL+1)); fi
 
-# 8b) Consistencia de versao nos ficheiros .md
-if [ -n "$VER" ]; then
-  README_VER=$(grep -m1 "^# Capture Engine" README.md 2>/dev/null | grep -oE "V[0-9]+" | head -1)
-  AGENTS_VER=$(grep -oE "Capture Engine V[0-9]+" AGENTS.md 2>/dev/null | grep -oE "V[0-9]+" | head -1)
-  if [ -z "$README_VER" ]; then
-    printf '[FAIL] %-52s\n' "README.md: versao nao encontrada"; FAIL=$((FAIL+1));
-  elif [ "$README_VER" = "$VER" ]; then
-    printf '[PASS] %-52s (%s)\n' "README.md versao consistente" "$README_VER"; PASS=$((PASS+1));
-  else
-    printf '[FAIL] %-52s (HTML=%s README=%s)\n' "README.md versao divergente" "$VER" "$README_VER"; FAIL=$((FAIL+1));
-  fi
-  if [ -z "$AGENTS_VER" ]; then
-    printf '[FAIL] %-52s\n' "AGENTS.md: versao nao encontrada"; FAIL=$((FAIL+1));
-  elif [ "$AGENTS_VER" = "$VER" ]; then
-    printf '[PASS] %-52s (%s)\n' "AGENTS.md versao consistente" "$AGENTS_VER"; PASS=$((PASS+1));
-  else
-    printf '[FAIL] %-52s (HTML=%s agents=%s)\n' "AGENTS.md versao divergente" "$VER" "$AGENTS_VER"; FAIL=$((FAIL+1));
-  fi
+# 8b) The CHANGELOG.md owns the version: its first entry that is not
+#     [Unreleased]. The README "Versão" line (Requisitos) and the HTML follow it.
+CL_VER=$(grep -oE "^## \[$VPAT\]" CHANGELOG.md 2>/dev/null | head -1 | grep -oE "$VPAT")
+README_VER=$(grep -m1 -oE "^\*\*Versão:\*\* $VPAT" README.md 2>/dev/null | grep -oE "$VPAT$")
+if [ -z "$CL_VER" ] || [ -z "$README_VER" ]; then
+  printf '[FAIL] %-52s (CHANGELOG=%s README=%s)
+' "Versao nao encontrada" "${CL_VER:-?}" "${README_VER:-?}"; FAIL=$((FAIL+1));
+elif [ "$README_VER" = "$CL_VER" ]; then
+  printf '[PASS] %-52s (%s)
+' "Versao: CHANGELOG = README (Requisitos)" "$CL_VER"; PASS=$((PASS+1));
+else
+  printf '[FAIL] %-52s (CHANGELOG=%s README=%s)
+' "Versao do README divergente" "$CL_VER" "$README_VER"; FAIL=$((FAIL+1));
+fi
+if [ -n "$CL_VER" ] && [ "$CL_VER" = "$VER" ]; then
+  printf '[PASS] %-52s (%s)
+' "Versao: CHANGELOG = HTML" "$CL_VER"; PASS=$((PASS+1));
+else
+  printf '[FAIL] %-52s (CHANGELOG=%s HTML=%s)
+' "Versao do HTML divergente" "${CL_VER:-?}" "${VER:-?}"; FAIL=$((FAIL+1));
 fi
 
 # 9) Sintaxe JavaScript (opcional: so corre se 'node' existir).

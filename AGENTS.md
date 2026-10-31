@@ -1,4 +1,4 @@
-# Agents · Capture Engine V27
+# Agents · Capture Engine
 
 > Guia operacional para desenvolvedores e agentes de IA que lêem, editam ou estendem o Capture Engine.
 > **Leia a Seção 0 e a Seção 1 antes de qualquer outra coisa. Sem exceções.**
@@ -1085,8 +1085,8 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 12. **TOKEN_SUBTITLE removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
 13. **Modo PDF 'exact' removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
 14. **Versão consistente no HTML**: Auto-detecta versão a partir do *boot message* e cruza com a versão declarada no *badge* visual e comentário VB. Falha indica versionamento inconsistente ou erro no processo de release.
-15. **README.md versao consistente**: Verifica a mesma detecção cruzada no `README.md`.
-16. **AGENTS.md versao consistente**: Verifica a mesma detecção cruzada no `AGENTS.md`.
+15. **Versão: CHANGELOG = README**: a primeira entrada do `CHANGELOG.md` que não é `[Unreleased]` é a versão. A linha «Versão» de «Requisitos», no README, deve ser igual.
+16. **Versão: CHANGELOG = HTML**: a mesma versão deve estar nas 3 referências de produto do HTML.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
 18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
 19. **Ferramentas de anotação no README (8/8)**: confirma que as 8 afordâncias do editor (7 valores de `annTool` + o botão Rotação 90°) estão documentadas no `README.md`. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
@@ -1580,7 +1580,3 @@ req2.onsuccess = e => {
 
 
 > **Nota:** A única salvaguarda confiável é **exportar (PDF/ZIP)** o material importante. Não existe backup automático dos dados — é uma decisão de design (privacidade), não uma falha.
-
----
-
-*Capture Engine V27 · Regras Operacionais para Agentes*

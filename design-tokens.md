@@ -1,4 +1,4 @@
-# Design Tokens · Capture Engine V27
+# Design Tokens · Capture Engine
 
 > Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
 
@@ -496,8 +496,3 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
 | `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Salvo com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
 | `text` | `x1, y1, txt, bold, italic, fontSize` | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
-
-
----
-
-*Capture Engine V27 · Especificações de Design Tokens*

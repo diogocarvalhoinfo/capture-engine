@@ -1,4 +1,4 @@
-# Capture Engine · V27
+# Capture Engine
 
 > Uma ferramenta para capturar, organizar e exportar screenshots e documentos — funciona 100% offline, sem instalar nada, sem internet, sem servidores. Abre no browser como qualquer página web.
 
@@ -616,6 +616,8 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o se
 
 ## 11. Requisitos
 
+**Versão:** V27. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — suporte completo, testado em Chrome 148 / Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — suporte completo, testado manualmente; versão mínima abaixo de 151.0.4 não verificada
@@ -824,10 +826,6 @@ flowchart LR
     H --> J(["download capture-engine.html"])
     I --> J
 ```
-
----
-
-*Capture Engine V27 · Single-file · zero dependências · 100% offline*
 
 ---
 
