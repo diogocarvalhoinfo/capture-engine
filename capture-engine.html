@@ -3158,7 +3158,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (28.0.1) -->
+  <!-- VISUAL BUILDER MODAL (28.1.0) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3176,7 +3176,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">28.0.1</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">28.1.0</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -5643,7 +5643,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.0.1 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.1.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
 function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
