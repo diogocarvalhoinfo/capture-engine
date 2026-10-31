@@ -339,11 +339,11 @@ O modo administrador não persiste entre aberturas — precisa ser ativado de no
 6 cliques no logo dentro de 3 segundos (janela deslizante — cliques com mais de 3 s são descartados). Enquanto o modo admin está ativo, 3 cliques rápidos em menos de 1 segundo desativam-no.
 
 <!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/admin-mode.png; preparo=capture-engine-admin-mode; recorte=#vb-overlay .sb-modal -->
-![Visual Builder aberto no modo administrador, com as abas, a cor principal e o texto do rodapé anotados](docs/images/admin-mode.png)
+![Visual Builder aberto na aba Histórico, com as abas, o interruptor e o rótulo do segundo campo anotados](docs/images/admin-mode.png)
 
 1. **Abas**: Interface, Histórico, Captura e Manutenção. <!-- anotação: alvo=.sb-tabs; lado=direita; ponto=1,0.5 -->
-2. **Cor principal**: muda a cor de destaque de toda a interface. <!-- anotação: alvo=#wrap-cor-principal; lado=direita; ponto=1,0.5 -->
-3. **Texto do rodapé**: aceita `{YEAR}`, que vira o ano atual. <!-- anotação: alvo=#cfg-footer-text; lado=direita; ponto=1,0.5 -->
+2. **Interruptor**: mostra ou esconde o campo na barra lateral. <!-- anotação: alvo=label:has(#cfg-show-pc); lado=direita; ponto=1,0.5 -->
+3. **Rótulo**: o nome do campo na barra lateral, como «Caso» ou «Processo». <!-- anotação: alvo=#cfg-equip-label; lado=baixo; ponto=0.5,1 -->
 
 ### 7.2 O Visual Builder
 
