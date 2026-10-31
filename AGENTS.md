@@ -268,14 +268,7 @@ html.dark { --color-background: #121212; }
 
 > **Exceção permitida:** `initTheme()` em JavaScript *pode* usar `window.matchMedia('prefers-color-scheme')` como fallback na primeira abertura (antes de o usuário ter definido preferência). O JS lê o OS, aplica a classe, e a partir daí o CSS faz o resto.
 
-**Z-index stack (9 níveis reais — agrupados por stacking context; não adicionar outros sem documentar aqui, em `design-tokens.md §4` e no `validate.sh`):**
-- `99999` → Banners críticos de quota/armazenamento (acima dos modais, de propósito)
-- `9999` → Modais (`.modal-overlay`, `.sb-overlay`, `#mobile-paste-fab`)
-- `2000` / `1999` → Sidebar mobile e o seu backdrop
-- `300` / `200` / `100` → Controles internos do modal de imagem (apagar / overlay de texto / zoom+setas)
-- `50` → Item em arrasto
-- `10` → Empilhamento local (placeholders, pequenos overlays)
-- `0` → Conteúdo base
+**Camadas (z-index):** todo `z-index` usa um token `--z-*`, na escala do Bootstrap. A tabela está no `design-tokens.md` §4, e o check 23 do `validate.sh` confere-a.
 
 ---
 
@@ -638,9 +631,9 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o browser for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e, quando é `QuotaExceededError`, chamam `showQuotaBanner()` — que injeta um banner vermelho fixo no topo (`id="ce-quota-banner"`, z-index `99999`, criado em runtime e **não** presente no HTML estático). O banner avisa que as capturas deixaram de ser gravadas e recomenda exportação imediata; tem botão ✕ para fechar, e reaparece na falha seguinte porque o guard testa a existência do elemento. `SysLogger.error` regista a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do browser for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e, quando é `QuotaExceededError`, chamam `showQuotaBanner()` — que injeta um banner vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`, criado em runtime e **não** presente no HTML estático). O banner avisa que as capturas deixaram de ser gravadas e recomenda exportação imediata; tem botão ✕ para fechar, e reaparece na falha seguinte porque o guard testa a existência do elemento. `SysLogger.error` regista a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
 
-> **Correção histórica:** até à V26 esta secção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia tanto o `README §8` como a `§2.2` deste documento, que já listava `99999` como «Banners críticos de quota/armazenamento». O banner existe desde a D9.
+> **Correção histórica:** até à V26 esta secção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia tanto o `README §8` como a `§2.2` deste documento, que já listava `99999` como «Banners críticos de quota/armazenamento». O banner existe desde a correção D9 (commit `a5656f5`).
 
 **Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a cota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
 

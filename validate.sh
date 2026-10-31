@@ -368,17 +368,19 @@ fi
 #     token values must be exactly the documented one (design-tokens.md
 #     section 4 / AGENTS.md section 2.2). Fails on a new value, a missing one,
 #     or a literal z-index anywhere in the file.
-ZEXPECTED="10 50 100 200 300 1999 2000 9999 99999"
+ZEXPECTED="1 2 3 4 5 1030 1040 1045 1055 1090"
 ZLIT=$(grep -oE "z-index: *[0-9]+" "$FILE" | wc -l | tr -d ' ')
 ZFOUND=$(grep -oE -- "--z-[a-z-]+: *[0-9]+" "$FILE" | grep -oE "[0-9]+$" | sort -n | uniq | tr '
 ' ' ' | sed 's/ *$//')
 check_eq "z-index: tokens = documentado, 0 literais" "$ZEXPECTED|0" "$ZFOUND|$ZLIT"
 
-# 24) Animation durations vs design-tokens.md section 5 (fixed expected values).
-AEXP="fade-in=0.2s fade-in-tab=0.25s modal-in=0.2s spin=0.65s"
+# 24) Animation durations vs design-tokens.md section 5: each named animation
+#     uses a --duration-* token, and the token holds the documented value.
+AEXP="fade-in=240ms fade-in-tab=240ms modal-in=240ms spin=650ms"
 AGOT=""
 for a in fade-in fade-in-tab modal-in spin; do
-  d=$(grep -oE "animation: *${a} [0-9.]+s" "$FILE" | grep -oE "[0-9.]+s" | head -1)
+  t=$(grep -oE "animation: *${a} var\(--duration-[a-z0-9-]+\)" "$FILE" | grep -oE -- "--duration-[a-z0-9-]+" | head -1)
+  d=$( [ -n "$t" ] && grep -oE -- "${t}: *[0-9.]+m?s" "$FILE" | head -1 | grep -oE "[0-9.]+m?s$")
   AGOT="$AGOT $a=$d"
 done
 AGOT=$(echo "$AGOT" | sed 's/^ *//')

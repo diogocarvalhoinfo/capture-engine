@@ -162,37 +162,54 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 ---
 
-## 4. Z-Index Stack — Quem fica à frente de quem
+## 4. Camadas (z-index)
 
-A pilha **não é uma escala global única** — os valores estão agrupados por *stacking context*. Valores baixos (10–300) só competem dentro do seu próprio contexto (ex.: controles internos do modal de imagem); os altos (9999, 99999) são globais.
+Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os de dentro de um componente são números pequenos, que só competem no seu próprio contexto de empilhamento.
 
-| Nível | Z-index | Onde / propósito | Contexto |
+| Token | Valor | Onde / propósito | Contexto |
 |---|---|---|---|
-| Base | `0` (implícito) | Conteúdo normal (grelha, listas, painéis) | global |
-| Local | `10` | Empilhamento local: placeholders de arrasto, pequenos overlays | local |
-| Arrasto | `50` | Item a ser arrastado (`.t-item/.d-item.dragging`) acima dos vizinhos | local |
-| Controles do modal de imagem | `100` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
-| Overlay de texto da anotação | `200` | `#ann-text-overlay` sobre o canvas | dentro do modal |
-| Botão apagar anotação | `300` | Botão `✕` acima do overlay de texto | dentro do modal |
-| Backdrop da sidebar mobile | `1999` | `#sb-mobile-overlay` (fundo escurecido) | mobile |
-| Sidebar mobile | `2000` | `#sidebar` acima do seu próprio backdrop | mobile |
-| Modais | `9999` | `.modal-overlay`, `.sb-overlay`, `#mobile-paste-fab` | global |
-| Banners críticos | `99999` | Quota/armazenamento — **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
+| `--z-raised` | `1` | Empilhamento local: placeholders de arrasto, pequenos overlays | local |
+| `--z-dragging` | `2` | Item a ser arrastado (`.t-item/.d-item.dragging`) acima dos vizinhos | local |
+| `--z-viewer-controls` | `3` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
+| `--z-viewer-text` | `4` | `#ann-text-overlay` sobre o canvas | dentro do modal |
+| `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
+| `--z-fixed` | `1030` | Botão de colar do mobile (`#mobile-paste-fab`) | global |
+| `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | mobile |
+| `--z-offcanvas` | `1045` | `#sidebar` no mobile, acima do seu fundo | mobile |
+| `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
+| `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
-**Regra de governança:** qualquer novo valor de `z-index` deve ser adicionado **a esta tabela, ao `AGENTS.md §2.2` e ao conjunto permitido no `validate.sh`** (que falha se aparecer valor não documentado).
+O botão de colar fica abaixo da barra lateral e dos modais. Até à versão 27 ficava acima deles.
+
+**Regra:** um valor novo entra nesta tabela e no `validate.sh` (check 23), que falha com um valor não documentado ou com um `z-index` literal.
 
 ---
 
-## 5. Animações
+## 5. Movimento
+
+As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa de um componente tem token próprio.
+
+| Token | Valor |
+|---|---|
+| `--duration-fast-02` | `110ms` |
+| `--duration-moderate-01` | `150ms` |
+| `--duration-moderate-02` | `240ms` |
+| `--duration-slow-01` | `400ms` |
+| `--duration-slow-02` | `700ms` |
+| `--duration-spinner` | `650ms` |
+| `--duration-ann-alert` | `400ms` |
+| `--duration-admin-pulse` | `1.2s` |
+| `--duration-status-pulse` | `3s` |
+| `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` |
+| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` |
+| `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` |
 
 | Animação | O que faz | Duração | Onde é usada |
 |---|---|---|---|
-| `spin` | Rotação contínua | Contínua | Spinner nos botões PDF/ZIP durante o processamento |
-| `fade-in` | Entrada com opacidade 0→1 | 200ms | Novos thumbnails e documentos ao serem adicionados |
-| `modal-in` | Escala `0.96→1` + opacidade | 200ms | Entrada suave de todos os modais |
-| `fade-in-tab` | Opacidade rápida | 250ms | Transição entre abas do Visual Builder |
-
-*Todas as animações são curtas (200–250ms) e sem inércia. O objetivo é dar feedback imediato — não criar uma experiência cinematográfica que atrase a interação.*
+| `spin` | Rotação contínua | `--duration-spinner` | Spinner nos botões PDF e ZIP durante o processamento |
+| `fade-in` | Entrada com opacidade 0→1 | `--duration-moderate-02` | Novos thumbnails e documentos |
+| `modal-in` | Escala `0.96→1` e opacidade | `--duration-moderate-02` | Entrada de todos os modais |
+| `fade-in-tab` | Opacidade | `--duration-moderate-02` | Troca de abas do Visual Builder |
 
 ---
 
