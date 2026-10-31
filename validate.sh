@@ -207,18 +207,18 @@ fi
 #     to fall out of sync if the list changes.
 ANN_TOOLS=("traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop")
 ANN_FAIL=0
-ANN_LINHA=$(grep -n "afordâncias de desenho no editor" README.md 2>/dev/null | head -1 | cut -d: -f1)
+ANN_LINHA=$(grep -n "O editor tem 7 ferramentas" README.md 2>/dev/null | head -1 | cut -d: -f1)
 if [ -z "$ANN_LINHA" ]; then
-  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'afordâncias de desenho no editor' nao encontrada)"
+  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'O editor tem 7 ferramentas' nao encontrada)"
   FAIL=$((FAIL+1))
 else
   ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
   # The line must hold ONLY the list. The explanation lives on the next,
-  # indented line, because it repeats terms ("a rotacao executa e termina...")
+  # indented line, because it repeats terms ("a rotacao gira a imagem e termina")
   # and would make the check pass with the tool removed -- the D41 hole,
   # caught in D46. If the two lines are merged again, this fails instead of
   # degrading silently. See D47.
-  if printf '%s' "$ANN_TEXTO" | grep -qi "A distinção é técnica"; then
+  if printf '%s' "$ANN_TEXTO" | grep -qi "fica ativa até"; then
     printf "[FAIL] %-52s %s\n" "Linha das ferramentas tem prosa misturada" "(mover a explicacao para a linha seguinte)"
     FAIL=$((FAIL+1))
     ANN_FAIL=$((ANN_FAIL+1))

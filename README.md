@@ -86,7 +86,7 @@ HTML, CSS e JavaScript num único arquivo, o `capture-engine.html`, sem bibliote
 Esta seção explica os termos técnicos usados em toda a documentação. Se encontrar um termo desconhecido, procure aqui primeiro.
 
 ### Quine
-Um **Quine** é um programa capaz de produzir uma cópia exata de si próprio como saída. O Capture Engine usa este conceito: ao fazer Export, o arquivo lê o seu próprio código-fonte, aplica as configurações atuais, e gera um novo arquivo HTML idêntico — mas com os tokens personalizados. Isto permite ao administrador distribuir versões configuradas sem precisar de servidores ou ferramentas externas.
+Um **Quine** é um programa capaz de produzir uma cópia exata de si próprio como saída. O Capture Engine usa este conceito no Export. O arquivo lê o seu próprio código-fonte, aplica as configurações atuais e gera um arquivo HTML igual, só com os tokens personalizados. Isto permite ao administrador distribuir versões configuradas sem precisar de servidores ou ferramentas externas.
 
 ### IndexedDB
 **IndexedDB** é uma base de dados embutida no navegador, semelhante a um disco local dentro do navegador. O Capture Engine a usa para guardar sessões, imagens e documentos automaticamente — sem servidor, sem arquivos externos. Os dados persistem enquanto o usuário não limpar os dados do navegador.
@@ -125,7 +125,7 @@ Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospita
 **XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine sanitiza (limpa) todos os dados inseridos pelo usuário antes de apresentá-los, impedindo este tipo de ataque.
 
 ### EMA (Exponential Moving Average)
-**EMA** (média móvel exponencial) é um filtro de suavização usado no Desenho Livre: cada novo ponto do traço é misturado com o anterior por um fator α (α=0.35), reduzindo o tremor em tempo real sem atrasar perceptivelmente o traço.
+**EMA** (média móvel exponencial) é o filtro que suaviza o traço livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
 
 ## 5. Início rápido
 
@@ -205,9 +205,9 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 ### 6.3 Anotação de imagens
 
 Motor de anotação (V24→V25):
-- 8 afordâncias de desenho no editor: **7 ferramentas** — traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Crop — e **1 ação**, Rotação 90°
-  - A barra tem mais controles além destes — desfazer/refazer, espessura do traço, negrito/itálico, guardar e cancelar. A contagem 8 refere-se ao que **desenha ou transforma** a imagem, não ao total de botões
-  - A distinção é técnica: as 7 ferramentas são valores de `annTool` e ficam ativas até se escolher outra; a rotação executa e termina, sem estado ativo
+- O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
+  - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
+  - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
@@ -282,15 +282,15 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 
 > [!CAUTION]
 > **O ZIP leva a imagem que você vê, e não a que colou.**
-> Assim que uma imagem é **anotada, rodada ou recortada**, o que segue no ZIP é a versão editada — um PNG novo, gerado a partir do canvas, com as edições já incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
+> Assim que uma imagem é **anotada, rodada ou recortada**, o ZIP leva a versão editada. É um PNG novo, gerado a partir do canvas, com as edições incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
 >
 > A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
 
-**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11), que é o que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos corretamente. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
+**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
-> Até a V25 os nomes eram gravados em UTF-8 mas sem essa declaração no cabeçalho, o que fazia os acentos aparecerem trocados (`Diagn+¦stico`) ao abrir o ZIP; e a legenda de imagem convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
+> Até a V25, os nomes eram gravados em UTF-8 sem essa declaração no cabeçalho, e os acentos apareciam trocados (`Diagn+¦stico`) ao abrir o ZIP. A legenda de imagem também convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
 
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
@@ -386,7 +386,7 @@ Admin configura → Export Admin (backup) → Export User → distribui aos usu�
 
 > [!NOTE]
 > **Atualizações e continuidade dos dados.**
-> Pode distribuir uma nova versão da ferramenta (novo arquivo) sem receio de o usuário perder o histórico: em Windows com Edge/Chrome, **o nome e a pasta do arquivo não afetam o acesso aos dados** — todas as cópias abertas no mesmo perfil de navegador compartilham a mesma base `CaptureEngineDB` (testado em Edge 148 / Chrome 148). O acesso depende do **perfil de navegador**, não do caminho. As exceções (que NÃO veem os dados) são: janela anônima, outro perfil, outro navegador, e abrir de dentro de um ZIP sem extrair. **Tudo isto vale dentro da mesma origem (`file://`)** — servir a ferramenta por HTTP/HTTPS (ex.: localhost, GitHub Pages) cria uma base separada. Ver a seção de recuperação para o detalhe completo, incluindo a nota sobre origem.
+> Uma versão nova da ferramenta não apaga o histórico de quem a usa. No Edge e no Chrome, **o nome e a pasta do arquivo não afetam o acesso aos dados**. Todas as cópias abertas no mesmo perfil de navegador leem a mesma base `CaptureEngineDB` (testado no Edge 148 e no Chrome 148). O acesso depende do **perfil de navegador**, não do caminho. As exceções (que NÃO veem os dados) são: janela anônima, outro perfil, outro navegador, e abrir de dentro de um ZIP sem extrair. **Tudo isto vale dentro da mesma origem (`file://`)** — servir a ferramenta por HTTP/HTTPS (ex.: localhost, GitHub Pages) cria uma base separada. Ver a seção de recuperação para o detalhe completo, incluindo a nota sobre origem.
 
 ### 7.4 Tokens de configuração
 
@@ -460,7 +460,7 @@ A CSP ativa inclui `script-src 'unsafe-inline'` e `style-src 'unsafe-inline'`. I
 - Toda a lógica JavaScript está inline no único arquivo HTML — sem `unsafe-inline`, o navegador bloquearia o próprio script da aplicação.
 - Nonces e hashes são incompatíveis com o Quine Engine: o conteúdo do arquivo muda a cada Export, invalidando qualquer hash calculado no build.
 - A CSP ainda protege contra **scripts externos**, **recursos de rede** (`connect-src 'self'`) e **imagens externas** (`img-src blob: data:`).
-- O bloqueio de scripts externos vem do próprio `script-src 'unsafe-inline'`, e **não** do `default-src`: quando `script-src` está declarado, ele substitui o `default-src` para scripts, e como não nomeia nenhuma origem de URL — nem sequer `'self'` — recusa tudo o que não seja inline. O resultado é mais restritivo do que o `default-src` sozinho daria, e não menos.
+- O bloqueio de scripts externos vem do próprio `script-src 'unsafe-inline'`, e **não** do `default-src`. Declarado, o `script-src` substitui o `default-src` para scripts. Como não nomeia nenhuma origem de URL, nem sequer `'self'`, recusa tudo o que não seja inline. O resultado é mais restritivo do que o `default-src` sozinho daria, e não menos.
 
 > [!NOTE]
 > **Avisos de scanners.**
@@ -472,7 +472,7 @@ Os dados do Capture Engine estão guardados no IndexedDB do navegador. **Se limp
 
 ### Comportamento com múltiplas abas
 
-O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** como todas as abas gravam na mesma base, editar a mesma sessão em duas abas ao mesmo tempo pode fazer com que uma sobreponha as alterações da outra (a última gravação prevalece). Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro a bloquear o uso; esse bloqueio foi removido.
+O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** todas as abas gravam na mesma base. Se a mesma sessão for editada em duas abas ao mesmo tempo, a última gravação apaga as alterações da outra. Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro a bloquear o uso; esse bloqueio foi removido.
 
 ## 9. Uso como prova
 
@@ -487,7 +487,7 @@ O Capture Engine é adequado para **recolha organizada e documentação** de evi
 - Integridade criptográfica — não há hash, assinatura digital nem timestamping independente
 - Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio navegador
 - Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
-- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP de imagens não editadas para preservar os arquivos originais
+- **Exportação PDF:** as imagens são recomprimidas como JPEG em memória, com perda. Não serve como prova primária quando se exige a integridade pixel a pixel; para isso, use o ZIP de imagens não editadas
 - **Exportação ZIP de imagens editadas:** anotar, rodar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no navegador, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
 
 > [!CAUTION]
@@ -507,9 +507,9 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
 | **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
-| **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote (o navegador falha primeiro), por isso o cenário é improvável — fica declarado por a falha ser silenciosa. |
+| **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
-| **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, rodar ou recortar:** o `ann-save` regenera a imagem a partir do canvas em PNG, e a animação perde-se também no ZIP — o arquivo sai corretamente nomeado `.png`, não como um `.gif` estático. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
+| **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, rodar ou recortar:** o `ann-save` regenera a imagem em PNG, a partir do canvas, e a animação perde-se também no ZIP. O arquivo sai com a extensão `.png`, e não como um `.gif` parado. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
 
 ## 11. Resolução de problemas
 
@@ -540,18 +540,22 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
 
 ### As minhas capturas desapareceram depois de fechar o navegador
-- O mais provável é esgotamento da quota de armazenamento do navegador. Quando o IndexedDB fica sem espaço, a gravação falha e um banner vermelho de aviso aparece no topo da aplicação — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o navegador, a memória é liberada e o item desaparece.
+- O mais provável é esgotamento da quota de armazenamento do navegador. Quando o IndexedDB fica sem espaço, a gravação falha, e um aviso vermelho aparece no topo da aplicação. O item aparece na grade durante a sessão, por um Object URL em memória, mas não chega a ser gravado. Ao fechar o navegador, a memória é liberada e o item desaparece.
 - **Como confirmar:** abra as DevTools (F12) → aba Console → procure erros com a palavra `quota` ou `storage`.
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP) e apague no histórico as sessões que já não precisa. **Não existe forma de reduzir o espaço que cada captura ocupa** — as imagens são sempre gravadas no formato original. O `TOKEN_MAX_IMG_DIMENSION` do Visual Builder reduz as imagens apenas na geração do PDF, não no armazenamento, e por isso não previne este problema.
-- **Editar uma imagem aproximadamente duplica o que ela ocupa:** ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs — o original (`origBlob`, preservado para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
+- **Editar uma imagem duplica, mais ou menos, o espaço que ela ocupa.** Ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs: o original (`origBlob`, para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
-- **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do navegador, numa base compartilhada por **perfil de navegador** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML no Firefox; no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
-- **O que NÃO afeta o acesso aos dados** (confirmado por teste): o **nome** do arquivo, a **pasta**, o **disco/pen**, a **versão** (uma versão antiga vê as sessões da nova — todas usam a mesma base `CaptureEngineDB`) e até caminhos com espaços ou caracteres especiais. Tudo isto continua a encontrar os dados, desde que seja o mesmo perfil.
-- **O que NÃO encontra os dados** (origem/perfil diferente): **janela anônima/privada**, **outro perfil** do navegador, **outro navegador** (Edge vs Chrome têm bases separadas), e abrir **de dentro de um ZIP** sem extrair.
-- **A base é por origem (protocolo + host + porta), não só por perfil:** a *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) são **três bases independentes** — as sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
+- **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox; o Safari não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
+- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Tudo isto continua a encontrar os dados, desde que seja o mesmo perfil.
+- **O que NÃO encontra os dados** (outra origem ou outro perfil):
+  - **janela anônima ou privada**;
+  - **outro perfil** do navegador;
+  - **outro navegador** (o Edge e o Chrome têm bases separadas);
+  - abrir **de dentro de um ZIP**, sem extrair.
+- **A base é por origem (protocolo, host e porta), e não só por perfil.** A *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) tem **três bases independentes**. As sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
 - **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, abrir a mesma conta/perfil **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
-- **Implicação para ambientes isolados (ex.: VDI (Virtual Desktop Infrastructure)):** como os dados vivem no perfil local daquela máquina/ambiente, sessões criadas dentro da VDI de um cliente ficam **isoladas** nessa VDI; sessões criadas no perfil local pessoal ficam todas juntas nesse perfil. *(Nota: ambientes com "roaming de perfil" gerenciados pela TI poderiam fazer os dados seguir o usuário entre máquinas — confirmar com a equipe de TI se for o caso.)*
+- **Ambientes isolados, como uma VDI (área de trabalho virtual):** os dados vivem no perfil local daquela máquina. As sessões criadas dentro da VDI de um cliente ficam **isoladas** nela, e as do perfil pessoal ficam juntas nesse perfil. Num perfil com roaming, gerenciado pela TI, os dados podem seguir o usuário entre máquinas: confirme com a equipe de TI.
 - Recuperação técnica de último recurso (requer conhecimentos): aba *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
 
 > [!IMPORTANT]
@@ -573,7 +577,7 @@ Sim — abra diretamente o `capture-engine.html` no navegador.
 Sim. Funciona no Firefox 151.0.4, testado manualmente; versão mínima abaixo de 151.0.4 não verificada.
 
 **Posso ter múltiplas versões do Capture Engine abertas ao mesmo tempo?**
-Sim. Pode abrir várias abas no mesmo navegador (todas compartilham a mesma base de dados local) ou versões diferentes em navegadores diferentes (ex: uma no Edge e outra no Firefox, cada uma com a sua própria base). A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
+Sim. Pode abrir várias abas no mesmo navegador, e todas leem a mesma base local. Também pode abrir versões em navegadores diferentes, como o Edge e o Firefox, cada uma com a sua base. A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
 
 **O que acontece se colocar o token `EXPORT MODAL` no rodapé?**
 Nada — a versão V15+ protege automaticamente os marcadores internos com um caractere invisível (zero-width space), impedindo que valores de tokens interfiram com o Quine Engine.
