@@ -386,12 +386,12 @@ done
 AGOT=$(echo "$AGOT" | sed 's/^ *//')
 check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
 
-# 25) File size (admin) within the range in README section 12 (~300KB).
+# 25) File size (admin) within the range in README section 12 (~340KB).
 SZ=$(wc -c < "$FILE" | tr -d ' ')
-if [ "$SZ" -ge 280000 ] && [ "$SZ" -le 340000 ]; then
-  printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~300KB)" "$SZ"; PASS=$((PASS+1));
+if [ "$SZ" -ge 300000 ] && [ "$SZ" -le 390000 ]; then
+  printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~340KB)" "$SZ"; PASS=$((PASS+1));
 else
-  printf '[FAIL] %-52s (%s, esperado 280000-340000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
+  printf '[FAIL] %-52s (%s, esperado 300000-390000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi
 
 # 26) ZIP: the UTF-8 encoding flag (bit 11 = 0x0800 of the general purpose

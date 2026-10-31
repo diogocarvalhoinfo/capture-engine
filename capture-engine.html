@@ -4103,13 +4103,18 @@
             ctx.rect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
             ctx.fill('evenodd');
             const kc = annPx(); // crop marks in screen px: 20 px long, 4 px thick, on any image
-            ctx.strokeStyle = '#ffffff';
+            // Visible on any image: the dashed border alternates dark and white dashes,
+            // and the white marks get a dark outline (dark image: the white shows; white image: the outline shows)
+            const CROP_DARK = 'rgba(0, 0, 0, 0.6)';
             ctx.lineWidth = kc;
             ctx.setLineDash([4 * kc, 4 * kc]);
+            ctx.strokeStyle = CROP_DARK;
             ctx.strokeRect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
-            ctx.setLineDash([]);
+            ctx.lineDashOffset = 4 * kc;
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 4 * kc;
+            ctx.strokeRect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
+            ctx.lineDashOffset = 0;
+            ctx.setLineDash([]);
             ctx.lineCap = 'square';
             const s = 20 * kc, o = 2 * kc, x1 = annCropBox.x, x2 = annCropBox.x + annCropBox.w, y1 = annCropBox.y, y2 = annCropBox.y + annCropBox.h;
             ctx.beginPath();
@@ -4121,7 +4126,8 @@
             const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2;
             if (x2 - x1 > s * 3) { ctx.moveTo(xm - s / 2, y1 + o); ctx.lineTo(xm + s / 2, y1 + o); ctx.moveTo(xm - s / 2, y2 - o); ctx.lineTo(xm + s / 2, y2 - o); }
             if (y2 - y1 > s * 3) { ctx.moveTo(x1 + o, ym - s / 2); ctx.lineTo(x1 + o, ym + s / 2); ctx.moveTo(x2 - o, ym - s / 2); ctx.lineTo(x2 - o, ym + s / 2); }
-            ctx.stroke();
+            ctx.strokeStyle = CROP_DARK; ctx.lineWidth = 7 * kc; ctx.stroke(); // outline, 1.5 px on each side
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4 * kc; ctx.stroke();
           }
           ctx.restore();
         }
