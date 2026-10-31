@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # =============================================================================
-# validate.sh - Verificacao estatica de integridade do Capture Engine
+# validate.sh - static integrity checks for the Capture Engine
 # -----------------------------------------------------------------------------
-# Faz verificacoes MECANICAS (texto/grep) sobre capture-engine.html.
-# Nao abre o browser, nao executa a app, nao "interpreta" nada: cada teste
-# e' uma contagem ou uma comparacao exata. Por isso o resultado e' SEMPRE o
-# mesmo para o mesmo arquivo -> uma IA pode confiar nele sem alucinar.
+# Runs MECHANICAL checks (text/grep) on capture-engine.html.
+# It does not open a browser, run the app or "interpret" anything: every test
+# is a count or an exact comparison, so the result is ALWAYS the same for the
+# same file -> an AI can rely on it without guessing.
 #
-# O QUE ISTO COBRE (verificavel sem browser):
-#   - Integridade do Quine (comment markers, funcoes essenciais)
-#   - Regra zero-dependencia (sem recursos externos http://)
-#   - APIs proibidas (eval / Function / document.write)
-#   - Estrutura do titulo (3 spans) e cabecalho de licenca
-#   - Sintaxe JavaScript (se 'node' estiver instalado)
+# WHAT IT COVERS (checkable without a browser):
+#   - Quine integrity (comment markers, essential functions)
+#   - Zero-dependency rule (no external http:// resources)
+#   - Forbidden APIs (eval / Function / document.write)
+#   - Title structure (3 spans) and licence header
+#   - JavaScript syntax (if 'node' is installed)
 #
-# O QUE ISTO NAO COBRE (precisa de um humano a abrir o browser):
-#   - Comportamento visual, dark mode, anotacao, ciclo de vida da sessao,
-#     export real de PDF/ZIP. Ver a checklist manual em AGENTS.md, Seccao 11.
+# WHAT IT DOES NOT COVER (needs the app open in a browser):
+#   - Visual behaviour, dark mode, annotation, session life cycle,
+#     real PDF/ZIP export. See the manual checklist in AGENTS.md, section 11.
 #
-# USO:   ./validate.sh [caminho-do-html]   (por defeito: capture-engine.html)
-# SAIDA: lista de [PASS]/[FAIL] e um resumo. Codigo de saida 0 = tudo OK.
+# USAGE:  ./validate.sh [html-path]   (default: capture-engine.html)
+# OUTPUT: a list of [PASS]/[FAIL] and a summary. Exit code 0 = all OK.
 # =============================================================================
 
 set -u
 export LC_ALL=C.UTF-8
 FILE="${1:-capture-engine.html}"
 
-# Interpretador python usado por varios checks (definido cedo: o check 2 ja precisa).
+# Python interpreter used by several checks (set early: check 2 needs it).
 PY_BIN="python"
 command -v python3 >/dev/null 2>&1 && PY_BIN="python3"
 PASS=0
@@ -37,7 +37,7 @@ if [ ! -f "$FILE" ]; then
   exit 2
 fi
 
-# check_eq "rotulo" valor_esperado valor_obtido
+# check_eq "label" expected_value actual_value
 check_eq() {
   local label="$1" expected="$2" got="$3"
   if [ "$got" = "$expected" ]; then
@@ -52,30 +52,30 @@ check_eq() {
 echo "== Validacao estatica de: $FILE =="
 echo
 
-# 1) Comment markers do Quine: o grep deve devolver exatamente 11 linhas.
-#    (8 strings unicas; aparecem em 11 linhas: 8 estruturais + boot() +
-#     sanitizeForQuine + exportFile. Ver AGENTS.md Seccao 5.)
+# 1) Quine comment markers: grep must return exactly 11 lines.
+#    (8 unique strings on 11 lines: 8 structural + boot() +
+#     sanitizeForQuine + exportFile. See AGENTS.md section 5.)
 M=$(grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" "$FILE")
 check_eq "Comment markers (linhas grep)" 11 "$M"
 
-# 2) Funcoes essenciais do Quine DEFINIDAS (nao apenas mencionadas).
-#    Casa a sintaxe de definicao — declaracao (function nome(), com ou sem
-#    async) ou atribuicao (nome = function), que e como window.exportFile esta
-#    escrita. Antes contava ocorrencias do NOME, e uma mencao em comentario ou
-#    numa chamada bastava para dar PASS.
+# 2) Essential Quine functions DEFINED (not just mentioned).
+#    Matches the definition syntax: a declaration (function name(), with or
+#    without async) or an assignment (name = function), which is how
+#    window.exportFile is written. It used to count occurrences of the NAME,
+#    and a mention in a comment or a call was enough for a PASS.
 #
-#    LIMITE CONHECIDO, declarado de proposito (ver D67, precisado na D72): isto
-#    NAO distingue codigo de contexto nao executado. Uma definicao escrita
-#    dentro de um comentario OU de uma string literal satisfaz o check --
-#    ambas medidas. Remover comentarios de forma fiavel exigiria um parser
-#    de JS: o ficheiro tem literais de regex com aspas dentro, que partem
-#    qualquer scanner ingenuo (foi assim que a D54 corrompeu a contagem de
-#    complexidade). O que este check prova e que a definicao NAO desapareceu;
-#    que ela CORRE e materia da prova de vida da secao 11 Parte B e do check 27.
+#    KNOWN LIMIT, declared on purpose (see D67, refined in D72): this does
+#    NOT tell code from non-executed context. A definition written inside a
+#    comment OR a string literal satisfies the check -- both measured.
+#    Stripping comments reliably would need a JS parser: the file has regex
+#    literals with quotes inside, which break any naive scanner (that is how
+#    D54 corrupted the complexity count). This check proves the definition
+#    did NOT disappear; that it RUNS is covered by the proof of life in
+#    section 11 Part B and by check 27.
 #
-#    O escape do ponto e a contagem sao feitos em python: o sed equivalente
-#    e no-op neste ambiente e o grep -c conta LINHAS, nao ocorrencias — com o
-#    JS em linhas longas o numero exibido era sempre 1.
+#    Escaping the dot and counting are done in Python: the sed equivalent is
+#    a no-op here, and grep -c counts LINES, not occurrences -- with the JS
+#    on long lines the number shown was always 1.
 for fn in "window.exportFile" "capturePristine" "sanitizeForQuine" "escapeHTML"; do
   C=$($PY_BIN - "$FILE" "$fn" <<'PYDEF'
 import sys, re
@@ -89,36 +89,36 @@ PYDEF
   else printf '[FAIL] %-52s (0)\n' "Funcao NAO DEFINIDA: $fn"; FAIL=$((FAIL+1)); fi
 done
 
-# 3) Os 3 spans do titulo existem.
+# 3) The 3 title spans exist.
 for id in ui-title-start ui-title-accent ui-title-end; do
   C=$(grep -c "id=\"$id\"" "$FILE")
   check_eq "Span de titulo: $id" 1 "$C"
 done
 
-# 4) APIs proibidas: tem de ser 0.
+# 4) Forbidden APIs: must be 0.
 BAD=$(grep -cE "\beval\(|\bnew Function\(|document\.write\(" "$FILE")
 check_eq "APIs proibidas (eval/Function/write)" 0 "$BAD"
 
-# 5) Zero-dependencia: nenhum recurso externo carregado por http(s).
-#    (O unico fetch permitido e' fetch(location.href), que nao casa este padrao.)
-#    Visa CONSTRUTOS DE CARREGAMENTO, nao a string "http": o ficheiro contem
-#    legitimamente http(s) no comentario de licenca e no xmlns do SVG inline, e
-#    nenhum dos dois e' carregado. Cobre aspas simples e duplas, url() em CSS,
-#    @import, fetch/importScripts, e URLs protocol-relative (//host). Ver D58.
-#    As substrings nuas "cdn." e "googleapis" foram removidas na D67: faziam o
-#    check reprovar sobre prosa inocente (um comentario a dizer "nao usar cdn.
-#    de terceiros" dava FAIL) e nao acrescentavam detecao nenhuma — medido, as
-#    7 formas da matriz continuam todas apanhadas sem elas, incluindo
-#    href='//cdn.foo/x.css', que casa pela forma protocol-relative.
+# 5) Zero dependencies: no external resource loaded over http(s).
+#    (The only allowed fetch is fetch(location.href), which does not match.)
+#    Targets LOADING CONSTRUCTS, not the string "http": the file legitimately
+#    has http(s) in the licence comment and in the inline SVG xmlns, and
+#    neither is loaded. Covers single and double quotes, url() in CSS,
+#    @import, fetch/importScripts and protocol-relative URLs (//host). See D58.
+#    The bare substrings "cdn." and "googleapis" were removed in D67: they
+#    failed the check on harmless prose (a comment saying "do not use cdn."
+#    gave FAIL) and detected nothing more -- measured, the 7 forms of the
+#    matrix are still caught without them, including href='//cdn.foo/x.css',
+#    which matches as protocol-relative.
 EXT=$(grep -cE "(src|href)[[:space:]]*=[[:space:]]*[\"'](https?:)?//|url\([[:space:]]*[\"']?(https?:)?//|@import[[:space:]]+[\"']?(https?:)?//|fetch\([[:space:]]*[\"'](https?:)?//|importScripts\(" "$FILE")
 check_eq "Recursos externos http(s) (zero-dep)" 0 "$EXT"
 
-# 6) Cabecalho de licenca presente no arquivo distribuido.
+# 6) Licence header present in the distributed file.
 LIC=$(grep -c "Copyright (c) 2026 Diogo Carvalho" "$FILE")
 if [ "$LIC" -ge 1 ]; then printf '[PASS] %-52s (%s)\n' "Cabecalho de licenca MIT presente" "$LIC"; PASS=$((PASS+1));
 else printf '[FAIL] %-52s (0)\n' "Cabecalho de licenca MIT AUSENTE"; FAIL=$((FAIL+1)); fi
 
-# 7) Codigo removido nao deve reaparecer.
+# 7) Removed code must not come back.
 SUB=$(grep -c "TOKEN_SUBTITLE" "$FILE")
 check_eq "TOKEN_SUBTITLE removido" 0 "$SUB"
 EXACT=$(grep -c "'exact'" "$FILE")
@@ -166,7 +166,7 @@ else
 ' "Versao do HTML divergente" "${CL_VER:-?}" "${VER:-?}"; FAIL=$((FAIL+1));
 fi
 
-# 9) Sintaxe JavaScript (opcional: so corre se 'node' existir).
+# 9) JavaScript syntax (optional: runs only if 'node' exists).
 if command -v node >/dev/null 2>&1; then
   if node -e '
     const fs=require("fs");
@@ -184,7 +184,7 @@ else
   printf '[SKIP] %-52s (node nao instalado)\n' "Sintaxe JavaScript"
 fi
 
-# 11) Cross-check: TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)
+# 11) Cross-check: TOKEN_MAIN_COLOR matches (HTML vs design-tokens.md)
 COLOR_HTML=$(grep -oP "const TOKEN_MAIN_COLOR\s*=\s*'\K[^']+" "$FILE" 2>/dev/null | head -1)
 COLOR_DOCS=$(grep "TOKEN_MAIN_COLOR" design-tokens.md 2>/dev/null | grep -oP "'\K[^']+" | head -1)
 if [ -z "$COLOR_HTML" ]; then
@@ -199,12 +199,12 @@ else
   PASS=$((PASS+1))
 fi
 
-# 12) Cross-check: ferramentas de anotação documentadas no README.md.
-#     Procura na LINHA que enumera as afordâncias do editor, nao no README
-#     inteiro: termos como "texto" ocorrem dezenas de vezes noutros contextos,
-#     e o check passava mesmo com a ferramenta removida da lista (ver D41).
-#     A contagem exibida deriva do proprio array — nao ha constante a
-#     dessincronizar-se se a lista mudar.
+# 12) Cross-check: annotation tools documented in README.md.
+#     Looks at the LINE that lists the editor tools, not the whole README:
+#     words like "texto" appear dozens of times elsewhere, and the check
+#     passed even with the tool removed from the list (see D41).
+#     The count shown comes from the array itself -- there is no constant
+#     to fall out of sync if the list changes.
 ANN_TOOLS=("traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop")
 ANN_FAIL=0
 ANN_LINHA=$(grep -n "afordâncias de desenho no editor" README.md 2>/dev/null | head -1 | cut -d: -f1)
@@ -213,11 +213,11 @@ if [ -z "$ANN_LINHA" ]; then
   FAIL=$((FAIL+1))
 else
   ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
-  # A linha tem de conter APENAS a enumeracao. A prosa explicativa vive na linha
-  # seguinte, indentada, porque repete termos ("a rotacao executa e termina...") e
-  # faria o check passar com a ferramenta removida da lista — foi o furo da D41,
-  # apanhado na D46. Se as duas linhas voltarem a ser fundidas, falha aqui em vez
-  # de degradar em silencio. Ver D47.
+  # The line must hold ONLY the list. The explanation lives on the next,
+  # indented line, because it repeats terms ("a rotacao executa e termina...")
+  # and would make the check pass with the tool removed -- the D41 hole,
+  # caught in D46. If the two lines are merged again, this fails instead of
+  # degrading silently. See D47.
   if printf '%s' "$ANN_TEXTO" | grep -qi "A distinção é técnica"; then
     printf "[FAIL] %-52s %s\n" "Linha das ferramentas tem prosa misturada" "(mover a explicacao para a linha seguinte)"
     FAIL=$((FAIL+1))
@@ -236,7 +236,7 @@ else
   fi
 fi
 
-# 13) Cross-check: guard de purge TOKEN_AUTO_PURGE_HOURS presente no HTML
+# 13) Cross-check: purge guard for TOKEN_AUTO_PURGE_HOURS present in the HTML
 PURGE_GUARD=$(grep -c "if (!TOKEN_AUTO_PURGE_HOURS) return" "$FILE" 2>/dev/null | tr -d '\r')
 PURGE_GUARD=${PURGE_GUARD:-0}
 if [ "$PURGE_GUARD" -eq 0 ]; then
@@ -247,7 +247,7 @@ else
   PASS=$((PASS+1))
 fi
 
-# 14) Cross-check: nenhum TOKEN_* declarado com aspas duplas (contrato do Quine)
+# 14) Cross-check: no TOKEN_* declared with double quotes (Quine contract)
 DQ_TOKENS=$(grep -cP 'const TOKEN_[A-Z_]+\s*=\s*"' "$FILE" 2>/dev/null | tr -d '\r')
 DQ_TOKENS=${DQ_TOKENS:-0}
 if [ "$DQ_TOKENS" -ne 0 ]; then
@@ -258,17 +258,17 @@ else
   PASS=$((PASS+1))
 fi
 
-# 15) Autoconsistencia: contagem documentada em AGENTS.md bate com checks numerados (1-22)
-# Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
+# 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
+# Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
 CHECKS_NUMERADOS=27
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
-  printf "[WARN] %-52s %s\n" "Contagem de checks em AGENTS.md desfasada" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
+  printf "[WARN] %-52s %s\n" "Contagem de checks em AGENTS.md diferente" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
 fi
 
-# 16) ZT1: cada token substituido pelo exportFile tem exatamente 1 declaracao real
-# (String.replace sem /g pega so a 1a ocorrencia — >1 declaracao = substituicao silenciosamente errada)
+# 16) ZT1: each token replaced by exportFile has exactly 1 real declaration
+# (String.replace without /g takes only the 1st match -- >1 declaration = silently wrong replacement)
 ZT1_FAIL=0
 ZT1_TOKENS=$(grep -oP 'html\.replace\(/const \KTOKEN_[A-Z_]+' "$FILE" 2>/dev/null | sort -u)
 for ZT in $ZT1_TOKENS; do
@@ -286,7 +286,7 @@ if [ "$ZT1_FAIL" -eq 0 ]; then
   PASS=$((PASS+1))
 fi
 
-# 10) Heuristica de complexidade ciclomatica (apenas WARN)
+# 10) Cyclomatic complexity heuristic (WARN only)
 if command -v python >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1; then
   PY_BIN="python"
   command -v python3 >/dev/null 2>&1 && PY_BIN="python3"
@@ -364,14 +364,14 @@ else
   printf "[SKIP] %-52s (python nao instalado)\n" "Heuristica CC"
 fi
 
-# 23) Inventario de z-index: o conjunto deve ser exatamente o documentado
-#     em design-tokens.md §4 / AGENTS.md §2.2. Falha se surgir valor novo
-#     ou se um documentado desaparecer.
+# 23) z-index inventory: the set must be exactly the documented one
+#     in design-tokens.md section 4 / AGENTS.md section 2.2. Fails if a new
+#     value appears or a documented one disappears.
 ZEXPECTED="10 50 100 200 300 1999 2000 9999 99999"
 ZFOUND=$(grep -oE "z-index: *[0-9]+" "$FILE" | grep -oE "[0-9]+" | sort -n | uniq | tr '\n' ' ' | sed 's/ *$//')
 check_eq "z-index: conjunto = documentado" "$ZEXPECTED" "$ZFOUND"
 
-# 24) Duracoes de animacao vs design-tokens.md §5 (valores fixos esperados).
+# 24) Animation durations vs design-tokens.md section 5 (fixed expected values).
 AEXP="fadeIn=0.2s fadeInTab=0.25s modalIn=0.2s spin=0.65s"
 AGOT=""
 for a in fadeIn fadeInTab modalIn spin; do
@@ -381,7 +381,7 @@ done
 AGOT=$(echo "$AGOT" | sed 's/^ *//')
 check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
 
-# 25) Tamanho do arquivo (admin) na faixa documentada no README §10 (~300KB).
+# 25) File size (admin) within the range in README section 10 (~300KB).
 SZ=$(wc -c < "$FILE" | tr -d ' ')
 if [ "$SZ" -ge 280000 ] && [ "$SZ" -le 340000 ]; then
   printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~300KB)" "$SZ"; PASS=$((PASS+1));
@@ -389,24 +389,24 @@ else
   printf '[FAIL] %-52s (%s, esperado 280000-340000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi
 
-# 26) ZIP: flag de codificacao UTF-8 (bit 11 = 0x0800 do general purpose bit
-#     flag) tem de estar escrito nos DOIS cabecalhos gerados por buildZIP:
-#     local file header e central directory. Os nomes ja sao codificados em
-#     UTF-8 por ENC.encode(); sem este flag o descompressor e' obrigado a
-#     ler os bytes como CP437/ANSI e os acentos saem ilegiveis no Windows
-#     (APPNOTE.TXT 4.4.4). Ver changelog D21.
+# 26) ZIP: the UTF-8 encoding flag (bit 11 = 0x0800 of the general purpose
+#     bit flag) must be set in BOTH headers built by buildZIP: the local file
+#     header and the central directory. Names are already UTF-8 encoded by
+#     ENC.encode(); without this flag the unzipper reads the bytes as
+#     CP437/ANSI and accents come out garbled on Windows (APPNOTE.TXT 4.4.4).
+#     See changelog D21.
 ZLOC=$(grep -c "0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0" "$FILE")
 ZCEN=$(grep -c "0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0" "$FILE")
 check_eq "ZIP: flag UTF-8 (bit 11) nos 2 cabecalhos" "1 1" "$ZLOC $ZCEN"
 
-# 27) Export User: o artefato podado tem de AVALIAR sem lancar excecao.
-#     Aplica os 4 regex de remocao do exportFile e corre o JS resultante num
-#     shim de DOM onde getElementById devolve null para os IDs removidos.
-#     Comparativo de propósito: so FALHA se o User abortar E o Admin nao —
-#     assim, IDs criados em runtime (que sao null nos dois) nao dao falso
-#     positivo, e um shim defeituoso reprova nos dois e e' detectado.
-#     Cobre codigo sincrono de nivel de modulo; init() e' async e nao corre aqui.
-#     Esta e' a classe de defeito da D25 (Export User que nunca inicializava).
+# 27) Export User: the pruned artefact must EVALUATE without throwing.
+#     Applies the 4 removal regexes of exportFile and runs the resulting JS in
+#     a DOM shim where getElementById returns null for the removed IDs.
+#     Comparative on purpose: FAILS only if User aborts AND Admin does not --
+#     so IDs created at runtime (null in both) give no false positive, and a
+#     broken shim fails in both and is detected.
+#     Covers synchronous module-level code; init() is async and does not run here.
+#     This is the D25 class of defect (Export User that never initialised).
 if command -v node >/dev/null 2>&1; then
   EU=$(node -e '
     const fs=require("fs"), vm=require("vm");
@@ -459,7 +459,7 @@ fi
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="
 if [ "$FAIL" -eq 0 ]; then
-  echo "Integridade estatica OK. Falta o teste manual no browser (AGENTS.md Seccao 11)."
+  echo "Integridade estatica OK. Falta o teste no navegador (AGENTS.md, secao 11)."
   exit 0
 else
   echo "Ha falhas. NAO considerar a tarefa concluida ate todas passarem."
