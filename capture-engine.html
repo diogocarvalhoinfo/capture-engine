@@ -4117,6 +4117,10 @@
             ctx.moveTo(x2 - s, y1 + o); ctx.lineTo(x2 - o, y1 + o); ctx.lineTo(x2 - o, y1 + s);
             ctx.moveTo(x1 + o, y2 - s); ctx.lineTo(x1 + o, y2 - o); ctx.lineTo(x1 + s, y2 - o);
             ctx.moveTo(x2 - s, y2 - o); ctx.lineTo(x2 - o, y2 - o); ctx.lineTo(x2 - o, y2 - s);
+            // Middle of each side: resizes only that side (drawn when the side has room beside the corners)
+            const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2;
+            if (x2 - x1 > s * 3) { ctx.moveTo(xm - s / 2, y1 + o); ctx.lineTo(xm + s / 2, y1 + o); ctx.moveTo(xm - s / 2, y2 - o); ctx.lineTo(xm + s / 2, y2 - o); }
+            if (y2 - y1 > s * 3) { ctx.moveTo(x1 + o, ym - s / 2); ctx.lineTo(x1 + o, ym + s / 2); ctx.moveTo(x2 - o, ym - s / 2); ctx.lineTo(x2 - o, ym + s / 2); }
             ctx.stroke();
           }
           ctx.restore();
@@ -4327,7 +4331,7 @@
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
         initEditorTips();
         // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
-        $('ann-canvas').addEventListener('pointermove', e => { const cv = e.currentTarget; if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return } const p = annCanvasXY(e), hr = ANN_HIT_SIZE * annPx(), { x, y, w, h } = annCropBox; const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr; let c = 'crosshair'; if (near(x, y) || near(x + w, y + h)) c = 'nwse-resize'; else if (near(x + w, y) || near(x, y + h)) c = 'nesw-resize'; else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) c = 'move'; cv.style.cursor = c; cv.dataset.cropCursor = '1' });
+        $('ann-canvas').addEventListener('pointermove', e => { const cv = e.currentTarget; if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return } const p = annCanvasXY(e), hr = ANN_HIT_SIZE * annPx(), { x, y, w, h } = annCropBox; const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr; let c = 'crosshair'; if (near(x, y) || near(x + w, y + h)) c = 'nwse-resize'; else if (near(x + w, y) || near(x, y + h)) c = 'nesw-resize'; else if (near(x + w / 2, y) || near(x + w / 2, y + h)) c = 'ns-resize'; else if (near(x, y + h / 2) || near(x + w, y + h / 2)) c = 'ew-resize'; else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) c = 'move'; cv.style.cursor = c; cv.dataset.cropCursor = '1' });
         $('ann-cancel').onclick = annDeactivate;
         $('ann-save').onclick = async () => {
           if (annCommitText) annCommitText();
@@ -4557,6 +4561,10 @@
               else if (Math.hypot(p.x - (x + w), p.y - y) < hr) annCropHandle = 'tr';
               else if (Math.hypot(p.x - x, p.y - (y + h)) < hr) annCropHandle = 'bl';
               else if (Math.hypot(p.x - (x + w), p.y - (y + h)) < hr) annCropHandle = 'br';
+              else if (Math.hypot(p.x - (x + w / 2), p.y - y) < hr) annCropHandle = 't';
+              else if (Math.hypot(p.x - (x + w / 2), p.y - (y + h)) < hr) annCropHandle = 'b';
+              else if (Math.hypot(p.x - x, p.y - (y + h / 2)) < hr) annCropHandle = 'l';
+              else if (Math.hypot(p.x - (x + w), p.y - (y + h / 2)) < hr) annCropHandle = 'r';
               else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) annCropHandle = 'move';
               else {
                 annCropHandle = 'br';
@@ -4696,9 +4704,13 @@
             else if (annCropHandle === 'tr') { annCropBox.y += dy; annCropBox.w += dx; annCropBox.h -= dy; }
             else if (annCropHandle === 'bl') { annCropBox.x += dx; annCropBox.w -= dx; annCropBox.h += dy; }
             else if (annCropHandle === 'br') { annCropBox.w += dx; annCropBox.h += dy; }
+            else if (annCropHandle === 't') { annCropBox.y += dy; annCropBox.h -= dy; }
+            else if (annCropHandle === 'b') { annCropBox.h += dy; }
+            else if (annCropHandle === 'l') { annCropBox.x += dx; annCropBox.w -= dx; }
+            else if (annCropHandle === 'r') { annCropBox.w += dx; }
             else if (annCropHandle === 'move') { annCropBox.x += dx; annCropBox.y += dy; }
-            if (annCropBox.w < 0) { annCropBox.x += annCropBox.w; annCropBox.w = Math.abs(annCropBox.w); annCropHandle = (annCropHandle === 'tl') ? 'tr' : (annCropHandle === 'tr') ? 'tl' : (annCropHandle === 'bl') ? 'br' : (annCropHandle === 'br') ? 'bl' : 'move'; }
-            if (annCropBox.h < 0) { annCropBox.y += annCropBox.h; annCropBox.h = Math.abs(annCropBox.h); annCropHandle = (annCropHandle === 'tl') ? 'bl' : (annCropHandle === 'bl') ? 'tl' : (annCropHandle === 'tr') ? 'br' : (annCropHandle === 'br') ? 'tr' : 'move'; }
+            if (annCropBox.w < 0) { annCropBox.x += annCropBox.w; annCropBox.w = Math.abs(annCropBox.w); annCropHandle = { tl: 'tr', tr: 'tl', bl: 'br', br: 'bl', l: 'r', r: 'l', t: 't', b: 'b' }[annCropHandle] || 'move'; }
+            if (annCropBox.h < 0) { annCropBox.y += annCropBox.h; annCropBox.h = Math.abs(annCropBox.h); annCropHandle = { tl: 'bl', bl: 'tl', tr: 'br', br: 'tr', t: 'b', b: 't', l: 'l', r: 'r' }[annCropHandle] || 'move'; }
             const cw = $('ann-canvas').width, ch = $('ann-canvas').height;
             if (annCropHandle === 'move') {
               if (annCropBox.x < 0) annCropBox.x = 0;
