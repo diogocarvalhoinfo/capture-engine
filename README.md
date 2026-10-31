@@ -26,6 +26,16 @@ Ferramenta para capturar, organizar e exportar evidências (imagens e documentos
 
 ## 1. O que é
 
+<!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/overview.png -->
+![Primeira tela do Capture Engine, com a identificação, a exportação, as zonas de imagens e de documentos, o histórico e os removidos anotados](docs/images/overview.png)
+
+1. **Identificação**: os campos «User» e «Equipamento» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
+2. **Exportar**: gera um PDF só com imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
+3. **Imagens**: cole com Ctrl+V, arraste ou clique para adicionar. <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
+4. **Documentos**: qualquer outro arquivo; os de texto abrem na própria ferramenta. <!-- anotação: alvo=#doc-zone; lado=cima; ponto=0.9,0 -->
+5. **Histórico**: as sessões anteriores, apagadas depois de 48 horas sem uso. <!-- anotação: alvo=#sb-rail; lado=direita; ponto=1,0.3 -->
+6. **Removidos**: os itens removidos, que se restauram daqui. <!-- anotação: alvo=#trash-bar; lado=baixo; ponto=0.5,1 -->
+
 O Capture Engine é **um único arquivo HTML** que funciona como uma aplicação completa de captura e exportação de evidências digitais. Não precisa de instalação, não requer internet, e não envia nenhum dado para servidores externos.
 
 Tudo o que você captura (screenshots, documentos, textos) fica guardado localmente no browser do seu computador. Quando exporta, o PDF ou ZIP é gerado diretamente no browser, em memória, sem sair do seu dispositivo.
@@ -633,6 +643,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
+├── docs/images/          ← a imagem anotada deste README
 └── LICENSE               ← licença MIT
 ```
 
