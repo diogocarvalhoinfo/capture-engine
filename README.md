@@ -388,27 +388,27 @@ Admin configura → Export Admin (backup) → Export User → distribui aos usu�
 
 ### 6.4 Tokens de configuração
 
-Os tokens são as variáveis internas que controlam o comportamento da ferramenta. O Visual Builder edita estes tokens graficamente.
+Os tokens são as variáveis internas que controlam o comportamento da ferramenta. O Visual Builder edita estes tokens graficamente. Os valores padrão estão no [`design-tokens.md`](design-tokens.md), §6.
 
-| Token | Valor padrão | O que controla |
-|---|---|---|
-| `TOKEN_TITLE_START` | `'Capture '` | Primeira parte do nome no topo (cor normal, negrito). O espaço final é intencional. |
-| `TOKEN_TITLE_ACCENT` | `'Engine'` | Segunda parte (na cor de destaque, mais transparente) |
-| `TOKEN_TITLE_END` | `''` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo "Texto Final" no VB. Exemplo de white-label: 'Capture Engine Pro' — onde 'Pro' ocuparia o terceiro span com cor de destaque independente |
-| `TOKEN_TITLE_START_COLOR` | `''` | Cor da 1.ª parte do título (vazio = usa a cor normal do texto) |
-| `TOKEN_TITLE_ACCENT_COLOR` | `''` | Cor da 2.ª parte do título (vazio = usa a cor de destaque) |
-| `TOKEN_TITLE_END_COLOR` | `''` | Cor da 3.ª parte do título (vazio = usa a cor normal do texto) |
-| `TOKEN_MAIN_COLOR` | `'#e86b2e'` | Cor principal da interface |
-| `TOKEN_ACCENT_FG_OVERRIDE` | `''` | Cor do texto sobre a cor principal (vazio = automático) |
-| `TOKEN_FOOTER_TEXT` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | Texto do rodapé |
-| `TOKEN_SHOW_SESSION_USER` | `true` | Mostra/oculta o Campo 1 (User) |
-| `TOKEN_SHOW_SESSION_PC` | `true` | Mostra/oculta o Campo 2 (Equipamento) |
-| `TOKEN_USER_LABEL` | `''` | Rótulo do Campo 1 (vazio = usa "User") |
-| `TOKEN_EQUIP_LABEL` | `''` | Rótulo do Campo 2 (vazio = usa "Equipamento") |
-| `TOKEN_JPEG_QUALITY` | `0.92` | Qualidade de compressão JPEG no export PDF |
-| `TOKEN_MAX_IMG_DIMENSION` | `0` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
-| `TOKEN_AUTO_PURGE_HOURS` | `48` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
-| `TOKEN_DEBUG_MODE` | `true` | Logs na consola do browser (desativado em Export User) |
+| Token | O que controla |
+|---|---|
+| `TOKEN_TITLE_START` | Primeira parte do nome no topo (cor normal, negrito). O espaço final é intencional. |
+| `TOKEN_TITLE_ACCENT` | Segunda parte (na cor de destaque, mais transparente) |
+| `TOKEN_TITLE_END` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo "Texto Final" no VB. Exemplo de white-label: 'Capture Engine Pro' — onde 'Pro' ocuparia o terceiro span com cor de destaque independente |
+| `TOKEN_TITLE_START_COLOR` | Cor da 1.ª parte do título (vazio = usa a cor normal do texto) |
+| `TOKEN_TITLE_ACCENT_COLOR` | Cor da 2.ª parte do título (vazio = usa a cor de destaque) |
+| `TOKEN_TITLE_END_COLOR` | Cor da 3.ª parte do título (vazio = usa a cor normal do texto) |
+| `TOKEN_MAIN_COLOR` | Cor principal da interface |
+| `TOKEN_ACCENT_FG_OVERRIDE` | Cor do texto sobre a cor principal (vazio = automático) |
+| `TOKEN_FOOTER_TEXT` | Texto do rodapé |
+| `TOKEN_SHOW_SESSION_USER` | Mostra/oculta o Campo 1 (User) |
+| `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o Campo 2 (Equipamento) |
+| `TOKEN_USER_LABEL` | Rótulo do Campo 1 (vazio = usa "User") |
+| `TOKEN_EQUIP_LABEL` | Rótulo do Campo 2 (vazio = usa "Equipamento") |
+| `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
+| `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
+| `TOKEN_AUTO_PURGE_HOURS` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
+| `TOKEN_DEBUG_MODE` | Logs na consola do browser (desativado em Export User) |
 
 ### 6.5 Distribuir uma atualização (nova versão)
 
