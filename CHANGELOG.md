@@ -8,6 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **Fim do README no padrão (F-0040).** A seção «Licença e autor» tinha um resumo da licença por palavras próprias, uma segunda cópia do `LICENSE`, e uma nota sobre o rodapé. O resumo sai, e a nota passa para a §7.2, junto de «Texto do rodapé».
 - **Descrição de «Cor do texto sobre destaque», no Visual Builder (F-0039).** Dizia «Automático via YIQ ou override manual». «YIQ» é um termo técnico que quem configura não conhece, e «override» está na lista de anglicismos. Passa a «Automática, pelo contraste com a cor principal, ou escolhida à mão».
 
 ## [28.0.0] - 2026-10-31
