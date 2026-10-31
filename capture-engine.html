@@ -33,6 +33,9 @@
       --color-primary-foreground: #fff;
       --color-primary-hover: #d4450f;
       --color-brand: var(--color-primary);
+      --color-ring: var(--color-primary);
+      --focus-width: 3px;
+      --focus-offset: 2px;
       --color-success-subtle: #eaf3de;
       --color-success-border: #639922;
       --color-success-foreground: #27500a;
@@ -239,8 +242,8 @@
     }
 
     *:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px
+      outline: var(--focus-width) solid var(--color-ring);
+      outline-offset: var(--focus-offset)
     }
 
     *::-webkit-scrollbar {
