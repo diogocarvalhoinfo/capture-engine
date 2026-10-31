@@ -54,6 +54,13 @@ As duas declarações de estado foram medidas de novo antes de mudar a data. O R
 - Não cobertos: o motor de anotação linha a linha, a reordenação, o mobile por toque, o Firefox, o Safari e o aviso de quota.
 - Antes de cada commit de CSS: 96 capturas (4 larguras, 2 temas, 12 estados) comparadas com a linha de base.
 
+### Cobertura da reauditoria de 2026-10-31
+
+- Os 32 achados da auditoria conferidos no código: 31 corrigidos, e o F-0029 em «Pendentes».
+- Os mesmos fluxos testados de novo no Edge 156, com o mesmo resultado do fim da execução.
+- Achados novos: F-0034 a F-0038, corrigidos nesta versão. O F-0033 (botão «Download» sem release) fecha-se com a release `v28.0.0`.
+- Não cobertos: o tema escuro da aba Histórico, o mobile por toque, o Firefox e o Safari.
+
 ## [V27] — 2026-08-18
 
 Versão aberta para receber trabalho novo. A V26 fechou com **50 entradas numeradas** (D21–D70) originadas de **cinco auditorias independentes** de zero confiança. ⚠️ **«50 correções» seria impreciso, e a sexta auditoria apanhou-o:** a maioria corrige defeitos, mas algumas são declarações documentais (D33, D38, D39), registros de validação (D63, D64) ou triagens que decidem **não** corrigir (D70). A seção dessa versão ocupa 36% do changelog inteiro, e foi essa a razão principal para abrir esta.
