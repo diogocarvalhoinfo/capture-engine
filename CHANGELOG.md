@@ -19,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O agente testa no navegador o que muda (F-0018).** O `AGENTS.md` §10 proibia o agente de abrir o navegador, e o padrão valida um projeto de um arquivo só abrindo-o. Agora o agente testa o que a mudança toca (D-0084). A prova de vida do Export User continua manual, antes de cada versão.
 - **Comentários do `validate.sh` em inglês (F-0029, em parte).** O código fica em inglês, e os comentários do `validate.sh` estavam em português, com formas de Portugal («ficheiro», «por defeito»). As mensagens que o script mostra continuam em português. Os comentários do HTML ficam em «Pendentes» (D-0085).
 - **Cores em `rgb()` moderno e hex curto (F-0013).** As 50 cores `rgba()` passam a `rgb(r g b / a%)`, os 11 hex longos passam à forma curta e os 2 hex de 8 dígitos passam a `rgb()`. Provado com capturas: 0 pixels diferentes em 96 casos (4 larguras, 2 temas, 12 estados).
+- **Nomes dos tokens do Tailwind v4 e do shadcn/ui (F-0014).** 33 nomes trocados no CSS, no JavaScript do Visual Builder e nos documentos: `--text` (uma cor) passa a `--color-foreground`, `--accent` a `--color-primary`, e os raios aos degraus do Tailwind (`--radius-sm` 6px passa a `--radius-md` 0.375rem). Motivo: no Tailwind, `--text-*` é um tamanho, e o mesmo nome não pode valer coisas diferentes. Provado com capturas: 0 pixels diferentes em 96 casos; o Visual Builder continua a mudar a cor principal.
 
 ### Corrigido
 

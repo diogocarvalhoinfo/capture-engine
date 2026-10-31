@@ -6,14 +6,14 @@
 
 ## O que são Design Tokens e por que existem?
 
-Um **design token** é um nome simbólico para um valor visual. Em vez de escrever `#0ea5e9` diretamente no CSS, usamos `var(--accent)`. Em vez de escrever `36px` em cada botão, os botões têm sempre `height: 36px` por convenção documentada.
+Um **design token** é um nome simbólico para um valor visual. Em vez de escrever `#0ea5e9` diretamente no CSS, usamos `var(--color-primary)`. Em vez de escrever `36px` em cada botão, os botões têm sempre `height: 36px` por convenção documentada.
 
 **Por que usar tokens?**
 
-1. **Consistência** — Mudar a cor principal em um lugar (`--accent`) muda em toda a interface automaticamente
+1. **Consistência** — Mudar a cor principal em um lugar (`--color-primary`) muda em toda a interface automaticamente
 2. **Personalização via Quine** — O admin muda a cor pelo Visual Builder; o Quine Engine substitui o valor no arquivo exportado
 3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `body.dark` (dark); o CSS que usa os tokens não precisa saber em que modo está
-4. **Legibilidade** — `color: var(--text-muted)` diz o que faz; `color: #6b6a66` não
+4. **Legibilidade** — `color: var(--color-muted-foreground)` diz o que faz; `color: #6b6a66` não
 
 **Dois tipos de tokens:**
 - **Tokens CSS** — definidos como variáveis CSS (`:root { --token: valor }`) — usados em `var(--token)` no CSS
@@ -26,36 +26,36 @@ Um **design token** é um nome simbólico para um valor visual. Em vez de escrev
 ### Como o sistema de cores funciona
 
 A paleta tem dois grupos:
-- **Cores base** (não mudam entre light/dark): `--accent`, `--color-green`, `--color-red`, `--color-yellow` — mantêm o mesmo matiz mas adaptam-se ao fundo
-- **Cores adaptativas** (mudam entre light/dark): `--bg`, `--surface`, `--border`, `--text`... — invertem ou ajustam conforme o modo
+- **Cores base** (não mudam entre light/dark): `--color-primary`, `--color-green-500`, `--color-red-500`, `--color-yellow-500` — mantêm o mesmo matiz mas adaptam-se ao fundo
+- **Cores adaptativas** (mudam entre light/dark): `--color-background`, `--color-card`, `--color-border`, `--color-foreground`... — invertem ou ajustam conforme o modo
 
 ### Light Mode (`:root` — padrão)
 
 | Token | Hex | Uso na interface |
 |---|---|---|
-| `--bg` | `#f4f3f0` | Fundo geral — off-white (não branco puro) para suavizar o contraste com a superfície branca dos painéis |
-| `--surface` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
-| `--border` | `#dddcd880` | Bordas sutis, linhas de separação — estruturam sem poluir (alpha 50%) |
-| `--border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
-| `--text` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
-| `--text-muted` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
-| `--accent` | `#e86b2e` | Cor de destaque principal personalizada — botões, links, elementos ativos |
-| `--accent-fg` | `#ffffff` | Texto legível sobre fundo accent — contraste calculado para #e86b2e — verificar WCAG AA se aplicado em texto de corpo |
-| `--accent-hover` | `#d4450f` | Accent escurecido para hover |
-| `--color-green` | `#22c55e` | Sucesso, confirmação, estado "Gravado" |
-| `--color-red` | `#ef4444` | Erro, remoção, ações destrutivas |
-| `--color-yellow` | `#eab308` | Aviso, expiração próxima |
+| `--color-background` | `#f4f3f0` | Fundo geral — off-white (não branco puro) para suavizar o contraste com a superfície branca dos painéis |
+| `--color-card` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
+| `--color-border` | `#dddcd880` | Bordas sutis, linhas de separação — estruturam sem poluir (alpha 50%) |
+| `--color-border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
+| `--color-foreground` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
+| `--color-muted-foreground` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
+| `--color-primary` | `#e86b2e` | Cor de destaque principal personalizada — botões, links, elementos ativos |
+| `--color-primary-foreground` | `#ffffff` | Texto legível sobre fundo accent — contraste calculado para #e86b2e — verificar WCAG AA se aplicado em texto de corpo |
+| `--color-primary-hover` | `#d4450f` | Accent escurecido para hover |
+| `--color-green-500` | `#22c55e` | Sucesso, confirmação, estado "Gravado" |
+| `--color-red-500` | `#ef4444` | Erro, remoção, ações destrutivas |
+| `--color-yellow-500` | `#eab308` | Aviso, expiração próxima |
 
 ### Dark Mode (`body.dark`)
 
 | Token | Hex | Nota |
 |---|---|---|
-| `--bg` | `#121212` | Quase preto — padrão Material Dark |
-| `--surface` | `#1e1e1e` | Ligeiramente mais claro que o fundo — cria profundidade sem bordas |
-| `--border` | `#33333380` | Borda escura sutil (alpha 50%) |
-| `--border-strong` | `#555555` | Borda escura mais visível |
-| `--text` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
-| `--text-muted` | `#9a9a9a` | Cinza médio para elementos secundários |
+| `--color-background` | `#121212` | Quase preto — padrão Material Dark |
+| `--color-card` | `#1e1e1e` | Ligeiramente mais claro que o fundo — cria profundidade sem bordas |
+| `--color-border` | `#33333380` | Borda escura sutil (alpha 50%) |
+| `--color-border-strong` | `#555555` | Borda escura mais visível |
+| `--color-foreground` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
+| `--color-muted-foreground` | `#9a9a9a` | Cinza médio para elementos secundários |
 
 > **Regra do dark mode:** Ativa-se *exclusivamente* via classe CSS `body.dark`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência salva em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controle total ao usuário.
 
@@ -69,23 +69,23 @@ Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fun
 
 | Estado | Token de fundo | Token de borda | Token de texto |
 |---|---|---|---|
-| **Sucesso** | `--success-bg` | `--success-border` | `--success-text` |
-| **Erro** | `--error-bg` | `--error-border` | `--error-text` |
-| **Aviso** | `--warn-bg` | `--warn-border` | `--warn-text` |
+| **Sucesso** | `--color-success-subtle` | `--color-success-border` | `--color-success-foreground` |
+| **Erro** | `--color-destructive-subtle` | `--color-destructive-border` | `--color-destructive-foreground` |
+| **Aviso** | `--color-warning-subtle` | `--color-warning-border` | `--color-warning-foreground` |
 
 **Valores Light / Dark:**
 
 | Variável | Light | Dark |
 |---|---|---|
-| `--success-bg` | `#eaf3de` | `rgba(34,197,94,0.08)` |
-| `--success-border` | `#639922` | `#4d7a18` |
-| `--success-text` | `#27500a` | `#86d84f` |
-| `--error-bg` | `#fcebeb` | `rgba(239,68,68,0.08)` |
-| `--error-border` | `#a32d2d` | `#8a2424` |
-| `--error-text` | `#501313` | `#ff8c8c` |
-| `--warn-bg` | `#faeeda` | `rgba(234,179,8,0.08)` |
-| `--warn-border` | `#ba7517` | `#9c6214` |
-| `--warn-text` | `#412402` | `#ecc680` |
+| `--color-success-subtle` | `#eaf3de` | `rgba(34,197,94,0.08)` |
+| `--color-success-border` | `#639922` | `#4d7a18` |
+| `--color-success-foreground` | `#27500a` | `#86d84f` |
+| `--color-destructive-subtle` | `#fcebeb` | `rgba(239,68,68,0.08)` |
+| `--color-destructive-border` | `#a32d2d` | `#8a2424` |
+| `--color-destructive-foreground` | `#501313` | `#ff8c8c` |
+| `--color-warning-subtle` | `#faeeda` | `rgba(234,179,8,0.08)` |
+| `--color-warning-border` | `#ba7517` | `#9c6214` |
+| `--color-warning-foreground` | `#412402` | `#ecc680` |
 
 *Em dark mode, os fundos usam `rgba` com opacidade ~0.08 — a cor semântica fica sobreposta ao fundo escuro com baixa saturação, em vez de um bloco de cor sólido.*
 
@@ -95,20 +95,20 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 
 | Cor | Onde | Por que é literal |
 |---|---|---|
-| `#b91c1c` | Fundo dos banners críticos `#ce-quota-banner` e `#ce-storage-banner` | Vermelho de alerta escolhido para estes dois avisos. Não corresponde a `--color-red` (`#ef4444`), que é mais claro; o tom mais escuro foi preferido para o bloco de fundo sólido de largura total. Não tem token próprio por decisão do proprietário. |
+| `#b91c1c` | Fundo dos banners críticos `#ce-quota-banner` e `#ce-storage-banner` | Vermelho de alerta escolhido para estes dois avisos. Não corresponde a `--color-red-500` (`#ef4444`), que é mais claro; o tom mais escuro foi preferido para o bloco de fundo sólido de largura total. Não tem token próprio por decisão do proprietário. |
 | `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` — os 8 swatches, enumerados (**não escrever «e restantes»**: o comando de verificação no fim desta secção compara listas literais e um apanha-tudo torna-o cego) | Atributos `data-color` da paleta de anotação | **Não são cor de interface — são dados.** O valor é gravado dentro do objeto de anotação no IndexedDB e usado depois para redesenhar a forma. Uma `var(--x)` ficaria persistida como texto no banco, ou exigiria resolução no momento da escrita. Têm de ser literais. |
 | `#ef4444` `#22c55e` `#eab308` | Strings de estilo do `SysLogger` (`console.log('%c…')`) | O console do DevTools **não resolve** custom properties da página. Não há alternativa técnica. |
-| `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
+| `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green-500)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red-500)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
 | `#ef4444` | `let annCurrentColor = '#ef4444'` | Cor inicial da anotação. **É dado, não interface** — mesma razão dos swatches: o valor é persistido no IndexedDB. |
-| `#fff` `#ffffff` | Texto e ícones sobre preenchimentos de cor sólida: banners críticos, `.btn-send:disabled`, `#btn-admin-save.admin-active`, `.spinner`, `.count-badge`, `.t-del`, `#trash-badge`, `.ann-swatch.active` | Branco puro sobre fundo saturado. Não há token de branco puro no sistema — o `--text` nunca é `#ffffff`, por decisão documentada na §1 — e usar `--text` aqui inverteria o contraste em modo claro. |
-| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `body:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--border-strong`, `#121212` = `--bg` do modo escuro): a coincidência é do valor, não da intenção. |
-| `#16a34a` | `#btn-admin-save.admin-active:hover` | Verde mais escuro para o estado hover. O estado base usa `var(--color-green)`; não existe token de variante escurecida no sistema. |
-| `#e86b2e` | Declaração do `TOKEN_MAIN_COLOR`; atributos `value=` dos inputs `#cfg-cor-hex` e `#cfg-cor-principal`; fallback quando `getComputedStyle(--accent)` devolve vazio | **É o valor padrão do próprio token** (§6). Um `var(--accent)` aqui seria circular: o `--accent` deriva deste valor. Os dois `value=` do Visual Builder têm de espelhar o padrão para o picker abrir na cor certa antes de qualquer JS correr. |
+| `#fff` `#ffffff` | Texto e ícones sobre preenchimentos de cor sólida: banners críticos, `.btn-send:disabled`, `#btn-admin-save.admin-active`, `.spinner`, `.count-badge`, `.t-del`, `#trash-badge`, `.ann-swatch.active` | Branco puro sobre fundo saturado. Não há token de branco puro no sistema — o `--color-foreground` nunca é `#ffffff`, por decisão documentada na §1 — e usar `--color-foreground` aqui inverteria o contraste em modo claro. |
+| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `body:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--color-border-strong`, `#121212` = `--color-background` do modo escuro): a coincidência é do valor, não da intenção. |
+| `#16a34a` | `#btn-admin-save.admin-active:hover` | Verde mais escuro para o estado hover. O estado base usa `var(--color-green-500)`; não existe token de variante escurecida no sistema. |
+| `#e86b2e` | Declaração do `TOKEN_MAIN_COLOR`; atributos `value=` dos inputs `#cfg-cor-hex` e `#cfg-cor-principal`; fallback quando `getComputedStyle(--color-primary)` devolve vazio | **É o valor padrão do próprio token** (§6). Um `var(--color-primary)` aqui seria circular: o `--color-primary` deriva deste valor. Os dois `value=` do Visual Builder têm de espelhar o padrão para o picker abrir na cor certa antes de qualquer JS correr. |
 | `#ffffff` `#1a1a1a` | `#tb-brand-icon svg` e a sua variante `body:not(.dark)` | Ícone da marca com cor fixa por tema, definida diretamente em vez de por token. |
 | `#1a1917` `#ffffff` | Cálculo YIQ de contraste (`fg = (yiq >= 128) ? … : …`) | Escolha de legibilidade sobre um acento **arbitrário** definido pelo usuário no Visual Builder — o resultado não é conhecido em tempo de escrita, portanto não pode vir de um token. Já descrito na §6; repetido aqui para que o `grep` desta secção não o reporte. |
 | `#35a800` `#ffd82b` | `stop-color` do `<linearGradient id="ce_accent">` no logo SVG inline | Stops de gradiente da identidade visual. SVG inline não resolve custom properties em `stop-color` de forma fiável entre browsers. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | Metatags lidas pelo browser e pelo sistema operativo **antes de o CSS existir**. Custom properties não se aplicam a metatags. |
-| `#fdfdfc` `#121212` | `index.html` — fundo do stub de redireção, claro e escuro | O `index.html` é uma página de 15 linhas que redireciona para o `capture-engine.html`. **Não pode usar o sistema de tokens**: pinta o fundo antes de a aplicação existir, para não haver um flash branco a caminho do modo escuro. O `#121212` coincide com o `--bg` escuro; o `#fdfdfc` é um branco-quente que não existe no sistema. |
+| `#fdfdfc` `#121212` | `index.html` — fundo do stub de redireção, claro e escuro | O `index.html` é uma página de 15 linhas que redireciona para o `capture-engine.html`. **Não pode usar o sistema de tokens**: pinta o fundo antes de a aplicação existir, para não haver um flash branco a caminho do modo escuro. O `#121212` coincide com o `--color-background` escuro; o `#fdfdfc` é um branco-quente que não existe no sistema. |
 
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
 
@@ -125,7 +125,7 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 > trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
 > O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
 >
-> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--bg: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
+> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--color-background: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
 >
 > ⚠️ **Não escrever cores literais nesta secção fora da tabela** (D70). O comando abaixo lê a secção inteira: um hex citado numa nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
 >
@@ -145,13 +145,13 @@ Existe uma escala de 5 níveis, cada um com um propósito específico:
 
 | Token | Valor | Onde usar |
 |---|---|---|
-| `--radius-xxs` | `3px` | Badges, etiquetas de tamanho — micro-elementos |
-| `--radius-xs` | `4px` | Inputs, chips de seleção — elementos pequenos interativos |
-| `--radius-sm` | `6px` | Botões, cards de documentos — elementos de ação principais |
-| `--radius-md` | `8px` | Painéis internos, caixas — contentores secundários |
-| `--radius-lg` | `12px` | Modais e diálogos — elementos de maior destaque visual |
+| `--radius-badge` | `0.1875rem` (3px) | Badges, etiquetas de tamanho — micro-elementos |
+| `--radius-sm` | `0.25rem` (4px) | Inputs, chips de seleção — elementos pequenos interativos |
+| `--radius-md` | `0.375rem` (6px) | Botões, cards de documentos — elementos de ação principais |
+| `--radius-lg` | `0.5rem` (8px) | Painéis internos, caixas — contentores secundários |
+| `--radius-xl` | `0.75rem` (12px) | Modais e diálogos — elementos de maior destaque visual |
 
-> **Exceção geométrica — imagens:** Os elementos `.t-item` e `.t-label` têm `border-radius: 0` (cantos retos — comunicam precisão e formalidade). O `.t-wrap` (wrapper do thumbnail) tem `border-radius: var(--radius-sm)` (6px) para suavizar visualmente a moldura da imagem na grelha, mantendo o card exterior reto. Botões e cards textuais ficam arredondados para parecerem interativos e acessíveis.
+> **Exceção geométrica — imagens:** Os elementos `.t-item` e `.t-label` têm `border-radius: 0` (cantos retos — comunicam precisão e formalidade). O `.t-wrap` (wrapper do thumbnail) tem `border-radius: var(--radius-md)` (6px) para suavizar visualmente a moldura da imagem na grelha, mantendo o card exterior reto. Botões e cards textuais ficam arredondados para parecerem interativos e acessíveis.
 
 ### Medidas fixas de layout
 
@@ -369,7 +369,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 | Títulos de bloco `.blk-hdr-title` | `11px` | `600` | Uppercase |
 | Badges `.count-badge`, `#trash-badge` | `11px` | `700` | |
 | Item de histórico — nome | `12px` | `400` | |
-| Item de histórico — data | `11px` | `400` | `--text-muted` |
+| Item de histórico — data | `11px` | `400` | `--color-muted-foreground` |
 | Título de modal `.modal-title` | `16px` | `600` | Centrado horizontalmente |
 | Input de documento `.d-input` | `13px` | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
 | Legenda de imagem `.t-label` | `11px` | `400` | **Sem negrito** — discreta, não distrai da imagem |
@@ -381,11 +381,11 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|
-| **Restaurar** | Fill accent | `var(--accent)` + branco | Apenas se o item está na lixeira |
-| **Copiar Texto** | Fill accent | `var(--accent)` + branco | Apenas em documentos de texto (não binários) |
-| **Download** | Outline | `var(--surface)` + `var(--text)` + `var(--border)` | Sempre — ativos e na lixeira |
-| **Confirmar** (anotação) | Fill verde | `var(--color-green)` | No modo de anotação |
-| **Cancelar** (anotação) | Outline | `var(--surface)` + `var(--text)` + `var(--border)` | No modo de anotação |
+| **Restaurar** | Fill accent | `var(--color-primary)` + branco | Apenas se o item está na lixeira |
+| **Copiar Texto** | Fill accent | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
+| **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre — ativos e na lixeira |
+| **Confirmar** (anotação) | Fill verde | `var(--color-green-500)` | No modo de anotação |
+| **Cancelar** (anotação) | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | No modo de anotação |
 
 ---
 
@@ -418,25 +418,25 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 | Estado | Borda |
 |---|---|
-| **Repouso** | `1px solid var(--border-strong)` — sempre visível, cinzenta |
-| **Hover** | `border-color: var(--accent)` — transição suave para a cor accent |
+| **Repouso** | `1px solid var(--color-border-strong)` — sempre visível, cinzenta |
+| **Hover** | `border-color: var(--color-primary)` — transição suave para a cor accent |
 | **Regra** | A borda **nunca desaparece**. Elimina layout shift. |
 
 ### Botões de Export ZIP em Modo ZIP Ativo (`.btn-zip-cta`)
 
 | Estado | Borda |
 |---|---|
-| **Repouso** | `1px solid var(--accent)` — accent permanente |
-| **Hover** | Fundo sutil `color-mix(in srgb, var(--accent) 6%, transparent)` + texto mais escuro |
+| **Repouso** | `1px solid var(--color-primary)` — accent permanente |
+| **Hover** | Fundo sutil `color-mix(in srgb, var(--color-primary) 6%, transparent)` + texto mais escuro |
 | **Regra** | A borda accent **não desaparece** ao sair com o cursor. |
 
 ### Chips de Modo (Auto / A4 Vertical / A4 Horizontal)
 
 | Estado | Borda | Texto |
 |---|---|---|
-| **Selecionado — repouso** | `1px solid var(--border-strong)` | `var(--text)` |
-| **Selecionado — hover** | `border-color: var(--accent)` | `var(--text)` |
-| **Não selecionado — qualquer estado** | `border: none` | `var(--text-muted)` |
+| **Selecionado — repouso** | `1px solid var(--color-border-strong)` | `var(--color-foreground)` |
+| **Selecionado — hover** | `border-color: var(--color-primary)` | `var(--color-foreground)` |
+| **Não selecionado — qualquer estado** | `border: none` | `var(--color-muted-foreground)` |
 
 *Chips inativos são sem borda em todos os estados — comunica claramente "este não está selecionado".*
 
@@ -444,9 +444,9 @@ Uma das decisões de design mais impactantes foi padronizar *quando* as bordas a
 
 | Estado | Visual |
 |---|---|
-| **Repouso** | Ícone `var(--text-muted)`, borda `var(--border-strong)` — neutro, discreto |
-| **Hover** | Ícone `var(--text)`, borda `var(--text-muted)` — reforço sutil |
-| **`:active` (toque)** | Ícone e borda em `var(--accent)` — feedback preciso no momento do toque |
+| **Repouso** | Ícone `var(--color-muted-foreground)`, borda `var(--color-border-strong)` — neutro, discreto |
+| **Hover** | Ícone `var(--color-foreground)`, borda `var(--color-muted-foreground)` — reforço sutil |
+| **`:active` (toque)** | Ícone e borda em `var(--color-primary)` — feedback preciso no momento do toque |
 
 *O accent aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
 
@@ -482,8 +482,8 @@ Estas variáveis CSS controlam a aparência do placeholder de arrasto (o espaço
 
 | Token CSS | Valor padrão (via `color-mix`) | Descrição |
 |---|---|---|
-| `--drop-ph-bg` | `color-mix(in srgb, var(--text) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito sutil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
-| `--drop-ph-border` | `color-mix(in srgb, var(--text) 8%, transparent)` | Cor da borda do placeholder de arrasto. Ligeiramente mais visível que o fundo para delimitar a área. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
+| `--color-drop-placeholder` | `color-mix(in srgb, var(--color-foreground) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito sutil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
+| `--color-drop-placeholder-border` | `color-mix(in srgb, var(--color-foreground) 8%, transparent)` | Cor da borda do placeholder de arrasto. Ligeiramente mais visível que o fundo para delimitar a área. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
 
 ### Formato de Entradas em `annHistory`
 

@@ -255,10 +255,10 @@ Porquê: O usuário pode ter o sistema em dark mode mas querer a app em light mo
 
 ```css
 /* CORRETO — controlável pelo usuário */
-body.dark { --bg: #121212; }
+body.dark { --color-background: #121212; }
 
 /* PROIBIDO — não permite override manual */
-@media (prefers-color-scheme: dark) { --bg: #121212; }
+@media (prefers-color-scheme: dark) { --color-background: #121212; }
 ```
 
 > **Exceção permitida:** `initTheme()` em JavaScript *pode* usar `window.matchMedia('prefers-color-scheme')` como fallback na primeira abertura (antes de o usuário ter definido preferência). O JS lê o OS, aplica a classe, e a partir daí o CSS faz o resto.
@@ -285,7 +285,7 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 | Ícones de cabeçalho de bloco `.blk-hdr svg` | `16px` |
 | Spinner de loading | `14px` |
 | Título de modal `.modal-title` | `16px`, centrado |
-| Botão fechar modal `.modal-close` | `32px` circular, `background: var(--bg)` |
+| Botão fechar modal `.modal-close` | `32px` circular, `background: var(--color-background)` |
 | Badges de contagem | `11px`, bold |
 | Nomes na sidebar | `12px` |
 | Datas na sidebar | `11px` |
@@ -300,9 +300,9 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 
 | Tipo de elemento | `border-radius` | Porquê |
 |---|---|---|
-| Botões, cards de texto, modais | `--radius-sm` a `--radius-lg` | Orgânicos, amigáveis |
+| Botões, cards de texto, modais | `--radius-md` a `--radius-xl` | Orgânicos, amigáveis |
 | Imagens e legendas `.t-item`, `.t-label` | `0` (quadrado perfeito) | Técnico, preciso — card e legenda com cantos retos |
-| Wrapper de thumbnail `.t-wrap` | `var(--radius-sm)` (6px) | Suaviza a moldura visual da imagem na grelha |
+| Wrapper de thumbnail `.t-wrap` | `var(--radius-md)` (6px) | Suaviza a moldura visual da imagem na grelha |
 
 **Cards de documento sem bordas visíveis:**
 
@@ -697,7 +697,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
 | `updateBtnTitles()` | `() → void` | Atualiza os atributos `title` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex: `Exportar: captura-2026-05-31.pdf`). Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
 | `updateStatusBar()` | `() → void` | Atualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`). Chamada pelo auto-save de 5 segundos e diretamente em `boot()` para estado inicial. |
-| `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--accent`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. |
+| `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--color-primary`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. |
 | `initVbSync()` | `() → void` | Regista todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. **Sem nome de sessão, o prefixo é omitido junto com o seu hífen** — o nome fica só com o timestamp (`13h29m-16-ago-2026.zip`), nunca com um hífen inicial órfão. O mesmo acontece se a sanitização esvaziar o nome (ex.: título só com pontuação). Usada por `updateBtnTitles()`. |
 
@@ -756,7 +756,7 @@ O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V
 
 **Comportamento touch vs mouse:** Em dispositivos touch, `.t-item` e `.d-item` usam `touch-action: pan-y` (permite scroll vertical nativo). O arrasto só ativa após `LONG_PRESS_DELAY` ms sem movimento > `DRAG_THRESHOLD`. Movimento acima do threshold durante a espera cancela o timer e entrega o gesto ao browser (scroll). Em mouse, `touch-action` não interfere e o drag ativa imediatamente ao ultrapassar `DRAG_THRESHOLD`.
 
-**O que é o placeholder:** Um elemento DOM vazio (`.reorder-placeholder`) com fundo e borda muito sutis (configuráveis via `--drop-ph-bg` / `--drop-ph-border`) que ocupa o espaço-alvo durante o arrasto. A sua posição atualiza com base na histerese descrita acima.
+**O que é o placeholder:** Um elemento DOM vazio (`.reorder-placeholder`) com fundo e borda muito sutis (configuráveis via `--color-drop-placeholder` / `--color-drop-placeholder-border`) que ocupa o espaço-alvo durante o arrasto. A sua posição atualiza com base na histerese descrita acima.
 
 **Fluxo do gesto (resumo):**
 ```

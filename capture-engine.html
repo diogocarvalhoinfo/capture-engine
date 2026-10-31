@@ -23,54 +23,55 @@
   <style>
     /* ═══ CSS VARIABLES — LIGHT MODE ═══ */
     :root {
-      --bg: #f4f3f0;
-      --surface: #fff;
-      --border: rgb(221 220 216 / 50.2%);
-      --border-strong: #b5b3ae;
-      --text: #1a1917;
-      --text-muted: #6b6a66;
-      --accent: #e86b2e;
-      --accent-fg: #fff;
-      --accent-hover: #d4450f;
-      --success-bg: #eaf3de;
-      --success-border: #639922;
-      --success-text: #27500a;
-      --error-bg: #fcebeb;
-      --error-border: #a32d2d;
-      --error-text: #501313;
-      --warn-bg: #faeeda;
-      --warn-border: #ba7517;
-      --warn-text: #412402;
-      --font: 'Segoe UI', Arial, sans-serif;
-      --radius-xxs: 3px;
-      --radius-xs: 4px;
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --color-green: #22c55e;
-      --color-red: #ef4444;
-      --color-yellow: #eab308;
+      --color-background: #f4f3f0;
+      --color-card: #fff;
+      --color-border: rgb(221 220 216 / 50.2%);
+      --color-border-strong: #b5b3ae;
+      --color-foreground: #1a1917;
+      --color-muted-foreground: #6b6a66;
+      --color-primary: #e86b2e;
+      --color-primary-foreground: #fff;
+      --color-primary-hover: #d4450f;
+      --color-brand: var(--color-primary);
+      --color-success-subtle: #eaf3de;
+      --color-success-border: #639922;
+      --color-success-foreground: #27500a;
+      --color-destructive-subtle: #fcebeb;
+      --color-destructive-border: #a32d2d;
+      --color-destructive-foreground: #501313;
+      --color-warning-subtle: #faeeda;
+      --color-warning-border: #ba7517;
+      --color-warning-foreground: #412402;
+      --font-sans: 'Segoe UI', Arial, sans-serif;
+      --radius-badge: 0.1875rem;
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --color-green-500: #22c55e;
+      --color-red-500: #ef4444;
+      --color-yellow-500: #eab308;
       --top-bar-h: 64px;
       --thumb-size: 140px;
     }
 
     /* ═══ DARK MODE ═══ */
     body.dark {
-      --bg: #121212;
-      --surface: #1e1e1e;
-      --border: rgb(51 51 51 / 50.2%);
-      --border-strong: #555;
-      --text: #e4e4e4;
-      --text-muted: #9a9a9a;
-      --success-bg: rgb(34 197 94 / 8%);
-      --success-border: #4d7a18;
-      --success-text: #86d84f;
-      --error-bg: rgb(239 68 68 / 8%);
-      --error-border: #8a2424;
-      --error-text: #ff8c8c;
-      --warn-bg: rgb(234 179 8 / 8%);
-      --warn-border: #9c6214;
-      --warn-text: #ecc680;
+      --color-background: #121212;
+      --color-card: #1e1e1e;
+      --color-border: rgb(51 51 51 / 50.2%);
+      --color-border-strong: #555;
+      --color-foreground: #e4e4e4;
+      --color-muted-foreground: #9a9a9a;
+      --color-success-subtle: rgb(34 197 94 / 8%);
+      --color-success-border: #4d7a18;
+      --color-success-foreground: #86d84f;
+      --color-destructive-subtle: rgb(239 68 68 / 8%);
+      --color-destructive-border: #8a2424;
+      --color-destructive-foreground: #ff8c8c;
+      --color-warning-subtle: rgb(234 179 8 / 8%);
+      --color-warning-border: #9c6214;
+      --color-warning-foreground: #ecc680;
     }
 
     /* ═══ ANIMATIONS ═══ */
@@ -144,28 +145,28 @@
     }
 
     body {
-      font-family: var(--font);
+      font-family: var(--font-sans);
       font-size: 14px;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--color-background);
+      color: var(--color-foreground);
       display: flex;
       flex-direction: column
     }
 
     button {
-      font-family: var(--font);
+      font-family: var(--font-sans);
       cursor: pointer;
       border: none;
       background: none
     }
 
     input {
-      font-family: var(--font)
+      font-family: var(--font-sans)
     }
 
     ::selection {
-      background: var(--accent);
-      color: var(--accent-fg)
+      background: var(--color-primary);
+      color: var(--color-primary-foreground)
     }
 
     /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
@@ -179,14 +180,14 @@
     }
 
     *:focus-visible {
-      outline: 2px solid var(--accent);
+      outline: 2px solid var(--color-primary);
       outline-offset: 2px
     }
 
     /* ═══ SCROLLBAR ═══ */
     * {
       scrollbar-width: thin;
-      scrollbar-color: var(--border-strong) transparent
+      scrollbar-color: var(--color-border-strong) transparent
     }
 
     *::-webkit-scrollbar {
@@ -199,12 +200,12 @@
     }
 
     *::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: var(--radius-md)
+      background: var(--color-border-strong);
+      border-radius: var(--radius-lg)
     }
 
     *::-webkit-scrollbar-thumb:hover {
-      background: var(--text-muted)
+      background: var(--color-muted-foreground)
     }
 
     /* ═══ MOBILE: scrollbar oculta + sem zoom (aspeto app nativo) ═══ */
@@ -239,10 +240,10 @@
     .btn-send {
       height: 36px;
       padding: 0 18px;
-      background: var(--accent);
-      color: var(--accent-fg);
+      background: var(--color-primary);
+      color: var(--color-primary-foreground);
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -264,7 +265,7 @@
     }
 
     .btn-send:disabled {
-      background: var(--border-strong);
+      background: var(--color-border-strong);
       color: #fff;
       cursor: not-allowed
     }
@@ -281,26 +282,26 @@
     }
 
     .btn-send.st-success {
-      background: var(--color-green) !important;
+      background: var(--color-green-500) !important;
       pointer-events: none
     }
 
     .btn-send.st-error {
-      background: var(--color-red) !important;
+      background: var(--color-red-500) !important;
       pointer-events: none
     }
 
     .btn-send.btn-outline {
       background: transparent !important;
       border: 1px solid transparent !important;
-      color: var(--text-muted) !important;
+      color: var(--color-muted-foreground) !important;
       text-transform: uppercase;
       transition: border-color 0.15s, color 0.15s, transform 0.1s, background 0.15s
     }
 
     .btn-send.btn-outline:hover:not(:disabled) {
-      border-color: var(--accent) !important;
-      color: var(--text) !important;
+      border-color: var(--color-primary) !important;
+      color: var(--color-foreground) !important;
       opacity: 1
     }
 
@@ -312,13 +313,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       cursor: pointer;
       transition: color 0.2s, background 0.2s, transform 0.1s
     }
 
     .action-btn:hover {
-      color: var(--text);
+      color: var(--color-foreground);
       background: rgb(0 0 0 / 5%)
     }
 
@@ -341,7 +342,7 @@
     }
 
     #btn-admin-save.admin-active {
-      background: var(--color-green) !important;
+      background: var(--color-green-500) !important;
       color: #fff !important;
       animation: pulse 1.2s ease-in-out infinite !important
     }
@@ -407,21 +408,21 @@
       font-size: 20px;
       font-weight: 600;
       letter-spacing: -0.2px;
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     #tb-brand-name #ui-title-start {
-      color: var(--title-start-color, inherit)
+      color: var(--color-title-start, inherit)
     }
     #tb-brand-name #ui-title-accent {
-      font-weight: var(--title-accent-weight, 400);
+      font-weight: var(--font-weight-title-accent, 400);
       opacity: var(--title-accent-opacity, 0.5);
-      color: var(--title-accent-color, inherit)
+      color: var(--color-title-accent, inherit)
     }
     #tb-brand-name #ui-title-end {
       font-weight: 600;
       opacity: 1;
-      color: var(--title-end-color, inherit)
+      color: var(--color-title-end, inherit)
     }
 
     #tb-session {
@@ -435,24 +436,24 @@
     .sess-input {
       width: 140px;
       height: 36px;
-      background: var(--bg);
+      background: var(--color-background);
       border: 1px solid transparent;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       padding: 0 12px;
       font-size: 13px;
-      color: var(--text);
+      color: var(--color-foreground);
       outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
       text-transform: uppercase
     }
 
     .sess-input:focus {
-      border-color: var(--accent) !important;
-      box-shadow: 0 0 0 1px var(--accent)
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 0 0 1px var(--color-primary)
     }
 
     .sess-input::placeholder {
-      color: var(--text-muted)
+      color: var(--color-muted-foreground)
     }
 
     #tb-actions {
@@ -495,9 +496,9 @@
       flex-direction: column;
       overflow: hidden;
       min-height: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
       box-shadow: 0 2px 8px rgb(0 0 0 / 2%)
     }
 
@@ -515,7 +516,7 @@
       gap: 8px;
       padding: 0 16px;
       height: 44px;
-      background: var(--surface);
+      background: var(--color-card);
       flex-shrink: 0
     }
 
@@ -523,7 +524,7 @@
       width: 16px;
       height: 16px;
       fill: none;
-      stroke: var(--text-muted);
+      stroke: var(--color-muted-foreground);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -535,14 +536,14 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: var(--text-muted)
+      color: var(--color-muted-foreground)
     }
 
     .count-badge {
       min-width: 20px;
       height: 20px;
       padding: 0 6px;
-      background: var(--accent);
+      background: var(--color-primary);
       color: #fff;
       border-radius: 99px;
       font-size: 11px;
@@ -569,15 +570,15 @@
     }
 
     .drop-zone.drag-over {
-      background: color-mix(in srgb, var(--accent) 5%, transparent)
+      background: color-mix(in srgb, var(--color-primary) 5%, transparent)
     }
 
     .drop-zone.drag-over::after {
       content: '';
       position: absolute;
       inset: 4px;
-      border: 2px solid var(--accent);
-      border-radius: var(--radius-md);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-lg);
       pointer-events: none
     }
 
@@ -599,7 +600,7 @@
     .empty-st svg {
       width: 38px;
       height: 38px;
-      stroke: var(--border);
+      stroke: var(--color-border);
       fill: none;
       stroke-width: 1.3;
       stroke-linecap: round
@@ -608,7 +609,7 @@
     .empty-st-title {
       font-size: 14px;
       font-weight: 500;
-      color: var(--text-muted)
+      color: var(--color-muted-foreground)
     }
 
     /* ═══ MOBILE PASTE FAB ═══ */
@@ -619,28 +620,28 @@
       right: 24px;
       width: 56px;
       height: 56px;
-      background: var(--surface);
-      color: var(--text-muted);
+      background: var(--color-card);
+      color: var(--color-muted-foreground);
       border-radius: 50%;
       box-shadow: none;
       z-index: 9999;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--color-border-strong);
       transition: color 0.15s, border-color 0.15s, transform 0.2s
     }
 
     #mobile-paste-fab:hover {
-      background: var(--bg);
-      color: var(--text);
-      border-color: var(--text-muted)
+      background: var(--color-background);
+      color: var(--color-foreground);
+      border-color: var(--color-muted-foreground)
     }
 
     #mobile-paste-fab:active {
       transform: scale(0.95);
-      color: var(--accent);
-      border-color: var(--accent)
+      color: var(--color-brand);
+      border-color: var(--color-primary)
     }
 
     #mobile-paste-fab svg {
@@ -677,7 +678,7 @@
       border-radius: 0;
       overflow: visible;
       border: 1px solid transparent;
-      background: var(--surface);
+      background: var(--color-card);
       display: flex;
       flex-direction: column;
       animation: fadeIn 0.2s ease-out;
@@ -710,19 +711,19 @@
       transform: scale(0.75);
       transform-origin: top left;
       box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       cursor: grabbing;
       transition: none;
       pointer-events: none
     }
 
     /* Espaco reservado para onde o item vai cair: area muito suave (quase um buraco).
-       Ajustavel via --drop-ph-bg / --drop-ph-border abaixo. */
+       Ajustavel via --color-drop-placeholder / --color-drop-placeholder-border abaixo. */
     .reorder-placeholder {
       box-sizing: border-box;
-      border-radius: var(--radius-sm);
-      background: var(--drop-ph-bg, color-mix(in srgb, var(--text) 5%, transparent));
-      border: 1px solid var(--drop-ph-border, color-mix(in srgb, var(--text) 8%, transparent));
+      border-radius: var(--radius-md);
+      background: var(--color-drop-placeholder, color-mix(in srgb, var(--color-foreground) 5%, transparent));
+      border: 1px solid var(--color-drop-placeholder-border, color-mix(in srgb, var(--color-foreground) 8%, transparent));
       transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1)
     }
 
@@ -732,7 +733,7 @@
       overflow: hidden;
       position: relative;
       flex-shrink: 0;
-      border-radius: var(--radius-sm)
+      border-radius: var(--radius-md)
     }
 
     .t-wrap img {
@@ -769,7 +770,7 @@
       align-items: center;
       justify-content: center;
       color: #fff;
-      background: var(--color-red);
+      background: var(--color-red-500);
       border: none;
       cursor: pointer;
       z-index: 10;
@@ -807,8 +808,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--accent-fg);
-      background: var(--accent);
+      color: var(--color-primary-foreground);
+      background: var(--color-primary);
       border: none;
       cursor: pointer;
       z-index: 10;
@@ -837,15 +838,15 @@
     .t-label {
       width: 100%;
       border: none;
-      background: var(--surface);
-      color: var(--text-muted);
+      background: var(--color-card);
+      color: var(--color-muted-foreground);
       font-size: 11px;
       font-weight: normal;
       padding: 4px 6px;
       height: 24px;
       outline: none;
       text-align: center;
-      font-family: var(--font);
+      font-family: var(--font-sans);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -854,12 +855,12 @@
     }
 
     .t-label::placeholder {
-      color: var(--border-strong)
+      color: var(--color-border-strong)
     }
 
     .t-label:focus {
-      color: var(--text);
-      background: var(--bg)
+      color: var(--color-foreground);
+      background: var(--color-background)
     }
 
     /* ═══ DOC LIST ═══ */
@@ -878,11 +879,11 @@
       align-items: center;
       gap: 12px;
       padding: 10px 14px;
-      background: var(--surface);
+      background: var(--color-card);
       border: 1px solid transparent;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       font-size: 13px;
-      color: var(--text);
+      color: var(--color-foreground);
       animation: fadeIn 0.2s ease-out;
       flex-shrink: 0;
       cursor: grab;
@@ -890,14 +891,14 @@
     }
 
     .d-item:hover {
-      background: var(--bg)
+      background: var(--color-background)
     }
 
     .d-item .d-icon {
       width: 20px;
       height: 20px;
       fill: none;
-      stroke: var(--text-muted);
+      stroke: var(--color-muted-foreground);
       stroke-width: 2;
       stroke-linecap: round;
       flex-shrink: 0
@@ -907,12 +908,12 @@
       flex: 1;
       border: none;
       background: transparent;
-      color: var(--text);
+      color: var(--color-foreground);
       font-size: 13px;
-      font-family: var(--font);
+      font-family: var(--font-sans);
       font-weight: normal;
       padding: 2px 6px;
-      border-radius: var(--radius-xs);
+      border-radius: var(--radius-sm);
       outline: none;
       width: 100%;
       overflow: hidden;
@@ -922,25 +923,25 @@
     }
 
     .d-input:focus {
-      background: var(--surface);
-      box-shadow: 0 0 0 1px var(--accent)
+      background: var(--color-card);
+      box-shadow: 0 0 0 1px var(--color-primary)
     }
 
     .d-size {
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       white-space: nowrap;
       flex-shrink: 0;
       font-weight: 600;
-      background: var(--bg);
+      background: var(--color-background);
       padding: 2px 6px;
-      border-radius: var(--radius-xs)
+      border-radius: var(--radius-sm)
     }
 
     .d-del {
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       padding: 4px;
-      border-radius: var(--radius-xs);
+      border-radius: var(--radius-sm);
       display: flex;
       flex-shrink: 0;
       cursor: pointer;
@@ -950,8 +951,8 @@
     }
 
     .d-del:hover {
-      color: var(--color-red);
-      background: var(--bg)
+      color: var(--color-red-500);
+      background: var(--color-background)
     }
 
     .d-del svg {
@@ -966,9 +967,9 @@
     /* ═══ SIDEBARS ═══ */
     #left-sidebar {
       width: 220px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
@@ -1003,9 +1004,9 @@
 
     #sidebar {
       width: 52px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
       flex-shrink: 0;
       display: flex;
       overflow: hidden;
@@ -1029,7 +1030,7 @@
       display: none;
       background: none;
       border: none;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       cursor: pointer;
       padding: 4px
     }
@@ -1061,7 +1062,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       transition: color 0.15s;
       border: none;
       cursor: pointer;
@@ -1069,7 +1070,7 @@
     }
 
     .sb-icon-btn:hover {
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     .sb-icon-btn svg {
@@ -1107,7 +1108,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       padding: 0 8px;
       margin: 0;
       flex-shrink: 0
@@ -1115,7 +1116,7 @@
 
     .sb-divider {
       height: 1px;
-      background: var(--border);
+      background: var(--color-border);
       margin: 6px 6px;
       flex-shrink: 0
     }
@@ -1134,20 +1135,20 @@
       align-items: center;
       gap: 8px;
       padding: 8px 8px;
-      border-radius: var(--radius-xs);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       transition: background 0.12s
     }
 
     .sb-sess-item:hover,
     .sb-sess-item.active {
-      background: var(--bg)
+      background: var(--color-background)
     }
 
     .sb-sess-name {
       font-size: 12px;
       font-weight: 500;
-      color: var(--text);
+      color: var(--color-foreground);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1156,12 +1157,12 @@
 
     .sb-sess-date {
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       flex-shrink: 0
     }
 
     .sb-sess-del {
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       opacity: 0;
       transition: opacity 0.15s;
       cursor: pointer;
@@ -1174,7 +1175,7 @@
     }
 
     .sb-sess-del:hover {
-      color: var(--color-red)
+      color: var(--color-red-500)
     }
 
     #sb-chevron {
@@ -1187,9 +1188,9 @@
 
     /* ═══ TRASH BAR ═══ */
     #trash-bar {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-card);
       flex-shrink: 0;
       height: auto;
       min-height: 52px;
@@ -1205,7 +1206,7 @@
       text-align: center;
       font-size: 10px;
       font-weight: 500;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       letter-spacing: 0.8px;
       text-transform: uppercase;
       flex-shrink: 0;
@@ -1238,7 +1239,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: var(--text-muted)
+      color: var(--color-muted-foreground)
     }
 
     /* ═══ STATUS BAR ═══ */
@@ -1258,21 +1259,21 @@
       gap: 6px;
       font-size: 13px;
       font-weight: 400;
-      color: var(--text-muted)
+      color: var(--color-muted-foreground)
     }
 
     .st-row1 .st-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--color-green);
+      background: var(--color-green-500);
       flex-shrink: 0;
       animation: pulse 3s ease-in-out infinite
     }
 
     .st-row2 {
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       display: none;
       line-height: 1.2
     }
@@ -1283,7 +1284,7 @@
 
     .st-row2 span {
       font-weight: 600;
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     @keyframes pulse {
@@ -1302,7 +1303,7 @@
       min-width: 20px;
       height: 20px;
       padding: 0 6px;
-      background: var(--color-red);
+      background: var(--color-red-500);
       color: #fff;
       border-radius: 99px;
       font-size: 11px;
@@ -1368,8 +1369,8 @@
     }
 
     .modal-box {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
+      background: var(--color-card);
+      border-radius: var(--radius-xl);
       width: 90vw;
       height: 85vh;
       max-width: 1000px;
@@ -1393,7 +1394,7 @@
     .modal-title {
       font-size: 16px;
       font-weight: 600;
-      color: var(--text);
+      color: var(--color-foreground);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1412,17 +1413,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       transition: color 0.12s, background 0.12s;
       flex-shrink: 0;
       border: none;
       cursor: pointer;
-      background: var(--bg)
+      background: var(--color-background)
     }
 
     .modal-close:hover {
-      color: var(--text);
-      background: var(--border)
+      color: var(--color-foreground);
+      background: var(--color-border)
     }
 
     .modal-close svg {
@@ -1457,10 +1458,10 @@
     }
 
     .sb-modal {
-      background: var(--surface);
+      background: var(--color-card);
       width: 90%;
       max-width: 480px;
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
       overflow: hidden;
       display: flex;
@@ -1479,10 +1480,10 @@
       position: absolute;
       top: 18px;
       right: 18px;
-      background: var(--bg);
+      background: var(--color-background);
       border: none;
       cursor: pointer;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -1494,8 +1495,8 @@
     }
 
     .sb-close:hover {
-      color: var(--text);
-      background: var(--border)
+      color: var(--color-foreground);
+      background: var(--color-border)
     }
 
     .sb-close svg {
@@ -1518,7 +1519,7 @@
     .sb-title {
       font-size: 20px;
       font-weight: 600;
-      color: var(--text);
+      color: var(--color-foreground);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1528,7 +1529,7 @@
 
     .sb-subtitle {
       font-size: 13px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       margin: 0
     }
 
@@ -1545,20 +1546,20 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      color: var(--text-muted);
-      background: var(--bg);
-      border-radius: var(--radius-md);
+      color: var(--color-muted-foreground);
+      background: var(--color-background);
+      border-radius: var(--radius-lg);
       transition: all 0.2s
     }
 
     .sb-tab:hover {
-      background: var(--border);
-      color: var(--text)
+      background: var(--color-border);
+      color: var(--color-foreground)
     }
 
     .sb-tab.active {
-      color: var(--accent-fg);
-      background: var(--accent)
+      color: var(--color-primary-foreground);
+      background: var(--color-primary)
     }
 
     .sb-content-tab {
@@ -1600,12 +1601,12 @@
     .sb-row-title {
       font-size: 14px;
       font-weight: 600;
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     .sb-row-desc {
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       line-height: 1.4
     }
 
@@ -1626,7 +1627,7 @@
       position: absolute;
       cursor: pointer;
       inset: 0;
-      background-color: var(--border-strong);
+      background-color: var(--color-border-strong);
       transition: .3s;
       border-radius: 24px
     }
@@ -1645,7 +1646,7 @@
     }
 
     input:checked+.toggle-slider {
-      background-color: var(--color-green)
+      background-color: var(--color-green-500)
     }
 
     input:checked+.toggle-slider:before {
@@ -1656,21 +1657,21 @@
       width: 60px;
       height: 32px;
       border: 1px solid transparent;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       text-align: center;
       font-size: 14px;
       font-weight: 600;
-      color: var(--text);
-      background: var(--bg);
+      color: var(--color-foreground);
+      background: var(--color-background);
       outline: none;
       transition: border-color 0.15s, background 0.15s
     }
 
     .num-input:focus {
-      border-color: var(--accent) !important;
-      background: var(--surface) !important;
+      border-color: var(--color-primary) !important;
+      background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--accent) !important
+      box-shadow: 0 0 0 1px var(--color-primary) !important
     }
 
     /* ═══ EXPORT CARDS ═══ */
@@ -1678,7 +1679,7 @@
       display: flex;
       gap: 16px;
       padding: 12px 16px;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       cursor: pointer;
       transition: all 0.15s;
       background: transparent;
@@ -1694,9 +1695,9 @@
     .export-icon {
       width: 48px;
       height: 48px;
-      border-radius: var(--radius-lg);
-      background: var(--bg);
-      color: var(--text-muted);
+      border-radius: var(--radius-xl);
+      background: var(--color-background);
+      color: var(--color-muted-foreground);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1715,8 +1716,8 @@
     }
 
     .export-card:hover .export-icon {
-      background: var(--accent);
-      color: var(--accent-fg)
+      background: var(--color-primary);
+      color: var(--color-primary-foreground)
     }
 
     .export-info {
@@ -1728,17 +1729,17 @@
     .export-title {
       font-size: 14px;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       transition: color 0.15s
     }
 
     .export-card:hover .export-title {
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     .export-desc {
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       line-height: 1.4
     }
 
@@ -1759,9 +1760,9 @@
       gap: 4px;
       padding: 4px 10px;
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       background: transparent;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       font-size: 11px;
       font-weight: 500;
       cursor: pointer;
@@ -1775,16 +1776,16 @@
     }
 
     .chip-label:hover {
-      color: var(--text)
+      color: var(--color-foreground)
     }
 
     .chip-input:checked+.chip-label {
-      border: 1px solid var(--border-strong);
-      color: var(--text)
+      border: 1px solid var(--color-border-strong);
+      color: var(--color-foreground)
     }
 
     .chip-input:checked+.chip-label:hover {
-      border-color: var(--accent)
+      border-color: var(--color-primary)
     }
 
     /* ═══ CAPTURE BUTTONS ═══ */
@@ -1792,8 +1793,8 @@
       width: 100%;
       justify-content: flex-start;
       background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border-strong);
+      color: var(--color-muted-foreground);
+      border: 1px solid var(--color-border-strong);
       font-weight: 600;
       font-size: 12px;
       height: 32px;
@@ -1803,23 +1804,23 @@
     }
 
     .btn-capture:hover:not(:disabled) {
-      border-color: var(--accent) !important;
-      color: var(--text) !important;
+      border-color: var(--color-primary) !important;
+      color: var(--color-foreground) !important;
       opacity: 1
     }
 
     /* ═══ ZIP CTA BUTTONS (V20 — Persistent accent border) ═══ */
     .btn-send.btn-zip-cta {
       background: transparent !important;
-      border: 1px solid var(--accent) !important;
-      color: var(--text-muted) !important;
+      border: 1px solid var(--color-primary) !important;
+      color: var(--color-muted-foreground) !important;
       text-transform: uppercase;
       transition: color 0.15s, background 0.15s, transform 0.1s
     }
 
     .btn-send.btn-zip-cta:hover:not(:disabled) {
-      color: var(--text) !important;
-      background: color-mix(in srgb, var(--accent) 6%, transparent) !important;
+      color: var(--color-foreground) !important;
+      background: color-mix(in srgb, var(--color-primary) 6%, transparent) !important;
       opacity: 1
     }
 
@@ -1832,14 +1833,14 @@
       box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
       flex-shrink: 0;
       overflow: hidden;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
       transition: all 0.2s ease
     }
 
     .swatch-wrap.is-empty {
       box-shadow: none;
-      border: 1px dashed var(--border-strong);
+      border: 1px dashed var(--color-border-strong);
       background: transparent
     }
 
@@ -1865,21 +1866,21 @@
       width: 90px;
       height: 36px;
       border: 1px solid transparent;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       text-align: center;
       font-size: 13px;
       font-family: monospace;
-      color: var(--text);
-      background: var(--bg);
+      color: var(--color-foreground);
+      background: var(--color-background);
       outline: none;
       transition: border-color 0.15s, background 0.15s
     }
 
     .hex-input:focus {
-      border-color: var(--accent) !important;
-      background: var(--surface) !important;
+      border-color: var(--color-primary) !important;
+      background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--accent) !important
+      box-shadow: 0 0 0 1px var(--color-primary) !important
     }
 
     .text-input-sm {
@@ -1887,11 +1888,11 @@
       max-width: 140px;
       height: 36px;
       border: 1px solid transparent;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       font-size: 13px;
-      font-family: var(--font);
-      color: var(--text);
-      background: var(--bg);
+      font-family: var(--font-sans);
+      color: var(--color-foreground);
+      background: var(--color-background);
       outline: none;
       transition: border-color 0.15s, background 0.15s;
       padding: 0 12px;
@@ -1899,38 +1900,38 @@
     }
 
     .text-input-sm:focus {
-      border-color: var(--accent) !important;
-      background: var(--surface) !important;
+      border-color: var(--color-primary) !important;
+      background: var(--color-card) !important;
       outline: none !important;
-      box-shadow: 0 0 0 1px var(--accent) !important
+      box-shadow: 0 0 0 1px var(--color-primary) !important
     }
 
     /* ═══ ANNOTATION TOOLBAR ═══ */
     .ann-btn {
       width: 36px;
       height: 36px;
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
+      color: var(--color-muted-foreground);
       transition: all 0.15s;
       flex-shrink: 0;
       cursor: pointer
     }
 
     .ann-btn:hover {
-      color: var(--text);
-      border-color: var(--border-strong);
-      background: var(--bg)
+      color: var(--color-foreground);
+      border-color: var(--color-border-strong);
+      background: var(--color-background)
     }
 
     .ann-btn.active {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: var(--bg)
+      color: var(--color-brand);
+      border-color: var(--color-primary);
+      background: var(--color-background)
     }
 
     .ann-btn svg {
@@ -1946,7 +1947,7 @@
     .ann-sep {
       width: 1px;
       height: 24px;
-      background: var(--border);
+      background: var(--color-border);
       margin: 0 4px;
       flex-shrink: 0
     }
@@ -1975,9 +1976,9 @@
     .ann-picker-wrap {
       width: 36px;
       height: 36px;
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2009,7 +2010,7 @@
       width: 60px;
       height: 4px;
       cursor: pointer;
-      accent-color: var(--accent)
+      accent-color: var(--color-primary)
     }
 
     .ann-spacer {
@@ -2133,10 +2134,10 @@
         z-index: 2000;
         transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
         margin: 0;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-xl);
         box-shadow: 0 12px 48px rgb(0 0 0 / 30%);
-        background: var(--surface);
+        background: var(--color-card);
         opacity: 0;
         pointer-events: none
       }
@@ -2181,7 +2182,7 @@
       #sidebar .sb-section-title {
         font-size: 14px;
         font-weight: 600;
-        color: var(--text);
+        color: var(--color-foreground);
         height: 44px;
         padding: 0 8px !important;
         letter-spacing: 0
@@ -2190,12 +2191,12 @@
       #sidebar .sb-sess-item {
         padding: 14px;
         margin-bottom: 6px;
-        background: var(--bg);
+        background: var(--color-background);
         border: 1px solid transparent
       }
 
       #sidebar .sb-sess-item.active {
-        border-color: var(--accent)
+        border-color: var(--color-primary)
       }
 
       #sidebar .sb-sess-name {
@@ -2401,7 +2402,7 @@
     #img-modal-overlay #ann-toolbar {
       background: rgb(255 255 255 / 6%);
       border: 1px solid rgb(255 255 255 / 10%);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       margin: 0 0 12px 0;
       color: #fff;
       backdrop-filter: blur(10px);
@@ -2420,9 +2421,9 @@
     }
 
     #img-modal-overlay .ann-btn.active {
-      color: var(--accent-fg);
-      background: var(--accent);
-      border-color: var(--accent);
+      color: var(--color-primary-foreground);
+      background: var(--color-primary);
+      border-color: var(--color-primary);
     }
 
     #img-modal-overlay #ann-bold-btn.active,
@@ -2434,9 +2435,9 @@
 
     #img-modal-overlay .ann-btn.active[data-tool="text"],
     #img-modal-overlay .ann-btn.ann-txt-selected {
-      background: var(--accent);
+      background: var(--color-primary);
       color: #fff;
-      border-color: var(--accent);
+      border-color: var(--color-primary);
     }
 
     #img-modal-overlay .ann-sep {
@@ -2787,7 +2788,7 @@
       <div id="trash-bar">
         <div id="trash-hdr">
           <svg viewBox="0 0 24 24"
-            style="width:16px;height:16px;fill:none;stroke:var(--text-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0">
+            style="width:16px;height:16px;fill:none;stroke:var(--color-muted-foreground);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
             <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -2796,7 +2797,7 @@
           <span id="trash-badge">0</span>
           <svg id="trash-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round"
-            style="width:16px;height:16px;margin-left:auto;flex-shrink:0;color:var(--text-muted);transition:transform 0.3s">
+            style="width:16px;height:16px;margin-left:auto;flex-shrink:0;color:var(--color-muted-foreground);transition:transform 0.3s">
             <polyline points="18 15 12 9 6 15" />
           </svg>
         </div>
@@ -2835,7 +2836,7 @@
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
-          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-md);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
+          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
           <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:#fff"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
@@ -2867,13 +2868,13 @@
         <!-- DEFAULT ACTIONS -->
         <div id="img-modal-default-actions" style="display:flex;gap:8px;justify-content:center">
           <button class="btn-send" id="img-modal-restore"
-            style="display:none;background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
+            style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
             </svg> Restaurar
           </button>
-          <button class="btn-send" id="ann-toggle" style="background:var(--accent);color:var(--accent-fg)">
+          <button class="btn-send" id="ann-toggle" style="background:var(--color-primary);color:var(--color-primary-foreground)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
               <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
@@ -2881,7 +2882,7 @@
             </svg> Editar
           </button>
           <button class="btn-send" id="img-modal-dl"
-            style="background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
+            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -2974,7 +2975,7 @@
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="ann-save" title="Confirmar"
-            style="background:var(--color-green);border-color:var(--color-green);color:#fff"><svg viewBox="0 0 24 24">
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:#fff"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
               <polyline points="7 3 7 8 15 8" />
@@ -2998,11 +2999,11 @@
           </svg></button>
       </div>
       <div
-        style="flex:1; overflow:auto; padding:16px; background:var(--bg); display:flex; flex-direction:column; min-height:0; position:relative">
+        style="flex:1; overflow:auto; padding:16px; background:var(--color-background); display:flex; flex-direction:column; min-height:0; position:relative">
         <textarea id="text-modal-content" readonly
-          style="width:100%; flex:1; resize:none; border:none; background:var(--bg); color:var(--text); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:12.5px; line-height:1.6; outline:none; white-space:pre-wrap; padding:8px; border-radius:var(--radius-sm)"></textarea>
+          style="width:100%; flex:1; resize:none; border:none; background:var(--color-background); color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:12.5px; line-height:1.6; outline:none; white-space:pre-wrap; padding:8px; border-radius:var(--radius-md)"></textarea>
         <div id="text-modal-binary-msg"
-          style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-muted); font-size:13px; padding:24px; line-height:1.6; gap:12px">
+          style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:13px; padding:24px; line-height:1.6; gap:12px">
         </div>
       </div>
       <!-- FOOTER -->
@@ -3010,14 +3011,14 @@
         style="padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex-shrink:0">
         <div style="display:flex; gap:8px; justify-content:center">
           <button class="btn-send" id="text-modal-restore"
-            style="display:none;background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
+            style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
             </svg> Restaurar
           </button>
           <button class="btn-send" id="text-modal-copy"
-            style="background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
+            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:14px; height:14px">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -3025,7 +3026,7 @@
             </svg> Copiar Texto
           </button>
           <button class="btn-send" id="text-modal-dl"
-            style="background:var(--surface);color:var(--text);border:1px solid var(--border-strong)">
+            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -3034,7 +3035,7 @@
           </button>
         </div>
         <span id="text-modal-info"
-          style="font-size:11px; color:var(--text-muted); text-align:center; margin:0 auto"></span>
+          style="font-size:11px; color:var(--color-muted-foreground); text-align:center; margin:0 auto"></span>
       </div>
     </div>
   </div>
@@ -3058,7 +3059,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:11px;background:var(--border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V27</span>
+            style="font-size:11px;background:var(--color-border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V27</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3182,7 +3183,7 @@
           </div>
           <div style="display:flex;align-items:center;gap:8px"><input type="range" id="cfg-jpeg-quality" min="70"
               max="95" value="92" style="width:100px"><span id="cfg-jpeg-label"
-              style="font-size:13px;font-weight:600;color:var(--text);min-width:32px">92%</span></div>
+              style="font-size:13px;font-weight:600;color:var(--color-foreground);min-width:32px">92%</span></div>
         </div>
         <div class="sb-row">
           <div class="sb-info">
@@ -3416,7 +3417,7 @@
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
-      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(r.label || '')}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" style=\"background:var(--bg);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--text-muted)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
+      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(r.label || '')}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
 
 
       /* ═══ IMAGE CAPTURE ═══ */
@@ -3598,7 +3599,7 @@
           $('text-modal-binary-msg').style.display = 'none';
         } else {
           const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
-          $('text-modal-binary-msg').innerHTML = '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:none;stroke:var(--text-muted);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:0.5;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:15px;font-weight:600;text-transform:uppercase;color:var(--text);letter-spacing:1px">' + escapeHTML(ext) + '</span><span style="font-size:14px;color:var(--text-muted);line-height:1.5">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
+          $('text-modal-binary-msg').innerHTML = '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:none;stroke:var(--color-muted-foreground);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:0.5;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:15px;font-weight:600;text-transform:uppercase;color:var(--color-foreground);letter-spacing:1px">' + escapeHTML(ext) + '</span><span style="font-size:14px;color:var(--color-muted-foreground);line-height:1.5">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
           $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';
@@ -3634,7 +3635,7 @@
           await navigator.clipboard.writeText(val);
           const old = btn.innerHTML;
           btn.innerHTML = 'Copiado!';
-          btn.style.background = 'var(--color-green)';
+          btn.style.background = 'var(--color-green-500)';
           btn.style.color = '#fff';
           setTimeout(() => {
             btn.innerHTML = old;
@@ -3642,7 +3643,7 @@
             btn.style.color = '';
           }, 1500);
         } catch (err) {
-          SysLogger.error('Erro ao copiar.'); const old = btn.innerHTML; btn.innerHTML = '<span style="color:var(--color-red)">Erro!</span>'; setTimeout(() => btn.innerHTML = old, 2000);
+          SysLogger.error('Erro ao copiar.'); const old = btn.innerHTML; btn.innerHTML = '<span style="color:var(--color-red-500)">Erro!</span>'; setTimeout(() => btn.innerHTML = old, 2000);
         }
       };
       $('text-modal-dl').onclick = function () {
@@ -3887,7 +3888,7 @@
       function annDrawSelectionOverlay() {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
         const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
-        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e86b2e';
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
         // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
         ctx.strokeStyle = accent; ctx.lineWidth = 1; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
@@ -5089,20 +5090,20 @@
 
       /* ═══ COLOR ENGINE ═══ */
       function updateThemeColor() {
-        document.documentElement.style.setProperty('--accent', sysColors.main);
-        if (sysColors.tStart) document.documentElement.style.setProperty('--title-start-color', sysColors.tStart);
-        else document.documentElement.style.removeProperty('--title-start-color');
+        document.documentElement.style.setProperty('--color-primary', sysColors.main);
+        if (sysColors.tStart) document.documentElement.style.setProperty('--color-title-start', sysColors.tStart);
+        else document.documentElement.style.removeProperty('--color-title-start');
         if (sysColors.tAccent) {
-          document.documentElement.style.setProperty('--title-accent-color', sysColors.tAccent);
+          document.documentElement.style.setProperty('--color-title-accent', sysColors.tAccent);
           document.documentElement.style.setProperty('--title-accent-opacity', '1');
-          document.documentElement.style.setProperty('--title-accent-weight', '600');
+          document.documentElement.style.setProperty('--font-weight-title-accent', '600');
         } else {
-          document.documentElement.style.removeProperty('--title-accent-color');
+          document.documentElement.style.removeProperty('--color-title-accent');
           document.documentElement.style.removeProperty('--title-accent-opacity');
-          document.documentElement.style.removeProperty('--title-accent-weight');
+          document.documentElement.style.removeProperty('--font-weight-title-accent');
         }
-        if (sysColors.tEnd) document.documentElement.style.setProperty('--title-end-color', sysColors.tEnd);
-        else document.documentElement.style.removeProperty('--title-end-color');
+        if (sysColors.tEnd) document.documentElement.style.setProperty('--color-title-end', sysColors.tEnd);
+        else document.documentElement.style.removeProperty('--color-title-end');
         let fg = sysColors.fg;
         if (!fg) {
           let hex = sysColors.main.replace('#', '');
@@ -5111,7 +5112,7 @@
           let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
           fg = (yiq >= 128) ? '#1a1917' : '#ffffff';
         }
-        document.documentElement.style.setProperty('--accent-fg', fg);
+        document.documentElement.style.setProperty('--color-primary-foreground', fg);
       }
 
       function applySwatchVisuals() {
@@ -5284,9 +5285,9 @@
           $(wrapId).addEventListener('dblclick', clearSwatch);
           $(wrapId).addEventListener('contextmenu', clearSwatch);
         }
-        bindTitleSwatch('cfg-cor-tstart',  'sw-tstart-bg',  'wrap-cor-tstart',  'tStart',  '--title-start-color');
-        bindTitleSwatch('cfg-cor-taccent', 'sw-taccent-bg', 'wrap-cor-taccent', 'tAccent', '--title-accent-color');
-        bindTitleSwatch('cfg-cor-tend',    'sw-tend-bg',    'wrap-cor-tend',    'tEnd',    '--title-end-color');
+        bindTitleSwatch('cfg-cor-tstart',  'sw-tstart-bg',  'wrap-cor-tstart',  'tStart',  '--color-title-start');
+        bindTitleSwatch('cfg-cor-taccent', 'sw-taccent-bg', 'wrap-cor-taccent', 'tAccent', '--color-title-accent');
+        bindTitleSwatch('cfg-cor-tend',    'sw-tend-bg',    'wrap-cor-tend',    'tEnd',    '--color-title-end');
 
         // Live text settings
         function syncTitleSpans() {
