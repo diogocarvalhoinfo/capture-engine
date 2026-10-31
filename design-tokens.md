@@ -179,7 +179,7 @@ A pilha **não é uma escala global única** — os valores estão agrupados por
 | Modais | `9999` | `.modal-overlay`, `.sb-overlay`, `#mobile-paste-fab` | global |
 | Banners críticos | `99999` | Quota/armazenamento — **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
-**Regra de governança:** qualquer novo valor de `z-index` deve ser adicionado **a esta tabela, ao `agents.md §2.2` e ao conjunto permitido no `validate.sh`** (que falha se aparecer valor não documentado).
+**Regra de governança:** qualquer novo valor de `z-index` deve ser adicionado **a esta tabela, ao `AGENTS.md §2.2` e ao conjunto permitido no `validate.sh`** (que falha se aparecer valor não documentado).
 
 ---
 

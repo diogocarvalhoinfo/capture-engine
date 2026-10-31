@@ -63,7 +63,7 @@ Configura a ferramenta para a sua organização — personaliza o nome, cores, c
 **O que não consegue fazer:** alterar o código-fonte diretamente.
 
 ### Desenvolvedor / Agente IA
-Edita o código-fonte do `capture-engine.html` para adicionar funcionalidades, corrigir bugs ou adaptar o motor a novos requisitos. **Leia o documento `agents.md` antes de qualquer modificação** — contém as regras absolutas, referência de funções, schema da base de dados, checklist de validação e protocolo de version bump.
+Edita o código-fonte do `capture-engine.html` para adicionar funcionalidades, corrigir bugs ou adaptar o motor a novos requisitos. **Leia o documento `AGENTS.md` antes de qualquer modificação** — contém as regras absolutas, referência de funções, schema da base de dados, checklist de validação e protocolo de version bump.
 
 ---
 
@@ -435,7 +435,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 
 **O que requer atenção:**
 - Configurações personalizadas (cores, nome, tokens) **não viajam** com os dados — são parte do arquivo HTML e têm de ser reaplicadas manualmente ou via Export Admin
-- Se a nova versão incrementar a versão do schema IndexedDB (atualmente `2`), consultar `agents.md` §6 sobre migração de schema antes de distribuir
+- Se a nova versão incrementar a versão do schema IndexedDB (atualmente `2`), consultar `AGENTS.md` §6 sobre migração de schema antes de distribuir
 
 **Aviso sobre `TOKEN_AUTO_PURGE_HOURS`:** se a nova versão tiver um valor de purge menor do que o anterior, sessões que ainda estariam vivas são purgadas na primeira abertura. Ver §6.4.
 
@@ -528,7 +528,7 @@ Para implementações em setor público, bancário ou saúde onde a acessibilida
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `agents.md §14` para verificar o uso real. |
+| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do browser (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do browser. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e descarregado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do browser aguenta ao montar o pacote (o browser falha primeiro), pelo que o cenário é improvável — fica declarado por a falha ser silenciosa. |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
@@ -649,8 +649,8 @@ capture-engine/              ← raiz do repositório
 ├── index.html               ← Redirect para GitHub Pages (abre capture-engine.html)
 ├── LICENSE                  ← Licença MIT (Diogo Carvalho)
 ├── README.md                ← Este guia (início aqui)
-├── changelog.md             ← Histórico de versões desde a V7 (base da arquitetura atual; V1–V6 anteriores à arquitetura Quine)
-├── agents.md                ← Guia operacional para desenvolvedores e agentes IA
+├── CHANGELOG.md             ← Histórico de versões desde a V7 (base da arquitetura atual; V1–V6 anteriores à arquitetura Quine)
+├── AGENTS.md                ← Guia operacional para desenvolvedores e agentes IA
 ├── design-tokens.md         ← Especificação completa do design system
 └── validate.sh              ← Script de validação estática manual — executar antes de cada commit (não há hook git configurado no repositório)
 ```

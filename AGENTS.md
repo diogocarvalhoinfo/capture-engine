@@ -1038,7 +1038,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 3. **Após cada alteração significativa, atualizar:**
    - `README.md` — se for nova funcionalidade visível ao usuário
    - `design-tokens.md` — se for novo token CSS ou JS
-   - `changelog.md` — sempre, com entrada na versão atual
+   - `CHANGELOG.md` — sempre, com entrada na versão atual
 4. **Codificação:** UTF-8 sem BOM
 5. **Testar regressão mental:** Para cada alteração, verificar se os 3 contratos (zero-dep, Quine, XSS) continuam válidos
 6. **Verificar markers:** Após qualquer edição ao HTML, confirmar que os 11 comment markers estão intactos
@@ -1086,7 +1086,7 @@ O `validate.sh` executa 27 verificações mecânicas baseadas em regex/grep, gar
 13. **Modo PDF 'exact' removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
 14. **Versão consistente no HTML**: Auto-detecta versão a partir do *boot message* e cruza com a versão declarada no *badge* visual e comentário VB. Falha indica versionamento inconsistente ou erro no processo de release.
 15. **README.md versao consistente**: Verifica a mesma detecção cruzada no `README.md`.
-16. **agents.md versao consistente**: Verifica a mesma detecção cruzada no `agents.md`.
+16. **AGENTS.md versao consistente**: Verifica a mesma detecção cruzada no `AGENTS.md`.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
 18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
 19. **Ferramentas de anotação no README (8/8)**: confirma que as 8 afordâncias do editor (7 valores de `annTool` + o botão Rotação 90°) estão documentadas no `README.md`. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
@@ -1174,7 +1174,7 @@ document.getElementById('app-logo').style.display = TOKEN_SHOW_LOGO ? '' : 'none
 **Passo 5 — Atualizar docs:**
 - `README.md §6.4` — nova linha na tabela de tokens
 - `design-tokens.md` — se for token de design visual
-- `changelog.md` — entrada na versão atual
+- `CHANGELOG.md` — entrada na versão atual
 
 **Passo 6 — Validar:**
 ```bash
@@ -1268,7 +1268,7 @@ A validação tem **duas partes**:
 **Documentação:**
 - [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 13 do `README.md` foi atualizado
 - [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Seção 9
-- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `README.md`, o `design-tokens.md` e o `agents.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
+- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `README.md`, o `design-tokens.md` e o `AGENTS.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
 
 ---
 
@@ -1371,7 +1371,7 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), 
    - Badge visual no header do modal de configurações: `>VERSAO_ANTERIOR</span>` → `>VERSAO_NOVA</span>`
    - Mensagem de inicialização no console: `SysLogger.info('Capture Engine VERSAO_ANTERIOR Ready')` → `VERSAO_NOVA`
 
-2. **`changelog.md`** — 1 inserção (não substituição):
+2. **`CHANGELOG.md`** — 1 inserção (não substituição):
    - Adicionar nova entrada no topo: `## [VERSAO_NOVA] — YYYY-MM-DD`
    - As referências `VERSAO_ANTERIOR` existentes no changelog são **registros históricos — não se substituem**.
 
@@ -1384,7 +1384,7 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), 
    - Título principal: `# Design Tokens · Capture Engine VERSAO_ANTERIOR` → `VERSAO_NOVA`
    - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
 
-5. **`agents.md`** — 2 substituições:
+5. **`AGENTS.md`** — 2 substituições:
    - Título principal: `# Agents · Capture Engine VERSAO_ANTERIOR` → `VERSAO_NOVA`
    - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
 
@@ -1393,21 +1393,21 @@ Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), 
 Em todos os arquivos existem referências ao número de versão anterior que são **registros históricos** e devem ser preservadas. A regra é simples: **substituir apenas onde o número de versão identifica o produto atual** (títulos, badges, logs de boot). Preservar onde descreve quando algo aconteceu.
 
 Exemplos de referências a preservar após um bump para VERSAO_NOVA:
-- `agents.md`: "removido na VERSAO_ANTERIOR", "reescrita com Pointer Events / FLIP na VERSAO_ANTERIOR", "desde a VERSAO_ANTERIOR"
+- `AGENTS.md`: "removido na VERSAO_ANTERIOR", "reescrita com Pointer Events / FLIP na VERSAO_ANTERIOR", "desde a VERSAO_ANTERIOR"
 - `design-tokens.md`: "sempre `false` desde a VERSAO_ANTERIOR"
 - `capture-engine.html`: comentários inline como `// NOTA (VERSAO_ANTERIOR): definida mas NAO chamada...`
-- `changelog.md`: todos os cabeçalhos `## [VERSAO_ANTERIOR]` e o respectivo conteúdo
+- `CHANGELOG.md`: todos os cabeçalhos `## [VERSAO_ANTERIOR]` e o respectivo conteúdo
 
 **Verificação obrigatória antes de fechar:**
 ```bash
-grep -rn "VERSAO_ANTERIOR" capture-engine.html README.md design-tokens.md agents.md changelog.md
+grep -rn "VERSAO_ANTERIOR" capture-engine.html README.md design-tokens.md AGENTS.md CHANGELOG.md
 ```
 Substituir `VERSAO_ANTERIOR` pelo número real (ex: `V23`). Confrontar cada resultado: os únicos que devem restar são referências históricas (changelog e comentários de código). Se restar algum nos títulos ou rodapés, está incompleto.
 
 Nunca assumir que as substituições foram completas sem verificar.
 
 **Commit atómico obrigatório:**
-Todos os arquivos alterados no version bump (`capture-engine.html`, `changelog.md`, `README.md`, `design-tokens.md`, `agents.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
+Todos os arquivos alterados no version bump (`capture-engine.html`, `CHANGELOG.md`, `README.md`, `design-tokens.md`, `AGENTS.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
 
 **Criar e enviar a tag (obrigatório — foi esquecido na V26):**
 

@@ -16,7 +16,7 @@
 #
 # O QUE ISTO NAO COBRE (precisa de um humano a abrir o browser):
 #   - Comportamento visual, dark mode, anotacao, ciclo de vida da sessao,
-#     export real de PDF/ZIP. Ver a checklist manual em agents.md, Seccao 11.
+#     export real de PDF/ZIP. Ver a checklist manual em AGENTS.md, Seccao 11.
 #
 # USO:   ./validate.sh [caminho-do-html]   (por defeito: capture-engine.html)
 # SAIDA: lista de [PASS]/[FAIL] e um resumo. Codigo de saida 0 = tudo OK.
@@ -54,7 +54,7 @@ echo
 
 # 1) Comment markers do Quine: o grep deve devolver exatamente 11 linhas.
 #    (8 strings unicas; aparecem em 11 linhas: 8 estruturais + boot() +
-#     sanitizeForQuine + exportFile. Ver agents.md Seccao 5.)
+#     sanitizeForQuine + exportFile. Ver AGENTS.md Seccao 5.)
 M=$(grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" "$FILE")
 check_eq "Comment markers (linhas grep)" 11 "$M"
 
@@ -145,7 +145,7 @@ else
 # 8b) Consistencia de versao nos ficheiros .md
 if [ -n "$VER" ]; then
   README_VER=$(grep -m1 "^# Capture Engine" README.md 2>/dev/null | grep -oE "V[0-9]+" | head -1)
-  AGENTS_VER=$(grep -oE "Capture Engine V[0-9]+" agents.md 2>/dev/null | grep -oE "V[0-9]+" | head -1)
+  AGENTS_VER=$(grep -oE "Capture Engine V[0-9]+" AGENTS.md 2>/dev/null | grep -oE "V[0-9]+" | head -1)
   if [ -z "$README_VER" ]; then
     printf '[FAIL] %-52s\n' "README.md: versao nao encontrada"; FAIL=$((FAIL+1));
   elif [ "$README_VER" = "$VER" ]; then
@@ -154,11 +154,11 @@ if [ -n "$VER" ]; then
     printf '[FAIL] %-52s (HTML=%s README=%s)\n' "README.md versao divergente" "$VER" "$README_VER"; FAIL=$((FAIL+1));
   fi
   if [ -z "$AGENTS_VER" ]; then
-    printf '[FAIL] %-52s\n' "agents.md: versao nao encontrada"; FAIL=$((FAIL+1));
+    printf '[FAIL] %-52s\n' "AGENTS.md: versao nao encontrada"; FAIL=$((FAIL+1));
   elif [ "$AGENTS_VER" = "$VER" ]; then
-    printf '[PASS] %-52s (%s)\n' "agents.md versao consistente" "$AGENTS_VER"; PASS=$((PASS+1));
+    printf '[PASS] %-52s (%s)\n' "AGENTS.md versao consistente" "$AGENTS_VER"; PASS=$((PASS+1));
   else
-    printf '[FAIL] %-52s (HTML=%s agents=%s)\n' "agents.md versao divergente" "$VER" "$AGENTS_VER"; FAIL=$((FAIL+1));
+    printf '[FAIL] %-52s (HTML=%s agents=%s)\n' "AGENTS.md versao divergente" "$VER" "$AGENTS_VER"; FAIL=$((FAIL+1));
   fi
 fi
 
@@ -254,13 +254,13 @@ else
   PASS=$((PASS+1))
 fi
 
-# 15) Autoconsistencia: contagem documentada em agents.md bate com checks numerados (1-22)
+# 15) Autoconsistencia: contagem documentada em AGENTS.md bate com checks numerados (1-22)
 # Comparar com constante fixa, NAO com $PASS (que varia se houver SKIP/FAIL)
 CHECKS_NUMERADOS=27
-DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" agents.md 2>/dev/null | head -1 | tr -d '\r')
+DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
-  printf "[WARN] %-52s %s\n" "Contagem de checks em agents.md desfasada" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
+  printf "[WARN] %-52s %s\n" "Contagem de checks em AGENTS.md desfasada" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
 fi
 
 # 16) ZT1: cada token substituido pelo exportFile tem exatamente 1 declaracao real
@@ -361,7 +361,7 @@ else
 fi
 
 # 23) Inventario de z-index: o conjunto deve ser exatamente o documentado
-#     em design-tokens.md §4 / agents.md §2.2. Falha se surgir valor novo
+#     em design-tokens.md §4 / AGENTS.md §2.2. Falha se surgir valor novo
 #     ou se um documentado desaparecer.
 ZEXPECTED="10 50 100 200 300 1999 2000 9999 99999"
 ZFOUND=$(grep -oE "z-index: *[0-9]+" "$FILE" | grep -oE "[0-9]+" | sort -n | uniq | tr '\n' ' ' | sed 's/ *$//')
@@ -455,7 +455,7 @@ fi
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="
 if [ "$FAIL" -eq 0 ]; then
-  echo "Integridade estatica OK. Falta o teste manual no browser (agents.md Seccao 11)."
+  echo "Integridade estatica OK. Falta o teste manual no browser (AGENTS.md Seccao 11)."
   exit 0
 else
   echo "Ha falhas. NAO considerar a tarefa concluida ate todas passarem."
