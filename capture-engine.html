@@ -389,6 +389,25 @@
       display: block
     }
 
+    .ce-tip {
+      position: fixed;
+      z-index: var(--z-toast);
+      padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+      border-radius: var(--radius-sm);
+      background: var(--color-white);
+      color: var(--color-viewer-active-foreground);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      pointer-events: none;
+      display: none
+    }
+
+    .ce-tip.show {
+      display: block
+    }
+
     .btn-send.st-error {
       background: var(--color-red-500) !important;
       pointer-events: none
@@ -4300,8 +4319,13 @@
         inp.oninput = annAutosizeText;
         inp.onblur = () => setTimeout(() => { if (!committed) commit() }, 100);
       }
+      /* Editor tooltips: shown at once above the hovered button, and kept while the pointer (or the keyboard focus) stays on it.
+         The native title waits about a second and the system hides it after a few seconds, so it moves to data-tip;
+         a button with only an icon keeps the same text as aria-label, for screen readers. */
+      function initEditorTips() { const bar = $('img-modal-ann-actions'); if (!bar) return; const tip = document.createElement('div'); tip.className = 'ce-tip'; tip.id = 'ce-tip'; tip.setAttribute('role', 'tooltip'); document.body.appendChild(tip); let cur = null; const sel = '[title], [data-tip]'; const prep = el => { if (el.title) { el.dataset.tip = el.title; el.removeAttribute('title') } if (el.dataset.tip && !el.getAttribute('aria-label') && !el.textContent.trim()) el.setAttribute('aria-label', el.dataset.tip) }; bar.querySelectorAll('[title]').forEach(prep); const show = el => { prep(el); const t = el.dataset.tip; if (!t) return; cur = el; tip.textContent = t; tip.classList.add('show'); const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 6; let top = r.top - h - gap; if (top < 4) top = r.bottom + gap; tip.style.left = Math.min(Math.max(4, r.left + r.width / 2 - w / 2), innerWidth - w - 4) + 'px'; tip.style.top = top + 'px' }; const hide = () => { tip.classList.remove('show'); cur = null }; const target = e => e.target.closest ? e.target.closest(sel) : null; bar.addEventListener('pointerover', e => { const el = target(e); if (el && bar.contains(el) && el !== cur) show(el) }); bar.addEventListener('pointerout', e => { const el = target(e); if (el && el === cur && !el.contains(e.relatedTarget)) hide() }); bar.addEventListener('focusin', e => { const el = target(e); if (el && bar.contains(el)) show(el) }); bar.addEventListener('focusout', e => { if (target(e) === cur) hide() }); const check = () => setTimeout(() => { if (cur && !cur.offsetParent) hide() }, 50); bar.addEventListener('click', check); document.addEventListener('keydown', check) }
       function initAnnotation() {
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
+        initEditorTips();
         // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
         $('ann-canvas').addEventListener('pointermove', e => { const cv = e.currentTarget; if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return } const p = annCanvasXY(e), hr = ANN_HIT_SIZE * annPx(), { x, y, w, h } = annCropBox; const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr; let c = 'crosshair'; if (near(x, y) || near(x + w, y + h)) c = 'nwse-resize'; else if (near(x + w, y) || near(x, y + h)) c = 'nesw-resize'; else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) c = 'move'; cv.style.cursor = c; cv.dataset.cropCursor = '1' });
         $('ann-cancel').onclick = annDeactivate;
