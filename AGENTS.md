@@ -113,13 +113,13 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 2. Fallback para `BOOT_HTML` se o `fetch` falhar (ex: protocolo `file://` com restrições)
 3. `exportFile()` substitui os valores dos tokens via regex
 
-> **Aviso Técnico (CORS Local):** Ao testar localmente, abrir o arquivo HTML via protocolo `file://` no Chrome ou Safari causará uma falha imediata no `fetch(location.href)` devido a políticas rigorosas de CORS para recursos locais (o navegador trata arquivos locais como origens opacas e proíbe `fetch` a si mesmos). O sistema sobrevive a isto porque `BOOT_HTML` captura a string estática do DOM exato (via `document.documentElement.outerHTML`, prefixado com `<!DOCTYPE html>` para preservar o standards mode) no momento do boot antes de qualquer mutação. O Quine opera sobre o fallback de forma imperceptível ao usuário.
+> **Aviso Técnico (CORS Local):** Aberto por `file://` no Chrome ou no Safari, o `fetch(location.href)` falha logo, por causa das regras de CORS para arquivos locais. O navegador trata um arquivo local como origem opaca e proíbe o `fetch` a si mesmo. O sistema sobrevive porque o `BOOT_HTML` guarda o DOM no arranque, antes de qualquer mutação. É o `document.documentElement.outerHTML`, com `<!DOCTYPE html>` à frente para manter o standards mode. O Quine opera sobre o fallback de forma imperceptível ao usuário.
 
-> **Aviso Técnico (Servidor HTTP):** Se a ferramenta for servida via servidor HTTP (ex: `python -m http.server`, Apache, Nginx), o `fetch(location.href)` pode ter sucesso — mas retornar HTML **gerado dinamicamente pelo servidor** em vez do código-fonte original. Neste cenário, o Quine exportaria **o que o servidor devolveu** — que pode não ser o código-fonte, mas nunca é o DOM vivo: depois do arranque, nenhum caminho volta a ler o DOM. O `BOOT_HTML` (fallback estático) não é utilizado quando o fetch tem sucesso. Para desenvolvimento local, usar um servidor que sirva o arquivo estático sem processamento (ex: `python -m http.server` serve arquivos estáticos diretamente — é seguro neste caso). Em servidores com geração dinâmica de HTML, o Export pode produzir arquivos corrompidos silenciosamente.
+> **Aviso Técnico (Servidor HTTP):** Servida por HTTP (ex.: `python -m http.server`, Apache, Nginx), o `fetch(location.href)` pode ter sucesso e devolver HTML **gerado pelo servidor**, e não o código-fonte. Nesse caso, o Quine exporta **o que o servidor devolveu**. Nunca é o DOM vivo: depois do arranque, nenhum caminho volta a ler o DOM. O `BOOT_HTML` (fallback estático) não é utilizado quando o fetch tem sucesso. Para desenvolvimento local, use um servidor que sirva o arquivo sem o processar; o `python -m http.server` é seguro. Em servidores com geração dinâmica de HTML, o Export pode produzir arquivos corrompidos silenciosamente.
 4. Para exports de User, remove os blocos marcados com comment markers
 5. Faz download do HTML resultante
 
-**O que é `BOOT_HTML`:** Uma constante estática capturada no momento do boot, antes de qualquer mutação do DOM. É o fallback do Quine quando o `fetch(location.href)` não está disponível. Sem ela, e com o `fetch` a falhar, o `PRISTINE_HTML` ficaria `null` e o export **abortaria** — `if (!PRISTINE_HTML) { SysLogger.error('PRISTINE_HTML not available'); return }`. ⚠️ **Não confundir com proteção contra mutação do DOM (ver D69):** o `BOOT_HTML` **é** a serialização do DOM, tirada cedo. O que o protege de mutações é o **momento** em que é tirado, não uma defesa qualquer — e é por isso que em `file://` o artefato exportado é HTML re-serializado pelo navegador, e não os bytes do arquivo.
+**O que é `BOOT_HTML`:** Uma constante estática capturada no momento do boot, antes de qualquer mutação do DOM. É o fallback do Quine quando o `fetch(location.href)` não está disponível. Sem ela, e com o `fetch` a falhar, o `PRISTINE_HTML` ficaria `null` e o export **abortaria** — `if (!PRISTINE_HTML) { SysLogger.error('PRISTINE_HTML not available'); return }`. ⚠️ **Não confundir com proteção contra mutação do DOM (ver D69):** o `BOOT_HTML` **é** a serialização do DOM, tirada cedo. O que o protege de mutações é o **momento** em que é tirado. Por isso, em `file://`, o artefato exportado é HTML serializado de novo pelo navegador, e não os bytes do arquivo.
 
 **O que nunca alterar:**
 
@@ -149,7 +149,7 @@ No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_E
 const TOKEN_MAIN_COLOR = '#e86b2e';
 ```
 
-> **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex ancorado à sintaxe de declaração (ex: `/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/` — o padrão do valor **precisa conhecer escapes**; ver o aviso crítico na `§1.3`). Isto garante que apenas a declaração seja substituída, prevenindo a corrupção acidental da string em contextos de comentário, log ou código (ex: `console.log("TOKEN_MAIN_COLOR")`). Adicionalmente, `sanitizeForQuine()` insere zero-width spaces (U+200B) nos valores dos campos editáveis antes de serializar o HTML, impedindo que texto digitado pelo usuário coincida acidentalmente com os marcadores de estrutura do Quine (ex.: `ADMIN_EDIT_START`).
+> **Proteção de colisão do regex:** As substituições de tokens no `exportFile()` usam regex presas à sintaxe da declaração, como `/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`. O padrão do valor **precisa conhecer escapes** (ver o aviso crítico na `§1.3`). Assim, só a declaração é substituída, e não o nome num comentário, num log ou no código (ex.: `console.log("TOKEN_MAIN_COLOR")`). Além disso, `sanitizeForQuine()` insere espaços de largura zero (U+200B) nos valores dos campos editáveis antes de serializar o HTML. Um texto digitado nunca coincide com os marcadores do Quine (ex.: `ADMIN_EDIT_START`).
 
 **Regra:** Qualquer alteração ao arquivo deve preservar todos os comment markers intactos e todas as funções Quine funcionais.
 
@@ -159,7 +159,7 @@ const TOKEN_MAIN_COLOR = '#e86b2e';
 
 **O problema:** O navegador interpreta HTML dentro de strings. Se um usuário escrever `<img src=x onerror=alert(1)>` como legenda e esse texto for inserido via `innerHTML`, o JavaScript executa.
 
-> **Modelo de ameaça:** Embora a app seja local e de usuário único, o conteúdo capturado pode ter origem em terceiros (ex.: uma captura de tela ou documento com texto controlado por outra pessoa, colado por um técnico de Service Desk a partir de um ticket de cliente). Esse texto, ao ser renderizado sem sanitização, executaria no contexto do arquivo. Em ambientes que processam dados de clientes (setor bancário, seguros), isto é um risco real — daí a sanitização ser obrigatória.
+> **Modelo de ameaça:** A app é local e de um só usuário, mas o conteúdo capturado pode vir de terceiros. Um exemplo é o texto de um ticket de cliente, colado por um técnico de Service Desk. Esse texto, ao ser renderizado sem sanitização, executaria no contexto do arquivo. Em ambientes que processam dados de clientes (setor bancário, seguros), isto é um risco real — daí a sanitização ser obrigatória.
 
 **A solução:** Usar sempre `escapeHTML()` antes de qualquer `innerHTML` com dados do usuário:
 ```js
@@ -174,7 +174,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 
 > **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) são exportados com a aspa escapada — o arquivo resultante é sintaticamente correto em JavaScript, mas quem inspecionar o HTML manualmente verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correto e esperado.
 
-> ⚠️ **AVISO CRÍTICO — as regexes de substituição precisam conhecer escapes:** escapar o apóstrofo em `sanitizeForQuine` só resolve **metade** do problema. Da V11 à V26 as 11 regexes de token de texto usavam `'[^']*'`, que **para no primeiro apóstrofo, mesmo escapado**. Consequência: o artefato da 1.ª geração ficava correto, mas ao **re-exportar a partir dele** o padrão cortava a declaração a meio e produzia `SyntaxError` — aplicação completamente morta, sem uma única função global. Corrigido na D40 com `'(?:[^'\\]|\\.)*'`, que consome pares escapados como unidade.
+> ⚠️ **AVISO CRÍTICO — as regexes de substituição precisam conhecer escapes:** escapar o apóstrofo em `sanitizeForQuine` só resolve **metade** do problema. Da V11 à V26 as 11 regexes de token de texto usavam `'[^']*'`, que **para no primeiro apóstrofo, mesmo escapado**. Consequência: o artefato da 1.ª geração ficava correto. Ao **reexportar a partir dele**, o padrão cortava a declaração a meio e produzia `SyntaxError`, e a aplicação ficava morta. Corrigido na D40 com `'(?:[^'\\]|\\.)*'`, que consome pares escapados como unidade.
 >
 > **Ao editar `exportFile`:** qualquer regex nova que capture um valor de token entre aspas simples precisa usar este padrão. `'[^']*'` é sempre errado aqui — funciona uma geração e parte a seguinte, o que o torna especialmente traiçoeiro: passa em qualquer teste que exporte só uma vez.
 
@@ -210,9 +210,9 @@ As regras acima não dependem de disciplina do programador — estão impostas p
 | `img-src blob: data:` | As capturas vivem como `blob:`/`data:`. Uma `<img src="https://…">` é bloqueada. |
 | `connect-src 'self'` | **Não mexer sem ler o parágrafo seguinte.** |
 
-> ⚠️ **`connect-src 'self'` é o que mantém o Quine vivo.** O `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo (§1.2). Apertar esta diretiva para `'none'` não produz erro visível: o `fetch` falha, a função cai no fallback `BOOT_HTML`, e o export continua a funcionar — a exportar uma cópia desatualizada do arquivo. É uma falha silenciosa que o `validate.sh` não apanha, porque o artefato produzido continua estruturalmente válido.
+> ⚠️ **`connect-src 'self'` é o que mantém o Quine vivo.** O `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo (§1.2). Apertar esta diretiva para `'none'` não produz erro visível. O `fetch` falha, a função cai no fallback `BOOT_HTML`, e o export continua, com uma cópia desatualizada do arquivo. É uma falha silenciosa que o `validate.sh` não apanha, porque o artefato produzido continua estruturalmente válido.
 
-**Ao acrescentar qualquer recurso novo:** a CSP bloqueia primeiro e o sintoma aparece no console, não na interface. Antes de concluir que «o recurso não funciona», confirme no console se foi a CSP que o recusou — e, se foi, a resposta correta é quase sempre embutir o recurso, não relaxar a diretiva.
+**Ao acrescentar qualquer recurso novo:** a CSP bloqueia primeiro e o sintoma aparece no console, não na interface. Antes de concluir que «o recurso não funciona», confirme no console se foi a CSP que o recusou. Se foi, embuta o recurso em vez de relaxar a diretiva.
 
 O `README.md` §Segurança documenta o mesmo para o público externo, incluindo por que `'unsafe-inline'` não é aqui a fraqueza que costuma ser.
 
@@ -631,7 +631,7 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o navegador for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do navegador for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e, quando é `QuotaExceededError`, chamam `showQuotaBanner()` — que injeta um banner vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`, criado em runtime e **não** presente no HTML estático). O banner avisa que as capturas deixaram de ser gravadas e recomenda exportação imediata; tem botão ✕ para fechar, e reaparece na falha seguinte porque o guard testa a existência do elemento. `SysLogger.error` registra a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do navegador for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação. Num `QuotaExceededError`, chamam `showQuotaBanner()`, que injeta um aviso vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`). O aviso é criado em runtime e **não** está no HTML estático. Diz que as capturas deixaram de ser gravadas e recomenda exportar já. Tem um botão ✕, e volta na falha seguinte, porque a guarda testa se o elemento existe. `SysLogger.error` registra a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
 
 > **Correção histórica:** até a V26 esta seção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia tanto o `README §8` como a `§2.2` deste documento, que já listava `99999` como «Banners críticos de quota/armazenamento». O banner existe desde a correção D9 (commit `a5656f5`).
 
@@ -713,11 +713,11 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | O que faz | Quando chamar |
 |---|---|---|
-| `capturePristine()` | Lê o código-fonte original via `fetch` ou `BOOT_HTML` e guarda em `PRISTINE_HTML` | **Uma vez, em `boot()`** — não em `exportFile()`, que apenas *lê* `PRISTINE_HTML` e aborta com `SysLogger.error` se ainda for `null`. (Até a V26 esta linha dizia «Apenas em `exportFile()`»; o diagrama do `README §13` sempre esteve certo.) |
+| `capturePristine()` | Lê o código-fonte original via `fetch` ou `BOOT_HTML` e guarda em `PRISTINE_HTML` | **Uma vez, em `boot()`** — não em `exportFile()`, que apenas *lê* `PRISTINE_HTML` e aborta com `SysLogger.error` se ainda for `null`. (Até a V26 esta linha dizia «Apenas em `exportFile()`»; o diagrama do `README §15` sempre esteve certo.) |
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
-**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`, produzindo nomes como `CAPTURE-ENGINE-14h22m-11-jun-2026.html` em vez de um nome derivado da sessão (ou sem prefixo nenhum, quando a sessão não tem título).
+**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`. O resultado é um nome como `CAPTURE-ENGINE-14h22m-11-jun-2026.html`, e não um nome derivado da sessão.
 
 ### Funções dos Motores PDF e ZIP
 
@@ -727,7 +727,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`), cria um XObject `/Image` com `/Filter /DCTDecode` (os bytes JPEG são embebidos diretamente, sem reprocessamento), uma `/Page` e um content stream que escala a imagem para caber na página mantendo a proporção e centra. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
+| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`) e cria um XObject `/Image` com `/Filter /DCTDecode`, com os bytes JPEG sem reprocessamento. Cria também uma `/Page` e um content stream que escala a imagem para caber na página, centrada e com a proporção mantida. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
 | `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais na sessão permanecem PNG — a conversão JPEG é só para o PDF. |
 | `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
 
@@ -735,12 +735,12 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem a partir de **`img.blob`** (extensão por MIME). **Nunca lê `origBlob`:** em imagens anotadas, rodadas ou recortadas, o `img.blob` é o PNG regenerado pelo `ann-save` a partir do canvas, e o original — que fica preservado em `origBlob` — não é exportável por nenhuma via. Comportamento intencional (as edições devem acompanhar a exportação), documentado como limitação no `README §5.7` e na seção de uso probatório. Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
-| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`.<br><br>**Codificação dos nomes (não alterar sem ler isto):** os nomes são escritos em UTF-8 por `ENC.encode()`, e o **bit 11 (`0x0800`) do *general purpose bit flag*** é ativado nos **dois** cabeçalhos para o declarar (APPNOTE.TXT §4.4.4). Os dois andam sempre juntos: com o bit a `0`, o descompressor é obrigado a ler os bytes como CP437/ANSI e qualquer nome com acentos sai ilegível (`Diagnóstico` → `Diagn+¦stico`). O `validate.sh` check #26 protege esta invariante. Ver D21. |
+| `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem a partir de **`img.blob`** (extensão por MIME). **Nunca lê `origBlob`.** Numa imagem anotada, rodada ou recortada, o `img.blob` é o PNG regenerado pelo `ann-save`. O original fica em `origBlob` e não se exporta por nenhuma via. É intencional, porque as edições devem acompanhar a exportação; a limitação está no `README §6.7` e em «Uso como prova» (§9). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
+| `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`.<br><br>**Codificação dos nomes (não alterar sem ler isto):** os nomes são escritos em UTF-8 por `ENC.encode()`. O **bit 11 (`0x0800`) do *general purpose bit flag*** declara-o, nos **dois** cabeçalhos (APPNOTE.TXT §4.4.4). Os dois andam sempre juntos. Com o bit a `0`, o descompressor lê os bytes como CP437/ANSI, e um nome com acentos sai ilegível (`Diagnóstico` → `Diagn+¦stico`). O `validate.sh` check #26 protege esta invariante. Ver D21. |
 
 ### Motor de Reordenação (`initReorder`)
 
-O mecanismo de drag-and-drop para reordenação foi completamente reescrito na V23 com Pointer Events e animações FLIP (*First-Last-Invert-Play* — mede a posição inicial e final do elemento, aplica a diferença como `transform` e anima-a até zero). Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura direta do changelog.
+O arrastar e soltar da reordenação foi reescrito na V23 com Pointer Events e animações FLIP. O FLIP (*First-Last-Invert-Play*) mede a posição inicial e a final, aplica a diferença como `transform` e anima-a até zero. Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura direta do changelog.
 
 **Constantes e parâmetros:**
 
@@ -818,7 +818,7 @@ ativar arrasto:
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto). A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
 | **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
-| **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annCommitUndo` ignora snapshots idênticos ao topo (deduplicação introduzida na D18). `annDoUndo` e `annDoRedo` são `async`. Detectam mudanças em `rot` e `crop` no snapshot: se `rot` mudou, regeneram o bitmap base via `getRotatedBlob(origBlob, _prev.rot)` e atualizam `annCurrentRotation`; se `crop` mudou, trocam a imagem base entre `o.blob` e `origBlob` e redimensionam o canvas. Se o snapshot tiver `pcrop`, restaura também a `o.cropBox` persistida. Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `annDragDirty` / `annResizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `annDragDirty`/`annResizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
+| **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annCommitUndo` ignora snapshots idênticos ao topo (deduplicação introduzida na D18). `annDoUndo` e `annDoRedo` são `async`. Detectam mudanças em `rot` e `crop` no snapshot. Se `rot` mudou, regeneram o bitmap base com `getRotatedBlob(origBlob, _prev.rot)` e atualizam `annCurrentRotation`. Se `crop` mudou, trocam a imagem base entre `o.blob` e `origBlob` e redimensionam o canvas. Se o snapshot tiver `pcrop`, restaura também a `o.cropBox` persistida. Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `annDragDirty` / `annResizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `annDragDirty`/`annResizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
 
 **Ferramenta de Rotação (90°)**
 Botão `ann-rotate-btn` na toolbar do editor. Cada clique roda a imagem 90° no
@@ -832,7 +832,7 @@ original.
 **Ferramenta de Crop (Recorte)**
 Ferramenta `annSetTool('crop')`. Comportamento:
 - **Primeira ativação (sem cropBox salvo):** define `annCropBox = {0, 0, w, h}` abrangendo toda a imagem; mostra máscara escurecida (60%) fora da área selecionada; 4 alças em "L" nos cantos para ajuste.
-- **Reativação (com cropBox salvo):** expande o canvas para as dimensões do `origBlob` (com rotação aplicada), desloca coordenadas +cx/+cy, e mostra a área de crop anterior — permite reajustar ou recuperar áreas cortadas.
+- **Reativação (com cropBox salvo):** expande o canvas para as dimensões do `origBlob`, com a rotação aplicada, e desloca as coordenadas +cx/+cy. Mostra a área de crop anterior, para reajustar ou recuperar áreas cortadas.
 - **Salvar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações, persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy, chama `annDeactivate()`.
 - **`annCropBox`**: estado ativo do recorte em memória (`{x, y, w, h}`) durante a edição. Null fora do modo crop.
 - **Invariante:** `origBlob` nunca é cortado. Todo recorte é reversível.
@@ -971,7 +971,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `_db` | IDBDatabase | Handle da base de dados IndexedDB |
 | `_ensurePromise` | Promise \| null | Mutex de `ensureSession()` — evita race conditions |
 | `_vbLabelDirty` | object | `{user: bool, equip: bool}` — track se o admin editou rótulos no VB |
-| `sysColors` | object | Cores atuais `{main, fg, tStart, tAccent, tEnd}`. `main`/`fg` são a cor principal e a cor do texto sobre ela (usadas no contraste automático YIQ — modelo de luminância que decide texto preto ou branco sobre a cor de fundo); `tStart`/`tAccent`/`tEnd` são as cores dos 3 spans de título (vazio = herda do contexto). Inicializado a partir de `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Lido por `applyTokens()`/`initVbSync()` e exportado pelo Quine. |
+| `sysColors` | object | Cores atuais `{main, fg, tStart, tAccent, tEnd}`. `main` e `fg` são a cor principal e a cor do texto sobre ela, usadas no contraste automático YIQ. O YIQ é um modelo de luminância que escolhe texto preto ou branco. `tStart`, `tAccent` e `tEnd` são as cores das 3 partes do título (vazio = herda). Inicializado a partir de `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Lido por `applyTokens()`/`initVbSync()` e exportado pelo Quine. |
 | `annActive` | boolean | `true` = modo de anotação ativo |
 | `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `text` \| `crop` |
 | `annHistory` | array | Fonte única da verdade das formas atuais no canvas; cada entrada: `{type, x1, y1, ...}` |
@@ -1055,7 +1055,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep ou Python e uma com o stylelint, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o navegador.
+O `validate.sh` executa 29 verificações mecânicas: 28 com regex, grep ou Python, e uma com o stylelint. Conferem os 3 contratos fundamentais (zero-dep, Quine, XSS) sem abrir o navegador.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1064,7 +1064,7 @@ O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-> **Além dos 29 numerados há dois checks que só emitem `[WARN]` e não entram na contagem (D70):** a heurística de complexidade ciclomática (descrita abaixo) e um check de **contagem de checks**, que compara o número declarado nesta seção com o `CHECKS_NUMERADOS` do script e avisa se desfasarem. Este último existe porque a D24 corrigiu exatamente essa dessincronização; se acrescentar ou remover um check numerado, atualize os dois lugares ou o `[WARN]` fica permanente.
+> **Além dos 29 numerados há dois checks que só emitem `[WARN]` e não entram na contagem (D70):** a heurística de complexidade ciclomática (descrita abaixo) e a **contagem de checks**. A contagem compara o número declarado nesta seção com o `CHECKS_NUMERADOS` do script e avisa se forem diferentes. Existe porque a D24 corrigiu essa diferença. Ao acrescentar ou remover um check numerado, atualize os dois lugares.
 
 **Os 29 Checks de Validação:**
 
@@ -1074,14 +1074,14 @@ O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep
 4. **Função definida: sanitizeForQuine**: Idem. Garante que a função existe — **não** que sanitize corretamente.
 5. **Função definida: escapeHTML**: Idem. Garante que a função existe — **não** que esteja aplicada em todos os pontos de entrada, que é o que «proteção XSS» exigiria. Um check de presença não pode sustentar essa promessa; a cobertura real é matéria da §1.3.
 
-> ⚠️ **O que os checks 2 a 5 provam, e o que não provam (D67).** Provam que a **sintaxe de definição não desapareceu** do arquivo. Não provam que a função corre — isso é a prova de vida da `§11 Parte B` e o check 27. E não distinguem código de **contexto não executado**: uma definição escrita dentro de um comentário **ou de uma string literal** satisfaz o check — ambas medidas (D72). O âmbito é textual, não sintático. Isto é um limite **declarado, não um descuido**. Remover comentários de forma confiável exigiria um parser de JavaScript: o arquivo contém literais de regex com aspas lá dentro (`/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`) e comentários com apóstrofos em português, e **ambos partem qualquer scanner ingênuo** — foi assim que a D54 corrompeu a contagem de complexidade. Escrever mais um scanner frágil para fechar este furo seria repetir o defeito que o projeto passa a vida a corrigir.
+> ⚠️ **O que os checks 2 a 5 provam, e o que não provam (D67).** Provam que a **sintaxe de definição não desapareceu** do arquivo. Não provam que a função corre — isso é a prova de vida da `§11 Parte B` e o check 27. E não distinguem código de **contexto não executado**. Uma definição escrita num comentário **ou numa string literal** satisfaz o check; os dois casos foram medidos (D72). O âmbito é textual, não sintático. Isto é um limite **declarado, não um descuido**. Tirar os comentários de forma confiável exigiria um parser de JavaScript. O arquivo tem regex com aspas lá dentro (`/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`) e comentários com apóstrofos. **Os dois partem qualquer scanner ingênuo**: foi assim que a D54 corrompeu a contagem de complexidade. Escrever mais um scanner frágil para fechar este furo seria repetir o defeito que o projeto passa a vida a corrigir.
 6. **Span de titulo: ui-title-start**: Verifica o span obrigatório do título (parte 1).
 7. **Span de titulo: ui-title-accent**: Verifica o span obrigatório do título (parte 2).
 8. **Span de titulo: ui-title-end**: Verifica o span obrigatório do título (parte 3).
 9. **APIs proibidas (eval/Function/write)**: Conta a ocorrência destas APIs. Deve ser estritamente 0 para mitigar riscos de segurança.
 10. **Recursos externos http(s) (zero-dep)**: Bloqueia injeção de dependências externas (`cdn`, `googleapis`, `href="http...`). Deve ser 0 para a ferramenta funcionar sem internet.
 
-> **Nota (D67):** este check visa **construtos de carregamento**, não a string `http`. As substrings nuas `cdn.` e `googleapis` foram removidas: faziam o check reprovar sobre prosa inocente — um comentário a dizer «não usar `cdn.` de terceiros» dava `[FAIL]` — e não acrescentavam detecção nenhuma. Medido: as 7 formas da matriz continuam todas apanhadas sem elas, incluindo `href='//cdn.foo/x.css'`, que casa pela forma protocol-relative.
+> **Nota (D67):** este check visa **construtos de carregamento**, não a string `http`. As substrings `cdn.` e `googleapis` saíram. Faziam o check falhar sobre prosa inocente (um comentário a dizer «não usar `cdn.` de terceiros» dava `[FAIL]`) e não detectavam nada a mais. Medido: as 7 formas da matriz continuam todas apanhadas sem elas, incluindo `href='//cdn.foo/x.css'`, que casa pela forma protocol-relative.
 11. **Cabecalho de licenca MIT presente**: Verifica presença obrigatória dos direitos de autor do Capture Engine.
 12. **TOKEN_SUBTITLE removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
 13. **Modo PDF 'exact' removido**: Verifica resíduo de funcionalidade descontinuada (deve ser 0).
@@ -1090,15 +1090,15 @@ O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep
 16. **Versão: CHANGELOG = HTML**: a mesma versão deve estar nas 3 referências de produto do HTML.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
 18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
-19. **Ferramentas de anotação no README (8/8)**: confirma que as 8 afordâncias do editor (7 valores de `annTool` + o botão Rotação 90°) estão documentadas no `README.md`. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
+19. **Ferramentas de anotação no README (8/8)**: confirma as 7 ferramentas do editor (valores de `annTool`) e a Rotação 90° na linha «O editor tem 7 ferramentas» do README. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
 20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
 21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
 22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).
 23. **Inventário de z-index**: todo `z-index` usa um token `--z-*`, e o conjunto dos valores dos tokens deve ser exatamente o documentado em design-tokens.md §4. Falha se surgir valor novo, se um documentado desaparecer ou se houver um `z-index` literal.
 24. **Durações de animação**: compara o CSS com os valores do design-tokens.md §5 (valores fixos esperados).
 25. **Tamanho do arquivo**: valida se o tamanho do arquivo (admin) está entre **280.000 e 340.000 bytes**, como tripwire. A faixa é um limiar de validação e vive **apenas no `validate.sh`** — o README §12 dá só a ordem de grandeza («ronda os ≈ 300 KB») e não declara faixa nenhuma. Ao alterar o limiar, altere-o no `validate.sh`; não há segundo lugar para sincronizar.
-26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
-27. **Export User inicializa**: aplica os 4 regex de remoção do `exportFile` e avalia o JS resultante num shim de DOM onde `getElementById` devolve `null` para os IDs removidos. **É comparativo:** só dá FAIL se o artefato User abortar **e** o Admin não — assim, IDs criados em runtime (que são `null` nos dois) não geram falso positivo, e um shim defeituoso reprova nos dois e é sinalizado como `[WARN]`. Cobre código síncrono de nível de módulo; `init()` é `async` e não corre neste ambiente. FAIL = a cópia distribuída aos usuários finais não inicializa (ver D25).
+26. **ZIP — flag UTF-8 (bit 11)**: confirma o bit 11 (`0x0800`) do *general purpose bit flag* nos dois cabeçalhos do `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
+27. **Export User inicializa**: aplica os 4 regex de remoção do `exportFile` e avalia o JS resultante num shim de DOM onde `getElementById` devolve `null` para os IDs removidos. **É comparativo:** só dá FAIL se o artefato User abortar **e** o Admin não. Assim, um ID criado em runtime (`null` nos dois) não gera falso positivo, e um shim com defeito falha nos dois e dá `[WARN]`. Cobre código síncrono de nível de módulo; `init()` é `async` e não corre neste ambiente. FAIL = a cópia distribuída aos usuários finais não inicializa (ver D25).
 28. **stylelint (modelo dos prompts)**: roda o stylelint com o `.stylelintrc.json` da raiz, cópia exata de `stylelint/.stylelintrc.json` do repositório `diogo-engenharia-software-agentes`, nas versões do README dessa pasta. FAIL = um valor visual fora dos tokens ou uma escrita fora do `stylelint-config-standard`. Sem `npx`, dá `[SKIP]`; na primeira vez, o `npx` baixa os pacotes.
 29. **design-tokens.md = código**: cada linha ``| `--nome` | `valor` |`` das tabelas do `design-tokens.md` deve bater com o `:root` do HTML, e a coluna «Escuro» com o bloco `html.dark`. Cada token dos dois blocos precisa de uma linha. As linhas ``| `TOKEN_X` | tipo | `valor` |`` da §6 devem bater com a declaração `const`. FAIL = a tabela envelheceu ou um token novo ficou sem documentação.
 
@@ -1115,7 +1115,7 @@ O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS
 
 #### Pontos de maior risco de regressão (remedidos na V27)
 
-Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos** — é o mapa de onde uma edição tem maior probabilidade de partir alguma coisa, e não é coincidência que as divergências entre código e documentação encontradas nas auditorias da V26 se concentrassem nestas mesmas funções.
+Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de partir alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções.
 
 | CC | Função | Motor |
 |---|---|---|
@@ -1134,7 +1134,7 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 
 > **Dois limites conhecidos que ficam por corrigir de propósito (D70).**
 >
-> **O guard de prosa do check 19 depende de uma frase editorial.** Ele dispara ao ver «A distinção é técnica» na linha
+> **O guard de prosa do check 19 depende de uma frase editorial.** Ele dispara ao ver «fica ativa até» na linha
 > das ferramentas. Medido: das duas linhas de prosa que a seguem, só essa contém um termo da lista (`Rotação`), pelo
 > que é a única cuja fusão abriria um furo — e é exatamente a que o guard vigia. **Hoje não há furo.** Mas se alguém
 > reescrever essa frase, o guard fica cego e a fragilidade volta em silêncio. Não foi remendado porque seria a **sexta**
@@ -1149,7 +1149,7 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 
 **Como usar isto:** antes de editar qualquer função desta tabela, leia a seção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
 
-> ⚠️ **Armadilha do medidor — apóstrofos em comentários.** O analisador de complexidade **não ignora comentários** e trata `'` como abertura de string. Um número ímpar de apóstrofos num comentário (fácil de escrever sem dar por isso: «e'», «d'») deixa o analisador dentro de uma string falsa e corrompe a contagem de chavetas a partir daí — funções passam a ser atribuídas ao nome errado e os valores **descem**. Sintoma: acrescentar código e ver o CC baixar. Aconteceu na D54 e custou uma investigação. Escreva comentários sem apóstrofos, ou em número par.
+> ⚠️ **Armadilha do medidor — apóstrofos em comentários.** O analisador de complexidade **não ignora comentários** e trata `'` como abertura de string. Um número ímpar de apóstrofos num comentário (ex.: «e'», «d'») deixa o analisador dentro de uma string falsa. A contagem de chaves corrompe-se a partir daí: as funções ficam com o nome errado, e os valores **descem**. Sintoma: acrescentar código e ver o CC baixar. Aconteceu na D54 e custou uma investigação. Escreva comentários sem apóstrofos, ou em número par.
 >
 > **Nota:** a heurística conta pontos de decisão, não complexidade real percebida. Uma função pode ter CC alto por ter muitos ramos triviais. A tabela ordena risco relativo, não é veredicto de qualidade. Regenerar com `bash validate.sh` após alterações significativas.
 
@@ -1237,7 +1237,7 @@ annRedoStack.length = 0; // limpar redo ao iniciar novo traço
 Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 A validação tem **duas partes**:
-- **Parte A — sem navegador:** verificações mecânicas e de leitura de código. As mecânicas (markers, funções Quine, spans de título, APIs proibidas, zero-dependência, sintaxe JS) são feitas automaticamente por `validate.sh` (ver Seção 10, "Como executar"); as restantes são confirmadas a ler o código.
+- **Parte A — sem navegador:** verificações mecânicas e de leitura de código. O `validate.sh` faz as mecânicas: markers, funções do Quine, partes do título, APIs proibidas, zero-dependência e sintaxe JS (ver a Seção 10, «Como executar»). As restantes confirmam-se lendo o código.
 - **Parte B — teste no navegador:** comportamento que só se confirma a abrir e a usar a aplicação. O agente pode fazer estes testes, por exemplo com o Playwright (D-0084). A «Prova de vida do Export User» é sempre feita por quem mantém o projeto, antes de cada versão.
 
 ---
@@ -1279,7 +1279,7 @@ A validação tem **duas partes**:
 **Documentação:**
 - [ ] Se foi adicionada ou removida uma função de inicialização, verificar se o diagrama `boot()` na Seção 15 do `README.md` foi atualizado
 - [ ] Se foi adicionada uma variável de estado global, verificar se foi incluída na tabela da Seção 9
-- [ ] Se foi alterado o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirmar que o `README.md`, o `design-tokens.md` e o `AGENTS.md` descrevem o comportamento **atual** — e não uma versão anterior. *(Já aconteceu deriva neste ponto: a anotação foi reescrita na V23 e os três documentos ficaram a descrever o pipeline antigo. O pipeline completo de suavização Laplaciana e RDP foi removido na V23, mas a variável `annSmoothLast` (EMA mínimo de último ponto) foi mantida ativa. Verificar sempre que se mexe num motor.)*
+- [ ] Se mudou o comportamento de um motor (anotação, Quine, PDF/ZIP, sessões), confirme que o `README.md`, o `design-tokens.md` e o `AGENTS.md` descrevem o comportamento **atual**. *(Já aconteceu: a anotação foi reescrita na V23, e os três documentos continuaram a descrever o pipeline antigo. A suavização Laplaciana e o RDP saíram na V23, mas a variável `annSmoothLast` ficou ativa. Confira sempre que mexer num motor.)*
 
 ---
 
@@ -1332,7 +1332,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 #### Prova de vida do Export User — obrigatória em toda a release
 
-> ⚠️ **AVISO CRÍTICO — este é o teste que faltou durante 15 versões:** entre a V11 e a V25, o Export User produziu um arquivo que **nunca inicializava** (ver changelog D25). Não foi detectado porque o `validate.sh` valida o arquivo de administrador e nunca o produto do export, e porque os itens antigos deste checklist verificavam apenas o que devia estar **ausente** (botões de admin, Visual Builder, logs) — condições que um artefato morto satisfaz trivialmente. **Nunca substituir este bloco por verificações de ausência.**
+> ⚠️ **AVISO CRÍTICO — este é o teste que faltou durante 15 versões:** entre a V11 e a V25, o Export User produziu um arquivo que **nunca inicializava** (ver changelog D25). Não foi detectado porque o `validate.sh` só valida o arquivo de administrador, e nunca o produto do export. Os itens antigos deste checklist só conferiam o que devia estar **ausente** (botões de admin, Visual Builder, logs), e um artefato morto cumpre isso. **Nunca substituir este bloco por verificações de ausência.**
 
 Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca com o `capture-engine.html` de desenvolvimento:
 
@@ -1348,9 +1348,9 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 
 > ⚠️ **O protocolo em que corre a prova muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha e o Quine exporta o `BOOT_HTML`, que é `document.documentElement.outerHTML` capturado no arranque: HTML equivalente mas **re-serializado pelo navegador** — tags SVG auto-fechadas passam a ter fecho explícito, atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registro que não diga qual protocolo usou não é reproduzível.
 
-> **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25 a interface renderizava por completo — logo, painéis, botões, e a barra de estado a dizer «Pronto» — porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
+> **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25, a interface aparecia inteira, com a barra de estado a dizer «Pronto», porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
 
-> ℹ️ **Nota:** o `validate.sh` check #27 simula o strip e apanha esta classe de defeito automaticamente, mas cobre apenas código síncrono de nível de módulo — `init()` é `async` e não corre nesse ambiente. **Não substitui esta prova de vida.**
+> ℹ️ **Nota:** o check 27 do `validate.sh` simula a remoção e apanha esta classe de defeito. Só cobre o código síncrono de nível de módulo, porque o `init()` é `async`. **Não substitui esta prova de vida.**
 
 **Multi-aba:**
 - [ ] Abrir o arquivo numa segunda aba do mesmo navegador → **carrega normalmente** (sem tela de erro vermelha); ambas as abas funcionam e compartilham a mesma base de dados
@@ -1402,13 +1402,13 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 |---|---|---|
 | D1 | **Botão PDF desativado quando há imagens + documentos** | PDF é exclusivo de imagens. Quando há docs na sessão, o usuário deve usar o ZIP. |
 | D2 | **Modal do Visual Builder não fecha ao clicar fora** | O VB é de uso exclusivo Admin e requer fecho explícito pelo botão ✕ para evitar perda de configurações acidentais. |
-| D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os eventos `isDirty=true` dos controles de campo contínuo do VB (color pickers, campos hex, sliders, radios, toggles, campos de texto/rótulo) que não chamam `triggerSave()` imediatamente por serem `input` events contínuos. Sem o interval, alterações no VB perdem-se se o navegador for fechado dentro da janela de 5s. |
+| D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os eventos `isDirty=true` dos controles contínuos do VB (seletores de cor, campos hex, sliders, radios, toggles, campos de texto). Esses eventos `input` não chamam `triggerSave()` na hora. Sem o interval, alterações no VB perdem-se se o navegador for fechado dentro da janela de 5s. |
 | D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
 | D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceite. O setInterval de 5s garante persistência antes do fecho do navegador em uso normal. |
 | D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + swatches de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
 | D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A lixeira cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
 | D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fecho (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
-| D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` é reiniciado (as anotações já foram confirmadas ao guardar) enquanto o `annRedoStack` é restaurado da persistência. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário: a barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**, por isso desativar os botões deixá-los-ia visualmente idênticos — trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
+| D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
 | D-0078 | **Versões em SemVer a partir de 28.0.0** | O critério de major, minor e patch está na §12. As tags `v1` a `v27` e as entradas `[V7]` a `[V27]` ficam. Origem: auditoria de 2026-10-31, decisão 1. |
 | D-0079 | **Purge às 48 horas e sem backup automático** | Por privacidade: para guardar, o usuário exporta PDF ou ZIP. Origem: `CHANGELOG.md`, «Decisões mantidas» da V23. |
 | D-0080 | **O aviso de quota fica por cima da barra do topo, em `#b91c1c` e branco** | É um aviso que não pode ser ignorado. As duas cores são literais declarados no `design-tokens.md` §2.1. Origem: `CHANGELOG.md`, D23. |
@@ -1425,7 +1425,7 @@ O que ficou para depois, com o ID e a origem.
 
 | ID | Pendente | Origem |
 |---|---|---|
-| D70 | O guard de prosa do check 19 depende da frase «A distinção é técnica», no README. A correção estrutural deriva os termos do próprio HTML (os 7 `data-tool` e o botão de rodar). | Sexta auditoria; detalhe na §10 |
+| D70 | O guard de prosa do check 19 depende da frase «fica ativa até», no README. A correção estrutural deriva os termos do próprio HTML (os 7 `data-tool` e o botão de rodar). | Sexta auditoria; detalhe na §10 |
 | D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
@@ -1465,7 +1465,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 | Outro navegador (Edge ↔ Chrome) | **NÃO** |
 | Mesma conta/perfil **em outra máquina** (sync ligado) | **NÃO** — IndexedDB não é sincronizado |
 
-> **Âmbito dos testes:** esta matriz foi confirmada em Windows 11 com Edge 148 e Chrome 148 (ambos motores Chromium). O Firefox e o Safari usam motores diferentes e **não foram testados formalmente** — o princípio geral (os dados estão ligados ao perfil de navegador, não ao arquivo) deve manter-se, mas os detalhes de compartilhamento entre arquivos `file://` podem variar.
+> **Âmbito dos testes:** esta matriz foi confirmada em Windows 11 com Edge 148 e Chrome 148 (ambos motores Chromium). O Firefox e o Safari usam motores diferentes e **não foram testados formalmente**. O princípio (os dados ligados ao perfil, e não ao arquivo) deve manter-se. Os detalhes de compartilhamento entre arquivos `file://` podem variar.
 
 **Pontos-chave:**
 - O que decide o acesso é o **perfil de navegador**, não o nome/pasta/versão do arquivo.
