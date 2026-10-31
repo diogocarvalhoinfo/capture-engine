@@ -60,6 +60,7 @@ As duas declarações de estado foram medidas de novo antes de mudar a data. O R
 - Os mesmos fluxos testados de novo no Edge 156, com o mesmo resultado do fim da execução.
 - Achados novos: F-0034 a F-0038, corrigidos nesta versão. O F-0033 (botão «Download» sem release) fecha-se com a release `v28.0.0`.
 - Não cobertos: o tema escuro da aba Histórico, o mobile por toque, o Firefox e o Safari.
+- Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
 
 ## [V27] — 2026-08-18
 
