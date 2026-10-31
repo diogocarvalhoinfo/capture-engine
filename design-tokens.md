@@ -360,20 +360,20 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 | Elemento | Tamanho | Peso | Notas |
 |---|---|---|---|
-| Nome da marca (topo) | `20px` | `600` | Logo principal |
-| Section titles (labels uppercase) | `11px` | `600` | `letter-spacing: 0.6px` |
-| Texto geral | `14px` | `400` | Body text |
-| Botões `.btn-send` | `13px` | `600` | Altura `36px` |
+| Nome da marca (topo) | `var(--text-xl)` (20px) | `600` | Logo principal |
+| Section titles (labels uppercase) | `var(--text-caption)` (11px) | `600` | `letter-spacing: 0.6px` |
+| Texto geral | `var(--text-sm)` (14px) | `400` | Body text |
+| Botões `.btn-send` | `var(--text-control)` (13px) | `600` | Altura `36px` |
 | Ícones em botões | `14px` | — | `stroke-width: 2` |
 | Ícones de cabeçalho `.blk-hdr svg` | `16px` | — | |
-| Títulos de bloco `.blk-hdr-title` | `11px` | `600` | Uppercase |
-| Badges `.count-badge`, `#trash-badge` | `11px` | `700` | |
-| Item de histórico — nome | `12px` | `400` | |
-| Item de histórico — data | `11px` | `400` | `--color-muted-foreground` |
-| Título de modal `.modal-title` | `16px` | `600` | Centrado horizontalmente |
-| Input de documento `.d-input` | `13px` | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
-| Legenda de imagem `.t-label` | `11px` | `400` | **Sem negrito** — discreta, não distrai da imagem |
-| Links de ação `.pick-link` | `13px` | `400` | Em empty states |
+| Títulos de bloco `.blk-hdr-title` | `var(--text-caption)` (11px) | `600` | Uppercase |
+| Badges `.count-badge`, `#trash-badge` | `var(--text-caption)` (11px) | `700` | |
+| Item de histórico — nome | `var(--text-xs)` (12px) | `400` | |
+| Item de histórico — data | `var(--text-caption)` (11px) | `400` | `--color-muted-foreground` |
+| Título de modal `.modal-title` | `var(--text-base)` (16px) | `600` | Centrado horizontalmente |
+| Input de documento `.d-input` | `var(--text-control)` (13px) | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
+| Legenda de imagem `.t-label` | `var(--text-caption)` (11px) | `400` | **Sem negrito** — discreta, não distrai da imagem |
+| Links de ação `.pick-link` | `var(--text-control)` (13px) | `400` | Em empty states |
 
 ---
 
@@ -391,9 +391,9 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 ## 10. Responsividade
 
-A interface tem dois breakpoints de adaptação:
+A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 50rem) and (width >= 56.3125rem)`, para telas baixas.
 
-### `max-width: 900px` — Tablets e smartphones em paisagem
+### `width <= 56.25rem` (900px) — tablets e telefones na horizontal
 
 - Layout muda de horizontal para vertical (painéis empilhados)
 - A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
@@ -401,7 +401,7 @@ A interface tem dois breakpoints de adaptação:
 - FAB mobile (`#mobile-paste-fab`) fica visível — botão flutuante para colar do clipboard
 - `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
 
-### `max-width: 480px` — Smartphones em retrato
+### `width <= 30rem` (480px) — telefones na vertical
 
 - Padding e margens reduzidos para maximizar área útil
 - Todos os elementos comprimem proporcionalmente

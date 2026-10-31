@@ -51,6 +51,17 @@
       --color-green-500: #22c55e;
       --color-red-500: #ef4444;
       --color-yellow-500: #eab308;
+      --spacing: 0.25rem;
+      --text-micro: 0.625rem;
+      --text-caption: 0.6875rem;
+      --text-xs: 0.75rem;
+      --text-code: 0.78125rem;
+      --text-control: 0.8125rem;
+      --text-sm: 0.875rem;
+      --text-subtitle: 0.9375rem;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
       --top-bar-h: 64px;
       --thumb-size: 140px;
     }
@@ -146,7 +157,7 @@
 
     body {
       font-family: var(--font-sans);
-      font-size: 14px;
+      font-size: var(--text-sm);
       background: var(--color-background);
       color: var(--color-foreground);
       display: flex;
@@ -209,7 +220,7 @@
     }
 
     /* ═══ MOBILE: scrollbar oculta + sem zoom (aspeto app nativo) ═══ */
-    @media (max-width: 768px) {
+    @media (width <= 48rem) {
       *, *::-webkit-scrollbar {
         scrollbar-width: none !important;
         -ms-overflow-style: none !important;
@@ -220,7 +231,7 @@
         height: 0 !important;
       }
       input, textarea, select {
-        font-size: 16px !important;
+        font-size: var(--text-base) !important;
       }
       * {
         touch-action: manipulation;
@@ -239,18 +250,18 @@
     /* ═══ BUTTONS ═══ */
     .btn-send {
       height: 36px;
-      padding: 0 18px;
+      padding: 0 calc(var(--spacing) * 4.5);
       background: var(--color-primary);
       color: var(--color-primary-foreground);
       border: none;
       border-radius: var(--radius-lg);
-      font-size: 13px;
+      font-size: var(--text-control);
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: calc(var(--spacing) * 2);
       transition: background 0.15s, transform 0.1s;
       white-space: nowrap;
       flex-shrink: 0
@@ -368,7 +379,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 28px 64px 10px 64px;
+      padding: calc(var(--spacing) * 7) calc(var(--spacing) * 16) calc(var(--spacing) * 2.5) calc(var(--spacing) * 16);
       height: auto;
       min-height: var(--top-bar-h);
       background: transparent;
@@ -378,7 +389,7 @@
     #tb-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: calc(var(--spacing) * 3);
       user-select: none;
       flex-shrink: 0;
       cursor: default;
@@ -405,7 +416,7 @@
     }
 
     #tb-brand-name {
-      font-size: 20px;
+      font-size: var(--text-xl);
       font-weight: 600;
       letter-spacing: -0.2px;
       color: var(--color-foreground)
@@ -427,7 +438,7 @@
 
     #tb-session {
       display: flex;
-      gap: 8px;
+      gap: calc(var(--spacing) * 2);
       align-items: center;
       justify-content: center;
       flex: 1
@@ -439,8 +450,8 @@
       background: var(--color-background);
       border: 1px solid transparent;
       border-radius: var(--radius-md);
-      padding: 0 12px;
-      font-size: 13px;
+      padding: 0 calc(var(--spacing) * 3);
+      font-size: var(--text-control);
       color: var(--color-foreground);
       outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
@@ -460,7 +471,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 6px;
+      gap: calc(var(--spacing) * 1.5);
       flex-shrink: 0;
       flex: 1
     }
@@ -471,8 +482,8 @@
       flex: 1;
       overflow: hidden;
       min-height: 0;
-      gap: 16px;
-      padding: 8px 58px 58px 58px
+      gap: calc(var(--spacing) * 4);
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 14.5) calc(var(--spacing) * 14.5) calc(var(--spacing) * 14.5)
     }
 
     #right-col {
@@ -480,14 +491,14 @@
       flex-direction: column;
       flex: 1;
       min-width: 0;
-      gap: 16px
+      gap: calc(var(--spacing) * 4)
     }
 
     #center-row {
       display: flex;
       flex: 1;
       min-height: 0;
-      gap: 16px
+      gap: calc(var(--spacing) * 4)
     }
 
     /* ═══ EV BLOCKS ═══ */
@@ -513,8 +524,8 @@
     .blk-hdr {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 16px;
+      gap: calc(var(--spacing) * 2);
+      padding: 0 calc(var(--spacing) * 4);
       height: 44px;
       background: var(--color-card);
       flex-shrink: 0
@@ -532,7 +543,7 @@
     }
 
     .blk-hdr-title {
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -542,11 +553,11 @@
     .count-badge {
       min-width: 20px;
       height: 20px;
-      padding: 0 6px;
+      padding: 0 calc(var(--spacing) * 1.5);
       background: var(--color-primary);
       color: #fff;
       border-radius: 99px;
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -590,8 +601,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 24px;
+      gap: calc(var(--spacing) * 2);
+      padding: calc(var(--spacing) * 6);
       pointer-events: none;
       user-select: none;
       text-align: center
@@ -607,7 +618,7 @@
     }
 
     .empty-st-title {
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 500;
       color: var(--color-muted-foreground)
     }
@@ -654,7 +665,7 @@
       stroke-linejoin: round
     }
 
-    @media(max-width:900px) {
+    @media (width <= 56.25rem) {
       #mobile-paste-fab {
         display: flex
       }
@@ -664,8 +675,8 @@
     #thumb-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      padding: 16px;
+      gap: calc(var(--spacing) * 4);
+      padding: calc(var(--spacing) * 4);
       overflow-y: auto;
       align-content: flex-start;
       flex: 1;
@@ -776,7 +787,7 @@
       z-index: 10;
       opacity: 0;
       transition: all 0.15s;
-      font-size: 10px;
+      font-size: var(--text-micro);
       font-weight: bold;
       box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
     }
@@ -840,9 +851,9 @@
       border: none;
       background: var(--color-card);
       color: var(--color-muted-foreground);
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: normal;
-      padding: 4px 6px;
+      padding: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
       height: 24px;
       outline: none;
       text-align: center;
@@ -867,8 +878,8 @@
     #doc-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 16px;
+      gap: calc(var(--spacing) * 2);
+      padding: calc(var(--spacing) * 4);
       overflow-y: auto;
       flex: 1;
       min-height: 0
@@ -877,12 +888,12 @@
     .d-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
+      gap: calc(var(--spacing) * 3);
+      padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3.5);
       background: var(--color-card);
       border: 1px solid transparent;
       border-radius: var(--radius-lg);
-      font-size: 13px;
+      font-size: var(--text-control);
       color: var(--color-foreground);
       animation: fadeIn 0.2s ease-out;
       flex-shrink: 0;
@@ -909,10 +920,10 @@
       border: none;
       background: transparent;
       color: var(--color-foreground);
-      font-size: 13px;
+      font-size: var(--text-control);
       font-family: var(--font-sans);
       font-weight: normal;
-      padding: 2px 6px;
+      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
       border-radius: var(--radius-sm);
       outline: none;
       width: 100%;
@@ -928,19 +939,19 @@
     }
 
     .d-size {
-      font-size: 11px;
+      font-size: var(--text-caption);
       color: var(--color-muted-foreground);
       white-space: nowrap;
       flex-shrink: 0;
       font-weight: 600;
       background: var(--color-background);
-      padding: 2px 6px;
+      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
       border-radius: var(--radius-sm)
     }
 
     .d-del {
       color: var(--color-muted-foreground);
-      padding: 4px;
+      padding: calc(var(--spacing) * 1);
       border-radius: var(--radius-sm);
       display: flex;
       flex-shrink: 0;
@@ -974,9 +985,9 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      padding: clamp(10px, 1.5vh, 16px) 12px;
+      padding: clamp(10px, 1.5vh, calc(var(--spacing) * 4)) calc(var(--spacing) * 3);
       box-shadow: 0 2px 8px rgb(0 0 0 / 2%);
-      gap: clamp(10px, 2vh, 20px);
+      gap: clamp(10px, 2vh, calc(var(--spacing) * 5));
       scrollbar-width: none;
       -ms-overflow-style: none
     }
@@ -988,7 +999,7 @@
     #left-sidebar>div {
       flex-shrink: 1;
       min-height: 0;
-      gap: clamp(6px, 1.2vh, 12px) !important
+      gap: clamp(6px, 1.2vh, calc(var(--spacing) * 3)) !important
     }
 
     #left-sidebar .sess-input,
@@ -1032,7 +1043,7 @@
       border: none;
       color: var(--color-muted-foreground);
       cursor: pointer;
-      padding: 4px
+      padding: calc(var(--spacing) * 1)
     }
 
     #sb-mobile-close svg {
@@ -1051,8 +1062,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
-      gap: 2px;
+      padding: calc(var(--spacing) * 2.5) 0;
+      gap: calc(var(--spacing) * 0.5);
       cursor: pointer
     }
 
@@ -1092,7 +1103,7 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
-      padding: 10px 12px 12px 0
+      padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3) calc(var(--spacing) * 3) 0
     }
 
     #sidebar.expanded #sb-content {
@@ -1104,12 +1115,12 @@
       display: flex;
       align-items: center;
       height: 28px;
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--color-muted-foreground);
-      padding: 0 8px;
+      padding: 0 calc(var(--spacing) * 2);
       margin: 0;
       flex-shrink: 0
     }
@@ -1117,7 +1128,7 @@
     .sb-divider {
       height: 1px;
       background: var(--color-border);
-      margin: 6px 6px;
+      margin: calc(var(--spacing) * 1.5) calc(var(--spacing) * 1.5);
       flex-shrink: 0
     }
 
@@ -1126,15 +1137,15 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: calc(var(--spacing) * 0.5);
       padding: 0
     }
 
     .sb-sess-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 8px;
+      gap: calc(var(--spacing) * 2);
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2);
       border-radius: var(--radius-sm);
       cursor: pointer;
       transition: background 0.12s
@@ -1146,7 +1157,7 @@
     }
 
     .sb-sess-name {
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 500;
       color: var(--color-foreground);
       overflow: hidden;
@@ -1156,7 +1167,7 @@
     }
 
     .sb-sess-date {
-      font-size: 11px;
+      font-size: var(--text-caption);
       color: var(--color-muted-foreground);
       flex-shrink: 0
     }
@@ -1166,7 +1177,7 @@
       opacity: 0;
       transition: opacity 0.15s;
       cursor: pointer;
-      padding: 2px;
+      padding: calc(var(--spacing) * 0.5);
       user-select: none
     }
 
@@ -1204,7 +1215,7 @@
 
     #footer-credits {
       text-align: center;
-      font-size: 10px;
+      font-size: var(--text-micro);
       font-weight: 500;
       color: var(--color-muted-foreground);
       letter-spacing: 0.8px;
@@ -1215,7 +1226,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: -58px;
+      margin-top: calc(var(--spacing) * -14.5);
       pointer-events: none
     }
 
@@ -1228,14 +1239,14 @@
       flex-shrink: 0;
       display: flex;
       align-items: center;
-      padding: 0 16px;
+      padding: 0 calc(var(--spacing) * 4);
       cursor: pointer;
       user-select: none;
-      gap: 8px
+      gap: calc(var(--spacing) * 2)
     }
 
     #trash-title {
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -1246,8 +1257,8 @@
     #status-bar {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      padding: 8px 8px 0;
+      gap: calc(var(--spacing) * 1);
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2) 0;
       flex-shrink: 0;
       user-select: none;
       cursor: default
@@ -1256,8 +1267,8 @@
     .st-row1 {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 13px;
+      gap: calc(var(--spacing) * 1.5);
+      font-size: var(--text-control);
       font-weight: 400;
       color: var(--color-muted-foreground)
     }
@@ -1272,7 +1283,7 @@
     }
 
     .st-row2 {
-      font-size: 12px;
+      font-size: var(--text-xs);
       color: var(--color-muted-foreground);
       display: none;
       line-height: 1.2
@@ -1302,11 +1313,11 @@
     #trash-badge {
       min-width: 20px;
       height: 20px;
-      padding: 0 6px;
+      padding: 0 calc(var(--spacing) * 1.5);
       background: var(--color-red-500);
       color: #fff;
       border-radius: 99px;
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 700;
       display: none;
       align-items: center;
@@ -1329,8 +1340,8 @@
     #trash-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      padding: 16px;
+      gap: calc(var(--spacing) * 3);
+      padding: calc(var(--spacing) * 4);
       overflow-y: auto;
       flex: 1;
       scrollbar-width: none;
@@ -1361,7 +1372,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px
+      padding: calc(var(--spacing) * 5)
     }
 
     .modal-overlay.open {
@@ -1386,13 +1397,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 20px;
+      padding: calc(var(--spacing) * 3.5) calc(var(--spacing) * 5);
       flex-shrink: 0;
       position: relative
     }
 
     .modal-title {
-      font-size: 16px;
+      font-size: var(--text-base);
       font-weight: 600;
       color: var(--color-foreground);
       overflow: hidden;
@@ -1510,40 +1521,40 @@
     }
 
     .sb-header {
-      padding: 22px 48px 16px 32px;
+      padding: calc(var(--spacing) * 5.5) calc(var(--spacing) * 12) calc(var(--spacing) * 4) calc(var(--spacing) * 8);
       display: flex;
       flex-direction: column;
-      gap: 4px
+      gap: calc(var(--spacing) * 1)
     }
 
     .sb-title {
-      font-size: 20px;
+      font-size: var(--text-xl);
       font-weight: 600;
       color: var(--color-foreground);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: calc(var(--spacing) * 2.5);
       margin: 0;
       letter-spacing: -0.2px
     }
 
     .sb-subtitle {
-      font-size: 13px;
+      font-size: var(--text-control);
       color: var(--color-muted-foreground);
       margin: 0
     }
 
     .sb-tabs {
       display: flex;
-      gap: 8px;
-      margin: 0 32px 24px 32px
+      gap: calc(var(--spacing) * 2);
+      margin: 0 calc(var(--spacing) * 8) calc(var(--spacing) * 6) calc(var(--spacing) * 8)
     }
 
     .sb-tab {
       flex: 1;
-      padding: 8px 0;
+      padding: calc(var(--spacing) * 2) 0;
       text-align: center;
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 600;
       cursor: pointer;
       color: var(--color-muted-foreground);
@@ -1563,7 +1574,7 @@
     }
 
     .sb-content-tab {
-      padding: 8px 32px 32px;
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 8) calc(var(--spacing) * 8);
       overflow-y: auto;
       display: none;
       flex-direction: column;
@@ -1583,8 +1594,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 20px
+      gap: calc(var(--spacing) * 4);
+      margin-bottom: calc(var(--spacing) * 5)
     }
 
     .sb-row:last-child {
@@ -1594,18 +1605,18 @@
     .sb-info {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: calc(var(--spacing) * 1);
       flex-grow: 1
     }
 
     .sb-row-title {
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--color-foreground)
     }
 
     .sb-row-desc {
-      font-size: 12px;
+      font-size: var(--text-xs);
       color: var(--color-muted-foreground);
       line-height: 1.4
     }
@@ -1659,7 +1670,7 @@
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       text-align: center;
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--color-foreground);
       background: var(--color-background);
@@ -1677,15 +1688,15 @@
     /* ═══ EXPORT CARDS ═══ */
     .export-card {
       display: flex;
-      gap: 16px;
-      padding: 12px 16px;
+      gap: calc(var(--spacing) * 4);
+      padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
       border-radius: var(--radius-lg);
       cursor: pointer;
       transition: all 0.15s;
       background: transparent;
       text-align: left;
       align-items: center;
-      margin-bottom: 4px
+      margin-bottom: calc(var(--spacing) * 1)
     }
 
     .export-card:active {
@@ -1723,11 +1734,11 @@
     .export-info {
       display: flex;
       flex-direction: column;
-      gap: 4px
+      gap: calc(var(--spacing) * 1)
     }
 
     .export-title {
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--color-muted-foreground);
       transition: color 0.15s
@@ -1738,7 +1749,7 @@
     }
 
     .export-desc {
-      font-size: 12px;
+      font-size: var(--text-xs);
       color: var(--color-muted-foreground);
       line-height: 1.4
     }
@@ -1747,7 +1758,7 @@
     .chips-group {
       display: flex;
       flex-wrap: nowrap;
-      gap: 6px
+      gap: calc(var(--spacing) * 1.5)
     }
 
     .chip-input {
@@ -1757,13 +1768,13 @@
     .chip-label {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
+      gap: calc(var(--spacing) * 1);
+      padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2.5);
       border: none;
       border-radius: var(--radius-lg);
       background: transparent;
       color: var(--color-muted-foreground);
-      font-size: 11px;
+      font-size: var(--text-caption);
       font-weight: 500;
       cursor: pointer;
       transition: color 0.15s;
@@ -1796,10 +1807,10 @@
       color: var(--color-muted-foreground);
       border: 1px solid var(--color-border-strong);
       font-weight: 600;
-      font-size: 12px;
+      font-size: var(--text-xs);
       height: 32px;
-      padding: 0 12px;
-      gap: 8px;
+      padding: 0 calc(var(--spacing) * 3);
+      gap: calc(var(--spacing) * 2);
       transition: border-color 0.15s, color 0.15s
     }
 
@@ -1868,7 +1879,7 @@
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       text-align: center;
-      font-size: 13px;
+      font-size: var(--text-control);
       font-family: monospace;
       color: var(--color-foreground);
       background: var(--color-background);
@@ -1889,13 +1900,13 @@
       height: 36px;
       border: 1px solid transparent;
       border-radius: var(--radius-md);
-      font-size: 13px;
+      font-size: var(--text-control);
       font-family: var(--font-sans);
       color: var(--color-foreground);
       background: var(--color-background);
       outline: none;
       transition: border-color 0.15s, background 0.15s;
-      padding: 0 12px;
+      padding: 0 calc(var(--spacing) * 3);
       text-align: right
     }
 
@@ -1948,7 +1959,7 @@
       width: 1px;
       height: 24px;
       background: var(--color-border);
-      margin: 0 4px;
+      margin: 0 calc(var(--spacing) * 1);
       flex-shrink: 0
     }
 
@@ -2018,7 +2029,7 @@
     }
 
     /* ═══ RESPONSIVE ═══ */
-    @media(max-width:900px) {
+    @media (width <= 56.25rem) {
 
       /* Allow page to scroll vertically on mobile */
       html,
@@ -2029,12 +2040,12 @@
 
       /* Top bar */
       #top-bar {
-        padding: 16px 16px 8px 16px;
+        padding: calc(var(--spacing) * 4) calc(var(--spacing) * 4) calc(var(--spacing) * 2) calc(var(--spacing) * 4);
         min-height: auto
       }
 
       #tb-brand-name {
-        font-size: 16px
+        font-size: var(--text-base)
       }
 
 
@@ -2050,8 +2061,8 @@
       /* Main layout: stack vertically, sidebar on top, no overflow:hidden */
       #main-layout {
         flex-direction: column;
-        padding: 16px;
-        gap: 16px;
+        padding: calc(var(--spacing) * 4);
+        gap: calc(var(--spacing) * 4);
         overflow: visible;
         min-height: auto
       }
@@ -2059,7 +2070,7 @@
       #right-col {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: calc(var(--spacing) * 4);
         overflow: visible;
         min-height: auto
       }
@@ -2067,7 +2078,7 @@
       #center-row {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: calc(var(--spacing) * 4);
         overflow: visible;
         min-height: auto
       }
@@ -2076,33 +2087,33 @@
       #left-sidebar {
         width: 100%;
         flex-direction: column;
-        padding: 16px;
-        gap: 16px;
+        padding: calc(var(--spacing) * 4);
+        gap: calc(var(--spacing) * 4);
         overflow: visible;
         height: auto
       }
 
       #left-sidebar>div {
-        gap: 10px !important
+        gap: calc(var(--spacing) * 2.5) !important
       }
 
       #left-sidebar .sess-input {
         height: 44px;
         min-height: 44px;
         flex: none;
-        font-size: 14px
+        font-size: var(--text-sm)
       }
 
       #left-sidebar .btn-send {
         height: 44px;
         min-height: 44px;
         flex: none;
-        font-size: 14px
+        font-size: var(--text-sm)
       }
 
       #left-sidebar .sb-section-title {
         height: 28px;
-        padding: 0 8px !important
+        padding: 0 calc(var(--spacing) * 2) !important
       }
 
       /* Image/doc blocks get a flexible but tall min-height */
@@ -2168,7 +2179,7 @@
       #sidebar #sb-content {
         opacity: 1;
         pointer-events: none;
-        padding: 24px
+        padding: calc(var(--spacing) * 6)
       }
 
       #sidebar.mobile-open #sb-content {
@@ -2180,17 +2191,17 @@
       }
 
       #sidebar .sb-section-title {
-        font-size: 14px;
+        font-size: var(--text-sm);
         font-weight: 600;
         color: var(--color-foreground);
         height: 44px;
-        padding: 0 8px !important;
+        padding: 0 calc(var(--spacing) * 2) !important;
         letter-spacing: 0
       }
 
       #sidebar .sb-sess-item {
-        padding: 14px;
-        margin-bottom: 6px;
+        padding: calc(var(--spacing) * 3.5);
+        margin-bottom: calc(var(--spacing) * 1.5);
         background: var(--color-background);
         border: 1px solid transparent
       }
@@ -2200,16 +2211,16 @@
       }
 
       #sidebar .sb-sess-name {
-        font-size: 14px
+        font-size: var(--text-sm)
       }
 
       #sidebar .sb-sess-date {
-        font-size: 12px
+        font-size: var(--text-xs)
       }
 
       #sidebar .sb-sess-del {
-        font-size: 16px;
-        padding: 4px 8px
+        font-size: var(--text-base);
+        padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2)
       }
 
       #sb-mobile-close {
@@ -2240,9 +2251,9 @@
 
       /* Fix Footer Overlap */
       #footer-credits {
-        margin-top: 16px;
+        margin-top: calc(var(--spacing) * 4);
         height: auto;
-        padding-bottom: 32px;
+        padding-bottom: calc(var(--spacing) * 8);
         opacity: 0.4
       }
 
@@ -2252,8 +2263,8 @@
       }
 
       .chip-label {
-        padding: 10px 14px;
-        font-size: 13px
+        padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3.5);
+        font-size: var(--text-control)
       }
 
       /* V20 — Mobile pointer-events: ensure 100% thumb card surface is tappable */
@@ -2286,9 +2297,9 @@
     }
 
     /* ═══ RESPONSIVE HEIGHT (Small Laptops) ═══ */
-    @media(max-height:800px) and (min-width:901px) {
+    @media (height <= 50rem) and (width >= 56.3125rem) {
       #top-bar {
-        padding: 12px 64px 4px 64px;
+        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 16) calc(var(--spacing) * 1) calc(var(--spacing) * 16);
         min-height: 48px
       }
 
@@ -2303,29 +2314,29 @@
       }
 
       #tb-brand-name {
-        font-size: 18px
+        font-size: var(--text-lg)
       }
 
       #main-layout {
-        padding: 4px 58px 32px 58px;
-        gap: 12px
+        padding: calc(var(--spacing) * 1) calc(var(--spacing) * 14.5) calc(var(--spacing) * 8) calc(var(--spacing) * 14.5);
+        gap: calc(var(--spacing) * 3)
       }
 
       #right-col {
-        gap: 12px
+        gap: calc(var(--spacing) * 3)
       }
 
       #center-row {
-        gap: 12px
+        gap: calc(var(--spacing) * 3)
       }
 
       #left-sidebar {
-        gap: clamp(4px, 1.5vh, 8px);
-        padding: clamp(4px, 1vh, 8px) 10px
+        gap: clamp(4px, 1.5vh, calc(var(--spacing) * 2));
+        padding: clamp(4px, 1vh, calc(var(--spacing) * 2)) calc(var(--spacing) * 2.5)
       }
 
       #left-sidebar>div {
-        gap: clamp(2px, 1vh, 4px) !important
+        gap: clamp(2px, 1vh, calc(var(--spacing) * 1)) !important
       }
 
       #left-sidebar .sess-input {
@@ -2337,12 +2348,12 @@
         height: clamp(24px, 4vh, 32px);
         min-height: 24px;
         font-size: clamp(11px, 1.5vh, 12px);
-        padding: 0 12px
+        padding: 0 calc(var(--spacing) * 3)
       }
 
       .sb-section-title {
         height: 26px;
-        padding: 0 8px !important
+        padding: 0 calc(var(--spacing) * 2) !important
       }
 
       #trash-bar {
@@ -2356,7 +2367,7 @@
 
       #footer-credits {
         height: 32px;
-        margin-top: -32px;
+        margin-top: calc(var(--spacing) * -8);
         opacity: 0.3
       }
     }
@@ -2378,7 +2389,7 @@
 
     #img-modal-overlay .modal-hdr {
       border-bottom: none;
-      padding: 14px 0px;
+      padding: calc(var(--spacing) * 3.5) 0;
     }
 
     #img-modal-overlay .modal-title {
@@ -2403,7 +2414,7 @@
       background: rgb(255 255 255 / 6%);
       border: 1px solid rgb(255 255 255 / 10%);
       border-radius: var(--radius-lg);
-      margin: 0 0 12px 0;
+      margin: 0 0 calc(var(--spacing) * 3) 0;
       color: #fff;
       backdrop-filter: blur(10px);
     }
@@ -2489,13 +2500,13 @@
       transition: none !important
     }
 
-    @media(max-width:480px) {
+    @media (width <= 30rem) {
       #top-bar {
-        padding: 12px 12px 6px 12px
+        padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 1.5) calc(var(--spacing) * 3)
       }
 
       #tb-brand-name {
-        font-size: 14px
+        font-size: var(--text-sm)
       }
 
       #tb-brand-icon {
@@ -2509,20 +2520,20 @@
       }
 
       #main-layout {
-        padding: 6px 12px 0 12px;
-        gap: 10px
+        padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3) 0 calc(var(--spacing) * 3);
+        gap: calc(var(--spacing) * 2.5)
       }
 
       .blk-hdr {
-        padding: 0 12px
+        padding: 0 calc(var(--spacing) * 3)
       }
 
       #thumb-grid {
-        padding: 8px
+        padding: calc(var(--spacing) * 2)
       }
 
       #doc-list {
-        padding: 6px
+        padding: calc(var(--spacing) * 1.5)
       }
     }
 
@@ -2624,7 +2635,7 @@
 
     <!-- ─── LEFT SIDEBAR (CONFIG/EXPORT) ─── -->
     <div id="left-sidebar">
-      <div id="id-section-wrap" style="display:flex; flex-direction:column; gap:8px;">
+      <div id="id-section-wrap" style="display:flex; flex-direction:column; gap:calc(var(--spacing) * 2);">
         <div class="sb-section-title">Identificação</div>
         <input type="text" id="session-user" class="sess-input" style="width:100%; transition:all 0.15s;"
           placeholder="User" autocomplete="off" spellcheck="false" maxlength="30">
@@ -2632,7 +2643,7 @@
           placeholder="Equipamento" autocomplete="off" spellcheck="false" maxlength="30">
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; flex-direction:column; gap:calc(var(--spacing) * 2);">
         <div class="sb-section-title" title="Escolha como o PDF será estruturado">Layout PDF</div>
         <div class="chips-group">
           <input type="radio" name="pdf-layout" value="auto" class="chip-input" id="pdf-l-auto" checked>
@@ -2647,7 +2658,7 @@
         </div>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; flex-direction:column; gap:calc(var(--spacing) * 2);">
         <div class="sb-section-title">Captura</div>
         <button class="btn-send btn-capture" onclick="document.getElementById('file-img-input').click()">
           <svg viewBox="0 0 24 24">
@@ -2668,7 +2679,7 @@
         </button>
       </div>
 
-      <div id="export-section" style="display:flex; flex-direction:column; gap:8px;">
+      <div id="export-section" style="display:flex; flex-direction:column; gap:calc(var(--spacing) * 2);">
         <div class="sb-section-title">Exportar</div>
         <button class="btn-send" id="btn-pdf" disabled style="width:100%; justify-content:flex-start;">
           <svg viewBox="0 0 24 24">
@@ -2823,7 +2834,7 @@
           </svg></button>
       </div>
       <div id="ann-viewport"
-        style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;background:transparent;min-height:0;position:relative;overflow:hidden;padding:12px 0">
+        style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;background:transparent;min-height:0;position:relative;overflow:hidden;padding:calc(var(--spacing) * 3) 0">
         <div id="ann-wrap"
           style="position:relative;display:flex;max-width:100%;min-height:0;flex-shrink:1;align-items:center;justify-content:center">
           <img id="img-modal-img" src="" alt="Pré-visualização" draggable="false"
@@ -2831,19 +2842,19 @@
           <canvas id="ann-canvas"
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
         </div>
-        <div style="padding:12px 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:10">
-          <span id="img-modal-dims" style="font-size:11px;color:rgb(255 255 255 / 60%)"></span>
+        <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:10">
+          <span id="img-modal-dims" style="font-size:var(--text-caption);color:rgb(255 255 255 / 60%)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
-          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
+          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
           <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:#fff"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg></button>
           <span id="zoom-level"
-            style="color:#fff;font-size:12px;font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
+            style="color:#fff;font-size:var(--text-xs);font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
             title="Reset">100%</span>
           <button class="action-btn" id="zoom-in" title="Aumentar Zoom" style="width:28px;height:28px;color:#fff"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -2863,10 +2874,10 @@
       </div>
       <!-- FOOTER ACTIONS -->
       <div
-        style="padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
+        style="padding:0 calc(var(--spacing) * 4) calc(var(--spacing) * 4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
 
         <!-- DEFAULT ACTIONS -->
-        <div id="img-modal-default-actions" style="display:flex;gap:8px;justify-content:center">
+        <div id="img-modal-default-actions" style="display:flex;gap:calc(var(--spacing) * 2);justify-content:center">
           <button class="btn-send" id="img-modal-restore"
             style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
@@ -2893,9 +2904,9 @@
 
         <!-- ANNOTATION ACTIONS (SQUARE CTAS) -->
         <div id="img-modal-ann-actions"
-          style="display:none;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
+          style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS: RECT FIRST -->
-          <div class="ann-row" style="display:flex;gap:6px;align-items:center">
+          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
             <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
@@ -2914,9 +2925,9 @@
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
           <button class="ann-btn" id="ann-bold-btn" title="Negrito (Ctrl+B)"
-            style="display:none;font-weight:700;font-size:14px;font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
+            style="display:none;font-weight:700;font-size:var(--text-sm);font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
           <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
-            style="display:none;font-style:italic;font-size:14px;font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
+            style="display:none;font-style:italic;font-size:var(--text-sm);font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
               <polyline points="5 9 2 12 5 15"/>
               <polyline points="9 5 12 2 15 5"/>
@@ -2936,7 +2947,7 @@
           </div>
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
-          <div class="ann-row" style="display:flex;gap:4px;align-items:center">
+          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1);align-items:center">
             <button class="ann-swatch active" data-color="#ef4444" style="background:#ef4444" title="Vermelho"></button>
             <button class="ann-swatch" data-color="#f97316" style="background:#f97316" title="Laranja"></button>
             <button class="ann-swatch" data-color="#eab308" style="background:#eab308" title="Amarelo"></button>
@@ -2949,7 +2960,7 @@
               style="background:#f0f0f0;border-color:rgb(120 120 120 / 50%)" title="Branco"></button>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
-              style="width:28px;height:28px;margin-left:4px"><svg viewBox="0 0 24 24">
+              style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
               </svg></button>
             <button class="ann-btn" id="ann-thickness-up" title="Espessura maior" style="width:28px;height:28px"><svg
@@ -2960,7 +2971,7 @@
           </div>
           <div class="ann-sep"></div>
           <!-- ACTIONS: UNDO, REDO, CANCEL, SAVE -->
-          <div class="ann-row" style="display:flex;gap:6px;align-items:center">
+          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
             <button class="ann-btn" id="ann-undo" title="Desfazer"><svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
@@ -2999,17 +3010,17 @@
           </svg></button>
       </div>
       <div
-        style="flex:1; overflow:auto; padding:16px; background:var(--color-background); display:flex; flex-direction:column; min-height:0; position:relative">
+        style="flex:1; overflow:auto; padding:calc(var(--spacing) * 4); background:var(--color-background); display:flex; flex-direction:column; min-height:0; position:relative">
         <textarea id="text-modal-content" readonly
-          style="width:100%; flex:1; resize:none; border:none; background:var(--color-background); color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:12.5px; line-height:1.6; outline:none; white-space:pre-wrap; padding:8px; border-radius:var(--radius-md)"></textarea>
+          style="width:100%; flex:1; resize:none; border:none; background:var(--color-background); color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
         <div id="text-modal-binary-msg"
-          style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:13px; padding:24px; line-height:1.6; gap:12px">
+          style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:var(--text-control); padding:calc(var(--spacing) * 6); line-height:1.6; gap:calc(var(--spacing) * 3)">
         </div>
       </div>
       <!-- FOOTER -->
       <div
-        style="padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex-shrink:0">
-        <div style="display:flex; gap:8px; justify-content:center">
+        style="padding:calc(var(--spacing) * 4); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--spacing) * 2); flex-shrink:0">
+        <div style="display:flex; gap:calc(var(--spacing) * 2); justify-content:center">
           <button class="btn-send" id="text-modal-restore"
             style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
             <svg viewBox="0 0 24 24">
@@ -3035,7 +3046,7 @@
           </button>
         </div>
         <span id="text-modal-info"
-          style="font-size:11px; color:var(--color-muted-foreground); text-align:center; margin:0 auto"></span>
+          style="font-size:var(--text-caption); color:var(--color-muted-foreground); text-align:center; margin:0 auto"></span>
       </div>
     </div>
   </div>
@@ -3052,14 +3063,14 @@
       <div class="sb-header">
         <div class="sb-title">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px">
+            stroke-linecap="round" stroke-linejoin="round" style="margin-right:calc(var(--spacing) * 0.5)">
             <circle cx="12" cy="12" r="3"></circle>
             <path
               d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:11px;background:var(--color-border, #0001);padding:2px 6px;border-radius:4px;margin-left:6px">V27</span>
+            style="font-size:var(--text-caption);background:var(--color-border, #0001);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:4px;margin-left:calc(var(--spacing) * 1.5)">V27</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3077,7 +3088,7 @@
             <div class="sb-row-title">Cor principal</div>
             <div class="sb-row-desc">Cor de destaque da interface</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="hex-input" id="cfg-cor-hex" value="#e86b2e" maxlength="7" spellcheck="false">
             <div class="swatch-wrap" id="wrap-cor-principal" title="Cor principal">
               <div class="swatch-bg" id="sw-accent-bg"></div>
@@ -3090,7 +3101,7 @@
             <div class="sb-row-title">Cor do texto sobre destaque</div>
             <div class="sb-row-desc">Automático via YIQ ou override manual</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="hex-input" id="cfg-fg-hex" value="#ffffff" maxlength="7" spellcheck="false"
               placeholder="Automático">
             <div class="swatch-wrap" id="wrap-cor-fg" title="Cor (Clique duplo para Automático)">
@@ -3103,7 +3114,7 @@
           <div class="sb-info">
             <div class="sb-row-title">Texto Inicial</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-start" value="Capture " placeholder="Capture " style="max-width:130px">
             <div class="swatch-wrap is-empty" id="wrap-cor-tstart" title="Cor (Duplo clique para Automático)">
               <div class="swatch-bg" id="sw-tstart-bg"></div>
@@ -3115,7 +3126,7 @@
           <div class="sb-info">
             <div class="sb-row-title">Texto em Destaque</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-accent" value="Engine" placeholder="Engine" style="max-width:130px">
             <div class="swatch-wrap is-empty" id="wrap-cor-taccent" title="Cor (Duplo clique para Automático)">
               <div class="swatch-bg" id="sw-taccent-bg"></div>
@@ -3128,7 +3139,7 @@
             <div class="sb-row-title">Texto Final</div>
             <div class="sb-row-desc">Terceira parte do título (espaços manuais)</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-end" value="" placeholder="" style="max-width:130px">
             <div class="swatch-wrap is-empty" id="wrap-cor-tend" title="Cor (Duplo clique para Automático)">
               <div class="swatch-bg" id="sw-tend-bg"></div>
@@ -3181,9 +3192,9 @@
             <div class="sb-row-title">Qualidade do PDF</div>
             <div class="sb-row-desc">As imagens PNG são convertidas para JPEG ao gerar o PDF (92% recomendado)</div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px"><input type="range" id="cfg-jpeg-quality" min="70"
+          <div style="display:flex;align-items:center;gap:calc(var(--spacing) * 2)"><input type="range" id="cfg-jpeg-quality" min="70"
               max="95" value="92" style="width:100px"><span id="cfg-jpeg-label"
-              style="font-size:13px;font-weight:600;color:var(--color-foreground);min-width:32px">92%</span></div>
+              style="font-size:var(--text-control);font-weight:600;color:var(--color-foreground);min-width:32px">92%</span></div>
         </div>
         <div class="sb-row">
           <div class="sb-info">
@@ -3237,7 +3248,7 @@
         <div class="sb-title">Configurar Distribuição</div>
         <p class="sb-subtitle">Escolha o perfil de exportação</p>
       </div>
-      <div style="padding:0 32px 32px">
+      <div style="padding:0 calc(var(--spacing) * 8) calc(var(--spacing) * 8)">
         <div class="export-card" onclick="exportFile(false)">
           <div class="export-icon"><svg viewBox="0 0 24 24">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -3357,8 +3368,8 @@
 
       /* ═══ INDEXEDDB ═══ */
       function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
-      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
-      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store), r = fn(st); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d));
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
@@ -3599,7 +3610,7 @@
           $('text-modal-binary-msg').style.display = 'none';
         } else {
           const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
-          $('text-modal-binary-msg').innerHTML = '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:none;stroke:var(--color-muted-foreground);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:0.5;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:15px;font-weight:600;text-transform:uppercase;color:var(--color-foreground);letter-spacing:1px">' + escapeHTML(ext) + '</span><span style="font-size:14px;color:var(--color-muted-foreground);line-height:1.5">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
+          $('text-modal-binary-msg').innerHTML = '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:none;stroke:var(--color-muted-foreground);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:0.5;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:var(--text-subtitle);font-weight:600;text-transform:uppercase;color:var(--color-foreground);letter-spacing:1px">' + escapeHTML(ext) + '</span><span style="font-size:var(--text-sm);color:var(--color-muted-foreground);line-height:1.5">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
           $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';

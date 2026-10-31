@@ -681,7 +681,7 @@ capture-engine.html
 │   ├── Dark mode (body.dark)
 │   ├── Layout principal
 │   ├── Componentes (botões, modais, sidebar, cards)
-│   ├── Responsividade (900px, 480px)
+│   ├── Responsividade (56.25rem, 30rem)
 │   └── Animações
 │
 ├── <body>

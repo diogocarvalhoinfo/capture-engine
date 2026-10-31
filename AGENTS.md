@@ -245,9 +245,14 @@ Cada zona tem a sua regra.
 
 ### 2.2 CSS — Unidades e Modo Escuro
 
-**Usar `px`, nunca `rem` ou `em`**
+**Tamanhos de fonte, espaços e cortes do layout em `rem` (D-0082)**
 
-Porquê: `rem` depende do `font-size` do `<html>`. Em ambientes corporativos com configurações de acessibilidade que alteram o tamanho de fonte do browser, `rem` produz layouts quebrados imprevisíveis. `px` é determinístico.
+- Tamanho de fonte: sempre por token `--text-*` (`var(--text-control)`, 13px). Os degraus do Tailwind (`--text-xs` a `--text-xl`) valem o mesmo que no Tailwind; os outros têm nome de papel (`--text-caption`, `--text-control`).
+- Espaços (`padding`, `margin`, `gap`): múltiplos de `--spacing: 0.25rem`, escritos `calc(var(--spacing) * n)`.
+- Cortes do layout: em `rem`, na notação de intervalo (`@media (width <= 56.25rem)`).
+- Bordas, alturas, larguras e ícones podem ficar em `px`.
+
+**Motivo:** em `rem`, o texto acompanha o tamanho de letra escolhido no navegador. Com a letra padrão (16 px), cada valor dá o mesmo pixel que dava em `px`.
 
 **Dark mode via `body.dark`, nunca via media query CSS**
 
@@ -280,17 +285,17 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 
 | Elemento | Tamanho |
 |---|---|
-| Botões principais `.btn-send` | `height: 36px`, `font-size: 13px`, `padding: 0 18px` |
+| Botões principais `.btn-send` | `height: 36px`, `font-size: var(--text-control)` (13px), `padding: 0 calc(var(--spacing) * 4.5)` (18px) |
 | Ícones dentro de botões | `14px`, `stroke-width: 2` |
 | Ícones de cabeçalho de bloco `.blk-hdr svg` | `16px` |
 | Spinner de loading | `14px` |
-| Título de modal `.modal-title` | `16px`, centrado |
+| Título de modal `.modal-title` | `var(--text-base)` (16px), centrado |
 | Botão fechar modal `.modal-close` | `32px` circular, `background: var(--color-background)` |
-| Badges de contagem | `11px`, bold |
-| Nomes na sidebar | `12px` |
-| Datas na sidebar | `11px` |
-| Legendas de imagem `.t-label` | `11px`, `font-weight: 400` (sem negrito) |
-| Inputs de documento `.d-input` | `13px`, `font-weight: 400` (sem negrito) |
+| Badges de contagem | `var(--text-caption)` (11px), bold |
+| Nomes na sidebar | `var(--text-xs)` (12px) |
+| Datas na sidebar | `var(--text-caption)` (11px) |
+| Legendas de imagem `.t-label` | `var(--text-caption)` (11px), `font-weight: 400` (sem negrito) |
+| Inputs de documento `.d-input` | `var(--text-control)` (13px), `font-weight: 400` (sem negrito) |
 
 ---
 
