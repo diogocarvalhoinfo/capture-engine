@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Patch: corrige a descrição de uma linha do Visual Builder e o fim do README. O arquivo do botão «Download» passa a trazer a correção do Visual Builder.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Corrigido
 
 - **Fim do README no padrão (F-0040).** A seção «Licença e autor» tinha um resumo da licença por palavras próprias, uma segunda cópia do `LICENSE`, e uma nota sobre o rodapé. O resumo sai, e a nota passa para a §7.2, junto de «Texto do rodapé».
