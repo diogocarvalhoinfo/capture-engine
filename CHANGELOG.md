@@ -19,6 +19,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O agente testa no navegador o que muda (F-0018).** O `AGENTS.md` §10 proibia o agente de abrir o navegador, e o padrão valida um projeto de um arquivo só abrindo-o. Agora o agente testa o que a mudança toca (D-0084). A prova de vida do Export User continua manual, antes de cada versão.
 - **Comentários do `validate.sh` em inglês (F-0029, em parte).** O código fica em inglês, e os comentários do `validate.sh` estavam em português, com formas de Portugal («ficheiro», «por defeito»). As mensagens que o script mostra continuam em português. Os comentários do HTML ficam em «Pendentes» (D-0085).
 
+### Corrigido
+
+- **O aviso de armazenamento diz «navegador» (F-0026).** O aviso «Armazenamento indisponível» dizia «Verifique se o browser está em modo privado». A interface é em português neutro, e a palavra é «navegador».
+
 ## [V27] — 2026-08-18
 
 Versão aberta para receber trabalho novo. A V26 fechou com **50 entradas numeradas** (D21–D70) originadas de **cinco auditorias independentes** de zero confiança. ⚠️ **«50 correções» seria impreciso, e a sexta auditoria apanhou-o:** a maioria corrige defeitos, mas algumas são declarações documentais (D33, D38, D39), registos de validação (D63, D64) ou triagens que decidem **não** corrigir (D70). A secção dessa versão ocupa 36% do changelog inteiro, e foi essa a razão principal para abrir esta.
