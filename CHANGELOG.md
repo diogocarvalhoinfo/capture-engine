@@ -15,6 +15,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Topo do changelog e critério de versão (F-0019, F-0003).** O changelog abre com as duas frases fixas e segue o Keep a Changelog. As versões passam a SemVer a partir de 28.0.0, com o critério no `AGENTS.md` §12 (D-0078). As entradas `[V7]` a `[V27]` ficam como estão.
 - **Topo do `AGENTS.md` e Seção 0 com título (F-0007, F-0019, F-0030).** O `AGENTS.md` abre com o título e a frase fixos. O índice apontava para uma «Seção 0» sem título; o texto dela ganha o título «0. Modelo mental». A contagem de linhas do HTML passa de «6000+» a «mais de 5000», o valor medido (5518).
 - **Decisões, pendentes e legenda dos IDs antigos (F-0001, F-0002).** A decisão do Desfazer e Refazer passa a D-0077: o ID D9 já era do commit `a5656f5`. Três decisões que só estavam neste changelog entram no `AGENTS.md` (D-0079 a D-0081), com as quatro desta auditoria (D-0082 a D-0085). O `AGENTS.md` §13 ganha «Pendentes» e a legenda dos formatos antigos. As duas citações «desde a D9» passam a nomear o commit.
+- **Idioma em três zonas e «User» de propósito (F-0004).** O `AGENTS.md` §2.1 separa documentação, interface e código, e declara o público da interface. «User» fica de propósito: é o rótulo padrão do Campo 1, configurável no Visual Builder. A linha antiga do glossário punha «User» na coluna «Evitar».
 
 ## [V27] — 2026-08-18
 

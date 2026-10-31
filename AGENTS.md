@@ -220,24 +220,28 @@ O `README.md` §Segurança documenta o mesmo para o público externo, incluindo 
 
 ## 2. Convenções de Código
 
-### 2.1 Língua — Onde usar inglês e onde usar português
+### 2.1 Idioma em três zonas
 
-| Contexto | Língua | Exemplo |
-|---|---|---|
-| Nomes de variáveis, funções, comentários técnicos | Inglês | `captureImg()`, `sessId`, `isDirty` |
-| Labels visíveis para o usuário na UI | Português neutro | `"Histórico"`, `"Removidos"`, `"Processando..."` |
+Cada zona tem a sua regra.
 
-**Português neutro — glossário aprovado:**
+- **Documentação** (README, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, mensagens de commit): português neutro, sem formas só do Brasil nem só de Portugal. Onde os dois países usam palavras diferentes, vale a tabela abaixo. Um termo da interface aparece como está na interface, entre aspas («User»).
+- **Interface** (o texto que o usuário vê): português neutro. **Motivo:** a ferramenta serve equipes de suporte de qualquer país de língua portuguesa.
+- **Código** (ids, classes, tokens, variáveis, funções e comentários técnicos): inglês. Os comentários do HTML ainda estão em português (pendente F-0029, D-0085).
 
-| ✅ Usar | ❌ Evitar | Razão |
-|---|---|---|
-| `"Arquivo"` | `"Ficheiro"` | Regionalismo PT-PT |
-| `"Histórico"` | `"Sessões"` | Mais claro para usuários não-técnicos |
-| `"Download"` | `"Descarregar"` | Termo universal |
-| `"Equipamento"` | `"Máquina"` | Mais formal e neutro |
-| `"Campo 1"`, `"Campo 2"` | `"User"`, `"Equipamento"` (hardcoded no VB) | Evergreen — funciona para qualquer domínio |
+**Tabela de palavras:**
 
----
+| Use | Não use |
+|---|---|
+| arquivo, usuário, seção, registrar, registro, compartilhar, tela, equipe, fato, contato, lugar, por isso | ficheiro, utilizador, secção, registar, registo, partilhar, ecrã, equipa, facto, contacto, sítio, pelo que |
+| navegador, captura de tela, sem internet, entrada, saída, rótulo | browser, screenshot, offline, input, output, label |
+| «precisa», «deve» | «tem de», «tem que» |
+| presente simples («usa») | «está a usar», «está usando» |
+
+**Palavras de propósito na interface:**
+- **«User»**, rótulo padrão do Campo 1 da identificação. **Motivo:** é o padrão que o administrador troca no Visual Builder (`TOKEN_USER_LABEL`). É também o nome do perfil «Export User».
+- **«Equipamento»**, rótulo padrão do Campo 2, é a forma dos dois países e não precisa de motivo.
+- **«Histórico»**, e não «Sessões». **Motivo:** é mais claro para quem não é técnico.
+- No Visual Builder, os dois campos da identificação chamam-se «Campo 1» e «Campo 2». **Motivo:** o rótulo é configurável, e o nome do campo vale para qualquer rótulo.
 
 ### 2.2 CSS — Unidades e Modo Escuro
 
