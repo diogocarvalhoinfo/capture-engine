@@ -238,10 +238,10 @@ Cada zona tem a sua regra.
 | presente simples («usa») | «está a usar», «está usando» |
 
 **Palavras de propósito na interface:**
-- **«User»**, rótulo padrão do Campo 1 da identificação. **Motivo:** é o padrão que o administrador troca no Visual Builder (`TOKEN_USER_LABEL`). É também o nome do perfil «Export User».
-- **«Equipamento»**, rótulo padrão do Campo 2, é a forma dos dois países e não precisa de motivo.
+- **«User»**, rótulo padrão da Identificação 1. **Motivo:** é o padrão que o administrador troca no Visual Builder (`TOKEN_USER_LABEL`). É também o nome do perfil «Export User».
+- **«Equipamento»**, rótulo padrão da Identificação 2, é a forma dos dois países e não precisa de motivo.
 - **«Histórico»**, e não «Sessões». **Motivo:** é mais claro para quem não é técnico.
-- No Visual Builder, os dois campos da identificação chamam-se «Campo 1» e «Campo 2». **Motivo:** o rótulo é configurável, e o nome do campo vale para qualquer rótulo.
+- No Visual Builder, os dois campos da identificação chamam-se «Identificação 1» e «Identificação 2». **Motivo:** é o título da seção da barra lateral onde os campos aparecem, e o nome vale para qualquer rótulo. «Campo», «Título» e «Texto primário» foram descartados: o primeiro não diz onde o campo está, e os outros dois sugerem um título ou uma hierarquia.
 
 ### 2.2 CSS — Unidades e Modo Escuro
 
@@ -571,8 +571,8 @@ r.onupgradeneeded = e => {
 |---|---|---|---|
 | `id` | string | ✅ | ID único gerado por `genId('sess')` — chave primária |
 | `name` | string | ❌ | Nome da sessão derivado de `session-user` + `session-pc` (maiúsculas, separados por `-`, via initSessionSync). Ambos vazios = usa fallback #XXXX |
-| `user` | string | ❌ | Valor do Campo 1 (ex: "João Silva") |
-| `pc` | string | ❌ | Valor do Campo 2 (ex: "PC-001") |
+| `user` | string | ❌ | Valor da Identificação 1 (ex: "João Silva") |
+| `pc` | string | ❌ | Valor da Identificação 2 (ex: "PC-001") |
 | `createdAt` | number | ✅ | Timestamp Unix (ms) da criação — imutável após criação |
 | `updatedAt` | number | ✅ | Timestamp Unix (ms) da última atividade — atualizado a cada save |
 | `exported` | boolean | ✅ | Definido como `false` em `createSession()` e **nunca alterado** — é a única ocorrência do campo em todo o código. Persistido mas inerte; reservado para futura marcação visual de sessões exportadas, sem versão-alvo definida. **Quem implementar essa marcação precisa escrever o lado da gravação também** — ele não existe. (Até a V26 esta célula afirmava que o campo «passa a `true` quando `exportFile()` é chamado»; nunca foi verdade.) |
