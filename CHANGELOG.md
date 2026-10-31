@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.1.0] - 2026-10-31
+
+Minor: cinco melhorias pedidas no uso diário. Uma imagem que o navegador não abre vai para «Documentos», o verde do PDF e do ZIP fica até a próxima ação, o zoom anda 1 %, as alças têm o mesmo tamanho na tela, e os tooltips do editor aparecem na hora.
 
 ### Modificado
 
@@ -15,6 +17,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **PDF disponível logo depois do ZIP.** Com o verde do ZIP à espera da próxima ação, o botão PDF ficava desativado até lá. Volta a ficar disponível no fim do ZIP; só o verde espera. Apanhado pelo teste de regressão antes da versão.
 - **Imagem que o navegador não abre vai para «Documentos».** Uma foto HEIC entrava em «Imagens», ficava quebrada, e o PDF dava erro. Agora todo arquivo passa por um teste: se o navegador não desenha a imagem, ela vai para «Documentos», sem alterações, e um aviso diz porquê. Uma sessão antiga com uma imagem assim passa-a para «Documentos» antes do PDF ou do ZIP. Medido no Edge 156: o HEIC novo e o de uma sessão da 28.0.1 vão para «Documentos», com a extensão `.heic`, sem erros.
 
 ## [28.0.1] - 2026-10-31
