@@ -24,13 +24,13 @@
     /* ═══ CSS VARIABLES — LIGHT MODE ═══ */
     :root {
       --bg: #f4f3f0;
-      --surface: #ffffff;
-      --border: #dddcd880;
+      --surface: #fff;
+      --border: rgb(221 220 216 / 50.2%);
       --border-strong: #b5b3ae;
       --text: #1a1917;
       --text-muted: #6b6a66;
       --accent: #e86b2e;
-      --accent-fg: #ffffff;
+      --accent-fg: #fff;
       --accent-hover: #d4450f;
       --success-bg: #eaf3de;
       --success-border: #639922;
@@ -58,17 +58,17 @@
     body.dark {
       --bg: #121212;
       --surface: #1e1e1e;
-      --border: #33333380;
-      --border-strong: #555555;
+      --border: rgb(51 51 51 / 50.2%);
+      --border-strong: #555;
       --text: #e4e4e4;
       --text-muted: #9a9a9a;
-      --success-bg: rgba(34, 197, 94, 0.08);
+      --success-bg: rgb(34 197 94 / 8%);
       --success-border: #4d7a18;
       --success-text: #86d84f;
-      --error-bg: rgba(239, 68, 68, 0.08);
+      --error-bg: rgb(239 68 68 / 8%);
       --error-border: #8a2424;
       --error-text: #ff8c8c;
-      --warn-bg: rgba(234, 179, 8, 0.08);
+      --warn-bg: rgb(234 179 8 / 8%);
       --warn-border: #9c6214;
       --warn-text: #ecc680;
     }
@@ -170,11 +170,11 @@
 
     /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
     #ann-text-input::selection {
-      background: rgba(232, 107, 46, 0.32);
+      background: rgb(232 107 46 / 32%);
       color: inherit
     }
     #ann-text-input::-moz-selection {
-      background: rgba(232, 107, 46, 0.32);
+      background: rgb(232 107 46 / 32%);
       color: inherit
     }
 
@@ -319,11 +319,11 @@
 
     .action-btn:hover {
       color: var(--text);
-      background: rgba(0, 0, 0, 0.05)
+      background: rgb(0 0 0 / 5%)
     }
 
     body.dark .action-btn:hover {
-      background: rgba(255, 255, 255, 0.06)
+      background: rgb(255 255 255 / 6%)
     }
 
     .action-btn:active {
@@ -354,7 +354,7 @@
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 2px solid rgb(255 255 255 / 30%);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.65s linear infinite;
@@ -396,7 +396,7 @@
     #tb-brand-icon svg {
       width: 48px;
       height: 48px;
-      color: #ffffff
+      color: #fff
     }
 
     body:not(.dark) #tb-brand-icon svg {
@@ -498,7 +498,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02)
+      box-shadow: 0 2px 8px rgb(0 0 0 / 2%)
     }
 
     #block-imgs {
@@ -709,7 +709,7 @@
       opacity: 0.95;
       transform: scale(0.75);
       transform-origin: top left;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
       border-radius: var(--radius-sm);
       cursor: grabbing;
       transition: none;
@@ -745,7 +745,7 @@
     .t-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgb(0 0 0 / 40%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -777,7 +777,7 @@
       transition: all 0.15s;
       font-size: 10px;
       font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
     }
 
     .t-del::after {
@@ -814,7 +814,7 @@
       z-index: 10;
       opacity: 0;
       transition: all 0.15s;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
     }
 
     .t-restore::after {
@@ -974,7 +974,7 @@
       flex-direction: column;
       overflow-y: auto;
       padding: clamp(10px, 1.5vh, 16px) 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 2%);
       gap: clamp(10px, 2vh, 20px);
       scrollbar-width: none;
       -ms-overflow-style: none
@@ -1010,7 +1010,7 @@
       display: flex;
       overflow: hidden;
       transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02)
+      box-shadow: 0 2px 8px rgb(0 0 0 / 2%)
     }
 
     #sidebar.expanded {
@@ -1196,7 +1196,7 @@
       max-height: 52px;
       overflow: hidden;
       transition: max-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), min-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 2%);
       display: flex;
       flex-direction: column
     }
@@ -1355,7 +1355,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgb(0 0 0 / 72%);
       z-index: 9999;
       display: none;
       align-items: center;
@@ -1377,7 +1377,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 24px 64px rgb(0 0 0 / 45%);
       animation: modalIn 0.2s ease-out
     }
 
@@ -1439,7 +1439,7 @@
     .sb-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgb(0 0 0 / 85%);
       z-index: 9999;
       display: flex;
       align-items: center;
@@ -1461,7 +1461,7 @@
       width: 90%;
       max-width: 480px;
       border-radius: var(--radius-lg);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -1641,7 +1641,7 @@
       background-color: white;
       transition: .3s;
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+      box-shadow: 0 2px 4px rgb(0 0 0 / 20%)
     }
 
     input:checked+.toggle-slider {
@@ -1829,7 +1829,7 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
       flex-shrink: 0;
       overflow: hidden;
       background: var(--bg);
@@ -1969,7 +1969,7 @@
     .ann-swatch.active {
       border-color: #fff;
       transform: scale(1.15);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4)
+      box-shadow: 0 0 0 1px rgb(0 0 0 / 40%)
     }
 
     .ann-picker-wrap {
@@ -2135,7 +2135,7 @@
         margin: 0;
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 12px 48px rgb(0 0 0 / 30%);
         background: var(--surface);
         opacity: 0;
         pointer-events: none
@@ -2151,7 +2151,7 @@
         display: block;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgb(0 0 0 / 50%);
         z-index: 1999;
         opacity: 0;
         pointer-events: none;
@@ -2362,7 +2362,7 @@
 
     /* Image Modal Dark/Transparent Theme */
     #img-modal-overlay {
-      background: rgba(10, 10, 10, 0.88);
+      background: rgb(10 10 10 / 88%);
     }
 
     #img-modal-overlay .modal-box {
@@ -2381,17 +2381,17 @@
     }
 
     #img-modal-overlay .modal-title {
-      color: #ffffff;
+      color: #fff;
     }
 
     #img-modal-overlay .modal-close {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
+      background: rgb(255 255 255 / 8%);
+      color: #fff;
       right: 0px;
     }
 
     #img-modal-overlay .modal-close:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgb(255 255 255 / 20%);
     }
 
     #img-modal-overlay #ann-viewport {
@@ -2399,8 +2399,8 @@
     }
 
     #img-modal-overlay #ann-toolbar {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgb(255 255 255 / 6%);
+      border: 1px solid rgb(255 255 255 / 10%);
       border-radius: var(--radius-md);
       margin: 0 0 12px 0;
       color: #fff;
@@ -2414,9 +2414,9 @@
     }
 
     #img-modal-overlay .ann-btn:hover {
-      color: #ffffff;
+      color: #fff;
       background: #363636;
-      border-color: #555555;
+      border-color: #555;
     }
 
     #img-modal-overlay .ann-btn.active {
@@ -2428,8 +2428,8 @@
     #img-modal-overlay #ann-bold-btn.active,
     #img-modal-overlay #ann-italic-btn.active {
       color: #121212;
-      background: #ffffff;
-      border-color: #ffffff;
+      background: #fff;
+      border-color: #fff;
     }
 
     #img-modal-overlay .ann-btn.active[data-tool="text"],
@@ -2440,7 +2440,7 @@
     }
 
     #img-modal-overlay .ann-sep {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgb(255 255 255 / 15%);
     }
 
     @keyframes ann-alert {
@@ -2460,22 +2460,22 @@
     }
 
     #img-modal-overlay #img-modal-dims {
-      color: rgba(255, 255, 255, 0.6);
+      color: rgb(255 255 255 / 60%);
     }
 
     #img-modal-overlay #img-modal-dl {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgb(255 255 255 / 8%);
+      color: #fff;
+      border: 1px solid rgb(255 255 255 / 15%);
     }
 
     #img-modal-overlay #img-modal-dl:hover {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: rgb(255 255 255 / 18%);
+      border-color: rgb(255 255 255 / 30%);
     }
 
     #img-nav-prev:hover, #img-nav-next:hover {
-      background: rgba(255, 255, 255, 0.18) !important;
+      background: rgb(255 255 255 / 18%) !important;
     }
 
     /* Zoom & Pan Styles */
@@ -2831,11 +2831,11 @@
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
         </div>
         <div style="padding:12px 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:10">
-          <span id="img-modal-dims" style="font-size:11px;color:rgba(255,255,255,0.6)"></span>
+          <span id="img-modal-dims" style="font-size:11px;color:rgb(255 255 255 / 60%)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
-          style="display:none;position:absolute;bottom:16px;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-md);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+          style="display:none;position:absolute;bottom:16px;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 10%);border-radius:var(--radius-md);padding:4px 8px;gap:8px;align-items:center;z-index:100;box-shadow:0 4px 12px rgb(0 0 0 / 15%)">
           <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:#fff"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
@@ -2857,8 +2857,8 @@
             style="position:absolute;background:transparent;color:#fff;border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
         <!-- IMAGE NAVIGATION ARROWS -->
-        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgba(25,25,25,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 15%);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:100;width:36px;height:36px;border-radius:50%;background:rgb(25 25 25 / 70%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / 15%);color:#fff;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background 0.15s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <!-- FOOTER ACTIONS -->
       <div
@@ -2943,9 +2943,9 @@
             <button class="ann-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Azul"></button>
             <button class="ann-swatch" data-color="#a855f7" style="background:#a855f7" title="Roxo"></button>
             <button class="ann-swatch" data-color="#1a1a1a"
-              style="background:#1a1a1a;border-color:rgba(120,120,120,0.5)" title="Preto"></button>
+              style="background:#1a1a1a;border-color:rgb(120 120 120 / 50%)" title="Preto"></button>
             <button class="ann-swatch" data-color="#f0f0f0"
-              style="background:#f0f0f0;border-color:rgba(120,120,120,0.5)" title="Branco"></button>
+              style="background:#f0f0f0;border-color:rgb(120 120 120 / 50%)" title="Branco"></button>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
               style="width:28px;height:28px;margin-left:4px"><svg viewBox="0 0 24 24">
@@ -3356,8 +3356,8 @@
 
       /* ═══ INDEXEDDB ═══ */
       function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
-      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgba(255,255,255,.25);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
-      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgba(255,255,255,.25);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store), r = fn(st); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d));
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
@@ -3963,7 +3963,7 @@
         if (annTool === 'crop') {
           const cv = $('ann-canvas'), ctx = annGetCtx();
           ctx.save();
-          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          ctx.fillStyle = 'rgb(0 0 0 / 60%)';
           if (!annCropBox) {
             ctx.fillRect(0, 0, cv.width, cv.height);
           } else {

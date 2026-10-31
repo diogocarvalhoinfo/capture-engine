@@ -18,6 +18,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Idioma em três zonas e «User» de propósito (F-0004).** O `AGENTS.md` §2.1 separa documentação, interface e código, e declara o público da interface. «User» fica de propósito: é o rótulo padrão do Campo 1, configurável no Visual Builder. A linha antiga do glossário punha «User» na coluna «Evitar».
 - **O agente testa no navegador o que muda (F-0018).** O `AGENTS.md` §10 proibia o agente de abrir o navegador, e o padrão valida um projeto de um arquivo só abrindo-o. Agora o agente testa o que a mudança toca (D-0084). A prova de vida do Export User continua manual, antes de cada versão.
 - **Comentários do `validate.sh` em inglês (F-0029, em parte).** O código fica em inglês, e os comentários do `validate.sh` estavam em português, com formas de Portugal («ficheiro», «por defeito»). As mensagens que o script mostra continuam em português. Os comentários do HTML ficam em «Pendentes» (D-0085).
+- **Cores em `rgb()` moderno e hex curto (F-0013).** As 50 cores `rgba()` passam a `rgb(r g b / a%)`, os 11 hex longos passam à forma curta e os 2 hex de 8 dígitos passam a `rgb()`. Provado com capturas: 0 pixels diferentes em 96 casos (4 larguras, 2 temas, 12 estados).
 
 ### Corrigido
 
