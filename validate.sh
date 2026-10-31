@@ -260,7 +260,7 @@ fi
 
 # 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
 # Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
-CHECKS_NUMERADOS=28
+CHECKS_NUMERADOS=29
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -459,6 +459,56 @@ if command -v node >/dev/null 2>&1; then
   esac
 else
   printf '[SKIP] %-52s (node nao instalado)\n' "Export User inicializa"
+fi
+
+# 29) design-tokens.md is a verified copy: every table row "| `--name` | `value` |"
+#     matches the :root block of the HTML, the "Escuro" column matches the
+#     html.dark block ("—" = not redefined), every token of both blocks has a
+#     row, and every "| `TOKEN_X` | `type` | `value` |" row matches its const.
+DT=$($PY_BIN - "$FILE" design-tokens.md <<'PYDT'
+import re, sys
+h = open(sys.argv[1], encoding="utf-8").read()
+d = open(sys.argv[2], encoding="utf-8").read()
+norm = lambda v: " ".join(v.split())
+kv = lambda b: {k: norm(v) for k, v in re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", b)}
+root = re.search(r":root\s*\{(.*?)\n    \}", h, re.S)
+dark = re.search(r"html\.dark\s*\{(.*?)\n    \}", h, re.S)
+if not root or not dark:
+    print("FAIL blocos :root/html.dark nao encontrados"); sys.exit()
+R, D = kv(root.group(1)), kv(dark.group(1))
+err, seen, seen_dark = [], set(), set()
+three = False
+for line in d.splitlines():
+    if line.startswith("|") and "Claro" in line and "Escuro" in line:
+        three = True; continue
+    if not line.startswith("|"):
+        three = False; continue
+    m = re.match(r"\| `(--[\w-]+)` \| `([^`]+)` \|(?: (`([^`]+)`|—) \|)?", line)
+    if m:
+        k, v = m.group(1), norm(m.group(2)); seen.add(k)
+        if R.get(k) != v: err.append(f"{k}: doc={v} codigo={R.get(k)}")
+        if three:
+            dv = m.group(4)
+            if dv is None and k in D: err.append(f"{k}: escuro no codigo={D[k]}, doc=—")
+            if dv is not None:
+                seen_dark.add(k)
+                if D.get(k) != norm(dv): err.append(f"{k}: escuro doc={dv} codigo={D.get(k)}")
+        continue
+    m = re.match(r"\| `(TOKEN_[A-Z_]+)` \| `[^`]+` \| `(.+?)` \|", line)
+    if m:
+        c = re.search(r"^\s*const " + m.group(1) + r"\s*=\s*(.+?);", h, re.M)
+        if not c or c.group(1).strip() != m.group(2): err.append(f"{m.group(1)}: doc={m.group(2)} codigo={c.group(1).strip() if c else None}")
+for k in R:
+    if k not in seen: err.append(f"{k}: sem linha no design-tokens.md")
+for k in D:
+    if k not in seen_dark: err.append(f"{k}: valor escuro sem linha")
+print("OK" if not err else "FAIL " + " | ".join(err[:4]) + (f" (+{len(err)-4})" if len(err) > 4 else ""))
+PYDT
+)
+if [ "${DT%% *}" = "OK" ]; then
+  printf '[PASS] %-52s\n' "design-tokens.md = codigo (CSS e TOKEN_*)"; PASS=$((PASS+1));
+else
+  printf '[FAIL] %-52s %s\n' "design-tokens.md divergente do codigo" "${DT#FAIL }"; FAIL=$((FAIL+1));
 fi
 
 # 28) CSS standard: stylelint with the reference config (.stylelintrc.json,

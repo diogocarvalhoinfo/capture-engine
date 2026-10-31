@@ -1,114 +1,113 @@
-# Design Tokens · Capture Engine
+# Design tokens
 
-> Especificação completa do design system — a linguagem visual que define como a interface se vê, se comporta e se sente.
+Os valores visuais do projeto: o nome e o valor de cada token.
 
----
+Nenhuma regra do CSS usa uma cor, um espaço, um tamanho ou uma duração literal: usa um token desta tabela.
 
-## O que são Design Tokens e por que existem?
+## O que são e como se conferem
 
-Um **design token** é um nome simbólico para um valor visual. Em vez de escrever `#0ea5e9` diretamente no CSS, usamos `var(--color-primary)`. Em vez de escrever `36px` em cada botão, os botões têm sempre `height: 36px` por convenção documentada.
+Um token é um nome para um valor visual: `color: var(--color-muted-foreground)` em vez de `color: #6b6a66`. Os nomes seguem os prefixos do Tailwind v4 (`--color-*`, `--text-*`, `--radius-*`) e o vocabulário de cores do shadcn/ui (`background`, `foreground`, `primary`, `muted-foreground`).
 
-**Por que usar tokens?**
+Há dois tipos:
+- **Tokens CSS**, no `:root` do `capture-engine.html`. O bloco `html.dark` redefine alguns para o tema escuro.
+- **Tokens JavaScript** (`const TOKEN_*`), na §6. Controlam a configuração, e o Quine troca-os na exportação.
 
-1. **Consistência** — Mudar a cor principal em um lugar (`--color-primary`) muda em toda a interface automaticamente
-2. **Personalização via Quine** — O admin muda a cor pelo Visual Builder; o Quine Engine substitui o valor no arquivo exportado
-3. **Dark mode sem duplicação** — Os tokens têm valores diferentes em `:root` (light) e `html.dark` (dark); o CSS que usa os tokens não precisa saber em que modo está
-4. **Legibilidade** — `color: var(--color-muted-foreground)` diz o que faz; `color: #6b6a66` não
+Este documento é uma cópia verificada. O `validate.sh` (check 29) compara cada linha das tabelas com o código, nome a nome e valor a valor, nos dois temas. Um token novo entra aqui no mesmo commit.
 
-**Dois tipos de tokens:**
-- **Tokens CSS** — definidos como variáveis CSS (`:root { --token: valor }`) — usados em `var(--token)` no CSS
-- **Tokens JavaScript** — definidos como `const TOKEN_*` no início do script — controlam o comportamento e são substituídos pelo Quine na exportação
+## 1. Cores
 
----
+A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); «—» quer dizer que o valor não muda. O visualizador de imagem é escuro nos dois temas, por isso as suas cores não mudam.
 
-## 1. Paleta de Cores
-
-### Como o sistema de cores funciona
-
-A paleta tem dois grupos:
-- **Cores base** (não mudam entre light/dark): `--color-primary`, `--color-green-500`, `--color-red-500`, `--color-yellow-500` — mantêm o mesmo matiz mas adaptam-se ao fundo
-- **Cores adaptativas** (mudam entre light/dark): `--color-background`, `--color-card`, `--color-border`, `--color-foreground`... — invertem ou ajustam conforme o modo
-
-### Light Mode (`:root` — padrão)
-
-| Token | Hex | Uso na interface |
-|---|---|---|
-| `--color-background` | `#f4f3f0` | Fundo geral — off-white (não branco puro) para suavizar o contraste com a superfície branca dos painéis |
-| `--color-card` | `#ffffff` | Superfície de painéis, cards, modais — branco puro para contraste com o fundo |
-| `--color-border` | `#dddcd880` | Bordas sutis, linhas de separação — estruturam sem poluir (alpha 50%) |
-| `--color-border-strong` | `#b5b3ae` | Bordas com mais presença — elementos de estado ativo ou hover |
-| `--color-foreground` | `#1a1917` | Texto principal — quase preto (nunca `#000000` puro — muito agressivo) |
-| `--color-muted-foreground` | `#6b6a66` | Texto secundário — datas, legendas, metadados menos importantes |
-| `--color-primary` | `#e86b2e` | Cor de destaque principal personalizada — botões, links, elementos ativos |
-| `--color-primary-foreground` | `#ffffff` | Texto legível sobre fundo accent — contraste calculado para #e86b2e — verificar WCAG AA se aplicado em texto de corpo |
-| `--color-primary-hover` | `#d4450f` | Accent escurecido para hover |
-| `--color-green-500` | `#22c55e` | Sucesso, confirmação, estado "Gravado" |
-| `--color-red-500` | `#ef4444` | Erro, remoção, ações destrutivas |
-| `--color-yellow-500` | `#eab308` | Aviso, expiração próxima |
-
-### Dark Mode (`html.dark`)
-
-| Token | Hex | Nota |
-|---|---|---|
-| `--color-background` | `#121212` | Quase preto — padrão Material Dark |
-| `--color-card` | `#1e1e1e` | Ligeiramente mais claro que o fundo — cria profundidade sem bordas |
-| `--color-border` | `#33333380` | Borda escura sutil (alpha 50%) |
-| `--color-border-strong` | `#555555` | Borda escura mais visível |
-| `--color-foreground` | `#e4e4e4` | Quase branco (nunca `#ffffff` puro — agressivo em fundos escuros) |
-| `--color-muted-foreground` | `#9a9a9a` | Cinza médio para elementos secundários |
-
-> **Regra do dark mode:** Ativa-se *exclusivamente* pela classe `dark` no `<html>`. A media query `prefers-color-scheme` é usada **apenas em JavaScript** (`initTheme`) como fallback na primeira abertura, quando não há preferência salva em `localStorage`. Depois de o usuário alternar manualmente, a escolha fica persistida. Isto dá controle total ao usuário.
-
-> **Anti-FOUC:** Existe um script síncrono imediatamente após `<body>` que põe a classe `dark` no `<html>` *antes* de qualquer pintura do DOM. Sem isto, o usuário em dark mode veria um flash branco ao abrir a app.
-
----
-
-## 2. Cores Semânticas — Estados de Feedback
-
-Estas variáveis definem estados de sucesso, erro e aviso de forma completa (fundo + borda + texto) para que qualquer alerta fique consistente sem definir três cores manualmente.
-
-| Estado | Token de fundo | Token de borda | Token de texto |
+| Token | Claro | Escuro | Uso |
 |---|---|---|---|
-| **Sucesso** | `--color-success-subtle` | `--color-success-border` | `--color-success-foreground` |
-| **Erro** | `--color-destructive-subtle` | `--color-destructive-border` | `--color-destructive-foreground` |
-| **Aviso** | `--color-warning-subtle` | `--color-warning-border` | `--color-warning-foreground` |
+| `--color-background` | `#f4f3f0` | `#121212` | Fundo geral. No claro, um branco quente, para a superfície dos painéis se destacar |
+| `--color-card` | `#fff` | `#1e1e1e` | Painéis, cartões e modais |
+| `--color-border` | `rgb(221 220 216 / 50.2%)` | `rgb(51 51 51 / 50.2%)` | Bordas suaves e linhas de separação |
+| `--color-border-strong` | `#b5b3ae` | `#555` | Bordas com mais presença: estado ativo e hover |
+| `--color-foreground` | `#1a1917` | `#e4e4e4` | Texto principal |
+| `--color-muted-foreground` | `#6b6a66` | `#9a9a9a` | Texto secundário: datas, legendas, metadados |
+| `--color-primary` | `#e86b2e` | — | Cor principal, escolhida no Visual Builder: botões e elementos ativos |
+| `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal; calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
+| `--color-primary-hover` | `#d4450f` | — | Cor principal no hover |
+| `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
+| `--color-ring` | `var(--color-primary)` | — | Contorno do foco do teclado |
+| `--color-success-subtle` | `#eaf3de` | `rgb(34 197 94 / 8%)` | Fundo de sucesso |
+| `--color-success-border` | `#639922` | `#4d7a18` | Borda de sucesso |
+| `--color-success-foreground` | `#27500a` | `#86d84f` | Texto de sucesso |
+| `--color-destructive-subtle` | `#fcebeb` | `rgb(239 68 68 / 8%)` | Fundo de erro |
+| `--color-destructive-border` | `#a32d2d` | `#8a2424` | Borda de erro |
+| `--color-destructive-foreground` | `#501313` | `#ff8c8c` | Texto de erro |
+| `--color-warning-subtle` | `#faeeda` | `rgb(234 179 8 / 8%)` | Fundo de aviso |
+| `--color-warning-border` | `#ba7517` | `#9c6214` | Borda de aviso |
+| `--color-warning-foreground` | `#412402` | `#ecc680` | Texto de aviso |
+| `--color-green-500` | `#22c55e` | — | Sucesso, estado «Gravado», confirmar a anotação |
+| `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
+| `--color-yellow-500` | `#eab308` | — | Aviso |
+| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contadores, spinner, botões verdes e vermelhos) |
+| `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
+| `--color-orange-500` | `#f97316` | — | Amostra laranja da paleta de anotação |
+| `--color-blue-500` | `#3b82f6` | — | Amostra azul da paleta de anotação |
+| `--color-purple-500` | `#a855f7` | — | Amostra roxa da paleta de anotação |
+| `--color-brand-icon-light` | `#1a1a1a` | — | Ícone da marca no tema claro |
+| `--color-annotation-black` | `#1a1a1a` | — | Amostra preta da paleta de anotação |
+| `--color-annotation-white` | `#f0f0f0` | — | Amostra branca da paleta de anotação |
+| `--color-viewer-control` | `#2a2a2a` | — | Botões da barra de anotação |
+| `--color-viewer-control-hover` | `#363636` | — | Hover dos botões da barra de anotação |
+| `--color-viewer-control-border-hover` | `#555` | — | Borda desses botões no hover |
+| `--color-viewer-control-foreground` | `#e0e0e0` | — | Texto e ícones desses botões |
+| `--color-viewer-active-foreground` | `#121212` | — | Texto do negrito e do itálico ativos |
+| `--color-annotation-selection` | `rgb(232 107 46 / 32%)` | — | Seleção do texto no editor de texto da anotação |
+| `--color-hover-overlay-dark` | `rgb(255 255 255 / 6%)` | — | Fundo de hover dos botões de ação, no tema escuro |
+| `--color-hover-overlay` | `rgb(0 0 0 / 5%)` | — | Fundo de hover dos botões de ação, no tema claro |
+| `--color-spinner-track` | `rgb(255 255 255 / 30%)` | — | Trilho do spinner |
+| `--color-thumb-overlay` | `rgb(0 0 0 / 40%)` | — | Véu sobre a miniatura no hover |
+| `--color-modal-backdrop` | `rgb(0 0 0 / 72%)` | — | Fundo atrás dos modais |
+| `--color-settings-backdrop` | `rgb(0 0 0 / 85%)` | — | Fundo atrás do Visual Builder e do painel de exportação |
+| `--color-offcanvas-backdrop` | `rgb(0 0 0 / 50%)` | — | Fundo atrás da barra lateral no mobile |
+| `--color-viewer-backdrop` | `rgb(10 10 10 / 88%)` | — | Fundo do visualizador de imagem |
+| `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botões claros sobre o visualizador (fechar, download) |
+| `--color-viewer-close-hover` | `rgb(255 255 255 / 20%)` | — | Hover do botão de fechar do visualizador |
+| `--color-viewer-toolbar` | `rgb(255 255 255 / 6%)` | — | Barra de ferramentas da anotação |
+| `--color-viewer-border` | `rgb(255 255 255 / 10%)` | — | Borda da barra de ferramentas e da barra de zoom |
+| `--color-viewer-control-border` | `#3f3f3f` | — | Borda dos botões da barra de anotação |
+| `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Separadores e bordas finas do visualizador |
+| `--color-viewer-muted-foreground` | `rgb(255 255 255 / 60%)` | — | Dimensões da imagem, sobre o visualizador |
+| `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
+| `--color-viewer-border-hover` | `rgb(255 255 255 / 30%)` | — | Borda do botão de download no hover |
+| `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom e setas, flutuando sobre a imagem |
+| `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
 
-**Valores Light / Dark:**
+> [!NOTE]
+> **Tema escuro e anti-FOUC.**
+> O tema escuro liga-se só pela classe `dark` no `<html>`. Sem escolha guardada, o `initTheme` segue o sistema (`prefers-color-scheme`). Um script logo no início do `<body>` põe a classe antes da primeira pintura, para não haver um flash branco.
 
-| Variável | Light | Dark |
+## 2. Cores semânticas
+
+Cada estado tem fundo, borda e texto, para um aviso nunca precisar de três cores escritas à mão.
+
+| Estado | Fundo | Borda | Texto |
+|---|---|---|---|
+| Sucesso | `--color-success-subtle` | `--color-success-border` | `--color-success-foreground` |
+| Erro | `--color-destructive-subtle` | `--color-destructive-border` | `--color-destructive-foreground` |
+| Aviso | `--color-warning-subtle` | `--color-warning-border` | `--color-warning-foreground` |
+
+No tema escuro, os fundos são a cor do estado com 8% de opacidade, sobre o fundo escuro.
+
+### 2.1 Cores literais fora dos tokens
+
+Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.html`, porque um token não pode ser usado ali. Esta tabela lista todas, para uma auditoria não as tratar como descuido.
+
+| Cor | Onde | Motivo |
 |---|---|---|
-| `--color-success-subtle` | `#eaf3de` | `rgba(34,197,94,0.08)` |
-| `--color-success-border` | `#639922` | `#4d7a18` |
-| `--color-success-foreground` | `#27500a` | `#86d84f` |
-| `--color-destructive-subtle` | `#fcebeb` | `rgba(239,68,68,0.08)` |
-| `--color-destructive-border` | `#a32d2d` | `#8a2424` |
-| `--color-destructive-foreground` | `#501313` | `#ff8c8c` |
-| `--color-warning-subtle` | `#faeeda` | `rgba(234,179,8,0.08)` |
-| `--color-warning-border` | `#ba7517` | `#9c6214` |
-| `--color-warning-foreground` | `#412402` | `#ecc680` |
-
-*Em dark mode, os fundos usam `rgba` com opacidade ~0.08 — a cor semântica fica sobreposta ao fundo escuro com baixa saturação, em vez de um bloco de cor sólido.*
-
-### 2.1 Cores literais fora do sistema de tokens — exceções declaradas
-
-O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, cores escritas como literais no `capture-engine.html`. **Todas são intencionais**, e estão listadas aqui para que auditorias automáticas e revisões futuras parem de as reportar como violação — um `grep` por `background:#` não distingue intenção de esquecimento, e duas auditorias independentes já as assinalaram.
-
-| Cor | Onde | Por que é literal |
-|---|---|---|
-| `#b91c1c` | Fundo dos banners críticos `#ce-quota-banner` e `#ce-storage-banner` | Vermelho de alerta escolhido para estes dois avisos. Não corresponde a `--color-red-500` (`#ef4444`), que é mais claro; o tom mais escuro foi preferido para o bloco de fundo sólido de largura total. Não tem token próprio por decisão do proprietário. |
-| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` — os 8 swatches, enumerados (**não escrever «e restantes»**: o comando de verificação no fim desta secção compara listas literais e um apanha-tudo torna-o cego) | Atributos `data-color` da paleta de anotação | **Não são cor de interface — são dados.** O valor é gravado dentro do objeto de anotação no IndexedDB e usado depois para redesenhar a forma. Uma `var(--x)` ficaria persistida como texto no banco, ou exigiria resolução no momento da escrita. Têm de ser literais. |
-| `#ef4444` `#22c55e` `#eab308` | Strings de estilo do `SysLogger` (`console.log('%c…')`) | O console do DevTools **não resolve** custom properties da página. Não há alternativa técnica. |
-| `#ef4444` | `style` inline do botão `#ann-cancel` | Decisão do proprietário. O botão vizinho `#ann-save` usa `var(--color-green-500)`; o valor literal aqui produz exatamente o mesmo resultado renderizado que `var(--color-red-500)` produziria (`rgb(239, 68, 68)`), pelo que não há divergência visual — apenas de escrita. Mantido como está. |
-| `#ef4444` | `let annCurrentColor = '#ef4444'` | Cor inicial da anotação. **É dado, não interface** — mesma razão dos swatches: o valor é persistido no IndexedDB. |
-| `#fff` `#ffffff` | Texto e ícones sobre preenchimentos de cor sólida: banners críticos, `.btn-send:disabled`, `#btn-admin-save.admin-active`, `.spinner`, `.count-badge`, `.t-del`, `#trash-badge`, `.ann-swatch.active` | Branco puro sobre fundo saturado. Não há token de branco puro no sistema — o `--color-foreground` nunca é `#ffffff`, por decisão documentada na §1 — e usar `--color-foreground` aqui inverteria o contraste em modo claro. |
-| `#ffffff` `#e0e0e0` `#2a2a2a` `#3f3f3f` `#363636` `#555555` `#121212` `#fff` | Chrome do modal de imagem: `#img-modal-overlay` e descendentes (`.modal-title`, `.modal-close`, `#ann-toolbar`, `.ann-btn` e variantes, `#img-modal-dl`) | **O modal de imagem não tem variante clara** — não existe nenhuma regra `html:not(.dark) #img-modal-overlay` no arquivo. É uma superfície de visualização deliberadamente escura, para a imagem ser avaliada contra chrome neutro em qualquer tema. Os tokens invertem com o modo; estes valores não podem inverter. Alguns coincidem com tokens (`#555555` = `--color-border-strong`, `#121212` = `--color-background` do modo escuro): a coincidência é do valor, não da intenção. |
-| `#16a34a` | `#btn-admin-save.admin-active:hover` | Verde mais escuro para o estado hover. O estado base usa `var(--color-green-500)`; não existe token de variante escurecida no sistema. |
-| `#e86b2e` | Declaração do `TOKEN_MAIN_COLOR`; atributos `value=` dos inputs `#cfg-cor-hex` e `#cfg-cor-principal`; fallback quando `getComputedStyle(--color-primary)` devolve vazio | **É o valor padrão do próprio token** (§6). Um `var(--color-primary)` aqui seria circular: o `--color-primary` deriva deste valor. Os dois `value=` do Visual Builder têm de espelhar o padrão para o picker abrir na cor certa antes de qualquer JS correr. |
-| `#ffffff` `#1a1a1a` | `#tb-brand-icon svg` e a sua variante `html:not(.dark)` | Ícone da marca com cor fixa por tema, definida diretamente em vez de por token. |
-| `#1a1917` `#ffffff` | Cálculo YIQ de contraste (`fg = (yiq >= 128) ? … : …`) | Escolha de legibilidade sobre um acento **arbitrário** definido pelo usuário no Visual Builder — o resultado não é conhecido em tempo de escrita, portanto não pode vir de um token. Já descrito na §6; repetido aqui para que o `grep` desta secção não o reporte. |
-| `#35a800` `#ffd82b` | `stop-color` do `<linearGradient id="ce_accent">` no logo SVG inline | Stops de gradiente da identidade visual. SVG inline não resolve custom properties em `stop-color` de forma fiável entre browsers. |
-| `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | Metatags lidas pelo browser e pelo sistema operativo **antes de o CSS existir**. Custom properties não se aplicam a metatags. |
-| `#fdfdfc` `#121212` | `index.html` — fundo do stub de redireção, claro e escuro | O `index.html` é uma página de 15 linhas que redireciona para o `capture-engine.html`. **Não pode usar o sistema de tokens**: pinta o fundo antes de a aplicação existir, para não haver um flash branco a caminho do modo escuro. O `#121212` coincide com o `--color-background` escuro; o `#fdfdfc` é um branco-quente que não existe no sistema. |
+| `#b91c1c` `#fff` | Fundo e texto dos avisos `#ce-quota-banner` e `#ce-storage-banner`, montados no JavaScript | Decisão do proprietário (D-0080): o vermelho é mais escuro que o `--color-red-500`, para o bloco de largura total. |
+| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, e `let annCurrentColor` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
+| `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
+| `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
+| `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script correr. |
+| `#e86b2e` | O `TOKEN_MAIN_COLOR`, os `value=` de `#cfg-cor-hex` e `#cfg-cor-principal`, e o valor de reserva do `getComputedStyle` | É o valor padrão do próprio token (§6): um `var()` aqui seria circular. |
+| `#35a800` `#ffd82b` | `stop-color` do gradiente `#ce_accent`, no logotipo SVG | Um `stop-color` com custom property não funciona da mesma forma em todos os navegadores. |
+| `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | O navegador lê as metatags antes de o CSS existir. |
+| `#fdfdfc` `#121212` | `--color-background` do `index.html`, claro e escuro | O `index.html` redireciona antes de a aplicação existir e tem o seu próprio `:root`. |
 
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
 
@@ -133,32 +132,69 @@ O contrato do projeto proíbe valor visual hardcoded. Existem, ainda assim, core
 
 ---
 
-## 3. Layout e Forma
+## 3. Tipografia, espaço e forma
 
-### Tipografia — Fonte do sistema
+Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px), cada valor dá o mesmo pixel que dava em `px`.
 
-A interface usa `'Segoe UI', Arial, sans-serif` — a fonte nativa do Windows/Mac/Linux. Sem fontes externas (sem Google Fonts, sem CDN), para garantir o funcionamento 100% offline e para que a interface se pareça "em casa" no sistema operacional de cada usuário.
+### Tipografia
 
-### Raio de Canto — A escala de arredondamento
-
-Existe uma escala de 5 níveis, cada um com um propósito específico:
-
-| Token | Valor | Onde usar |
+| Token | Valor | Uso |
 |---|---|---|
-| `--radius-badge` | `0.1875rem` (3px) | Badges, etiquetas de tamanho — micro-elementos |
-| `--radius-sm` | `0.25rem` (4px) | Inputs, chips de seleção — elementos pequenos interativos |
-| `--radius-md` | `0.375rem` (6px) | Botões, cards de documentos — elementos de ação principais |
-| `--radius-lg` | `0.5rem` (8px) | Painéis internos, caixas — contentores secundários |
-| `--radius-xl` | `0.75rem` (12px) | Modais e diálogos — elementos de maior destaque visual |
+| `--font-sans` | `'Segoe UI', arial, sans-serif` | Fonte de toda a interface: a do sistema, sem fontes externas |
+| `--text-micro` | `0.625rem` | Rodapé e botão de remover da miniatura (10px) |
+| `--text-caption` | `0.6875rem` | Títulos de seção, contadores, datas e legendas (11px) |
+| `--text-xs` | `0.75rem` | Nomes no histórico (12px) |
+| `--text-code` | `calc(12.5rem / 16)` | Visualizador de texto, em fonte monoespaçada (12.5px) |
+| `--text-control` | `0.8125rem` | Botões, campos e chips (13px) |
+| `--text-sm` | `0.875rem` | Texto geral (14px) |
+| `--text-subtitle` | `0.9375rem` | Título do aviso de documento binário (15px) |
+| `--text-base` | `1rem` | Títulos de modal e campos no mobile (16px) |
+| `--text-lg` | `1.125rem` | Nome da ferramenta em telas baixas (18px) |
+| `--text-xl` | `1.25rem` | Nome da ferramenta e títulos do Visual Builder (20px) |
 
-> **Exceção geométrica — imagens:** Os elementos `.t-item` e `.t-label` têm `border-radius: 0` (cantos retos — comunicam precisão e formalidade). O `.t-wrap` (wrapper do thumbnail) tem `border-radius: var(--radius-md)` (6px) para suavizar visualmente a moldura da imagem na grelha, mantendo o card exterior reto. Botões e cards textuais ficam arredondados para parecerem interativos e acessíveis.
+### Espaçamento
 
-### Medidas fixas de layout
-
-| Token CSS | Valor | Uso |
+| Token | Valor | Uso |
 |---|---|---|
-| `--top-bar-h` | `64px` | Altura estrita da barra de cabeçalho — consistente em todas as telas |
-| `--thumb-size` | `140px` | Tamanho da caixa de thumbnail — todos os thumbs têm a mesma área |
+| `--spacing` | `0.25rem` | Base dos espaços: `calc(var(--spacing) * n)` |
+
+### Raios
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--radius-badge` | `0.1875rem` | Badges e etiquetas de tamanho (3px) |
+| `--radius-sm` | `0.25rem` | Campos, chips e o botão de remover (4px) |
+| `--radius-md` | `0.375rem` | Botões, cartões de documento e a moldura da miniatura (6px) |
+| `--radius-lg` | `0.5rem` | Painéis internos e caixas (8px) |
+| `--radius-xl` | `0.75rem` | Modais e diálogos (12px) |
+| `--radius-circle` | `50%` | Elementos redondos: botões de ícone, amostras, spinner |
+| `--radius-full` | `calc(infinity * 1px)` | Pílulas: contadores e o interruptor |
+
+### Sombras
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--shadow-card` | `0 2px 8px rgb(0 0 0 / 2%)` | Painéis e barras |
+| `--shadow-control` | `0 2px 4px rgb(0 0 0 / 20%)` | Botões pequenos sobre a miniatura e o interruptor |
+| `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
+| `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
+| `--shadow-input-focus` | `0 0 0 1px var(--color-primary)` | Campos com foco |
+| `--shadow-dragging` | `0 12px 30px rgb(0 0 0 / 35%)` | Item em arrasto |
+| `--shadow-sidebar` | `0 12px 48px rgb(0 0 0 / 30%)` | Barra lateral no mobile |
+| `--shadow-settings` | `0 10px 25px rgb(0 0 0 / 20%)` | Visual Builder e painel de exportação |
+| `--shadow-modal` | `0 24px 64px rgb(0 0 0 / 45%)` | Modais |
+| `--shadow-viewer-zoom` | `0 4px 12px rgb(0 0 0 / 15%)` | Barra de zoom do visualizador |
+
+### Foco e medidas de componente
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--focus-width` | `3px` | Espessura do contorno do foco |
+| `--focus-offset` | `2px` | Afastamento do contorno do foco |
+| `--top-bar-h` | `64px` | Altura da barra do topo |
+| `--thumb-size` | `140px` | Lado da caixa de miniatura |
+
+Os elementos `.t-item` e `.t-label` têm `border-radius: 0`: a miniatura fica com cantos retos, e só a moldura `.t-wrap` é arredondada.
 
 ---
 
@@ -234,7 +270,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → "Rótulo — Campo 2" |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
-| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Captura → horas até purge automático. **ℹ️ Valor 0 desativa o purge** (guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — nenhuma sessão é apagada). Valores suportados pelo Visual Builder: 8, 24, 48 (horas) e 0 (Nunca/desativado). Valores arbitrários editados à mão no token não são preservados pelo reexport do Visual Builder — ver nota no README §6.4. |
+| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Manutenção → «Limpeza automática» (8h, 24h, 48h, Nunca). **ℹ️ Valor 0 desativa o purge** (guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — nenhuma sessão é apagada). Valores suportados pelo Visual Builder: 8, 24, 48 (horas) e 0 (Nunca/desativado). Valores arbitrários editados à mão no token não são preservados pelo reexport do Visual Builder — ver nota no README §6.4. |
 | `TOKEN_DEBUG_MODE` | `bool` | `true` | ❌ | Sem UI — desativado automaticamente em Export User |
 
 ### Notas sobre tokens específicos

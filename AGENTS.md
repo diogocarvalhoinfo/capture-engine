@@ -1055,7 +1055,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 ### O que o validate.sh verifica
 
-O `validate.sh` executa 28 verificações mecânicas, 27 baseadas em regex/grep e uma com o stylelint, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
+O `validate.sh` executa 29 verificações mecânicas, 28 baseadas em regex, grep ou Python e uma com o stylelint, garantindo a integridade dos 3 contratos fundamentais (zero-dep, Quine, XSS) sem a necessidade de abrir o browser.
 
 **Critérios de Sucesso e Saída:**
 - O critério correto de saída não é o número total de PASS, mas sim **"0 FAIL / exit code 0"**. Se houver 0 FAIL, a validação estática passou.
@@ -1064,9 +1064,9 @@ O `validate.sh` executa 28 verificações mecânicas, 27 baseadas em regex/grep 
 - **`[WARN]`**: Aviso não-bloqueante (ex: Complexidade Ciclomática excedida). Não incrementa FAIL nem altera o exit code.
 - **`[SKIP]`**: O teste foi ignorado por ausência de dependências opcionais no sistema (ex: ausência do `node` ou `python`). Não afeta o resultado final.
 
-> **Além dos 28 numerados há dois checks que só emitem `[WARN]` e não entram na contagem (D70):** a heurística de complexidade ciclomática (descrita abaixo) e um check de **contagem de checks**, que compara o número declarado nesta secção com o `CHECKS_NUMERADOS` do script e avisa se desfasarem. Este último existe porque a D24 corrigiu exatamente essa dessincronização; se acrescentar ou remover um check numerado, atualize os dois sítios ou o `[WARN]` fica permanente.
+> **Além dos 29 numerados há dois checks que só emitem `[WARN]` e não entram na contagem (D70):** a heurística de complexidade ciclomática (descrita abaixo) e um check de **contagem de checks**, que compara o número declarado nesta secção com o `CHECKS_NUMERADOS` do script e avisa se desfasarem. Este último existe porque a D24 corrigiu exatamente essa dessincronização; se acrescentar ou remover um check numerado, atualize os dois sítios ou o `[WARN]` fica permanente.
 
-**Os 28 Checks de Validação:**
+**Os 29 Checks de Validação:**
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função definida: window.exportFile**: Casa a **sintaxe de definição** (`nome = function`), não a mera ocorrência do nome. Garante que o ponto de entrada do Quine existe como função.
@@ -1100,6 +1100,15 @@ O `validate.sh` executa 28 verificações mecânicas, 27 baseadas em regex/grep 
 26. **ZIP — flag UTF-8 (bit 11)**: confirma que o bit 11 (`0x0800`) do *general purpose bit flag* está escrito nos dois cabeçalhos gerados por `buildZIP` (local file header e central directory). FAIL = nomes de arquivo com acentos saem ilegíveis no descompressor (ver D21).
 27. **Export User inicializa**: aplica os 4 regex de remoção do `exportFile` e avalia o JS resultante num shim de DOM onde `getElementById` devolve `null` para os IDs removidos. **É comparativo:** só dá FAIL se o artefato User abortar **e** o Admin não — assim, IDs criados em runtime (que são `null` nos dois) não geram falso positivo, e um shim defeituoso reprova nos dois e é sinalizado como `[WARN]`. Cobre código síncrono de nível de módulo; `init()` é `async` e não corre neste ambiente. FAIL = a cópia distribuída aos usuários finais não inicializa (ver D25).
 28. **stylelint (modelo dos prompts)**: roda o stylelint com o `.stylelintrc.json` da raiz, cópia exata de `stylelint/.stylelintrc.json` do repositório `diogo-engenharia-software-agentes`, nas versões do README dessa pasta. FAIL = um valor visual fora dos tokens ou uma escrita fora do `stylelint-config-standard`. Sem `npx`, dá `[SKIP]`; na primeira vez, o `npx` baixa os pacotes.
+29. **design-tokens.md = código**: cada linha ``| `--nome` | `valor` |`` das tabelas do `design-tokens.md` deve bater com o `:root` do HTML, e a coluna «Escuro» com o bloco `html.dark`. Cada token dos dois blocos precisa de uma linha. As linhas ``| `TOKEN_X` | tipo | `valor` |`` da §6 devem bater com a declaração `const`. FAIL = a tabela envelheceu ou um token novo ficou sem documentação.
+
+**Cópias verificadas.** Estes fatos aparecem em dois lugares, e um check do `validate.sh` compara as duas cópias:
+
+| Cópia | Dono | Check |
+|---|---|---|
+| Tabelas do `design-tokens.md` (tokens CSS e padrões dos `TOKEN_*`) | `capture-engine.html` | 29, 18, 23 e 24 |
+| Linha «Versão» do README e as 3 referências de versão do HTML | `CHANGELOG.md` | 15 e 16 |
+| Lista das ferramentas de anotação no README | `capture-engine.html` | 19 |
 
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
