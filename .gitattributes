@@ -1,0 +1,16 @@
+# Modelo para todos os repositórios: copie este arquivo igual para a raiz de cada um.
+
+# Arquivos de texto com fim de linha LF, em qualquer computador.
+* text=auto eol=lf
+
+# Imagens, fontes e pacotes: o git nunca mexe neles.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.zip binary
