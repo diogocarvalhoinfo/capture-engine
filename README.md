@@ -199,9 +199,9 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 | Ação | Como fazer |
 |---|---|
 | **Abrir** | Clicar na miniatura da imagem |
-| **Zoom in/out** | Roda do mouse (scroll), centrado na posição do cursor |
+| **Zoom in/out** | Roda do mouse, 1 % por clique, centrado na posição do cursor |
 | **Pan (mover)** | Clicar e arrastar quando a imagem está ampliada |
-| **Zoom com botões** | Botões +/−/Reset na barra flutuante (aparece quando zoom > 100%) |
+| **Zoom com botões** | Botões + e −, 1 % por clique; segurar o botão repete o passo. O valor (ex.: 137 %) volta a 100 % com um clique. A barra aparece quando o zoom passa de 100 % |
 | **Navegar ← →** | Botões de seta flutuantes nas laterais (visíveis quando há ≥2 imagens na sessão), ou teclas ArrowLeft / ArrowRight |
 | **Fechar** | Botão × ou clicar fora da imagem (apenas quando zoom = 100%) |
 
