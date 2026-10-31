@@ -10,6 +10,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de separador e depois do Alt; some no clique seguinte.
 - **Zoom de 1 % por passo.** A roda do mouse andava 20 % por clique, e os botões + e − 50 %. Agora os dois andam 1 %, e segurar o botão repete o passo, 25 vezes por segundo. O duplo clique continua a levar a 200 %. Medido no Edge 156: 3 cliques na roda dão 103 %, e segurar o + durante 1,4 s soma 25 %.
+- **Alças com o mesmo tamanho na tela.** As marcas do recorte e as alças das anotações tinham o tamanho em pixels da imagem: numa foto de 3000 px, a marca do recorte ficava com 3,9 px na tela, e a área de clique com 5,3 px de raio. Agora têm sempre 20 px (recorte) e 12 px (anotações), com uma área de clique de 44 × 44 px, e o cursor muda sobre os cantos do recorte. Medido no Edge 156, numa imagem de 3000 px e noutra de 400 px.
 
 ### Corrigido
 

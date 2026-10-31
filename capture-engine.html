@@ -3977,9 +3977,9 @@
       // Retorna 'tl','tr','bl','br' ou '' se não houver hit.
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
-        const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
+        const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
-        const H = ANN_HANDLE_SIZE + 5; // zona de hit maior que a alça visual (+5px para facilitar o clique)
+        const H = ANN_HIT_SIZE * k; // hit area of 44 x 44 screen px, larger than the visible handle
         const _corners = [
           { x: _bx,        y: _by,        id: 'tl' },
           { x: _bx + _bw,  y: _by,        id: 'tr' },
@@ -3991,19 +3991,23 @@
         }
         return '';
       }
-      const ANN_HANDLE_SIZE = 6; // meio-lado da alça em px canvas (total 6×6) — usado também no hit-test
+      // Handles keep the same size on screen whatever the image resolution: sizes are in screen px,
+      // and annPx() converts them to canvas px (a 3000 px image shown at 789 px has 3.8 canvas px per screen px)
+      const ANN_HANDLE_SIZE = 6; // half side of the visible handle, in screen px (12 x 12)
+      const ANN_HIT_SIZE = 22;   // half side of the hit area, in screen px (44 x 44)
+      function annPx() { const cv = $('ann-canvas'), r = cv ? cv.getBoundingClientRect() : null; return r && r.width ? cv.width / r.width : 1 }
       function annDrawSelectionOverlay() {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-        const b = annBBox(annHistory[annSelectedIdx]); const M = 6;
+        const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
         // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
-        ctx.strokeStyle = accent; ctx.lineWidth = 1; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
+        ctx.strokeStyle = accent; ctx.lineWidth = k; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
         ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
         ctx.globalAlpha = 0.04; ctx.fillStyle = accent;
         ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
         // ── Alças nos 4 cantos (preparação Passo 3.2) ────────────────────────────
-        const H = ANN_HANDLE_SIZE; // meio-lado
+        const H = ANN_HANDLE_SIZE * k; // half side, in canvas px
         const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
         const _corners = [
           { x: _bx,        y: _by        }, // topo-esquerdo
@@ -4013,9 +4017,9 @@
         ];
         _corners.forEach(c => {
           ctx.globalAlpha = 1;
-          ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5;
+          ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5 * k;
           ctx.beginPath();
-          ctx.roundRect(c.x - H, c.y - H, H * 2, H * 2, 2); // cantos suaves (radius 2px canvas)
+          ctx.roundRect(c.x - H, c.y - H, H * 2, H * 2, 2 * k); // soft corners, 2 screen px
           ctx.fill();
           ctx.stroke();
         });
@@ -4043,7 +4047,7 @@
         const _scaleX = _cvR.width / _annCv.width;
         const _scaleY = _cvR.height / _annCv.height;
         const _b = annBBox(annHistory[annSelectedIdx]);
-        const _M = 6; // mesma margem de annDrawSelectionOverlay
+        const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
         // Alça top-right em coords canvas: (b.x + b.w + M, b.y - M)
         // Converter para coords do ann-viewport e centrar o botão sobre a alça
         const _BTN = 20; // dimensão do botão ✕ (quadrado)
@@ -4079,15 +4083,16 @@
             ctx.rect(0, 0, cv.width, cv.height);
             ctx.rect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
             ctx.fill('evenodd');
+            const kc = annPx(); // crop marks in screen px: 20 px long, 4 px thick, on any image
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4, 4]);
+            ctx.lineWidth = kc;
+            ctx.setLineDash([4 * kc, 4 * kc]);
             ctx.strokeRect(annCropBox.x, annCropBox.y, annCropBox.w, annCropBox.h);
             ctx.setLineDash([]);
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4 * kc;
             ctx.lineCap = 'square';
-            const s = 15, o = 1.5, x1 = annCropBox.x, x2 = annCropBox.x + annCropBox.w, y1 = annCropBox.y, y2 = annCropBox.y + annCropBox.h;
+            const s = 20 * kc, o = 2 * kc, x1 = annCropBox.x, x2 = annCropBox.x + annCropBox.w, y1 = annCropBox.y, y2 = annCropBox.y + annCropBox.h;
             ctx.beginPath();
             ctx.moveTo(x1 + o, y1 + s); ctx.lineTo(x1 + o, y1 + o); ctx.lineTo(x1 + s, y1 + o);
             ctx.moveTo(x2 - s, y1 + o); ctx.lineTo(x2 - o, y1 + o); ctx.lineTo(x2 - o, y1 + s);
@@ -4297,6 +4302,8 @@
       }
       function initAnnotation() {
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
+        // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
+        $('ann-canvas').addEventListener('pointermove', e => { const cv = e.currentTarget; if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return } const p = annCanvasXY(e), hr = ANN_HIT_SIZE * annPx(), { x, y, w, h } = annCropBox; const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr; let c = 'crosshair'; if (near(x, y) || near(x + w, y + h)) c = 'nwse-resize'; else if (near(x + w, y) || near(x, y + h)) c = 'nesw-resize'; else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) c = 'move'; cv.style.cursor = c; cv.dataset.cropCursor = '1' });
         $('ann-cancel').onclick = annDeactivate;
         $('ann-save').onclick = async () => {
           if (annCommitText) annCommitText();
@@ -4521,7 +4528,7 @@
               annCropHandle = 'br';
               annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
             } else {
-              const hr = 20, {x, y, w, h} = annCropBox;
+              const hr = ANN_HIT_SIZE * annPx(), {x, y, w, h} = annCropBox;
               if (Math.hypot(p.x - x, p.y - y) < hr) annCropHandle = 'tl';
               else if (Math.hypot(p.x - (x + w), p.y - y) < hr) annCropHandle = 'tr';
               else if (Math.hypot(p.x - x, p.y - (y + h)) < hr) annCropHandle = 'bl';
