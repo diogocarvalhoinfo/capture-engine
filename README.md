@@ -63,7 +63,7 @@ Configura a ferramenta para a sua organização — personaliza o nome, cores, c
 **O que não consegue fazer:** alterar o código-fonte diretamente.
 
 ### Desenvolvedor / Agente IA
-Edita o código-fonte do `capture-engine.html` para adicionar funcionalidades, corrigir bugs ou adaptar o motor a novos requisitos. **Leia o documento `AGENTS.md` antes de qualquer modificação** — contém as regras absolutas, referência de funções, schema da base de dados, checklist de validação e protocolo de version bump.
+Edita o código-fonte do `capture-engine.html` para adicionar funcionalidades, corrigir bugs ou adaptar o motor a novos requisitos. **Leia o documento `AGENTS.md` antes de qualquer modificação** — contém as regras absolutas, referência de funções, schema da base de dados, checklist de validação e como fechar uma versão.
 
 ---
 

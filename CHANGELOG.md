@@ -1,9 +1,18 @@
-# Changelog · Capture Engine
+# Changelog
 
-> Histórico de versões desde a V7 (base da arquitetura atual; V1–V6 anteriores à arquitetura Quine). Cada entrada explica **o que mudou**, **porquê mudou**, e **o impacto real** para o usuário.
-> Formato: `### Adicionado` — nova funcionalidade. `### Modificado` — comportamento existente alterado. `### Corrigido` — bug eliminado.
+As versões do projeto, da mais nova para a mais antiga.
 
----
+Cada entrada diz o que mudou, por que mudou e o impacto real.
+
+## [Unreleased]
+
+### Modificado
+
+- **Fim de linha LF em qualquer computador (F-0010).** O `.gitattributes` do modelo entra na raiz. Antes, um clone no Windows saía com CRLF, e um bash que não aceita CRLF parava no `validate.sh`. Nenhum arquivo muda de conteúdo.
+- **Pastas de ferramentas de IA fora do git (F-0011).** O `.gitignore` lista `.claude/`, `.cursor/` e `.gemini/`. A configuração local de cada ferramenta continua a funcionar no computador de quem a usa.
+- **`AGENTS.md` e `CHANGELOG.md` em maiúsculas (F-0009).** São arquivos de convenção, que as ferramentas procuram por esse nome. Os links, o `validate.sh` e o texto atual acompanham; as entradas antigas deste changelog ficam como estão.
+- **A versão sai dos títulos (F-0012).** O changelog é o dono da versão. O README ganha a linha «Versão» em «Requisitos», e o `validate.sh` compara-a com o changelog e com o HTML. Os títulos e os rodapés do README, do `AGENTS.md` e do `design-tokens.md` deixam de repetir a versão.
+- **Topo do changelog e critério de versão (F-0019, F-0003).** O changelog abre com as duas frases fixas e segue o Keep a Changelog. As versões passam a SemVer a partir de 28.0.0, com o critério no `AGENTS.md` §12 (D-0078). As entradas `[V7]` a `[V27]` ficam como estão.
 
 ## [V27] — 2026-08-18
 

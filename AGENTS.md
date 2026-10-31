@@ -19,7 +19,7 @@
 - [Seção 9 — Variáveis de Estado Global](#9-variáveis-de-estado-global)
 - [Seção 10 — Workflow de Desenvolvimento](#10-workflow-de-desenvolvimento-para-agentes)
 - [Seção 11 — Checklist de Validação](#11-checklist-de-validação--antes-de-declarar-completo)
-- [Seção 12 — Protocolo de Version Bump](#12-protocolo-de-version-bump)
+- [Seção 12 — Versões e changelog](#12-versões-e-changelog)
 - [Seção 13 — Decisões de Design Documentadas](#13-decisões-de-design-documentadas)
 - [Seção 14 — Disaster Recovery Técnico](#14-disaster-recovery-técnico)
 
@@ -38,7 +38,7 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 | **Modificar a anotação** | §0, §1, §7 (funções de anotação), §9, §11 |
 | **Modificar o Quine / Export** | §0, §1, §1.2, §5, §7 (funções Quine), §11 |
 | **Modificar tokens ou Visual Builder** | §1.2, §6, §7 (funções Quine), §13 |
-| **Fazer version bump** | §12 |
+| **Fechar uma versão** | §12 |
 | **Disaster recovery / recuperação de dados** | §14 |
 
 ---
@@ -1346,92 +1346,40 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 
 ---
 
-## 12. Protocolo de Version Bump
+## 12. Versões e changelog
 
-Ao passar para uma nova versão (ex: V24 → V25), o número de versão tem de ser atualizado em vários locais dos 5 arquivos do projeto. O número exato de substituições varia conforme a documentação cresce — **nunca assuma uma contagem fixa**.
+**Formato do changelog:** o `CHANGELOG.md` segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Cada versão é uma entrada `## [X.Y.Z] - AAAA-MM-DD`, com as categorias Adicionado, Modificado, Removido e Corrigido. O trabalho ainda sem versão fica em `## [Unreleased]`.
 
----
-**Passo 0 — Localizar todas as ocorrências (obrigatório antes de qualquer substituição):**
+As entradas `[V7]` a `[V27]` são anteriores a este formato e usam outras categorias. Ficam como estão, porque são registro datado.
 
-```bash
-grep -rn "VERSAO_ANTERIOR" --include="*.html" --include="*.md" .
-```
+**Versões:** SemVer a partir de 28.0.0 (D-0078).
+- Major: quem distribui a ferramenta precisa refazer algo (um `TOKEN_*`, o formato do export, o schema do IndexedDB).
+- Minor: uma funcionalidade nova.
+- Patch: uma correção sem mudança para quem distribui.
 
-Classifique cada resultado como **mudar** (label de versão, título, rodapé) ou **manter** (entrada histórica do changelog, referências evolutivas como `V24→V25`). Só então execute as substituições. Esta etapa previne que novas localizações introduzidas em ciclos anteriores passem despercebidas.
+As tags `v1` a `v27` ficam como estão. As tags novas são leves e chamam-se `vX.Y.Z`.
 
----
+**Onde a versão aparece.** O `CHANGELOG.md` é o dono. Quatro lugares repetem a versão, e o `validate.sh` confere-os (checks 14 a 16):
+- a linha «Versão» de «Requisitos», no README;
+- no HTML, o comentário `<!-- VISUAL BUILDER MODAL (X.Y.Z) -->`, o badge `>X.Y.Z</span>` do Visual Builder e a mensagem `SysLogger.info('Capture Engine X.Y.Z Ready')`.
 
+Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um lugar onde a versão envelhece sem aviso.
 
-Nos exemplos abaixo, `VERSAO_ANTERIOR` = a versão que está agora (ex: `V24`), `VERSAO_NOVA` = a versão de destino (ex: `V25`).
+**Fechar uma versão:**
+1. Troque `## [Unreleased]` por `## [X.Y.Z] - AAAA-MM-DD`.
+2. Mude a linha «Versão» do README e as 3 referências do HTML.
+3. Rode `bash validate.sh`, que deve dar 0 FAIL.
+4. Faça um commit só com estas mudanças: `docs(changelog): versão X.Y.Z`.
+5. Crie a tag leve nesse commit: `git tag vX.Y.Z`. O push da tag pede a palavra CONFIRMO de quem mantém o projeto.
+6. Faça a «Prova de vida do Export User» da §11, Parte B, com o arquivo gerado pelo botão.
 
-**Os 5 arquivos e as alterações exatas:**
+**Motivo da tag no protocolo:** a V26 saiu sem tag, e seis auditorias não o apanharam. Este protocolo não falava de tags, e uma auditoria só encontra o que o protocolo manda procurar.
 
-1. **`capture-engine.html`** — 3 substituições:
-   - Comentário do Visual Builder: `<!-- VISUAL BUILDER MODAL (VERSAO_ANTERIOR) -->` → `(VERSAO_NOVA)`
-   - Badge visual no header do modal de configurações: `>VERSAO_ANTERIOR</span>` → `>VERSAO_NOVA</span>`
-   - Mensagem de inicialização no console: `SysLogger.info('Capture Engine VERSAO_ANTERIOR Ready')` → `VERSAO_NOVA`
+> [!CAUTION]
+> **Nenhuma versão fecha sem a prova de vida do Export User.**
+> Da V11 à V25, o Export User gerou um arquivo que não inicializava, e ninguém notou. O teste custa dois minutos.
 
-2. **`CHANGELOG.md`** — 1 inserção (não substituição):
-   - Adicionar nova entrada no topo: `## [VERSAO_NOVA] — YYYY-MM-DD`
-   - As referências `VERSAO_ANTERIOR` existentes no changelog são **registros históricos — não se substituem**.
-
-3. **`README.md`** — 2 substituições:
-   - Título principal: `# Capture Engine · VERSAO_ANTERIOR` → `VERSAO_NOVA`
-
-   - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
-
-4. **`design-tokens.md`** — 2 substituições:
-   - Título principal: `# Design Tokens · Capture Engine VERSAO_ANTERIOR` → `VERSAO_NOVA`
-   - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
-
-5. **`AGENTS.md`** — 2 substituições:
-   - Título principal: `# Agents · Capture Engine VERSAO_ANTERIOR` → `VERSAO_NOVA`
-   - Rodapé do documento: `*Capture Engine VERSAO_ANTERIOR ·` → `VERSAO_NOVA`
-
-**Referências contextuais — NÃO substituir:**
-
-Em todos os arquivos existem referências ao número de versão anterior que são **registros históricos** e devem ser preservadas. A regra é simples: **substituir apenas onde o número de versão identifica o produto atual** (títulos, badges, logs de boot). Preservar onde descreve quando algo aconteceu.
-
-Exemplos de referências a preservar após um bump para VERSAO_NOVA:
-- `AGENTS.md`: "removido na VERSAO_ANTERIOR", "reescrita com Pointer Events / FLIP na VERSAO_ANTERIOR", "desde a VERSAO_ANTERIOR"
-- `design-tokens.md`: "sempre `false` desde a VERSAO_ANTERIOR"
-- `capture-engine.html`: comentários inline como `// NOTA (VERSAO_ANTERIOR): definida mas NAO chamada...`
-- `CHANGELOG.md`: todos os cabeçalhos `## [VERSAO_ANTERIOR]` e o respectivo conteúdo
-
-**Verificação obrigatória antes de fechar:**
-```bash
-grep -rn "VERSAO_ANTERIOR" capture-engine.html README.md design-tokens.md AGENTS.md CHANGELOG.md
-```
-Substituir `VERSAO_ANTERIOR` pelo número real (ex: `V23`). Confrontar cada resultado: os únicos que devem restar são referências históricas (changelog e comentários de código). Se restar algum nos títulos ou rodapés, está incompleto.
-
-Nunca assumir que as substituições foram completas sem verificar.
-
-**Commit atómico obrigatório:**
-Todos os arquivos alterados no version bump (`capture-engine.html`, `CHANGELOG.md`, `README.md`, `design-tokens.md`, `AGENTS.md`) devem ser incluídos num único commit. Não commitar arquivos separadamente — um commit parcial deixa o repositório em estado inconsistente entre versões.
-
-**Criar e enviar a tag (obrigatório — foi esquecido na V26):**
-
-O repositório etiqueta cada versão. As tags são **leves** (não anotadas) e chamam-se `vNN` em minúsculas, apontando para o commit em que o HTML passa a declarar essa versão — normalmente o próprio commit do bump.
-
-```bash
-git tag v27 <sha-do-commit-do-bump>
-git push origin v27
-```
-
-Verificar que existe no remoto, e que a versão no HTML desse commit é a esperada:
-
-```bash
-git ls-remote --tags origin | grep v27
-git show v27:capture-engine.html | grep -o 'Capture Engine V[0-9]* Ready'
-```
-
-> ⚠️ **Por que este passo está escrito aqui.** A **V26 saiu sem tag** e ninguém deu por isso durante 118 commits, 50 entradas de changelog e **seis auditorias independentes** de zero confiança. Nenhuma o apanhou — não porque fossem descuidadas, mas porque **este protocolo não mencionava tags**, e uma auditoria contra um protocolo só encontra o que o protocolo manda procurar. Foi preciso o proprietário abrir a página de tags do GitHub e reparar que a última era a `v25`.
->
-> É o exemplo mais claro que o projeto tem de que **a lacuna perigosa não é o passo mal executado — é o passo que não está escrito.** Ao acrescentar qualquer etapa nova a este protocolo, assuma que é a única defesa contra ela ser esquecida.
-
-> ⚠️ **AVISO CRÍTICO — nenhuma versão está pronta sem a prova de vida do Export User:** antes de considerar a release fechada, execute a «Prova de vida do Export User» da Seção 11, Parte B. Gerar o artefato, abri-lo, e confirmar que **funciona** — não apenas que não tem botões de admin. Foi a ausência deste passo que deixou o Export User quebrado da V11 à V25 sem que ninguém notasse. Custa dois minutos.
-
-> **Nota sobre o `validate.sh`:** o script **não** tem número de versão hardcoded — a verificação #8 auto-detecta a versão a partir do boot message (`Capture Engine Vxx Ready`) e confirma que essa mesma versão aparece nas 3 referências de produto do HTML (comentário do Visual Builder, badge e console). Por isso o `validate.sh` **não precisa de ser editado** no version bump; pelo contrário, **correr `validate.sh` após o bump apanha** os 3 locais caso algum tenha ficado por substituir (a verificação #8 dá `FAIL` se a versão do boot message não bater com o badge/comentário VB). Adicionalmente, o `validate.sh` verifica automaticamente a consistência de `TOKEN_MAIN_COLOR` entre o HTML e o `design-tokens.md`, e a presença das **8 afordâncias** de anotação no `README.md` — 7 ferramentas mais a ação de rodar; o script imprime `(8/8)`. ⚠️ **Cuidado com a numeração (D69):** os comentários internos do `validate.sh` numeram estes dois como `#11` e `#12`, enquanto a lista de 27 da `§10` os numera como **18** e **19**. São as mesmas verificações com dois números — ao citar um check, diga de que lista está a falar. Qualquer deriva nestes dois eixos aparece como `[FAIL]` antes do commit.
+**Numeração dos checks:** os comentários do `validate.sh` numeram os checks de outra forma que a lista da §10 (D69). Ao citar um check, diga de que lista fala.
 
 ---
 
