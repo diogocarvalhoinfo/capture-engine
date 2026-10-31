@@ -331,12 +331,10 @@ Sessões sem atividade há mais de 48 horas (configurável) são apagadas automa
 
 O painel de administração não é visível por padrão. Para ativá-lo:
 
-1. **Clicar 6 vezes seguidas no logo** (canto superior esquerdo)
-2. Dois botões aparecem na barra de topo: Visual Builder (ícone engrenagem) e Export (ícone disquete)
+1. Clique 6 vezes seguidas no logo, no canto superior esquerdo, em menos de 3 segundos. Os cliques com mais de 3 s não contam.
+2. Use os dois botões que aparecem na barra de topo: a engrenagem abre o Visual Builder, e o disquete exporta uma cópia.
 
-O modo administrador não persiste entre aberturas — precisa ser ativado de novo cada vez que abre a aplicação.
-
-6 cliques no logo dentro de 3 segundos (janela deslizante — cliques com mais de 3 s são descartados). Enquanto o modo admin está ativo, 3 cliques rápidos em menos de 1 segundo desativam-no.
+Para desativar, clique 3 vezes no logo em menos de 1 segundo. O modo administrador não continua ativo depois de fechar a aplicação: ative-o de novo em cada abertura.
 
 <!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/admin-mode.png; preparo=capture-engine-admin-mode; recorte=#vb-overlay .sb-modal -->
 ![Visual Builder aberto na aba Histórico, com as abas, o interruptor e o rótulo do segundo campo anotados](docs/images/admin-mode.png)
@@ -715,7 +713,7 @@ capture-engine.html
     ├── ZIP Engine        → Geração de ZIPs em JavaScript puro (sem bibliotecas)
     ├── Visual Builder    → Painel de configuração do administrador
     ├── Quine Engine      → Auto-exportação do arquivo com configurações
-    ├── Admin Gate        → Ativa o modo admin (6 cliques no logo)
+    ├── Admin Gate        → Ativa o modo administrador (6 cliques no logo)
     └── boot()            → Chamada por init() após openDB() e purgeExpired(). Inicializa todos os subsistemas da interface.
 ```
 
