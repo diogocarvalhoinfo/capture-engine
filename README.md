@@ -4,6 +4,10 @@
 
 Ferramenta para capturar, organizar e exportar evidências (imagens e documentos) em PDF ou ZIP, num único arquivo HTML que abre no navegador e funciona sem internet.
 
+[diogocarvalhoinfo.github.io/capture-engine](https://diogocarvalhoinfo.github.io/capture-engine/)
+
+[![Download](https://img.shields.io/badge/Download-2ea44f?style=flat-square)](https://github.com/diogocarvalhoinfo/capture-engine/releases/latest/download/capture-engine.html)
+
 ## Índice
 
 1. [O que é](#1-o-que-é)
@@ -132,8 +136,11 @@ Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospita
 ### Abrir a aplicação
 
 **Método simples (qualquer sistema operacional):**
-1. Faça duplo clique em `capture-engine.html`
-2. O arquivo abre no navegador padrão
+1. Baixe o `capture-engine.html` pelo botão «Download», no topo deste README
+2. Faça duplo clique no arquivo
+3. O arquivo abre no navegador padrão
+
+A versão online, no endereço do topo, funciona igual. Guarda as sessões numa base separada da do arquivo baixado (ver «A base é por origem», na §11).
 
 ### Fluxo básico de trabalho
 
