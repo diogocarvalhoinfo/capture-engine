@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de separador e depois do Alt; some no clique seguinte.
+- **Zoom de 1 % por passo.** A roda do mouse andava 20 % por clique, e os botões + e − 50 %. Agora os dois andam 1 %, e segurar o botão repete o passo, 25 vezes por segundo. O duplo clique continua a levar a 200 %. Medido no Edge 156: 3 cliques na roda dão 103 %, e segurar o + durante 1,4 s soma 25 %.
 
 ### Corrigido
 
