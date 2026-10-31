@@ -36,9 +36,9 @@ Ferramenta para capturar, organizar e exportar evidências (imagens e documentos
 5. **Histórico**: as sessões anteriores, apagadas depois de 48 horas sem uso. <!-- anotação: alvo=#sb-rail; lado=direita; ponto=1,0.3 -->
 6. **Removidos**: os itens removidos, que se restauram daqui. <!-- anotação: alvo=#trash-bar; lado=baixo; ponto=0.5,1 -->
 
-O Capture Engine é **um único arquivo HTML** que funciona como uma aplicação completa de captura e exportação de evidências digitais. Não precisa de instalação, não requer internet, e não envia nenhum dado para servidores externos.
+O Capture Engine é **um único arquivo HTML** que contém a aplicação inteira de captura e exportação de evidências digitais. Não precisa de instalação, não requer internet, e não envia nenhum dado para servidores externos.
 
-Tudo o que você captura (screenshots, documentos, textos) fica guardado localmente no browser do seu computador. Quando exporta, o PDF ou ZIP é gerado diretamente no browser, em memória, sem sair do seu dispositivo.
+Tudo o que você captura (capturas de tela, documentos, textos) fica guardado localmente no navegador do seu computador. Quando exporta, o PDF ou ZIP é gerado diretamente no navegador, em memória, sem sair do seu dispositivo.
 
 **Em termos simples:** funciona como uma pasta que vive dentro de um único arquivo. Você abre, cola ou arrasta arquivos, organiza, anota e exporta — tudo sem internet.
 
@@ -46,15 +46,15 @@ Tudo o que você captura (screenshots, documentos, textos) fica guardado localme
 
 | Situação | Como o Capture Engine ajuda |
 |---|---|
-| Suporte técnico | Junta screenshots de erros, logs e configurações num único PDF para o ticket |
+| Suporte técnico | Junta capturas de tela de erros, logs e configurações num único PDF para o ticket |
 | Área jurídica | Reúne e exporta provas e documentos para processos ou audiências |
-| Uso pessoal | Agrupa prints para submeter num portal, chamado ou formulário |
+| Uso pessoal | Agrupa capturas para submeter num portal, chamado ou formulário |
 | Ambientes restritos (banco, governo, saúde) | Funciona sem internet, sem CDN, sem registro de dados externos |
 | Auditoria e conformidade | Evidências documentadas e exportadas sem sair do dispositivo |
 
 > [!CAUTION]
 > **Os dados não ficam guardados para sempre, e isto é de propósito.**
-> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para conservar um trabalho, tem de o **exportar** (botão **PDF** ou **ZIP**) e guardar o arquivo você mesmo. Fechar o programa não basta; só o que exportar fica garantido.
+> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para conservar um trabalho, precisa o **exportar** (botão **PDF** ou **ZIP**) e guardar o arquivo você mesmo. Fechar o programa não basta; só o que exportar fica garantido.
 
 ## 2. Para quem é
 
@@ -86,12 +86,12 @@ HTML, CSS e JavaScript num único arquivo, o `capture-engine.html`, sem bibliote
 Esta seção explica os termos técnicos usados em toda a documentação. Se encontrar um termo desconhecido, procure aqui primeiro.
 
 ### Quine
-Um **Quine** é um programa capaz de produzir uma cópia exata de si próprio como output. O Capture Engine usa este conceito: ao fazer Export, o arquivo lê o seu próprio código-fonte, aplica as configurações atuais, e gera um novo arquivo HTML idêntico — mas com os tokens personalizados. Isto permite ao administrador distribuir versões configuradas sem precisar de servidores ou ferramentas externas.
+Um **Quine** é um programa capaz de produzir uma cópia exata de si próprio como saída. O Capture Engine usa este conceito: ao fazer Export, o arquivo lê o seu próprio código-fonte, aplica as configurações atuais, e gera um novo arquivo HTML idêntico — mas com os tokens personalizados. Isto permite ao administrador distribuir versões configuradas sem precisar de servidores ou ferramentas externas.
 
 ### IndexedDB
-**IndexedDB** é uma base de dados embutida no browser, semelhante a um disco local dentro do browser. O Capture Engine a usa para guardar sessões, imagens e documentos automaticamente — sem servidor, sem arquivos externos. Os dados persistem enquanto o usuário não limpar os dados do browser.
+**IndexedDB** é uma base de dados embutida no navegador, semelhante a um disco local dentro do navegador. O Capture Engine a usa para guardar sessões, imagens e documentos automaticamente — sem servidor, sem arquivos externos. Os dados persistem enquanto o usuário não limpar os dados do navegador.
 
-**Importante:** Os dados do Capture Engine estão ligados ao browser e ao computador onde foram criados. Se limpar o histórico/cache do browser, os dados são apagados.
+**Importante:** Os dados do Capture Engine estão ligados ao navegador e ao computador onde foram criados. Se limpar o histórico/cache do navegador, os dados são apagados.
 
 ### Sessão
 Uma **sessão** é um conjunto de trabalho — como um projeto ou pasta. Cada vez que abre o Capture Engine, começa uma sessão nova. Sessões anteriores ficam guardadas no histórico (ícone de relógio, lado direito).
@@ -109,7 +109,7 @@ As duas opções do botão de exportar, que na interface se chamam «Administrad
 
 > [!CAUTION]
 > **Exportar a ferramenta não é fazer backup dos dados.**
-> O arquivo HTML gerado pelo Export contém **apenas a configuração** e o código da ferramenta. As imagens, documentos e histórico de sessões **não são exportados no HTML** — estes ficam permanentemente guardados no IndexedDB do browser.
+> O arquivo HTML gerado pelo Export contém **apenas a configuração** e o código da ferramenta. As imagens, documentos e histórico de sessões **não são exportados no HTML** — estes ficam permanentemente guardados no IndexedDB do navegador.
 
 ### Diagnóstico de Export
 
@@ -118,8 +118,8 @@ Se suspeitar que as configurações não foram aplicadas no arquivo exportado, p
 2. Procure por `const TOKEN_MAIN_COLOR`.
 3. Verifique se o valor corresponde à cor que escolheu no Visual Builder. Se ainda mostrar o valor padrão, pode haver uma falha no formato interno do token ou os marcadores de proteção não estão íntegros.
 
-### Funcionamento 100% Offline
-Um sistema isolado (offline) é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
+### Funcionamento sem internet
+Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
 
 ### XSS (Cross-Site Scripting)
 **XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine sanitiza (limpa) todos os dados inseridos pelo usuário antes de apresentá-los, impedindo este tipo de ataque.
@@ -133,7 +133,7 @@ Um sistema isolado (offline) é aquele sem acesso à internet — comum em banco
 
 **Método simples (qualquer sistema operacional):**
 1. Faça duplo clique em `capture-engine.html`
-2. O arquivo abre no browser padrão
+2. O arquivo abre no navegador padrão
 
 ### Fluxo básico de trabalho
 
@@ -151,11 +151,11 @@ Um sistema isolado (offline) é aquele sem acesso à internet — comum em banco
 
 ### Dicas essenciais
 
-- **Ctrl+V** cola qualquer coisa do clipboard: imagem, arquivo ou texto
+- **Ctrl+V** cola qualquer coisa da área de transferência: imagem, arquivo ou texto
 - **Drag & Drop** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
-- A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o browser dentro dessa janela pode perder as últimas alterações)
+- A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o navegador dentro dessa janela pode perder as últimas alterações)
 
 ## 6. Funcionalidades
 
@@ -165,9 +165,9 @@ O Capture Engine aceita conteúdo de três formas:
 
 | Método | Como usar | O que captura |
 |---|---|---|
-| **Ctrl+V** | Pressione Ctrl+V com a app em foco | Imagem do clipboard, arquivo copiado, ou texto |
+| **Ctrl+V** | Pressione Ctrl+V com a app em foco | Imagem da área de transferência, arquivo copiado, ou texto |
 | **Drag & Drop** | Arraste o arquivo para a área de destino | Qualquer arquivo |
-| **Picker** | Clique em "Adicionar Imagem" ou "Adicionar Documento" | Qualquer arquivo pelo seletor do sistema |
+| **Seletor** | Clique em "Adicionar Imagem" ou "Adicionar Documento" | Qualquer arquivo pelo seletor do sistema |
 
 **Tipos de arquivo aceitos:**
 
@@ -181,17 +181,17 @@ O Capture Engine aceita conteúdo de três formas:
 Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automaticamente `imagem-2`, `imagem-3`, etc. Renomeações manuais seguem a mesma lógica — nunca geram nomes duplicados.
 
 **Comportamento do Ctrl+V por tipo de conteúdo:**
-1. Se o clipboard contiver uma **imagem** → captura como imagem
-2. Se o clipboard contiver um **arquivo não-imagem** → captura como documento
-3. Se o clipboard contiver **texto** → captura como arquivo `.txt`
+1. Se a área de transferência contiver uma **imagem** → captura como imagem
+2. Se a área de transferência contiver um **arquivo não-imagem** → captura como documento
+3. Se a área de transferência contiver **texto** → captura como arquivo `.txt`
 
 ### 6.2 Visualizador de imagens (Zoom & Pan)
 
-Ao clicar numa imagem, abre um modal com visualizador completo.
+Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 | Ação | Como fazer |
 |---|---|
-| **Abrir** | Clicar no thumbnail da imagem |
+| **Abrir** | Clicar na miniatura da imagem |
 | **Zoom in/out** | Roda do mouse (scroll), centrado na posição do cursor |
 | **Pan (mover)** | Clicar e arrastar quando a imagem está ampliada |
 | **Zoom com botões** | Botões +/−/Reset na barra flutuante (aparece quando zoom > 100%) |
@@ -206,7 +206,7 @@ Ao clicar numa imagem, abre um modal com visualizador completo.
 
 Motor de anotação (V24→V25):
 - 8 afordâncias de desenho no editor: **7 ferramentas** — traço livre, retângulo, círculo, seta, texto (negrito B / itálico I), selecionar, Crop — e **1 ação**, Rotação 90°
-  - A barra tem mais controlos além destes — desfazer/refazer, espessura do traço, negrito/itálico, guardar e cancelar. A contagem 8 refere-se ao que **desenha ou transforma** a imagem, não ao total de botões
+  - A barra tem mais controles além destes — desfazer/refazer, espessura do traço, negrito/itálico, guardar e cancelar. A contagem 8 refere-se ao que **desenha ou transforma** a imagem, não ao total de botões
   - A distinção é técnica: as 7 ferramentas são valores de `annTool` e ficam ativas até se escolher outra; a rotação executa e termina, sem estado ativo
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
@@ -224,7 +224,7 @@ Mobile (V25):
 ### 6.4 Reordenação
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
-- Em imagens: arraste o thumbnail para a posição desejada na grade
+- Em imagens: arraste a miniatura para a posição desejada na grade
 - Em documentos: arraste o card para cima ou para baixo na lista
 
 A nova ordem é guardada automaticamente.
@@ -240,7 +240,7 @@ Um item removido não é apagado na hora: vai para a barra «Removidos», no fun
 
 Cada sessão guarda os seus itens removidos. Eles ficam lá até serem restaurados ou até a sessão expirar.
 
-Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauro**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo os removidos). Até à V26 esta secção descrevia um botão de apagar permanente que nunca existiu na interface.
+Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo os removidos). Até a V26 esta seção descrevia um botão de apagar permanente que nunca existiu na interface.
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
@@ -284,13 +284,13 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 > **O ZIP leva a imagem que você vê, e não a que colou.**
 > Assim que uma imagem é **anotada, rodada ou recortada**, o que segue no ZIP é a versão editada — um PNG novo, gerado a partir do canvas, com as edições já incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
 >
-> A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no browser (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
+> A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
 
 **Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11), que é o que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos corretamente. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
-> Até à V25 os nomes eram gravados em UTF-8 mas sem essa declaração no cabeçalho, o que fazia os acentos aparecerem trocados (`Diagn+¦stico`) ao abrir o ZIP; e a legenda de imagem convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
+> Até a V25 os nomes eram gravados em UTF-8 mas sem essa declaração no cabeçalho, o que fazia os acentos aparecerem trocados (`Diagn+¦stico`) ao abrir o ZIP; e a legenda de imagem convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
 
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
@@ -306,7 +306,7 @@ A sessão nova só aparece no histórico após a primeira interação real (cola
 
 **Identificação de sessão:**
 - **Nome da sessão** — derivado automaticamente dos campos de Identificação (USER e EQUIPAMENTO, em maiúsculas, separados por hífen). Os rótulos dos dois campos são configuráveis no Visual Builder.
-- **Campo User** — nome do usuário que está a trabalhar (configurável)
+- **Campo User** — nome do usuário que trabalha (configurável)
 - **Campo Equipamento** — nome do computador ou equipamento (configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
 
@@ -327,7 +327,7 @@ O painel de administração não é visível por padrão. Para ativá-lo:
 1. **Clicar 6 vezes seguidas no logo** (canto superior esquerdo)
 2. Dois botões aparecem na barra de topo: Visual Builder (ícone engrenagem) e Export (ícone disquete)
 
-O modo administrador não persiste entre aberturas — tem de ser ativado de novo cada vez que abre a aplicação.
+O modo administrador não persiste entre aberturas — precisa ser ativado de novo cada vez que abre a aplicação.
 
 6 cliques no logo dentro de 3 segundos (janela deslizante — cliques com mais de 3 s são descartados). Enquanto o modo admin está ativo, 3 cliques rápidos em menos de 1 segundo desativam-no.
 
@@ -345,7 +345,7 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 
 **Aba Interface:**
 - Nome da ferramenta (texto inicial + texto em destaque)
-- Cor principal (color picker)
+- Cor principal (color seletor)
 - Cor do texto sobre a cor principal (auto-detecção se vazio)
 - Texto do rodapé (`{YEAR}` é substituído pelo ano atual)
 
@@ -386,7 +386,7 @@ Admin configura → Export Admin (backup) → Export User → distribui aos usu�
 
 > [!NOTE]
 > **Atualizações e continuidade dos dados.**
-> Pode distribuir uma nova versão da ferramenta (novo arquivo) sem receio de o usuário perder o histórico: em Windows com Edge/Chrome, **o nome e a pasta do arquivo não afetam o acesso aos dados** — todas as cópias abertas no mesmo perfil de browser compartilham a mesma base `CaptureEngineDB` (testado em Edge 148 / Chrome 148). O acesso depende do **perfil de browser**, não do caminho. As exceções (que NÃO veem os dados) são: janela anônima, outro perfil, outro browser, e abrir de dentro de um ZIP sem extrair. **Tudo isto vale dentro da mesma origem (`file://`)** — servir a ferramenta por HTTP/HTTPS (ex.: localhost, GitHub Pages) cria uma base separada. Ver a seção de recuperação para o detalhe completo, incluindo a nota sobre origem.
+> Pode distribuir uma nova versão da ferramenta (novo arquivo) sem receio de o usuário perder o histórico: em Windows com Edge/Chrome, **o nome e a pasta do arquivo não afetam o acesso aos dados** — todas as cópias abertas no mesmo perfil de navegador compartilham a mesma base `CaptureEngineDB` (testado em Edge 148 / Chrome 148). O acesso depende do **perfil de navegador**, não do caminho. As exceções (que NÃO veem os dados) são: janela anônima, outro perfil, outro navegador, e abrir de dentro de um ZIP sem extrair. **Tudo isto vale dentro da mesma origem (`file://`)** — servir a ferramenta por HTTP/HTTPS (ex.: localhost, GitHub Pages) cria uma base separada. Ver a seção de recuperação para o detalhe completo, incluindo a nota sobre origem.
 
 ### 7.4 Tokens de configuração
 
@@ -410,13 +410,13 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
 | `TOKEN_AUTO_PURGE_HOURS` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
-| `TOKEN_DEBUG_MODE` | Logs na consola do browser (desativado em Export User) |
+| `TOKEN_DEBUG_MODE` | Logs no console do navegador (desativado em Export User) |
 
 ### 7.5 Distribuir uma atualização (nova versão)
 
 Quando existe uma nova versão do `capture-engine.html` e há usuários com sessões ativas:
 
-**Os dados das sessões não estão no arquivo HTML** — estão no IndexedDB do browser. Substituir o arquivo não apaga nem migra dados. O fluxo correto é:
+**Os dados das sessões não estão no arquivo HTML** — estão no IndexedDB do navegador. Substituir o arquivo não apaga nem migra dados. O fluxo correto é:
 
 ```
 1. Antes de atualizar — fazer Export Admin da versão atual
@@ -428,7 +428,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 3. Fazer Export User → distribuir o novo arquivo aos usuários
          ↓
 4. Os usuários abrem o novo arquivo — as sessões anteriores aparecem automaticamente
-   (o IndexedDB é compartilhado por perfil de browser, não pelo arquivo)
+   (o IndexedDB é compartilhado por perfil de navegador, não pelo arquivo)
 ```
 
 **O que é seguro:**
@@ -436,7 +436,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 - Uma versão mais nova vê as sessões criadas numa versão mais antiga (todos usam `CaptureEngineDB`)
 
 **O que requer atenção:**
-- Configurações personalizadas (cores, nome, tokens) **não viajam** com os dados — são parte do arquivo HTML e têm de ser reaplicadas manualmente ou via Export Admin
+- Configurações personalizadas (cores, nome, tokens) **não viajam** com os dados — são parte do arquivo HTML e precisam ser reaplicadas manualmente ou via Export Admin
 - Se a nova versão incrementar a versão do schema IndexedDB (atualmente `2`), consultar `AGENTS.md` §6 sobre migração de schema antes de distribuir
 
 **Aviso sobre `TOKEN_AUTO_PURGE_HOURS`:** se a nova versão tiver um valor de purge menor do que o anterior, sessões que ainda estariam vivas são purgadas na primeira abertura. Ver §7.4.
@@ -446,18 +446,18 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 | Característica | Detalhe |
 |---|---|
 | **Zero dependências externas** | Sem CDNs, sem bibliotecas remotas, sem Google Fonts — nada carregado da internet |
-| **Isolado / Offline** | Funciona 100% offline; nenhum dado sai do dispositivo |
-| **Sanitização de inputs** | Todo o texto inserido pelo usuário é sanitizado antes de ser apresentado (proteção XSS) |
+| **Isolado, sem internet** | Funciona sem internet; nenhum dado sai do dispositivo |
+| **Sanitização de campos** | Todo o texto inserido pelo usuário é sanitizado antes de ser apresentado (proteção XSS) |
 | **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados. Diretivas ativas: `default-src 'self' blob: data:; script-src 'unsafe-inline' (necessário: todo CSS e JS está inline por contrato de arquivo único; o Quine gera novos arquivos e invalidaria nonces a cada export); style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';` |
 | **Admin Gate oculto** | O painel de admin requer 6 cliques no logo — invisível e inatingível acidentalmente |
 | **Sem registro** | Nenhum dado de utilização, telemetria ou analytics |
-| **Sem cookies** | Usa IndexedDB e localStorage do browser (sem cookies de sessão) |
+| **Sem cookies** | Usa IndexedDB e localStorage do navegador (sem cookies de sessão) |
 
 ### Content Security Policy — nota sobre `unsafe-inline`
 
 A CSP ativa inclui `script-src 'unsafe-inline'` e `style-src 'unsafe-inline'`. Isto é uma **consequência estrutural da arquitetura single-file**, não uma escolha de comodidade:
 
-- Toda a lógica JavaScript está inline no único arquivo HTML — sem `unsafe-inline`, o browser bloquearia o próprio script da aplicação.
+- Toda a lógica JavaScript está inline no único arquivo HTML — sem `unsafe-inline`, o navegador bloquearia o próprio script da aplicação.
 - Nonces e hashes são incompatíveis com o Quine Engine: o conteúdo do arquivo muda a cada Export, invalidando qualquer hash calculado no build.
 - A CSP ainda protege contra **scripts externos**, **recursos de rede** (`connect-src 'self'`) e **imagens externas** (`img-src blob: data:`).
 - O bloqueio de scripts externos vem do próprio `script-src 'unsafe-inline'`, e **não** do `default-src`: quando `script-src` está declarado, ele substitui o `default-src` para scripts, e como não nomeia nenhuma origem de URL — nem sequer `'self'` — recusa tudo o que não seja inline. O resultado é mais restritivo do que o `default-src` sozinho daria, e não menos.
@@ -466,29 +466,29 @@ A CSP ativa inclui `script-src 'unsafe-inline'` e `style-src 'unsafe-inline'`. I
 > **Avisos de scanners.**
 > Em scanners de segurança automáticos (OWASP ZAP, Lighthouse), `unsafe-inline` será marcado como aviso. O contexto acima explica por que é intencional neste modelo.
 
-### Aviso sobre limpeza do browser
+### Aviso sobre limpeza do navegador
 
-Os dados do Capture Engine estão guardados no IndexedDB do browser. **Se limpar os dados de navegação, cache, ou histórico do browser, os dados do Capture Engine são apagados permanentemente.** Exporte sempre os dados importantes antes de limpar o browser.
+Os dados do Capture Engine estão guardados no IndexedDB do navegador. **Se limpar os dados de navegação, cache, ou histórico do navegador, os dados do Capture Engine são apagados permanentemente.** Exporte sempre os dados importantes antes de limpar o navegador.
 
 ### Comportamento com múltiplas abas
 
-O Capture Engine pode ser aberto em várias abas do mesmo browser — todas compartilham a mesma base de dados local. **Atenção:** como todas as abas gravam na mesma base, editar a mesma sessão em duas abas ao mesmo tempo pode fazer com que uma sobreponha as alterações da outra (a última gravação prevalece). Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro a bloquear o uso; esse bloqueio foi removido.
+O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** como todas as abas gravam na mesma base, editar a mesma sessão em duas abas ao mesmo tempo pode fazer com que uma sobreponha as alterações da outra (a última gravação prevalece). Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro a bloquear o uso; esse bloqueio foi removido.
 
 ## 9. Uso como prova
 
 O Capture Engine é adequado para **recolha organizada e documentação** de evidências digitais, mas não constitui por si só uma cadeia de custódia forense verificável.
 
 **O que a ferramenta garante:**
-- Timestamp de criação e última atividade registado por sessão (gerado pelo browser do dispositivo)
+- Timestamp de criação e última atividade registrado por sessão (gerado pelo navegador do dispositivo)
 - Armazenamento local isolado — os dados não saem do dispositivo sem ação explícita do usuário
 - Exportação ZIP **de imagens não editadas** com os arquivos originais, byte a byte, sem reprocessamento
 
 **O que a ferramenta não garante:**
 - Integridade criptográfica — não há hash, assinatura digital nem timestamping independente
-- Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio browser
+- Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio navegador
 - Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
 - **Exportação PDF:** as imagens são recomprimidas como JPEG em memória (processo com perda) — não adequado como prova primária de imagem em contexto forense onde a integridade pixel-a-pixel seja exigida; usar exportação ZIP de imagens não editadas para preservar os arquivos originais
-- **Exportação ZIP de imagens editadas:** anotar, rodar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no browser, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
+- **Exportação ZIP de imagens editadas:** anotar, rodar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no navegador, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
 
 > [!CAUTION]
 > **O original de uma imagem editada não se recupera depois.**
@@ -500,33 +500,33 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 | Limitação | Detalhe |
 |---|---|
-| **Sem sincronização** | Os dados só existem no browser do computador onde foram criados. Não há sincronização entre dispositivos. |
-| **Dependente do browser** | Limpar dados do browser apaga todos os dados. |
+| **Sem sincronização** | Os dados só existem no navegador do computador onde foram criados. Não há sincronização entre dispositivos. |
+| **Dependente do navegador** | Limpar dados do navegador apaga todos os dados. |
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do browser (atenção)** | O IndexedDB tem um limite de espaço definido pelo browser. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
-| **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do browser (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do browser. |
-| **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e descarregado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do browser aguenta ao montar o pacote (o browser falha primeiro), pelo que o cenário é improvável — fica declarado por a falha ser silenciosa. |
+| **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
+| **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
+| **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote (o navegador falha primeiro), por isso o cenário é improvável — fica declarado por a falha ser silenciosa. |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
 | **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, rodar ou recortar:** o `ann-save` regenera a imagem a partir do canvas em PNG, e a animação perde-se também no ZIP — o arquivo sai corretamente nomeado `.png`, não como um `.gif` estático. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
 
 ## 11. Resolução de problemas
 
 ### A aplicação não abre ou mostra página em branco
-- Verifique se está a usar Chrome 90+, Edge 90+, ou Firefox 151.0.4
+- Verifique se usa Chrome 90+, Edge 90+, ou Firefox 151.0.4
 - Experimente abrir diretamente com duplo clique no `capture-engine.html`
-- Em alguns sistemas, arquivos HTML locais precisam de permissão — verifique as configurações de segurança do browser
+- Em alguns sistemas, arquivos HTML locais precisam de permissão — verifique as configurações de segurança do navegador
 
 ### Os dados desapareceram
-- Os dados do Capture Engine ficam no IndexedDB do browser. Se limpou os dados do browser (histórico, cache, dados de sites), os dados foram apagados.
-- Os dados só existem no computador e browser onde foram criados.
-- Certifique-se de exportar os dados importantes antes de limpar o browser.
+- Os dados do Capture Engine ficam no IndexedDB do navegador. Se limpou os dados do navegador (histórico, cache, dados de sites), os dados foram apagados.
+- Os dados só existem no computador e navegador onde foram criados.
+- Certifique-se de exportar os dados importantes antes de limpar o navegador.
 
 ### O Ctrl+V não cola nada
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
 - Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
-- Verifique se o browser tem permissão para acessar o clipboard (aparece uma notificação)
+- Verifique se o navegador tem permissão para acessar a área de transferência (aparece uma notificação)
 - Ctrl+V suporta múltiplos arquivos copiados do Explorer em simultâneo (Ctrl+C nos arquivos → Ctrl+V na aplicação).
 
 ### O botão PDF está desativado
@@ -539,20 +539,20 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 ### Sessões com mais de 48 horas desapareceram
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
 
-### As minhas capturas desapareceram depois de fechar o browser
-- O mais provável é esgotamento da quota de armazenamento do browser. Quando o IndexedDB fica sem espaço, a gravação falha e um banner vermelho de aviso aparece no topo da aplicação — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o browser, a memória é liberada e o item desaparece.
-- **Como confirmar:** abra as DevTools (F12) → separador Console → procure erros com a palavra `quota` ou `storage`.
+### As minhas capturas desapareceram depois de fechar o navegador
+- O mais provável é esgotamento da quota de armazenamento do navegador. Quando o IndexedDB fica sem espaço, a gravação falha e um banner vermelho de aviso aparece no topo da aplicação — o item aparece na grade durante a sessão (via Object URL em memória) mas não chega a ser persistido. Ao fechar o navegador, a memória é liberada e o item desaparece.
+- **Como confirmar:** abra as DevTools (F12) → aba Console → procure erros com a palavra `quota` ou `storage`.
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP) e apague no histórico as sessões que já não precisa. **Não existe forma de reduzir o espaço que cada captura ocupa** — as imagens são sempre gravadas no formato original. O `TOKEN_MAX_IMG_DIMENSION` do Visual Builder reduz as imagens apenas na geração do PDF, não no armazenamento, e por isso não previne este problema.
-- **Editar uma imagem aproximadamente duplica o que ela ocupa:** ao confirmar a primeira anotação, rotação ou recorte, o registo passa a guardar **dois** blobs — o original (`origBlob`, preservado para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
+- **Editar uma imagem aproximadamente duplica o que ela ocupa:** ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs — o original (`origBlob`, preservado para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
-- **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do browser, numa base partilhada por **perfil de browser** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML no Firefox; no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo browser** e as sessões reaparecem.
+- **Provavelmente não.** Os dados não estão dentro do arquivo HTML — ficam guardados no IndexedDB do navegador, numa base compartilhada por **perfil de navegador** (comportamento confirmado por testes em Windows 11 com Edge 148 e Chrome 148; ✅ Verificado — IndexedDB persiste mesmo após remoção do arquivo HTML no Firefox; no Safari este detalhe não foi testado formalmente e pode variar). Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
 - **O que NÃO afeta o acesso aos dados** (confirmado por teste): o **nome** do arquivo, a **pasta**, o **disco/pen**, a **versão** (uma versão antiga vê as sessões da nova — todas usam a mesma base `CaptureEngineDB`) e até caminhos com espaços ou caracteres especiais. Tudo isto continua a encontrar os dados, desde que seja o mesmo perfil.
-- **O que NÃO encontra os dados** (origem/perfil diferente): **janela anônima/privada**, **outro perfil** do browser, **outro browser** (Edge vs Chrome têm bases separadas), e abrir **de dentro de um ZIP** sem extrair.
-- **A base é por origem (protocolo + host + porta), não só por perfil:** a *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) são **três bases independentes** — as sessões de uma não aparecem nas outras, mesmo no mesmo browser e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
+- **O que NÃO encontra os dados** (origem/perfil diferente): **janela anônima/privada**, **outro perfil** do navegador, **outro navegador** (Edge vs Chrome têm bases separadas), e abrir **de dentro de um ZIP** sem extrair.
+- **A base é por origem (protocolo + host + porta), não só por perfil:** a *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) são **três bases independentes** — as sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
 - **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, abrir a mesma conta/perfil **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
 - **Implicação para ambientes isolados (ex.: VDI (Virtual Desktop Infrastructure)):** como os dados vivem no perfil local daquela máquina/ambiente, sessões criadas dentro da VDI de um cliente ficam **isoladas** nessa VDI; sessões criadas no perfil local pessoal ficam todas juntas nesse perfil. *(Nota: ambientes com "roaming de perfil" gerenciados pela TI poderiam fazer os dados seguir o usuário entre máquinas — confirmar com a equipe de TI se for o caso.)*
-- Recuperação técnica de último recurso (requer conhecimentos): separador *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
+- Recuperação técnica de último recurso (requer conhecimentos): aba *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
 
 > [!IMPORTANT]
 > **Exporte (PDF ou ZIP) o que for importante.**
@@ -561,19 +561,19 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 ## 12. Perguntas frequentes
 
 **O meu arquivo HTML tem ≈ 300 KB. É normal?**
-Sim. O Capture Engine é uma aplicação completa encapsulada num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 300 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
+Sim. O Capture Engine é a aplicação inteira num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 300 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
 
 **Os meus dados ficam guardados para sempre?**
-Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do browser apaga tudo. Exporte os dados importantes.
+Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
 
 **Posso usar o Capture Engine em Mac ou Linux?**
-Sim — abra diretamente o `capture-engine.html` no browser.
+Sim — abra diretamente o `capture-engine.html` no navegador.
 
 **Posso usar em Firefox?**
-Sim. Firefox 151.0.4 — suporte completo, testado manualmente; versão mínima abaixo de 151.0.4 não verificada.
+Sim. Funciona no Firefox 151.0.4, testado manualmente; versão mínima abaixo de 151.0.4 não verificada.
 
 **Posso ter múltiplas versões do Capture Engine abertas ao mesmo tempo?**
-Sim. Pode abrir várias abas no mesmo browser (todas compartilham a mesma base de dados local) ou versões diferentes em browsers diferentes (ex: uma no Edge e outra no Firefox, cada uma com a sua própria base). A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
+Sim. Pode abrir várias abas no mesmo navegador (todas compartilham a mesma base de dados local) ou versões diferentes em navegadores diferentes (ex: uma no Edge e outra no Firefox, cada uma com a sua própria base). A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
 
 **O que acontece se colocar o token `EXPORT MODAL` no rodapé?**
 Nada — a versão V15+ protege automaticamente os marcadores internos com um caractere invisível (zero-width space), impedindo que valores de tokens interfiram com o Quine Engine.
@@ -585,25 +585,25 @@ Nada — a versão V15+ protege automaticamente os marcadores internos com um ca
 Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, campos e rodapé sem tocar no código.
 
 **Posso usar o Capture Engine em Edge e Chrome ao mesmo tempo com o mesmo histórico?**
-Não. Edge e Chrome têm bases IndexedDB separadas — cada browser mantém o seu próprio histórico, mesmo sendo a mesma conta ou perfil. Para ver as mesmas sessões, use sempre o mesmo browser. O mesmo se aplica ao Firefox: dados criados no Chrome não aparecem no Firefox e vice-versa. Ver §13 para a matriz completa de compatibilidade.
+Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o seu próprio histórico, mesmo sendo a mesma conta ou perfil. Para ver as mesmas sessões, use sempre o mesmo navegador. O mesmo se aplica ao Firefox: dados criados no Chrome não aparecem no Firefox e vice-versa. Ver §13 para a matriz completa de compatibilidade.
 
 ## 13. Requisitos
 
 **Versão:** V27. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
-- **Chrome 90+ / Edge 90+** — suporte completo, testado em Chrome 148 / Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
-- **Firefox 151.0.4** — suporte completo, testado manualmente; versão mínima abaixo de 151.0.4 não verificada
-  - ⚠️ IndexedDB no Firefox persiste no perfil do browser — dados criados no Firefox não são visíveis no Chrome e vice-versa (origens distintas)
+- **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
+- **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
+  - ⚠️ IndexedDB no Firefox persiste no perfil do navegador — dados criados no Firefox não são visíveis no Chrome e vice-versa (origens distintas)
 - **Safari** — suporte parcial; não testado formalmente. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine; outros comportamentos não verificados
 - Sem internet, sem servidor, sem instalação
-- Qualquer sistema operacional com browser moderno
+- Qualquer sistema operacional com navegador moderno
 
 Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) ou Firefox 151.0.4.
 
 ### Matriz de compatibilidade
 
-| Browser | Versão testada | Captura e Export | IndexedDB `file://` | Quine (fetch) | Disaster Recovery |
+| Navegador | Versão testada | Captura e Export | IndexedDB `file://` | Quine (fetch) | Disaster Recovery |
 |---|---|---|---|---|---|
 | **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
@@ -614,13 +614,13 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 > [!NOTE]
 > **Firefox.**
-> O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do browser, independentes do arquivo.
+> O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do navegador, independentes do arquivo.
 
 ### Acessibilidade
 
 **Estado avaliado na V25** (não reavaliado desde então)**:**
-- Navegação por teclado: parcialmente suportada nos controlos principais
-- Rácios de contraste WCAG: verificados para a cor de destaque principal (ver `design-tokens.md §1`)
+- Navegação por teclado: parcialmente suportada nos controles principais
+- Razões de contraste WCAG: verificadas para a cor de destaque principal (ver `design-tokens.md §1`)
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
@@ -628,7 +628,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 | Onde | Atributo | Porquê |
 |---|---|---|
-| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não fica a saber que as capturas deixaram de ser gravadas |
+| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não sabe que as capturas deixaram de ser gravadas |
 | Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
 
 Nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário.
