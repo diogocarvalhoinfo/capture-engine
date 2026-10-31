@@ -19,7 +19,7 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 - [Seção 10 — Workflow de Desenvolvimento](#10-workflow-de-desenvolvimento-para-agentes)
 - [Seção 11 — Checklist de Validação](#11-checklist-de-validação--antes-de-declarar-completo)
 - [Seção 12 — Versões e changelog](#12-versões-e-changelog)
-- [Seção 13 — Decisões de Design Documentadas](#13-decisões-de-design-documentadas)
+- [Seção 13 — Decisões, pendentes e IDs](#13-decisões-pendentes-e-ids)
 - [Seção 14 — Disaster Recovery Técnico](#14-disaster-recovery-técnico)
 
 ## Índice de Leitura por Perfil
@@ -1382,7 +1382,7 @@ Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um
 
 ---
 
-## 13. Decisões de Design Documentadas
+## 13. Decisões, pendentes e IDs
 
 Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e **não devem ser revertidas sem aprovação**:
 
@@ -1396,7 +1396,42 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + swatches de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
 | D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A lixeira cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
 | D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fecho (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
-| D9 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspeto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` é reiniciado (as anotações já foram confirmadas ao guardar) enquanto o `annRedoStack` é restaurado da persistência. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário: a barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**, pelo que desativar os botões deixá-los-ia visualmente idênticos — trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. |
+| D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` é reiniciado (as anotações já foram confirmadas ao guardar) enquanto o `annRedoStack` é restaurado da persistência. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário: a barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**, pelo que desativar os botões deixá-los-ia visualmente idênticos — trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
+| D-0078 | **Versões em SemVer a partir de 28.0.0** | O critério de major, minor e patch está na §12. As tags `v1` a `v27` e as entradas `[V7]` a `[V27]` ficam. Origem: auditoria de 2026-10-31, decisão 1. |
+| D-0079 | **Purge às 48 horas e sem backup automático** | Por privacidade: para guardar, o usuário exporta PDF ou ZIP. Origem: `CHANGELOG.md`, «Decisões mantidas» da V23. |
+| D-0080 | **O aviso de quota fica por cima da barra do topo, em `#b91c1c` e branco** | É um aviso que não pode ser ignorado. As duas cores são literais declarados no `design-tokens.md` §2.1. Origem: `CHANGELOG.md`, D23. |
+| D-0081 | **Sem o botão «Nova Sessão»** | Abrir uma sessão numa janela separada só fazia sentido com o launcher `CaptureEngineApp.vbs`. Fora dele, abria várias instâncias sem necessidade. Origem: `CHANGELOG.md`, V18. |
+| D-0082 | **Tamanhos de fonte, espaços e cortes do layout em `rem`** | O texto acompanha o tamanho de letra escolhido no navegador. Com a letra padrão (16 px), nenhum pixel muda. Revoga a regra antiga «Usar `px`» do §2.2. Origem: auditoria de 2026-10-31, decisão 2. |
+| D-0083 | **Entradas antigas do changelog: as palavras seguem a tabela, as frases ficam** | As formas de Portugal e os anglicismos da lista são trocados também nas entradas `[V7]` a `[V27]`. As frases longas antigas ficam, porque são registro datado. Origem: auditoria de 2026-10-31, decisão 4. |
+| D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
+| D-0085 | **Comentários de código em inglês: o `validate.sh` já, o HTML depois** | Os comentários do HTML ficam perto dos marcadores do Quine e vão num plano próprio (F-0029, em «Pendentes»). Origem: auditoria de 2026-10-31, decisão 7. |
+
+### Pendentes
+
+O que ficou para depois, com o ID e a origem.
+
+| ID | Pendente | Origem |
+|---|---|---|
+| D70 | O guard de prosa do check 19 depende da frase «A distinção é técnica», no README. A correção estrutural deriva os termos do próprio HTML (os 7 `data-tool` e o botão de rodar). | Sexta auditoria; detalhe na §10 |
+| D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
+| F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
+| P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
+
+### IDs
+
+Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não veio de uma auditoria) e `F-0001` (achado de auditoria). O ID vai no fim do título do commit, entre parênteses. Os IDs antigos ficam como estão:
+
+| Formato | O que é | Onde aparece |
+|---|---|---|
+| `D1`–`D8` | Decisões do proprietário | Esta seção |
+| `D9`–`D76` | Entradas do changelog: correções, triagens e registros. O `D9` é o commit `a5656f5` (guarda de blob na lixeira e aviso de IndexedDB indisponível) | `CHANGELOG.md` e títulos de commit |
+| `M1`–`M6`, `M-1`, `B8`, `B-1`–`B-3` | Achados das auditorias externas da V26 | `CHANGELOG.md`, entrada `[V26]` |
+| `G1`–`G3` | Gerações sucessivas do Export Admin numa prova de vida | `CHANGELOG.md`, entrada `[V26]` |
+| `V7`–`V27` | Versões anteriores ao SemVer | `CHANGELOG.md` e tags `v1` a `v27` |
+
+Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a decisão seguinte foi a `D-0077`.
+
+---
 
 ## 14. Disaster Recovery Técnico
 
