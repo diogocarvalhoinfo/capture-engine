@@ -15,6 +15,7 @@ As duas declarações de estado foram medidas de novo antes de mudar a data: o R
 - **stylelint do modelo no `validate.sh` (F-0013).** O `.stylelintrc.json` da raiz é cópia exata do modelo do repositório dos prompts, e o check 28 roda-o pelo `npx`, nas versões fixas. Uma cor literal numa regra dá FAIL (testado numa cópia com `color: red`). Sem `npx`, o check dá `[SKIP]`, e o projeto continua sem dependências.
 - **Imagem anotada da primeira tela.** O README abre «O que é» com a primeira tela, em 1280 × 720, e 6 anotações: Identificação, Exportar, Imagens, Documentos, Histórico e Removidos. Feita pelo `anotacoes/gerar.py` do repositório dos prompts, com a lista numerada por baixo; o `--verificar` confere que mostra a tela atual.
 - **Imagem anotada do modo de administrador.** A §7.1 do README mostra só o Visual Builder, recortado na borda, com 3 anotações: as abas, a cor principal e o texto do rodapé. Os dois botões de administração ficam no passo 2 da §7.1, em texto. Um preparo do repositório dos prompts (`capture-engine-admin-mode.py`) abre o modo escondido antes da captura.
+- **Versão online e botão «Download» no topo do README.** Uma linha leva ao endereço do GitHub Pages, e um botão baixa o `capture-engine.html` da release mais recente. O «Fechar uma versão» do `AGENTS.md` ganha o passo da release com o arquivo anexado.
 
 ### Modificado
 

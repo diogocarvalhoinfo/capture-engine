@@ -1382,7 +1382,8 @@ Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um
 3. Rode `bash validate.sh`, que deve dar 0 FAIL.
 4. Faça um commit só com estas mudanças: `docs(changelog): versão X.Y.Z`.
 5. Crie a tag leve nesse commit: `git tag vX.Y.Z`. O push da tag pede a palavra CONFIRMO de quem mantém o projeto.
-6. Faça a «Prova de vida do Export User» da §11, Parte B, com o arquivo gerado pelo botão.
+6. Publique a release da tag com o `capture-engine.html` anexado: `gh release create vX.Y.Z capture-engine.html --title "X.Y.Z" --notes-file <entrada do changelog>`. O botão «Download» do README baixa o arquivo da release mais recente. Publicar pede o mesmo CONFIRMO.
+7. Faça a «Prova de vida do Export User» da §11, Parte B, com o arquivo gerado pelo botão.
 
 **Motivo da tag no protocolo:** a V26 saiu sem tag, e seis auditorias não o apanharam. Este protocolo não falava de tags, e uma auditoria só encontra o que o protocolo manda procurar.
 
