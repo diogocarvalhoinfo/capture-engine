@@ -8,7 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Primeira versão em SemVer (D-0078). Põe o projeto no padrão dos prompts 4.11.0, a partir da auditoria de 2026-10-31. O que se vê só muda no aviso de armazenamento, no foco do teclado, nas camadas e nas durações.
 
-As duas declarações de estado foram medidas de novo antes de mudar a data: o README conta 2 `role` e 2 `aria-label`, e a tabela de complexidade do `AGENTS.md` §10 bate com o `validate.sh`.
+As duas declarações de estado foram medidas de novo antes de mudar a data. O README conta 2 `role` e 2 `aria-label`, e a tabela de complexidade do `AGENTS.md` §10 bate com o `validate.sh`.
 
 ### Adicionado
 
