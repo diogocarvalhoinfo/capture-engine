@@ -356,10 +356,8 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 - Texto do rodapé (`{YEAR}` é substituído pelo ano atual)
 
 **Aba Histórico (Campos de Sessão):**
-- Ativar/desativar Campo 1 (por padrão: "User")
-- Ativar/desativar Campo 2 (por padrão: "Equipamento")
-- Rótulo personalizado do Campo 1
-- Rótulo personalizado do Campo 2
+- Campo 1: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
+- Campo 2: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
 
 **Aba Captura:**
 - Qualidade do PDF (0.70 a 0.95 — afeta apenas a geração de PDF, não os originais)

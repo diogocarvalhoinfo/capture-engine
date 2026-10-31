@@ -3225,28 +3225,24 @@
         <div class="sb-row">
           <div class="sb-info">
             <div class="sb-row-title">Campo 1</div>
-            <div class="sb-row-desc">Visível na barra lateral</div>
-          </div><label class="toggle-switch"><input type="checkbox" id="cfg-show-user" checked><span
-              class="toggle-slider"></span></label>
+            <div class="sb-row-desc">Rótulo e placeholder na barra lateral (ex.: Advogado, Cliente)</div>
+          </div>
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center;flex-shrink:0">
+            <input type="text" class="text-input-sm" id="cfg-user-label" style="width:140px" placeholder="" aria-label="Rótulo do campo 1">
+            <label class="toggle-switch"><input type="checkbox" id="cfg-show-user" checked aria-label="Mostrar o campo 1 na barra lateral"><span
+                class="toggle-slider"></span></label>
+          </div>
         </div>
         <div class="sb-row">
           <div class="sb-info">
             <div class="sb-row-title">Campo 2</div>
-            <div class="sb-row-desc">Visível na barra lateral</div>
-          </div><label class="toggle-switch"><input type="checkbox" id="cfg-show-pc" checked><span
-              class="toggle-slider"></span></label>
-        </div>
-        <div class="sb-row">
-          <div class="sb-info">
-            <div class="sb-row-title">Rótulo — Campo 1</div>
-            <div class="sb-row-desc">Texto e placeholder do campo (Ex: Advogado, Cliente)</div>
-          </div><input type="text" class="text-input-sm" id="cfg-user-label" placeholder="">
-        </div>
-        <div class="sb-row">
-          <div class="sb-info">
-            <div class="sb-row-title">Rótulo — Campo 2</div>
-            <div class="sb-row-desc">Texto e placeholder do campo (Ex: Caso, Processo)</div>
-          </div><input type="text" class="text-input-sm" id="cfg-equip-label" placeholder="">
+            <div class="sb-row-desc">Rótulo e placeholder na barra lateral (ex.: Caso, Processo)</div>
+          </div>
+          <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center;flex-shrink:0">
+            <input type="text" class="text-input-sm" id="cfg-equip-label" style="width:140px" placeholder="" aria-label="Rótulo do campo 2">
+            <label class="toggle-switch"><input type="checkbox" id="cfg-show-pc" checked aria-label="Mostrar o campo 2 na barra lateral"><span
+                class="toggle-slider"></span></label>
+          </div>
         </div>
       </div>
 

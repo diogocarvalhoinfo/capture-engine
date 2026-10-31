@@ -19,6 +19,7 @@ As duas declarações de estado foram medidas de novo antes de mudar a data: o R
 
 ### Modificado
 
+- **Campos da aba Histórico numa linha cada.** O Visual Builder tinha uma linha para mostrar o Campo 1 e outra para o rótulo dele, e o mesmo no Campo 2. Agora cada campo tem uma linha só, com o rótulo e o interruptor à direita, como na aba Interface.
 - **Fim de linha LF em qualquer computador (F-0010).** O `.gitattributes` do modelo entra na raiz. Antes, um clone no Windows saía com CRLF, e um bash que não aceita CRLF parava no `validate.sh`. Nenhum arquivo muda de conteúdo.
 - **Pastas de ferramentas de IA fora do git (F-0011).** O `.gitignore` lista `.claude/`, `.cursor/` e `.gemini/`. A configuração local de cada ferramenta continua a funcionar no computador de quem a usa.
 - **`AGENTS.md` e `CHANGELOG.md` em maiúsculas (F-0009).** São arquivos de convenção, que as ferramentas procuram por esse nome. Os links, o `validate.sh` e o texto atual acompanham; as entradas antigas deste changelog ficam como estão.
