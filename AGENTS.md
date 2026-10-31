@@ -1113,7 +1113,7 @@ O `validate.sh` executa 29 verificações mecânicas: 28 com regex, grep ou Pyth
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
 
-#### Pontos de maior risco de regressão (remedidos na V27)
+#### Pontos de maior risco de regressão (medidos de novo na 28.0.0)
 
 Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de partir alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções.
 

@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.0.0] - 2026-10-31
+
+Primeira versão em SemVer (D-0078). Põe o projeto no padrão dos prompts 4.11.0, a partir da auditoria de 2026-10-31. O que se vê só muda no aviso de armazenamento, no foco do teclado, nas camadas e nas durações.
+
+As duas declarações de estado foram medidas de novo antes de mudar a data: o README conta 2 `role` e 2 `aria-label`, e a tabela de complexidade do `AGENTS.md` §10 bate com o `validate.sh`.
 
 ### Adicionado
 
@@ -40,6 +44,13 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **O aviso de armazenamento diz «navegador» (F-0026).** O aviso «Armazenamento indisponível» dizia «Verifique se o browser está em modo privado». A interface é em português neutro, e a palavra é «navegador».
+
+### Cobertura da auditoria de 2026-10-31
+
+- Lidos inteiros o README, o `validate.sh`, o `LICENSE` e o `index.html`; o `AGENTS.md`, o changelog e o `design-tokens.md` em parte, e o resto por busca.
+- Testados no Edge 156, por `file://`: captura, ZIP, PDF, anotação, persistência, modo de administrador, os dois exports, a reexportação e o purge.
+- Não cobertos: o motor de anotação linha a linha, a reordenação, o mobile por toque, o Firefox, o Safari e o aviso de quota.
+- Antes de cada commit de CSS: 96 capturas (4 larguras, 2 temas, 12 estados) comparadas com a linha de base.
 
 ## [V27] — 2026-08-18
 

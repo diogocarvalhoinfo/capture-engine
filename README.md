@@ -593,7 +593,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** V27. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 28.0.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
@@ -628,7 +628,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
-**ARIA — o que existe, exatamente (remedido na V27):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
+**ARIA — o que existe, exatamente (medido de novo na 28.0.0):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
 
 | Onde | Atributo | Porquê |
 |---|---|---|
