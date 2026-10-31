@@ -398,7 +398,7 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 |---|---|
 | `TOKEN_TITLE_START` | Primeira parte do nome no topo (cor normal, negrito). O espaço final é intencional. |
 | `TOKEN_TITLE_ACCENT` | Segunda parte (na cor de destaque, mais transparente) |
-| `TOKEN_TITLE_END` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo "Texto Final" no VB. Exemplo de white-label: 'Capture Engine Pro' — onde 'Pro' ocuparia o terceiro span com cor de destaque independente |
+| `TOKEN_TITLE_END` | Terceira parte do nome (cor normal, negrito). Espaços manuais. Campo «Texto final» no Visual Builder. Exemplo de white-label: 'Capture Engine Pro' — onde 'Pro' ocuparia o terceiro span com cor de destaque independente |
 | `TOKEN_TITLE_START_COLOR` | Cor da 1.ª parte do título (vazio = usa a cor normal do texto) |
 | `TOKEN_TITLE_ACCENT_COLOR` | Cor da 2.ª parte do título (vazio = usa a cor de destaque) |
 | `TOKEN_TITLE_END_COLOR` | Cor da 3.ª parte do título (vazio = usa a cor normal do texto) |

@@ -141,7 +141,7 @@ O título da app é composto por 3 spans independentes:
 ```
 Os espaços entre as partes são **manuais** — incluir no valor do token se necessário. Exemplo para "Capture Engine": `TOKEN_TITLE_START='Capture '`, `TOKEN_TITLE_ACCENT='Engine'`, `TOKEN_TITLE_END=''`.
 
-No Visual Builder, o campo "Texto Final" (cfg-title-end) controla `TOKEN_TITLE_END`. O Quine exporta os 3 tokens.
+No Visual Builder, o campo «Texto final» (`cfg-title-end`) controla `TOKEN_TITLE_END`. O Quine exporta os 3 tokens.
 
 **Formato dos tokens:**
 ```js
