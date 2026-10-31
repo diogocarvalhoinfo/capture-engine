@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.0.1] - 2026-10-31
+
+Patch: corrige a descrição de uma linha do Visual Builder e o fim do README. O arquivo do botão «Download» passa a trazer a correção do Visual Builder.
 
 ### Corrigido
 
