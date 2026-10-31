@@ -331,6 +331,14 @@ O modo administrador não persiste entre aberturas — tem de ser ativado de nov
 
 6 cliques no logo dentro de 3 segundos (janela deslizante — cliques com mais de 3 s são descartados). Enquanto o modo admin está ativo, 3 cliques rápidos em menos de 1 segundo desativam-no.
 
+<!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/admin-mode.png; preparo=capture-engine-admin-mode -->
+![Modo de administrador aberto, com os dois botões de administração e o Visual Builder anotados](docs/images/admin-mode.png)
+
+1. **Botões de administração**: a engrenagem abre o Visual Builder, e o botão ao lado exporta a cópia «Administrador» ou «User». <!-- anotação: alvo=#btn-admin-config; lado=cima; ponto=0.5,0 -->
+2. **Abas**: Interface, Histórico, Captura e Manutenção. <!-- anotação: alvo=.sb-tabs; lado=esquerda; ponto=0,0.5 -->
+3. **Cor principal**: muda a cor de destaque de toda a interface. <!-- anotação: alvo=#wrap-cor-principal; lado=direita; ponto=1,0.5 -->
+4. **Texto do rodapé**: aceita `{YEAR}`, que vira o ano atual. <!-- anotação: alvo=#cfg-footer-text; lado=direita; ponto=1,0.5 -->
+
 ### 7.2 O Visual Builder
 
 O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Histórico, Captura e Manutenção.
@@ -643,7 +651,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← a imagem anotada deste README
+├── docs/images/          ← as imagens anotadas deste README
 └── LICENSE               ← licença MIT
 ```
 

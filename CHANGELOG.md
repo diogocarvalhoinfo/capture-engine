@@ -10,6 +10,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **stylelint do modelo no `validate.sh` (F-0013).** O `.stylelintrc.json` da raiz é cópia exata do modelo do repositório dos prompts, e o check 28 roda-o pelo `npx`, nas versões fixas. Uma cor literal numa regra dá FAIL (testado numa cópia com `color: red`). Sem `npx`, o check dá `[SKIP]`, e o projeto continua sem dependências.
 - **Imagem anotada da primeira tela.** O README abre «O que é» com a primeira tela, em 1280 × 720, e 6 anotações: Identificação, Exportar, Imagens, Documentos, Histórico e Removidos. Feita pelo `anotacoes/gerar.py` do repositório dos prompts, com a lista numerada por baixo; o `--verificar` confere que mostra a tela atual.
+- **Imagem anotada do modo de administrador.** A §7.1 do README mostra o Visual Builder aberto, com 4 anotações: os botões de administração, as abas, a cor principal e o texto do rodapé. Um preparo do repositório dos prompts (`capture-engine-admin-mode.py`) abre o modo escondido antes da captura.
 
 ### Modificado
 
