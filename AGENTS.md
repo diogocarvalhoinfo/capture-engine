@@ -684,6 +684,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `canDrawImage(blob)` | `(Blob) → Promise<boolean>` | Abre a imagem e desenha-a num canvas de 1 × 1 px. É o mesmo caminho do `imgToJPEG` do PDF: o que passa aqui entra no PDF |
 | `moveUndrawableToDocs()` | `async () → number` | Antes do PDF e do ZIP, passa para «Documentos» as imagens que o navegador não desenha (sessões gravadas antes do `captureFile`). A extensão vem do tipo ou dos primeiros bytes (`sniffExt`) |
 | `holdSuccess(reset)` | `(Function) → void` | Mantém o verde «Concluído» do botão PDF ou ZIP até a próxima interação na página (`pointerdown`, `keydown`, `paste`, `drop`). Teclas sozinhas de modificador (Alt, Ctrl, Shift, Tab) não contam, porque o Alt + Tab para trocar de janela as envia |
+| `initEditorTips()` | `() → void` | Tooltips dos botões do editor: o texto do `title` passa a `data-tip` e a `aria-label`, e um balão aparece logo por cima do botão enquanto o mouse ou o foco do teclado estiverem nele. O `title` nativo esperava cerca de um segundo e sumia sozinho |
 | `showNotice(msg)` | `(string) → void` | Aviso no fundo da tela (`role="status"`), que some em 8 s ou com um clique |
 | `captureImg(blob)` | `async (Blob) → void` | Captura imagem: gera rótulo único, salva em IndexedDB, renderiza thumb |
 | `captureDoc(blob, name, type)` | `async (Blob, string, string) → void` | Captura documento: gera nome único, salva em IndexedDB, renderiza card |

@@ -215,6 +215,7 @@ Motor de anotação (V24→V25):
 - O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
   - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
+  - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
@@ -634,12 +635,14 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
-**ARIA — o que existe, exatamente (medido de novo na 28.0.0):** o produto tem **dois** atributos `role` e **dois** `aria-label`, e mais nada:
+**ARIA — o que existe, exatamente (medido de novo na 28.1.0):**
 
 | Onde | Atributo | Porquê |
 |---|---|---|
 | Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não sabe que as capturas deixaram de ser gravadas |
 | Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
+| Aviso de formato que o navegador não abre | `role="status"` | Diz para onde foi o arquivo, sem tirar o foco de onde a pessoa está |
+| Botões do editor de imagem | `aria-label` com o texto do tooltip, e `role="tooltip"` no balão | Os botões só têm um ícone. O texto que aparece por cima deles é também o nome que o leitor de tela lê |
 
 Nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário.
 
