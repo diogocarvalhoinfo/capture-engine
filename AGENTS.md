@@ -1037,7 +1037,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 ## 10. Workflow de Desenvolvimento para Agentes
 
 1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas
-2. **Nunca abrir o browser para testar** — o humano testa, o agente edita
+2. **Teste no navegador o que a mudança toca** (D-0084). A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão.
 3. **Após cada alteração significativa, atualizar:**
    - `README.md` — se for nova funcionalidade visível ao usuário
    - `design-tokens.md` — se for novo token CSS ou JS
@@ -1230,7 +1230,7 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 A validação tem **duas partes**:
 - **Parte A — sem browser:** verificações mecânicas e de leitura de código. As mecânicas (markers, funções Quine, spans de título, APIs proibidas, zero-dependência, sintaxe JS) são feitas automaticamente por `validate.sh` (ver Seção 10, "Como executar"); as restantes são confirmadas a ler o código.
-- **Parte B — teste manual no browser:** comportamento que só se confirma a abrir e a usar a aplicação. **Tem de ser feito por um humano** — o agente edita, o humano testa.
+- **Parte B — teste no navegador:** comportamento que só se confirma a abrir e a usar a aplicação. O agente pode fazer estes testes, por exemplo com o Playwright (D-0084). A «Prova de vida do Export User» é sempre feita por quem mantém o projeto, antes de cada versão.
 
 ---
 
