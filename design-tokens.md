@@ -70,7 +70,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-toolbar` | `rgb(255 255 255 / 6%)` | — | Barra de ferramentas da anotação |
 | `--color-viewer-border` | `rgb(255 255 255 / 10%)` | — | Borda da barra de ferramentas e da barra de zoom |
 | `--color-viewer-control-border` | `#3f3f3f` | — | Borda dos botões da barra de anotação |
-| `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Separadores e bordas finas do visualizador |
+| `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Abas e bordas finas do visualizador |
 | `--color-viewer-muted-foreground` | `rgb(255 255 255 / 60%)` | — | Dimensões da imagem, sobre o visualizador |
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
 | `--color-viewer-border-hover` | `rgb(255 255 255 / 30%)` | — | Borda do botão de download no hover |
@@ -124,11 +124,11 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 > trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
 > O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
 >
-> O `grep -v` tem de filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--color-background: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
+> O `grep -v` precisa filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--color-background: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
 >
-> ⚠️ **Não escrever cores literais nesta secção fora da tabela** (D70). O comando abaixo lê a secção inteira: um hex citado numa nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
+> ⚠️ **Não escrever cores literais nesta seção fora da tabela** (D70). O comando abaixo lê a seção inteira: um hex citado numa nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
 >
-> Qualquer linha devolvida é uma cor no código que esta secção não declara.
+> Qualquer linha devolvida é uma cor no código que esta seção não declara.
 
 ---
 
@@ -215,7 +215,7 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
-O botão de colar fica abaixo da barra lateral e dos modais. Até à versão 27 ficava acima deles.
+O botão de colar fica abaixo da barra lateral e dos modais. Até a versão 27 ficava acima deles.
 
 **Regra:** um valor novo entra nesta tabela e no `validate.sh` (check 23), que falha com um valor não documentado ou com um `z-index` literal.
 
@@ -243,7 +243,7 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 | Animação | O que faz | Duração | Onde é usada |
 |---|---|---|---|
 | `spin` | Rotação contínua | `--duration-spinner` | Spinner nos botões PDF e ZIP durante o processamento |
-| `fade-in` | Entrada com opacidade 0→1 | `--duration-moderate-02` | Novos thumbnails e documentos |
+| `fade-in` | Entrada com opacidade 0→1 | `--duration-moderate-02` | Novas miniaturas e documentos |
 | `modal-in` | Escala `0.96→1` e opacidade | `--duration-moderate-02` | Entrada de todos os modais |
 | `fade-in-tab` | Opacidade | `--duration-moderate-02` | Troca de abas do Visual Builder |
 
@@ -261,8 +261,8 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Inicial (vazio = herda cor do texto) |
 | `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto em Destaque (vazio = herda cor accent) |
 | `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do Texto Final (vazio = herda cor do texto) |
-| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color picker principal |
-| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color picker de texto |
+| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color seletor principal |
+| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color seletor de texto |
 | `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → "Texto do Rodapé" |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → toggle "Campo 1" |
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → toggle "Campo 2" |
@@ -287,22 +287,22 @@ yiq ≥ 128  →  texto escuro (#1a1917)
 yiq < 128  →  texto branco (#ffffff)
 ```
 
-O limiar 128 divide a escala 0–255 ao meio. Para cores de baixo contraste intrínseco (ex: amarelo `#eab308` — yiq ≈ 176, texto escuro; ciano `#06b6d4` — yiq ≈ 133, texto escuro; laranja `#f97316` — yiq ≈ 145, texto escuro), o resultado automático pode não atingir os rácios WCAG AA (4.5:1 para texto normal). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
+O limiar 128 divide a escala 0–255 ao meio. Para cores de baixo contraste intrínseco (ex: amarelo `#eab308` — yiq ≈ 176, texto escuro; ciano `#06b6d4` — yiq ≈ 133, texto escuro; laranja `#f97316` — yiq ≈ 145, texto escuro), o resultado automático pode não atingir as razões WCAG AA (4.5:1 para texto normal). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
 
 **`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` (vazio = padrão visual):**
 Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
 
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
-Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em screenshots com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
+Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
 
-> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O standard HTML define que valores fora de `[0, 1]` fazem o browser usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceitos sem erro — apenas produzem os artefatos ou o desperdício de espaço documentados acima.
+> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. O padrão HTML define que valores fora de `[0, 1]` fazem o navegador usar a qualidade padrão da implementação (tipicamente ~0.92); valores no intervalo `[0, 1]` mas fora de `[0.70, 0.95]` são aceitos sem erro — apenas produzem os artefatos ou o desperdício de espaço documentados acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
 Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido (ex: `1920`), qualquer imagem com dimensão superior é reduzida ao gerar o PDF, preservando a proporção. É lido num único ponto do código — `imgToJPEG()`, chamada exclusivamente por `generatePDF()`.
 
 > ⚠️ **Importante — não reduz o armazenamento:** `captureImg()` grava sempre o blob **original**, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
 >
-> Até à V26, esta secção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Optou-se por corrigir a documentação e não o código — redimensionar na captura destruiria o original de forma irreversível, o que numa ferramenta de recolha de provas é perda de evidência.
+> Até a V26, esta seção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Optou-se por corrigir a documentação e não o código — redimensionar na captura destruiria o original de forma irreversível, o que numa ferramenta de recolha de provas é perda de evidência.
 
 > **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem entra no PDF tal como está.
 
@@ -414,7 +414,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 | Elemento | Tamanho | Peso | Notas |
 |---|---|---|---|
 | Nome da marca (topo) | `var(--text-xl)` (20px) | `600` | Logo principal |
-| Section titles (labels uppercase) | `var(--text-caption)` (11px) | `600` | `letter-spacing: 0.6px` |
+| Section titles (rótulos uppercase) | `var(--text-caption)` (11px) | `600` | `letter-spacing: 0.6px` |
 | Texto geral | `var(--text-sm)` (14px) | `400` | Body text |
 | Botões `.btn-send` | `var(--text-control)` (13px) | `600` | Altura `36px` |
 | Ícones em botões | `14px` | — | `stroke-width: 2` |
@@ -424,7 +424,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 | Item de histórico — nome | `var(--text-xs)` (12px) | `400` | |
 | Item de histórico — data | `var(--text-caption)` (11px) | `400` | `--color-muted-foreground` |
 | Título de modal `.modal-title` | `var(--text-base)` (16px) | `600` | Centrado horizontalmente |
-| Input de documento `.d-input` | `var(--text-control)` (13px) | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
+| Campo de documento `.d-input` | `var(--text-control)` (13px) | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
 | Legenda de imagem `.t-label` | `var(--text-caption)` (11px) | `400` | **Sem negrito** — discreta, não distrai da imagem |
 | Links de ação `.pick-link` | `var(--text-control)` (13px) | `400` | Em empty states |
 
@@ -451,7 +451,7 @@ A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda 
 - Layout muda de horizontal para vertical (painéis empilhados)
 - A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
 - O botão de histórico fica na barra de topo
-- FAB mobile (`#mobile-paste-fab`) fica visível — botão flutuante para colar do clipboard
+- FAB mobile (`#mobile-paste-fab`) fica visível — botão flutuante para colar da área de transferência
 - `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
 
 ### `width <= 30rem` (480px) — telefones na vertical
