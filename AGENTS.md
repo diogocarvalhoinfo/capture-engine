@@ -1357,9 +1357,9 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 
 1. [ ] Fazer **Export User** pela aplicação e guardar o arquivo
 2. [ ] Abrir esse arquivo no navegador e pressionar **F12 → Console**
-3. [ ] **Zero erros no console — com uma exceção declarada.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25: o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal.
-   - **Exceção:** aberto por `file://` — que é o modo de uso pretendido (`README §12`) — aparece **sempre** um `Fetch API cannot load file:///…`, seguido de `[CE] Quine fallback: BOOT_HTML`. É o comportamento documentado na `§1.2`, não um defeito: o `fetch(location.href)` é bloqueado por CORS e o Quine cai no `BOOT_HTML`. **Este par é o único erro tolerado.** Qualquer outro reprova o passo.
-   - Servido por `http(s)` não deve aparecer erro nenhum, nem sequer esse.
+3. [ ] **Zero erros no console, sem exceção.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25: o IIFE abortou e a aplicação está morta por baixo de uma interface que parece normal.
+   - O Export User não tem o bloco `ADMIN_JS`, por isso não chama o `capturePristine()` nem faz o `fetch(location.href)`. Aberto por `file://` ou servido por `http(s)`, o console fica sem erro nenhum.
+   - O par `Access to fetch at 'file:///…' … CORS` e `[CE] Quine fallback: BOOT_HTML` é normal só no `capture-engine.html` principal e no Export Admin abertos por `file://` (§1.2). **Num Export User, esse par reprova o passo:** quer dizer que o bloco `ADMIN_JS` não foi removido.
 4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
 5. [ ] **A sessão persiste:** escrever no campo User, recarregar a página, e confirmar que a sessão está no histórico
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
