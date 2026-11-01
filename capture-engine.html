@@ -36,6 +36,7 @@
       --color-ring: var(--color-primary);
       --focus-width: 3px;
       --focus-offset: 2px;
+      --opacity-dimmed: 0.3;
       --color-success-subtle: #eaf3de;
       --color-success-border: #639922;
       --color-success-foreground: #27500a;
@@ -2143,7 +2144,7 @@
       border: 2px solid transparent;
       cursor: pointer;
       padding: 0;
-      transition: transform var(--duration-fast-02), border-color var(--duration-fast-02);
+      transition: transform var(--duration-fast-02), border-color var(--duration-fast-02), opacity var(--duration-moderate-01);
       flex-shrink: 0
     }
 
@@ -2672,6 +2673,14 @@
 
     #img-modal-overlay .ann-sep {
       background: var(--color-viewer-line);
+    }
+
+    /* Unsaved changes: the rest of the toolbar dims and ignores clicks, so only Cancelar and Confirmar stay usable */
+    #img-modal-ann-actions.ann-await .ann-btn:not(#ann-cancel, #ann-save),
+    #img-modal-ann-actions.ann-await .ann-swatch,
+    #img-modal-ann-actions.ann-await .ann-sep {
+      opacity: var(--opacity-dimmed);
+      pointer-events: none
     }
 
     /* Text mode: only the back button and the text buttons stay among the tools */
@@ -3959,6 +3968,8 @@
       // Fase 5 — pilhas de Undo/Redo por snapshots de estado completo
       let annUndoStack = [], annRedoStack = [];
       const ANN_HISTORY_MAX = 50;
+      const ANN_AWAIT_MS = 5000; // unsaved changes: how long the rest of the toolbar stays dimmed
+      let annAwaitTimer = null;
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
       let annPrevTool = 'free'; // tool to go back to from the text mode
@@ -4011,6 +4022,14 @@
         const btnClose = $('ann-cancel'), btnSave = $('ann-save');
         if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
         if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
+        // Dim the rest of the toolbar for ANN_AWAIT_MS; a new alert restarts the time
+        const bar = $('img-modal-ann-actions');
+        if (bar) { bar.classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
+      }
+      function clearAnnAwait() {
+        clearTimeout(annAwaitTimer); annAwaitTimer = null;
+        const bar = $('img-modal-ann-actions');
+        if (bar) bar.classList.remove('ann-await');
       }
       async function annActivate() {
         annActive = true;
@@ -4045,6 +4064,7 @@
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
+        clearAnnAwait();
         annActive = false; annDrawing = false; annSelectedIdx = -1; annHoverIdx = -1; // reset por segurança
         // Restaurar imagem baked como fundo (para o modo de visualização)
         const _restoreO = images.find(x => x.id === modalItemId);
@@ -4765,6 +4785,7 @@
         const cv = $('ann-canvas');
         cv.addEventListener('pointerdown', e => {
           if (!annActive) return;
+          clearAnnAwait(); // a click on the image means: keep editing
           if (e.button === 1 || annSpaceHeld) return;
           if (e.button === 2) {
             if (annCommitText) annCommitText();

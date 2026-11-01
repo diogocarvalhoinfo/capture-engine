@@ -192,6 +192,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 |---|---|---|
 | `--focus-width` | `3px` | Espessura do contorno do foco |
 | `--focus-offset` | `2px` | Afastamento do contorno do foco |
+| `--opacity-dimmed` | `0.3` | Botões da barra do editor apagados durante o aviso de anotações por salvar |
 | `--top-bar-h` | `64px` | Altura da barra do topo |
 | `--thumb-size` | `140px` | Lado da caixa de miniatura |
 

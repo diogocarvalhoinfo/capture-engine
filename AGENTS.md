@@ -856,7 +856,8 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 |---|---|---|
 | `setAnnDirty(val)` | Define `annIsDirty` e controla visibilidade do botão fechar modal | Esconde `img-modal-close` quando `annActive && annIsDirty` |
 | `hasUnsavedAnnotations()` | Retorna `true` se há anotações não guardadas (`annActive && annIsDirty`) | Usada por `closeImgModal`, `imgModalNav` e backdrop click |
-| `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário | Chamada quando se tenta fechar com anotações pendentes |
+| `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário. Liga também a classe `ann-await` na barra: os outros botões ficam com `--opacity-dimmed` e sem clique durante `ANN_AWAIT_MS` | Chamada por `closeImgModal`, `imgModalNav` e o clique no fundo, quando há anotações pendentes. Um novo aviso reinicia o tempo |
+| `clearAnnAwait()` | Tira a classe `ann-await` e cancela o temporizador | Chamada pelo temporizador, pelo `pointerdown` no canvas (continuar editando) e por `annDeactivate`, que cobre o Cancelar e o Confirmar |
 
 ### Funções de Segurança
 
@@ -1025,6 +1026,8 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `_expOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de Export |
 | `textModalItemId` | string \| null | ID do documento atualmente aberto no text modal; `null` = modal fechado |
 | `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
+| `ANN_AWAIT_MS` | number (const) | `5000` — quanto tempo os outros botões da barra ficam apagados depois do aviso de anotações por salvar |
+| `annAwaitTimer` | TimeoutID \| null | Temporizador do estado `ann-await`; `null` quando inativo |
 | `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na toolbar de anotação (px) |
 | `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
 | `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois lugares (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê a escrever (WYSIWYG) |
@@ -1323,7 +1326,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Texto: colocar (Enter confirma, Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
-- [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam (alerta)
+- [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam, e os outros botões da barra ficam meio transparentes e sem clique por 5 s; um clique na imagem desfaz o estado antes
 - [ ] Texto: a Rotação 90° gira também o texto; o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
 - [ ] Modo texto: a barra mostra só ←, T, B e I entre as ferramentas; o ← volta à ferramenta anterior e deixa o texto na imagem
 - [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor; Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
