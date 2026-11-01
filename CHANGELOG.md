@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.6.1] - 2026-11-01
+
+Patch: as correções da auditoria de 2026-11-01, todas na documentação. O arquivo só muda no número da versão.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, com o arquivo já na 28.6.1.
 
 ### Corrigido
 
@@ -15,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Mapa de complexidade (F-0046).** A tabela do `AGENTS.md` §10 era da 28.0.0 e já não batia com o `validate.sh`. Sai a cópia; o mapa é a saída `[WARN]` do script.
 - **Script de recuperação (F-0047).** O script do `AGENTS.md` §14 punha `.png` em todo arquivo, e um documento saía como `relatorio.pdf.png`. Agora cada arquivo sai com a sua extensão. Testado em Node com PNG, JPEG, GIF, WEBP e documentos.
 - **Referências internas (F-0048).** Duas referências do `AGENTS.md` apontavam para seções erradas.
+- **Imagem do modo administrador com a versão atual.** A 28.6.0 trocou o número da versão, que aparece no Visual Builder, sem gerar a imagem de novo; o `--verificar` acusou 396 pixels diferentes. A imagem é gerada de novo, e o passo entra em «Fechar uma versão».
 
 ### Modificado
 
