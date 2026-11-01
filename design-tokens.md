@@ -379,7 +379,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 └──────────────────────────────────────────────────────────┘
 ```
 
-*A barra `#zoom-ui` usa glassmorphism: `background: rgba(25,25,25,0.7)` + `backdrop-filter: blur(10px)`. Flutua sobre a imagem com texto sempre a `#fff` independentemente do conteúdo por baixo.*
+*A barra `#zoom-ui` usa um fundo translúcido: `--color-viewer-floating` e `backdrop-filter: blur(10px)`. Flutua sobre a imagem com texto sempre a `#fff` independentemente do conteúdo por baixo.*
 
 *O fechamento por clique no backdrop está bloqueado quando zoom > 100% — evita fechamentos acidentais durante o panning.*
 
