@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Patch: os botões desativados mostram a seta normal, em vez do cursor de bloqueio.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Modificado
 
 - **Seta normal nos botões desativados.** Com a sessão vazia, o «.pdf» e o «.zip» mostravam o cursor de bloqueio, um círculo vermelho que parecia um erro. Agora mostram a seta normal, como no Fluent UI e no Material Design; o cinza já diz que o botão não está disponível. Vale para todos os botões desativados. Medido no Edge 156: seta com o botão desativado, mão com o botão ativo.
