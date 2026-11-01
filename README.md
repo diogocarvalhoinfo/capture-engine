@@ -159,7 +159,7 @@ A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guard
 ### Dicas essenciais
 
 - **Ctrl+V** cola qualquer coisa da área de transferência: imagem, arquivo ou texto
-- **Drag & Drop** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
+- **Arrastar e soltar** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
 - A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o navegador dentro dessa janela pode perder as últimas alterações)
@@ -173,7 +173,7 @@ O Capture Engine aceita conteúdo de três formas:
 | Método | Como usar | O que captura |
 |---|---|---|
 | **Ctrl+V** | Pressione Ctrl+V com a app em foco | Imagem da área de transferência, arquivo copiado, ou texto |
-| **Drag & Drop** | Arraste o arquivo para a área de destino | Qualquer arquivo |
+| **Arrastar e soltar** | Arraste o arquivo para a área de destino | Qualquer arquivo |
 | **Seletor** | Clique em "Adicionar Imagem" ou "Adicionar Documento" | Qualquer arquivo pelo seletor do sistema |
 
 **Tipos de arquivo aceitos:**
@@ -232,7 +232,7 @@ Mobile (V25):
 - Desenho por toque funciona (Pointer Events nativos)
 - Scroll de fundo bloqueado quando qualquer modal está aberto
 - Botões de apagar e restaurar sempre visíveis em dispositivos touch
-- Toolbar em 3 linhas: ferramentas / cores+espessura / ações
+- Barra de ferramentas em 3 linhas: ferramentas / cores+espessura / ações
 
 ### 6.4 Reordenação
 
@@ -514,7 +514,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Dependente do navegador** | Limpar dados do navegador apaga todos os dados. |
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
-| **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
+| **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
 | **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação com o aviso de que as capturas deixaram de ser gravadas e a recomendação de exportar já. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |

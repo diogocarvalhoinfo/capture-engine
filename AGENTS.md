@@ -674,7 +674,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `idbGet(store, id)` | `(string, any) → Promise<object>` | Lê um registro pela chave primária. Retorna `undefined` se não existir. |
 | `idbAll(store)` | `(string) → Promise<array>` | Retorna todos os registros da store como array. |
 | `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registro com a chave primária dada. |
-| `idbDelBatch(store, ids)` | `(string, string[]) → Promise` | Deleta múltiplos registros da store `store` em **uma única transação** `readwrite`. Mais eficiente que N chamadas a `idbDel` em loop. Usa `tx.oncomplete` em vez de `r.onsuccess`. |
+| `idbDelBatch(store, ids)` | `(string, string[]) → Promise` | Apaga múltiplos registros da store `store` em **uma única transação** `readwrite`. Mais eficiente que N chamadas a `idbDel` em loop. Usa `tx.oncomplete` em vez de `r.onsuccess`. |
 | `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registros onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
 
 ### Funções de Captura
@@ -803,8 +803,8 @@ ativar arrasto:
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra toolbar; oculta `#img-nav-prev` e `#img-nav-next` | Chamada pelo botão "Editar" (id `ann-toggle`) |
-| `annDeactivate()` | Desativa anotação: esconde canvas e toolbar, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
+| `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra a barra de ferramentas; oculta `#img-nav-prev` e `#img-nav-next` | Chamada pelo botão "Editar" (id `ann-toggle`) |
+| `annDeactivate()` | Desativa anotação: esconde canvas e barra de ferramentas, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
 | `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I conforme `t==='text'` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
@@ -828,7 +828,7 @@ ativar arrasto:
 | **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annCommitUndo` ignora snapshots idênticos ao topo (deduplicação introduzida na D18). `annDoUndo` e `annDoRedo` são `async`. Detectam mudanças em `rot` e `crop` no snapshot. Se `rot` mudou, regeneram o bitmap base com `getRotatedBlob(origBlob, _prev.rot)` e atualizam `annCurrentRotation`. Se `crop` mudou, trocam a imagem base entre `o.blob` e `origBlob` e redimensionam o canvas. Se o snapshot tiver `pcrop`, restaura também a `o.cropBox` persistida. Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `annDragDirty` / `annResizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `annDragDirty`/`annResizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
 
 **Ferramenta de Rotação (90°)**
-Botão `ann-rotate-btn` na toolbar do editor. Cada clique roda a imagem 90° no
+Botão `ann-rotate-btn` na barra de ferramentas do editor. Cada clique roda a imagem 90° no
 sentido horário: recalcula o bitmap via canvas temporário, atualiza
 `annCurrentRotation = (annCurrentRotation + 90) % 360`, redimensiona o canvas
 (largura e altura trocam), recalcula coordenadas de todas as anotações e
@@ -989,7 +989,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `annRedoStack` | array | Pilha de snapshots para refazer; limpa sempre que uma nova ação gera um undo |
 | `annSelectedIdx` | number | Índice em `annHistory` da anotação selecionada; `-1` = nenhuma seleção |
 | `annDragDirty` / `annResizeDirty` | boolean | Flags transitórias para identificar se o gesto contínuo gerou mutação de coordenadas antes do undo |
-| `annCurrentColor` | string | Cor ativa da toolbar de anotação (hex) |
+| `annCurrentColor` | string | Cor ativa da barra de anotação (hex) |
 | `annSizeIdx` | number | Índice em `ANN_SIZES=[1,2,4,6,8,12]` — espessura de linha ativa |
 | `annTextBold` | boolean | Negrito ativo na ferramenta texto (padrão: `true`) |
 | `annTextItalic` | boolean | Itálico ativo na ferramenta texto |
@@ -1028,7 +1028,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
 | `ANN_AWAIT_MS` | number (const) | `5000` — quanto tempo os outros botões da barra ficam apagados depois do aviso de anotações por salvar |
 | `annAwaitTimer` | TimeoutID \| null | Temporizador do estado `ann-await`; `null` quando inativo |
-| `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na toolbar de anotação (px) |
+| `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na barra de anotação (px) |
 | `ANN_TEXT_SIZES` | array (const) | `[14, 18, 24, 36, 48]` — tamanhos de fonte disponíveis na ferramenta texto (px) |
 | `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois lugares (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê ao escrever (WYSIWYG) |
 
@@ -1201,7 +1201,7 @@ bash validate.sh  # deve retornar 0 FAIL / exit code 0
 
 **Cenário:** adicionar a ferramenta "Linha reta" ao motor de anotação.
 
-**Passo 1 — Adicionar botão na toolbar HTML** (fora dos blocos `ADMIN_*`):
+**Passo 1 — Adicionar botão na barra de ferramentas (HTML)** (fora dos blocos `ADMIN_*`):
 ```html
 <button id="ann-tool-line" class="ann-tool-btn" title="Linha">—</button>
 ```
@@ -1210,7 +1210,7 @@ bash validate.sh  # deve retornar 0 FAIL / exit code 0
 
 **Passo 3 — Implementar Pointer Events** em `initAnnotation()`:
 - `pointerdown` — registrar ponto inicial
-- `pointermove` — redesenhar preview
+- `pointermove` — redesenhar a pré-visualização
 - `pointerup` — confirmar e salvar snapshot
 
 **Passo 4 — Salvar snapshot antes de confirmar** (crítico para undo/redo):
@@ -1410,7 +1410,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os eventos `isDirty=true` dos controles contínuos do VB (seletores de cor, campos hex, sliders, radios, toggles, campos de texto). Esses eventos `input` não chamam `triggerSave()` na hora. Sem o interval, alterações no VB perdem-se se o navegador for fechado dentro da janela de 5s. |
 | D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
 | D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceito. O setInterval de 5s garante persistência antes de fechar o navegador em uso normal. |
-| D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + swatches de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
+| D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + amostras de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
 | D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A lixeira cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
 | D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fechamento (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
 | D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
