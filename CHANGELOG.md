@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.4.0] - 2026-11-01
+
+Minor: a barra lateral e as zonas vazias ganham um visual novo, os textos pequenos passam a 12 px, e a interface cresce nas telas grandes.
 
 ### Modificado
 
