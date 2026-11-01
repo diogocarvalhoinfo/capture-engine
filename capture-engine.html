@@ -770,6 +770,19 @@
       color: var(--color-muted-foreground)
     }
 
+    /* Notebook screens (125 % and 150 % Windows scaling, up to 800 px of height): the empty hint a little smaller, so it does not
+       take the eye from the side panel */
+    @media (height <= 50rem) {
+      .empty-st svg {
+        width: 40px;
+        height: 40px
+      }
+
+      .empty-st-title {
+        font-size: var(--text-control)
+      }
+    }
+
     /* ═══ MOBILE PASTE FAB ═══ */
     #mobile-paste-fab {
       display: none;
