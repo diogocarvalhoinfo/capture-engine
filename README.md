@@ -216,7 +216,7 @@ Motor de anotação (V24→V25):
   - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
   - No modo texto (a ferramenta Texto, ou o duplo clique num texto para reeditá-lo), a barra mostra só o ← (voltar à ferramenta anterior), o T, o negrito e o itálico, além das cores, do tamanho, de desfazer e refazer, de salvar e de cancelar. O ← deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
-  - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também.
+  - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
@@ -264,7 +264,7 @@ Gera um PDF com uma imagem por página.
 
 Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a próxima ação na página: um clique, uma tecla, colar ou arrastar. Ir a outra janela anexar o arquivo e voltar não tira o verde, por isso a última ação continua à vista.
 
-**Modos de página disponíveis:**
+**Modos de página disponíveis:** na barra lateral, «Auto» é escrito; «Horizontal» e «Vertical» são ícones de página, com o nome no tooltip.
 
 | Modo | Comportamento |
 |---|---|
@@ -638,14 +638,14 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
-**ARIA — o que existe, exatamente (medido de novo na 28.1.0):**
+**ARIA — o que existe, exatamente (medido de novo na 28.5.0):**
 
 | Onde | Atributo | Porquê |
 |---|---|---|
 | Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não sabe que as capturas deixaram de ser gravadas |
 | Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
 | Aviso de formato que o navegador não abre | `role="status"` | Diz para onde foi o arquivo, sem tirar o foco de onde a pessoa está |
-| Botões do editor de imagem | `aria-label` com o texto do tooltip, e `role="tooltip"` no balão | Os botões só têm um ícone. O texto que aparece por cima deles é também o nome que o leitor de tela lê |
+| Elementos com tooltip, em toda a aplicação | `role="tooltip"` no balão; `aria-label` com o texto do tooltip nos que só têm ícone, e `aria-description` nos que têm texto | Muitos botões só têm um ícone. O texto que aparece por cima deles é também o nome que o leitor de tela lê |
 
 Nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário.
 

@@ -4,6 +4,18 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Ícones no Layout PDF.** «Horizontal» e «Vertical» passam a ícones de página, deitada e em pé, com o nome no tooltip. O «Auto» continua escrito. A barra fica menos carregada.
+- **Um tooltip só em toda a aplicação.** O tooltip do editor passa a valer para todos os botões: aparece na hora, acima do elemento, e fica enquanto o mouse ou o foco do teclado estiverem nele. Antes, os botões fora do editor usavam o tooltip do navegador, que espera cerca de um segundo e muda de sistema para sistema. O balão é escuro no tema claro, claro no tema escuro e branco por cima do visualizador.
+
+### Corrigido
+
+- **O «Auto» piscava de branco para escuro ao carregar.** A cor do texto sobre o laranja só era calculada depois de abrir o banco de dados, e até lá valia o branco. Agora as cores são aplicadas antes da primeira pintura. Medido no Edge 156: na primeira pintura, o texto já está escuro.
+- **O botão do tema dizia sempre «Modo noturno».** No tema escuro, passa a dizer «Modo claro».
+
 ## [28.4.0] - 2026-11-01
 
 Minor: a barra lateral e as zonas vazias ganham um visual novo, os textos pequenos passam a 12 px, e a interface cresce nas telas grandes.
