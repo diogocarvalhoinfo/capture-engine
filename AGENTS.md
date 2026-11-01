@@ -170,7 +170,7 @@ element.innerHTML = `<span>${escapeHTML(userInput)}</span>`;
 
 **Para o Quine:** Usar `sanitizeForQuine()` antes de injetar valores de tokens no HTML exportado. Esta função protege os comment markers de serem acidentalmente incluídos em valores de tokens (o que corromperia o arquivo exportado).
 
-> **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) são exportados com a aspa escapada — o arquivo resultante é sintaticamente correto em JavaScript, mas quem inspecionar o HTML manualmente verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correto e esperado.
+> **Comportamento adicional de `sanitizeForQuine()`:** Para além de proteger os 8 marcadores, a função também escapa aspas simples (`'` → `\'`). Tokens com apóstrofos (ex.: `TOKEN_FOOTER_TEXT = '© 2026 • O'Brien Tools'`) saem com a aspa escapada. O arquivo resultante é JavaScript válido, mas quem abrir o HTML num editor verá `O\'Brien` em vez de `O'Brien`. Este é o comportamento correto e esperado.
 
 > ⚠️ **AVISO CRÍTICO — as regexes de substituição precisam conhecer escapes:** escapar o apóstrofo em `sanitizeForQuine` só resolve **metade** do problema. Da V11 à V26 as 11 regexes de token de texto usavam `'[^']*'`, que **para no primeiro apóstrofo, mesmo escapado**. Consequência: o artefato da 1.ª geração ficava correto. Ao **reexportar a partir dele**, o padrão cortava a declaração no meio e produzia `SyntaxError`, e a aplicação ficava morta. Corrigido na D40 com `'(?:[^'\\]|\\.)*'`, que consome pares escapados como unidade.
 >
@@ -475,7 +475,7 @@ Os markers são comentários especiais que o Quine Engine usa para identificar e
 
 > Verificação rápida sem `validate.sh`: procure cada um dos 8 textos acima no HTML com Ctrl+F. Se algum estiver ausente ou duplicado, o Quine está corrompido.
 
-> **Nota sobre contagens — 8 vs 11:** existem **8 strings únicas de marcadores** (4 pares: ADMIN_BUTTONS, ADMIN_EDIT, ADMIN_JS, EXPORT MODAL), mas o `grep -c` no HTML retorna **11 linhas** porque os marcadores aparecem em 3 categorias de locais:
+> **Nota sobre contagens — 8 vs 11:** existem **8 strings únicas de marcadores**, em 4 pares: ADMIN_BUTTONS, ADMIN_EDIT, ADMIN_JS e EXPORT MODAL. O `grep -c` no HTML retorna **11 linhas**, porque os marcadores aparecem em 3 categorias de locais:
 > - **8 locais estruturais** — os 4 pares de comentários/tokens HTML e JS que delimitam blocos removíveis
 > - **1 linha em `boot()`** — o par `ADMIN_JS_START`/`ADMIN_JS_END` inline que envolve `capturePristine()`
 > - **1 linha em `sanitizeForQuine()`** — os 8 nomes como strings para substituição com zero-width space
@@ -704,7 +704,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `initVbSync()` | `() → void` | Registra todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. **Sem nome de sessão, o prefixo é omitido junto com o seu hífen** — o nome fica só com o timestamp (`13h29m-16-ago-2026.zip`), nunca com um hífen inicial órfão. O mesmo acontece se a sanitização esvaziar o nome (ex.: título só com pontuação). Usada por `updateBtnTitles()`. |
 
-> **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado e o default (`48` para purge, `0` para max-dim) permanece — o reexport usa esse default, não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de usuário.
+> **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex.: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado, e fica o default: `48` para purge e `0` para max-dim. O reexport usa esse default, e não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de usuário.
 
 ### Funções do modal de imagem
 
@@ -789,7 +789,7 @@ ativar arrasto:
   - repor escala (1.0)
 ```
 
-**Algoritmo de geometria de repouso:** A posição final de cada item é calculada a partir de `offsetLeft`, `offsetTop`, `offsetWidth`, `offsetHeight` — coordenadas reais do DOM após reflow, não coordenadas salvas em memória. Isto garante que o snap é sempre preciso independentemente de redimensionamentos ou scroll ocorridos durante o arrasto.
+**Algoritmo de geometria de repouso:** A posição final de cada item vem de `offsetLeft`, `offsetTop`, `offsetWidth` e `offsetHeight`. São as coordenadas reais do DOM depois do reflow, e não coordenadas guardadas em memória. Isto garante que o snap é sempre preciso independentemente de redimensionamentos ou scroll ocorridos durante o arrasto.
 
 **Nota sobre o item `pointercancel`:** está registrado com o **mesmo handler** do `pointerup` (`onUp`) — não existe caminho de reversão separado. O comportamento depende de o arrasto ter chegado a ativar:
 - **Gesto que nunca ativou** (`!wasActive` — abaixo do `DRAG_THRESHOLD`, ou long-press ainda em curso): sai por `return` antecipado, limpa o estado visual e **não persiste**. É este caso que protege os gestos de scroll em mobile que começam com um toque.
@@ -1307,10 +1307,13 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Texto: colocar (Enter confirma, Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
-- [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam, e os outros botões da barra ficam meio transparentes e sem clique por 5 s; um clique na imagem desfaz o estado antes
-- [ ] Texto: a Rotação 90° gira também o texto; o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
+- [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam, e o resto da barra fica meio transparente e sem clique por 5 s
+- [ ] Durante esse aviso, um clique na imagem desfaz o estado antes dos 5 s
+- [ ] Texto: a Rotação 90° gira também o texto
+- [ ] Texto: o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
 - [ ] Modo texto: a barra mostra só ←, T, B e I entre as ferramentas; o ← volta à ferramenta anterior e deixa o texto na imagem
-- [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor; Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
+- [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor
+- [ ] Zoom no editor: Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
 
 **Reordenação (reescrita com Pointer Events / FLIP na V23):**
 - [ ] Arrastar imagens para reordenar é **estável** (não salta nem pisca), com mouse
@@ -1346,7 +1349,7 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
 
-> ⚠️ **O protocolo em que roda o teste muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha e o Quine exporta o `BOOT_HTML`, que é `document.documentElement.outerHTML` capturado ao abrir: HTML equivalente mas **re-serializado pelo navegador** — tags SVG auto-fechadas passam a ter fechamento explícito, atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registro que não diga qual protocolo usou não é reproduzível.
+> ⚠️ **O protocolo em que roda o teste muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha, e o Quine exporta o `BOOT_HTML`, o `document.documentElement.outerHTML` capturado ao abrir. É HTML equivalente, mas **re-serializado pelo navegador**: tags SVG auto-fechadas passam a ter fechamento explícito, e atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registro que não diga qual protocolo usou não é reproduzível.
 
 > **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25, a interface aparecia inteira, com «Pronto» na barra de estado, porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
 
