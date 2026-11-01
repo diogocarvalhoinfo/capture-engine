@@ -1435,6 +1435,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
 | D-0085 | **Comentários de código em inglês: o `validate.sh` já, o HTML depois** | Os comentários do HTML ficam perto dos marcadores do Quine e vão num plano próprio (F-0029, em «Pendentes»). Origem: auditoria de 2026-10-31, decisão 7. |
 | D-0086 | **O prefixo `-webkit-backdrop-filter` fica** | O Safari anterior à versão 18 só aplica o desfoque com o prefixo. É a única exceção ao stylelint, marcada com `stylelint-disable-next-line` na regra de `#zoom-ui`, `#img-nav-prev` e `#img-nav-next`. Origem: auditoria de 2026-10-31, passo 72 do plano. |
+| D-0087 | **O chevron «›» dos botões .pdf e .zip fica** | Aparece só com o botão ativo e some no estado «Concluído». Num botão preenchido, lê-se como «seguir em frente», perto da ação. Alternativas estudadas na 28.4.0 e na 28.5.0: ícone de baixar (pesado), contagem de páginas e arquivos, «.pdf»/«.zip» (redundante depois da mudança de nome) e o visto (diz «feito» antes de exportar e enfraquece o aviso de sucesso). Fecha a P-0002. |
 
 ### Pendentes
 
@@ -1446,7 +1447,6 @@ O que ficou para depois, com o ID e a origem.
 | D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
-| P-0002 | O chevron «›» dos botões PDF e ZIP. Aparece só quando há itens e preenche o botão, mas o «›» costuma querer dizer «abre outra tela», e os botões baixam o arquivo na hora. Alternativas estudadas na 28.4.0: ícone de baixar (pesado), contagem de páginas e arquivos, e «.pdf»/«.zip» (redundante). Reavaliar a escolha. | Decisão de quem mantém o projeto, na 28.4.0 |
 
 ### IDs
 
