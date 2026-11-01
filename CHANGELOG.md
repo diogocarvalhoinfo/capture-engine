@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.5.0] - 2026-11-01
+
+Minor: um tooltip só em toda a aplicação, ícones no Layout PDF, botões «.pdf» e «.zip» com ícones novos e a zona vazia um pouco acima do meio. Corrige o «Auto» que piscava ao carregar e o tooltip do botão do tema.
 
 ### Modificado
 
