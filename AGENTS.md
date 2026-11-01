@@ -1487,7 +1487,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 | Outro navegador (Edge ↔ Chrome) | **NÃO** |
 | Mesma conta/perfil **em outra máquina** (sync ligado) | **NÃO** — IndexedDB não é sincronizado |
 
-> **Âmbito dos testes:** esta matriz foi confirmada em Windows 11 com Edge 148 e Chrome 148 (ambos motores Chromium). O Firefox e o Safari usam motores diferentes e **não foram testados formalmente**. O princípio (os dados ligados ao perfil, e não ao arquivo) deve manter-se. Os detalhes de compartilhamento entre arquivos `file://` podem variar.
+> **Âmbito dos testes:** esta matriz foi confirmada no Windows 11, com o Edge 148 e o Chrome 148. O Firefox 151.0.4 foi testado à mão, com o mesmo resultado na recuperação; o Safari não foi testado. A matriz por navegador é a do README §13, que é o dono dela.
 
 **Pontos-chave:**
 - O que decide o acesso é o **perfil de navegador**, não o nome/pasta/versão do arquivo.
