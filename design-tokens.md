@@ -251,7 +251,7 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 
 ---
 
-## 6. Tokens JavaScript (SSOT — Single Source of Truth)
+## 6. Tokens JavaScript (fonte única de verdade)
 
 Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São a **fonte de verdade** para a configuração: o Visual Builder lê estes valores ao abrir, e o Quine Engine os substitui ao exportar.
 
@@ -326,9 +326,9 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ---
 
-## 7. Anatomia dos Componentes
+## 7. Anatomia dos componentes
 
-### Barra de Topo
+### Barra do topo
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -339,7 +339,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
   Os botões [⚙] [💾] são ADMIN_BUTTONS — removidos em exports User
 ```
 
-### Layout Principal
+### Layout principal
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -361,7 +361,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
-### Modal de Imagem (`#img-modal-overlay`)
+### Modal de imagem (`#img-modal-overlay`)
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -383,7 +383,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 *O fechamento por clique no backdrop está bloqueado quando zoom > 100% — evita fechamentos acidentais durante o panning.*
 
-### Modal de Documento (`#text-modal-overlay`)
+### Modal de documento (`#text-modal-overlay`)
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -413,7 +413,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ---
 
-## 8. Tipografia — Tabela de Referência
+## 8. Tipografia: tabela de referência
 
 | Elemento | Tamanho | Peso | Notas |
 |---|---|---|---|
@@ -435,7 +435,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ---
 
-## 9. Padrão de Botões em Modais
+## 9. Botões nos modais
 
 | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|
@@ -478,7 +478,7 @@ Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os 
 
 ---
 
-## 11. Comportamento de Bordas
+## 11. Bordas, sombras e preenchimentos
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
@@ -501,7 +501,7 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 
 «Horizontal» e «Vertical» são ícones de página, com o nome no tooltip; «Auto» é escrito.
 
-### FAB Mobile (`#mobile-paste-fab`)
+### Botão de colar no mobile (`#mobile-paste-fab`)
 
 | Estado | Visual |
 |---|---|
@@ -514,9 +514,9 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 
 ---
 
-## Annotation Engine — Constantes e Estado
+## 12. Motor de anotação: constantes e estado
 
-### Constantes de Traço
+### Constantes de traço
 
 | Constante | Valor | Descrição |
 |---|---|---|
@@ -524,7 +524,7 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | `ANN_TEXT_SIZES` | `[14, 18, 24, 36, 48]` | Tamanhos de fonte disponíveis (px canvas); index 2 = 24px padrão |
 | `ANN_TEXT_LINE_RATIO` | `1.3` | Line-height ratio do texto. Constante **única** usada no `line-height` do `<textarea>` editor **e** no render do canvas (`annDrawShape`) — garante que o texto multilinha achatado é igual ao que se vê a escrever (WYSIWYG) |
 
-### Variáveis de Estado da Anotação
+### Variáveis de estado da anotação
 
 | Variável | Padrão | Descrição |
 |---|---|---|
@@ -537,7 +537,7 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | `annTextClickTimer` | `null` | Timer 220ms para distinguir single-click de dblclick |
 | `annSmoothLast` | `null` | Último ponto EMA no desenho livre (α=0.35); reset em activate/deactivate/mouseup |
 
-### Tokens CSS do Motor de Reordenação
+### Tokens CSS do motor de reordenação
 
 Estas variáveis CSS controlam a aparência do placeholder de arrasto (o espaço vazio que aparece durante a reordenação de itens). **Requerem edição direta do `capture-engine.html`** — não são expostas no Visual Builder e não viajam com o Export (o Quine não substitui variáveis CSS, apenas tokens `TOKEN_*`).
 
@@ -546,7 +546,7 @@ Estas variáveis CSS controlam a aparência do placeholder de arrasto (o espaço
 | `--color-drop-placeholder` | `color-mix(in srgb, var(--color-foreground) 5%, transparent)` | Cor de fundo do placeholder de arrasto — área muito sutil que indica onde o item irá cair. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
 | `--color-drop-placeholder-border` | `color-mix(in srgb, var(--color-foreground) 8%, transparent)` | Cor da borda do placeholder de arrasto. Ligeiramente mais visível que o fundo para delimitar a área. Alterável apenas por desenvolvedor com acesso ao código-fonte. |
 
-### Formato de Entradas em `annHistory`
+### Formato das entradas em `annHistory`
 
 Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais por tipo:
 
