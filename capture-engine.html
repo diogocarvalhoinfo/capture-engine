@@ -81,6 +81,7 @@
       --radius-circle: 50%;
       --radius-full: calc(infinity * 1px);
       --shadow-card: 0 2px 8px rgb(0 0 0 / 2%);
+      --shadow-button: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%);
       --shadow-control: 0 2px 4px rgb(0 0 0 / 20%);
       --shadow-swatch: 0 2px 4px rgb(0 0 0 / 15%);
       --shadow-swatch-active: 0 0 0 1px rgb(0 0 0 / 40%);
@@ -1886,40 +1887,55 @@
       opacity: 0.9
     }
 
-    /* ═══ CAPTURE BUTTONS ═══ */
+    /* ═══ CAPTURE BUTTONS ═══
+       Secondary buttons (Adicionar Imagem/Documento, and the two choices of the ZIP mode): no outline, a soft shadow in the light theme.
+       In the dark theme a shadow does not show on the panel (1.12:1), so the button gets a slightly lighter fill instead.
+       On hover, a thin edge in the main colour, as the outline had before. */
     .btn-capture {
       width: 100%;
       justify-content: flex-start;
-      background: transparent;
+      background: var(--color-card);
       color: var(--color-muted-foreground);
-      border: 1px solid var(--color-border-strong);
+      border: none;
+      box-shadow: var(--shadow-button);
       font-weight: 600;
       font-size: var(--text-xs);
       height: 32px;
       padding: 0 calc(var(--spacing) * 3);
       gap: calc(var(--spacing) * 2);
-      transition: border-color var(--duration-moderate-01), color var(--duration-moderate-01)
+      transition: box-shadow var(--duration-moderate-01), color var(--duration-moderate-01)
+    }
+
+    /* ZIP mode choices: the same look as the Adicionar buttons */
+    .btn-send.btn-zip-cta {
+      background: var(--color-card) !important;
+      border: none !important;
+      box-shadow: var(--shadow-button);
+      color: var(--color-muted-foreground) !important;
+      transition: color var(--duration-moderate-01), box-shadow var(--duration-moderate-01), transform var(--duration-fast-02)
+    }
+
+    html.dark .btn-capture,
+    html.dark .btn-send.btn-zip-cta {
+      background: var(--color-hover-overlay-dark) !important;
+      box-shadow: none
     }
 
     .btn-capture:hover:not(:disabled) {
-      border-color: var(--color-primary) !important;
+      box-shadow: var(--shadow-input-focus);
       color: var(--color-foreground) !important;
       opacity: 1
-    }
-
-    /* ═══ ZIP CTA BUTTONS (V20 — Persistent accent border) ═══ */
-    .btn-send.btn-zip-cta {
-      background: transparent !important;
-      border: 1px solid var(--color-primary) !important;
-      color: var(--color-muted-foreground) !important;
-      text-transform: uppercase;
-      transition: color var(--duration-moderate-01), background var(--duration-moderate-01), transform var(--duration-fast-02)
     }
 
     .btn-send.btn-zip-cta:hover:not(:disabled) {
       color: var(--color-foreground) !important;
-      background: color-mix(in srgb, var(--color-primary) 6%, transparent) !important;
+      box-shadow: var(--shadow-input-focus);
       opacity: 1
+    }
+
+    html.dark .btn-capture:hover:not(:disabled),
+    html.dark .btn-send.btn-zip-cta:hover:not(:disabled) {
+      box-shadow: var(--shadow-input-focus)
     }
 
     /* ═══ SWATCH ═══ */
@@ -5739,7 +5755,7 @@
 
       /* ═══ ZIP ENGINE ═══ */
       function resetZipMode() { zipModeActive = false; const bPdf = $('btn-pdf'), bZip = $('btn-zip'); bPdf.classList.remove('btn-outline'); bPdf.classList.remove('btn-zip-cta'); bZip.classList.remove('btn-outline'); bZip.classList.remove('btn-zip-cta'); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> ZIP'; initPdfModal(); bZip.onclick = handleZipClick; updateBtns(); updateBtnTitles() }
-      function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* V20: Use btn-zip-cta for persistent accent border on Export CTAs */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.title = "Exportar imagens num único PDF dentro do ZIP"; bZip.title = "Exportar imagens em arquivos separados dentro do ZIP"; bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> IMAGENS EM PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> IMAGENS SEPARADAS'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
+      function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* V20: Use btn-zip-cta for persistent accent border on Export CTAs */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.title = "Exportar imagens num único PDF dentro do ZIP"; bZip.title = "Exportar imagens em arquivos separados dentro do ZIP"; bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens Separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
       document.addEventListener('click', (e) => { if (zipModeActive && !e.target.closest('#export-section')) resetZipMode() });
       async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Chave em minusculas: imagens e documentos sao deduplicados a montante em
    namespaces separados, mas partilham UM namespace aqui. Windows e macOS sao

@@ -57,7 +57,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-control-foreground` | `#e0e0e0` | — | Texto e ícones desses botões |
 | `--color-viewer-active-foreground` | `#121212` | — | Texto do negrito e do itálico ativos |
 | `--color-annotation-selection` | `rgb(232 107 46 / 32%)` | — | Seleção do texto no editor de texto da anotação |
-| `--color-hover-overlay-dark` | `rgb(255 255 255 / 6%)` | — | Fundo de hover dos botões de ação, no tema escuro |
+| `--color-hover-overlay-dark` | `rgb(255 255 255 / 6%)` | — | No tema escuro: fundo de hover dos botões de ação e fundo dos botões secundários sem contorno, onde a sombra não aparece |
 | `--color-hover-overlay` | `rgb(0 0 0 / 5%)` | — | Fundo de hover dos botões de ação, no tema claro |
 | `--color-spinner-track` | `rgb(255 255 255 / 30%)` | — | Trilho do spinner |
 | `--color-thumb-overlay` | `rgb(0 0 0 / 40%)` | — | Véu sobre a miniatura no hover |
@@ -175,6 +175,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | Token | Valor | Uso |
 |---|---|---|
 | `--shadow-card` | `0 2px 8px rgb(0 0 0 / 2%)` | Painéis e barras |
+| `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno (Adicionar Imagem e Documento, as duas escolhas do modo ZIP), no tema claro |
 | `--shadow-control` | `0 2px 4px rgb(0 0 0 / 20%)` | Botões pequenos sobre a miniatura e o interruptor |
 | `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
 | `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
