@@ -4,6 +4,31 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **Teste do Export User sem erro tolerado no artefato User (F-0045).** O `AGENTS.md` mandava tolerar o par CORS e «Quine fallback» também no Export User. Medido no Edge: o Export User abre sem erro nenhum, porque não tem o bloco `ADMIN_JS`. Agora esse par reprova o teste, porque indica que o bloco não saiu.
+- **`design-tokens.md` com o visual da 28.4.0 (F-0042).** As §3, §8 e §11 ainda descreviam botões com borda, chips com borda e títulos de 11 px. Medido no Edge: títulos de 12 px, botões sem borda e chip escolhido preenchido. A §10 ganha o corte de 800 px da zona vazia.
+- **Exemplo da regex do Quine (F-0043).** O exemplo usava o padrão que corrompe a segunda exportação com apóstrofos (D40). Passa ao padrão do `exportFile`, testado com apóstrofo, barra invertida e os dois juntos.
+- **Firefox (F-0044).** O `AGENTS.md` dizia que o Firefox não fora testado; o README registra o teste manual no Firefox 151.0.4. O `AGENTS.md` passa a apontar para a matriz do README.
+- **Mapa de complexidade (F-0046).** A tabela do `AGENTS.md` §10 era da 28.0.0 e já não batia com o `validate.sh`. Sai a cópia; o mapa é a saída `[WARN]` do script.
+- **Script de recuperação (F-0047).** O script do `AGENTS.md` §14 punha `.png` em todo arquivo, e um documento saía como `relatorio.pdf.png`. Agora cada arquivo sai com a sua extensão. Testado em Node com PNG, JPEG, GIF, WEBP e documentos.
+- **Referências internas (F-0048).** Duas referências do `AGENTS.md` apontavam para seções erradas.
+
+### Modificado
+
+- **Escrita da documentação (F-0049, F-0050, F-0051, F-0052, F-0054 a F-0059, F-0061, F-0062).** Frases com até 30 palavras, formas da tabela de palavras, anglicismos em português neutro, «Removidos» em vez de «lixeira» e «Motivo» como rótulo. Saem as versões antigas do README e os emoji dos avisos. As células longas viram notas abaixo das tabelas. Os títulos ficam só com a primeira maiúscula. O README ganha o botão «Atualizar» e o tamanho do arquivo medido.
+- **Decisões D-0089 e D-0090.** A dica menor das zonas vazias até 800 px fica registrada como escolha, e as frases longas das entradas publicadas do changelog ficam.
+
+### Cobertura da auditoria de 2026-11-01
+
+- Lidos inteiros o README, o `AGENTS.md` e o `design-tokens.md`; o changelog nas versões 28.x e o resto por busca.
+- Testados no Edge, por `file://`: captura, PDF, ZIP, anotação, modo administrador, os dois exports e as telas de 1536 × 777 e 1280 × 633.
+- **F-0041 rebaixado.** A auditoria apontou o modo compacto a 1280 × 633 como desnecessário, medindo só o excesso da barra inteira. Medido de novo dentro de cada seção, com o modo ZIP aberto: o tamanho normal aperta as seções em 4 a 5 px a 620–640 px de altura. O compacto é necessário ali. Sobra uma faixa de 680 a 700 px em que ele liga sem precisar, que fica como está.
+- Em «Pendentes»: F-0052 (linha das ferramentas do README), F-0053 (textos da interface), F-0055 (comentários do código) e F-0060 (estilos dos avisos no JavaScript).
+- Não cobertos: o tema escuro nas telas de notebook, o mobile por toque, o Firefox e o Safari.
+
 ## [28.6.0] - 2026-11-01
 
 Minor: com anotações por salvar, o resto da barra do editor apaga por 5 s, e só o Cancelar e o Confirmar respondem.
