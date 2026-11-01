@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.2.0] - 2026-11-01
+
+Minor: o zoom acelera com cliques seguidos, como no Android e no iOS, e cliques rápidos no + e no − já não fazem o zoom sumir.
 
 ### Modificado
 
