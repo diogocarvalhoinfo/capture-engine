@@ -118,14 +118,14 @@ Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém
 
 ### Modificado
 
-- **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de separador e depois do Alt; some no clique seguinte.
+- **O verde do PDF e do ZIP fica até a próxima ação.** Antes, o «Concluído» sumia em 2,5 s, e quem voltava de outra janela já não sabia se tinha exportado. Agora fica até um clique, uma tecla, colar ou arrastar na página. Medido no Edge 156: continua verde ao fim de 6 s, depois de trocar de aba e depois do Alt; some no clique seguinte.
 - **Zoom de 1 % por passo.** A roda do mouse andava 20 % por clique, e os botões + e − 50 %. Agora os dois andam 1 %, e segurar o botão repete o passo, 25 vezes por segundo. O duplo clique continua a levar a 200 %. Medido no Edge 156: 3 cliques na roda dão 103 %, e segurar o + durante 1,4 s soma 25 %.
 - **Alças com o mesmo tamanho na tela.** As marcas do recorte e as alças das anotações tinham o tamanho em pixels da imagem: numa foto de 3000 px, a marca do recorte ficava com 3,9 px na tela, e a área de clique com 5,3 px de raio. Agora têm sempre 20 px (recorte) e 12 px (anotações), com uma área de clique de 44 × 44 px, e o cursor muda sobre as alças do recorte. O recorte ganha também uma alça no meio de cada lado, que muda só esse lado. As marcas, que eram só brancas e desapareciam numa imagem branca, ganham um contorno escuro, e a linha tracejada alterna traços pretos e brancos. Medido no Edge 156, numa imagem de 3000 px e noutra de 400 px.
 - **Tooltips do editor na hora.** Os botões do editor usavam o `title` do navegador, que esperava cerca de um segundo e sumia sozinho. Agora o nome aparece logo por cima do botão e fica enquanto o mouse ou o foco do teclado estiverem nele. Cada botão só com ícone ganha um `aria-label` com o mesmo texto. Medido no Edge 156: visível aos 50 ms e ainda aos 6 s; some ao sair do botão e ao fechar o editor.
 
 ### Corrigido
 
-- **PDF disponível logo depois do ZIP.** Com o verde do ZIP à espera da próxima ação, o botão PDF ficava desativado até lá. Volta a ficar disponível no fim do ZIP; só o verde espera. Apanhado pelo teste de regressão antes da versão.
+- **PDF disponível logo depois do ZIP.** Com o verde do ZIP à espera da próxima ação, o botão PDF ficava desativado até lá. Volta a ficar disponível no fim do ZIP; só o verde espera. Detectado pelo teste de regressão antes da versão.
 - **Imagem que o navegador não abre vai para «Documentos».** Uma foto HEIC entrava em «Imagens», ficava quebrada, e o PDF dava erro. Agora todo arquivo passa por um teste: se o navegador não desenha a imagem, ela vai para «Documentos», sem alterações, e um aviso diz porquê. Uma sessão antiga com uma imagem assim passa-a para «Documentos» antes do PDF ou do ZIP. Medido no Edge 156: o HEIC novo e o de uma sessão da 28.0.1 vão para «Documentos», com a extensão `.heic`, sem erros.
 
 ## [28.0.1] - 2026-10-31
