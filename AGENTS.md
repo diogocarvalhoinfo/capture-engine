@@ -100,7 +100,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 <link rel="stylesheet" href="https://fonts.googleapis.com/...">
 ```
 
-**Por quê:** O Capture Engine destina-se a ambientes totalmente isolados (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega.
+**Motivo:** O Capture Engine destina-se a ambientes totalmente isolados (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega.
 
 **Regra:** Toda a lógica, todo o CSS, todos os ícones SVG, devem estar inline dentro do `capture-engine.html`. Sem exceções.
 
@@ -123,7 +123,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 
 **O que nunca alterar:**
 
-| O quê | Onde | Porquê |
+| O quê | Onde | Motivo |
 |---|---|---|
 | `window.exportFile()` | `ADMIN_JS_START/END` | Ponto de entrada do Export |
 | `capturePristine()` | `ADMIN_JS_START/END` | Lê o código-fonte original |
@@ -257,7 +257,7 @@ Cada zona tem a sua regra.
 
 **Tema escuro pela classe `dark` no `<html>`, nunca por media query no CSS**
 
-Porquê: O usuário pode ter o sistema em dark mode mas querer a app em light mode. A classe `dark` do `<html>` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
+Motivo: O usuário pode ter o sistema em dark mode mas querer a app em light mode. A classe `dark` do `<html>` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
 
 ```css
 /* CORRETO — controlável pelo usuário */
@@ -297,7 +297,7 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 
 **A lógica dos cantos:**
 
-| Tipo de elemento | `border-radius` | Porquê |
+| Tipo de elemento | `border-radius` | Motivo |
 |---|---|---|
 | Botões, cards de texto, modais | `--radius-md` a `--radius-xl` | Orgânicos, amigáveis |
 | Imagens e legendas `.t-item`, `.t-label` | `0` (quadrado perfeito) | Técnico, preciso — card e legenda com cantos retos |
@@ -318,7 +318,7 @@ Os `.d-item` têm `border: 1px solid transparent`. A borda existe no DOM (evita 
   // Todo o código aqui dentro
 })();
 ```
-Porquê: Isola completamente todas as variáveis do escopo global da página. Previne colisões com APIs do navegador ou scripts injetados.
+Motivo: Isola completamente todas as variáveis do escopo global da página. Previne colisões com APIs do navegador ou scripts injetados.
 
 **Selector padrão:**
 ```js
@@ -334,7 +334,7 @@ console.log('imagem capturada');
 // CORRETO
 SysLogger.info('Imagem capturada: ' + label);
 ```
-Porquê: `SysLogger` respeita `TOKEN_DEBUG_MODE`. Em exports de User, os logs desaparecem automaticamente.
+Motivo: `SysLogger` respeita `TOKEN_DEBUG_MODE`. Em exports de User, os logs desaparecem automaticamente.
 
 **API do `SysLogger`:**
 
@@ -386,7 +386,7 @@ imagem-1 → imagem-2 → imagem-3   ✅
 imagem-1 → imagem-1-1            ❌
 ```
 
-**Verificação cross-list obrigatória:** A unicidade verifica-se contra *ambas* as listas simultaneamente — itens ativos **e** itens na lixeira. Um item restaurado da lixeira nunca colide com um ativo.
+**Verificação cross-list obrigatória:** A unicidade verifica-se contra *ambas* as listas simultaneamente — itens ativos **e** itens nos «Removidos». Um item restaurado dos «Removidos» nunca colide com um ativo.
 
 **Extensão de arquivo:** Ao renomear um documento, a extensão original é sempre preservada. Se o usuário escrever `relatorio` (sem extensão) num documento `.pdf`, o nome final é `relatorio.pdf`.
 
@@ -439,7 +439,7 @@ init() → interface em branco (Pristine State)
 | **Apagar sessão ATIVA sem vizinha** | Reset completo: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos zerados. **Não criar nova sessão.** |
 | **`createSession()` diretamente** | Apenas em `ensureSession()`. Nunca chamar em `deleteSessionId()` ou handlers de evento. |
 
-> **Porquê nunca criar sessão em `deleteSessionId`?** Porque o usuário que apaga a última sessão decide ter uma interface vazia. Criar uma sessão automática seria ignorar a intenção do usuário — e causaria um loop onde apagar sempre gerava uma sessão nova no histórico.
+> **Por que nunca criar sessão em `deleteSessionId`?** Porque o usuário que apaga a última sessão decide ter uma interface vazia. Criar uma sessão automática seria ignorar a intenção do usuário — e causaria um loop onde apagar sempre gerava uma sessão nova no histórico.
 
 ### isDirty — O flag de alterações pendentes
 
@@ -617,9 +617,9 @@ Mesmos campos das tabelas ativas, com adição de:
 
 | Campo | Tipo | Descrição |
 |---|---|---|
-| `removedAt` | number | Timestamp Unix (ms) de quando foi movido para a lixeira |
+| `removedAt` | number | Timestamp Unix (ms) de quando foi movido para os «Removidos» |
 
-**Nota:** a lixeira **ordena por `removedAt`**, não por `order`. O campo `order` continua presente nos registros movidos para a lixeira — `delImg`/`delDoc` fazem `splice` do array e acrescentam `removedAt`, sem apagar o `order` anterior. Até a V26 esta nota dizia que os itens «não têm» o campo; têm, apenas não é usado para os ordenar. O valor antigo é ignorado na restauração, que atribui uma ordem nova.
+**Nota:** a barra «Removidos» **ordena por `removedAt`**, não por `order`. O campo `order` continua presente nos registros movidos para os «Removidos» — `delImg`/`delDoc` fazem `splice` do array e acrescentam `removedAt`, sem apagar o `order` anterior. Até a V26 esta nota dizia que os itens «não têm» o campo; têm, apenas não é usado para os ordenar. O valor antigo é ignorado na restauração, que atribui uma ordem nova.
 
 ### Chaves de LocalStorage
 
@@ -636,7 +636,7 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 > **Correção histórica:** até a V26 esta seção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia o README. O banner existe desde a correção D9 (commit `a5656f5`).
 
-**Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a cota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
+**Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a quota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
 
 > **Risco de redistribuição:** Se redistribuir com um valor de `TOKEN_AUTO_PURGE_HOURS` menor do que o anterior (ex: de 48h para 24h), sessões que antes sobreviveriam são purgadas na próxima abertura. O comportamento é correto (o código usa sempre o valor atual do token), mas pode surpreender usuários com sessões em curso. Comunicar a mudança antes de redistribuir.
 
@@ -696,8 +696,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 |---|---|---|
 | `renderThumb(o)` | `(object) → void` | Cria e insere card de imagem na grade |
 | `renderDoc(o)` | `(object) → void` | Cria e insere card de documento na lista |
-| `renderTrash()` | `() → void` | Re-renderiza a barra de lixeira com itens atuais |
-| `updateCounters()` | `() → void` | Atualiza badges de contagem (imagens, documentos, lixeira) |
+| `renderTrash()` | `() → void` | Re-renderiza a barra «Removidos» com os itens atuais |
+| `updateCounters()` | `() → void` | Atualiza badges de contagem (imagens, documentos, «Removidos») |
 | `scheduleUIUpdate()` | `() → void` | Debounce de 50ms que consolida `renderTrash()`, `updateCounters()`, `updateBtns()` e `triggerSave()` numa única execução. Chamada por `delImg`/`delDoc` em vez de chamar cada função diretamente — evita N rebuilds do DOM em deleções múltiplas rápidas. |
 | `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
 | `updateBtnTitles()` | `() → void` | Atualiza os atributos `title` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex: `Exportar: captura-2026-05-31.pdf`). Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
@@ -712,7 +712,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `openImgModal(id, trash)` | Abre o modal para a imagem `id`; inicializa título, zoom, botões de ação e setas de navegação (visíveis se array ≥ 2) | Chamada pelas miniaturas e pela lixeira |
+| `openImgModal(id, trash)` | Abre o modal para a imagem `id`; inicializa título, zoom, botões de ação e setas de navegação (visíveis se array ≥ 2) | Chamada pelas miniaturas e pela barra «Removidos» |
 | `closeImgModal()` | Fecha o modal; bloqueia se há anotações por salvar | |
 | `imgModalNav(dir)` | Navega ±1 na lista dentro do modal aberto; bloqueia se há anotações por salvar | `dir = -1` (anterior) ou `+1` (seguinte). Chamada pelas setas ← → e pelas teclas ArrowLeft / ArrowRight |
 
@@ -974,8 +974,8 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `sessObj` | object \| null | Objeto completo da sessão ativa |
 | `images` | array | Imagens ativas da sessão (espelho em memória do IndexedDB). **Nota:** ao carregar sessão, items sem Blob válido são filtrados automaticamente (`blob instanceof Blob && blob.size > 0`) para proteger ambientes Safari/WebView onde blobs podem deserializar como `{}`. |
 | `docs` | array | Documentos ativos da sessão |
-| `removed` | array | Imagens na lixeira |
-| `removedDocs` | array | Documentos na lixeira |
+| `removed` | array | Imagens nos «Removidos» |
+| `removedDocs` | array | Documentos nos «Removidos» |
 | `isDirty` | boolean | `true` = há alterações não guardadas |
 | `sbExp` | boolean | `true` = sidebar de histórico está expandida |
 | `_db` | IDBDatabase | Handle da base de dados IndexedDB |
@@ -1004,7 +1004,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `lastSaveAt` | number | Timestamp do último save automático para a status bar |
 | `pdfFmt` | string | Modo de layout da página PDF ('vertical', 'horizontal', 'auto') |
 | `zipModeActive` | boolean | Define se o modo ZIP está ativado |
-| `modalIsTrash` | boolean | Indica se o modal de visualização provém da lixeira |
+| `modalIsTrash` | boolean | Indica se o modal de visualização provém dos «Removidos» |
 | `modalItemId` | string | ID da imagem visualizada no modal |
 | `imgZoomed` | boolean | Flag de imagem ampliada no modal |
 | `imgScale` | number | Fator de zoom atual da imagem |
@@ -1015,7 +1015,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `annPrevTool` | string | Ferramenta para onde o ← do modo texto volta |
 | `annRotCenter` / `annRotStart` / `annRotStartAng` | object / number / number | Centro do texto, ângulo dele e ângulo do mouse no início do arrasto da alça de girar |
 | `annTextPlace` | function \| null | Coloca de novo o campo de texto sobre o seu ponto da imagem, depois de um zoom ou de um pan |
-| `trashUrls` | array | Lista de ObjectURLs das imagens na lixeira |
+| `trashUrls` | array | Lista de ObjectURLs das imagens nos «Removidos» |
 | `annDrawing` | boolean | Estado de desenho em progresso na anotação |
 | `annStart` | object | Coordenadas de início do traço de anotação |
 | `annPath` | array | Lista de pontos desenhados na ferramenta 'free' |
@@ -1025,7 +1025,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `_textOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de documento — idem para o text modal |
 | `_expOverlayMdOnBackdrop` | boolean | Flag de gesture do modal de Export |
 | `textModalItemId` | string \| null | ID do documento atualmente aberto no text modal; `null` = modal fechado |
-| `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém da lixeira |
+| `textModalIsTrash` | boolean | `true` se o documento aberto no text modal provém dos «Removidos» |
 | `ANN_AWAIT_MS` | number (const) | `5000` — quanto tempo os outros botões da barra ficam apagados depois do aviso de anotações por salvar |
 | `annAwaitTimer` | TimeoutID \| null | Temporizador do estado `ann-await`; `null` quando inativo |
 | `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na barra de anotação (px) |
@@ -1260,7 +1260,7 @@ A validação tem **duas partes**:
 
 **Unicidade:**
 - [ ] Sem nomes duplicados possíveis em capturas de tela ou documentos
-- [ ] A deduplicação verifica contra listas ativas **e** lixeira (verificar: `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc`, `setLabel`, `setDocName`)
+- [ ] A deduplicação verifica contra listas ativas **e** «Removidos» (verificar: `captureImg`, `captureDoc`, `restoreImg`, `restoreDoc`, `setLabel`, `setDocName`)
 - [ ] Comparação de nomes é case-insensitive
 
 **Internacionalização:**
@@ -1403,7 +1403,7 @@ Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um
 
 Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e **não devem ser revertidas sem aprovação**:
 
-| # | Decisão | Justificação |
+| # | Decisão | Motivo |
 |---|---|---|
 | D1 | **Botão PDF desativado quando há imagens + documentos** | PDF é exclusivo de imagens. Quando há docs na sessão, o usuário deve usar o ZIP. |
 | D2 | **Modal do Visual Builder não fecha ao clicar fora** | O VB é de uso exclusivo Admin e requer fechamento explícito pelo botão ✕ para evitar perda de configurações acidentais. |
@@ -1411,7 +1411,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
 | D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceito. O setInterval de 5s garante persistência antes de fechar o navegador em uso normal. |
 | D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + amostras de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
-| D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A lixeira cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
+| D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A barra «Removidos» cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
 | D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fechamento (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
 | D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
 | D-0078 | **Versões em SemVer a partir de 28.0.0** | O critério de major, minor e patch está na §12. As tags `v1` a `v27` e as entradas `[V7]` a `[V27]` ficam. Origem: auditoria de 2026-10-31, decisão 1. |
@@ -1444,7 +1444,7 @@ Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não v
 | Formato | O que é | Onde aparece |
 |---|---|---|
 | `D1`–`D8` | Decisões do proprietário | Esta seção |
-| `D9`–`D76` | Entradas do changelog: correções, triagens e registros. O `D9` é o commit `a5656f5` (guarda de blob na lixeira e aviso de IndexedDB indisponível) | `CHANGELOG.md` e títulos de commit |
+| `D9`–`D76` | Entradas do changelog: correções, triagens e registros. O `D9` é o commit `a5656f5` (guarda de blob nos «Removidos» e aviso de IndexedDB indisponível) | `CHANGELOG.md` e títulos de commit |
 | `M1`–`M6`, `M-1`, `B8`, `B-1`–`B-3` | Achados das auditorias externas da V26 | `CHANGELOG.md`, entrada `[V26]` |
 | `G1`–`G3` | Gerações sucessivas do Export Admin num teste do Export User | `CHANGELOG.md`, entrada `[V26]` |
 | `V7`–`V27` | Versões anteriores ao SemVer | `CHANGELOG.md` e tags `v1` a `v27` |
