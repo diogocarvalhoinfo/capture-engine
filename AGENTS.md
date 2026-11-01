@@ -1381,7 +1381,7 @@ Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um
 
 **Fechar uma versão:**
 1. Troque `## [Unreleased]` por `## [X.Y.Z] - AAAA-MM-DD`.
-2. Mude a linha «Versão» do README e as 3 referências do HTML.
+2. Mude a linha «Versão» do README e as 3 referências do HTML. A imagem `docs/images/admin-mode.png` mostra o número da versão no Visual Builder: gere-a de novo com o `gerar.py` do repositório dos prompts, e confira as duas com `--verificar`.
 3. Rode `bash validate.sh`, que deve dar 0 FAIL.
 4. Antes do commit, quem mantém o projeto faz o «Teste do Export User» da §11, Parte B, com o arquivo já com a versão nova.
 5. Faça um commit só com estas mudanças e a linha do teste do Export User no changelog: `docs(changelog): versão X.Y.Z`. Um commit só para o teste não é preciso.
