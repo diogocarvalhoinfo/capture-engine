@@ -7,22 +7,22 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 ## Índice
 
 - [Seção 0 — Modelo mental](#0-modelo-mental)
-- [Seção 1 — Regras Absolutas](#1-regras-absolutas)
-- [Seção 2 — Convenções de Código](#2-convenções-de-código)
-- [Seção 3 — Unicidade de Nomes](#3-unicidade-de-nomes--prevenção-de-colisões-no-zip)
-- [Seção 4 — Ciclo de Vida da Sessão](#4-ciclo-de-vida-da-sessão)
-- [Seção 5 — Comment Markers do Quine](#5-comment-markers--blocos-de-código-removíveis)
-- [Seção 6 — IndexedDB — Schema Completo](#6-indexeddb--schema-completo)
-- [Seção 7 — Funções Críticas — Referência Rápida](#7-funções-críticas--referência-rápida)
-- [Seção 8 — Fluxos de Comportamento](#8-fluxos-de-comportamento)
-- [Seção 9 — Variáveis de Estado Global](#9-variáveis-de-estado-global)
+- [Seção 1 — Regras absolutas](#1-regras-absolutas)
+- [Seção 2 — Convenções de código](#2-convenções-de-código)
+- [Seção 3 — Unicidade de nomes](#3-unicidade-de-nomes--prevenção-de-colisões-no-zip)
+- [Seção 4 — Ciclo de vida da sessão](#4-ciclo-de-vida-da-sessão)
+- [Seção 5 — Comment markers do Quine](#5-comment-markers--blocos-de-código-removíveis)
+- [Seção 6 — IndexedDB: schema completo](#6-indexeddb--schema-completo)
+- [Seção 7 — Funções críticas: referência rápida](#7-funções-críticas--referência-rápida)
+- [Seção 8 — Fluxos de comportamento](#8-fluxos-de-comportamento)
+- [Seção 9 — Variáveis de estado global](#9-variáveis-de-estado-global)
 - [Seção 10 — Fluxo de trabalho de desenvolvimento](#10-fluxo-de-trabalho-de-desenvolvimento-para-agentes)
-- [Seção 11 — Checklist de Validação](#11-checklist-de-validação--antes-de-declarar-completo)
+- [Seção 11 — Checklist de validação](#11-checklist-de-validação--antes-de-declarar-completo)
 - [Seção 12 — Versões e changelog](#12-versões-e-changelog)
 - [Seção 13 — Decisões, pendentes e IDs](#13-decisões-pendentes-e-ids)
-- [Seção 14 — Disaster Recovery Técnico](#14-disaster-recovery-técnico)
+- [Seção 14 — Disaster recovery técnico](#14-disaster-recovery-técnico)
 
-## Índice de Leitura por Perfil
+## Índice de leitura por perfil
 
 Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabela:
 
@@ -36,9 +36,7 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 | **Modificar o Quine / Export** | §0, §1, §1.2, §5, §7 (funções Quine), §11 |
 | **Modificar tokens ou Visual Builder** | §1.2, §6, §7 (funções Quine), §13 |
 | **Fechar uma versão** | §12 |
-| **Disaster recovery / recuperação de dados** | §14 |
-
----
+| **Recuperação de dados** | §14 |
 
 ## Como editar este arquivo com segurança
 
@@ -89,9 +87,9 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 
 ---
 
-## 1. Regras Absolutas
+## 1. Regras absolutas
 
-### 1.1 Zero-Dependency — Sem dependências externas
+### 1.1 Zero dependências externas
 
 **O que não fazer:**
 ```html
@@ -106,7 +104,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 
 ---
 
-### 1.2 Single-File Quine — O arquivo que se auto-reproduz
+### 1.2 Quine de arquivo único: o arquivo que se copia
 
 **Como funciona o Quine:**
 1. `capturePristine()` faz `fetch(location.href)` para ler o próprio arquivo
@@ -155,7 +153,7 @@ const TOKEN_MAIN_COLOR = '#e86b2e';
 
 ---
 
-### 1.3 XSS Prevention — Sanitização de campos
+### 1.3 Prevenção de XSS: sanitização de campos
 
 **O problema:** O navegador interpreta HTML dentro de strings. Se um usuário escrever `<img src=x onerror=alert(1)>` como legenda e esse texto for inserido via `innerHTML`, o JavaScript executa.
 
@@ -218,7 +216,7 @@ O `README.md` §Segurança documenta o mesmo para o público externo, incluindo 
 
 ---
 
-## 2. Convenções de Código
+## 2. Convenções de código
 
 ### 2.1 Idioma em três zonas
 
@@ -243,7 +241,7 @@ Cada zona tem a sua regra.
 - **«Histórico»**, e não «Sessões». **Motivo:** é mais claro para quem não é técnico.
 - No Visual Builder, os dois campos da identificação chamam-se «Primeiro campo» e «Segundo campo». **Motivo:** o nome segue a ordem da barra lateral e vale para qualquer rótulo; o exemplo por baixo diz para que serve. Foram descartados «Campo 1», «Identificação 1», «Título» e «Identificação primária». Os números liam-se mal, «Título» sugere um título, e «primária» uma hierarquia que não existe.
 
-### 2.2 CSS — Unidades e Modo Escuro
+### 2.2 CSS: unidades e tema escuro
 
 **Tamanhos de fonte, espaços e cortes do layout em `rem` (D-0082)**
 
@@ -273,7 +271,7 @@ html.dark { --color-background: #121212; }
 
 ---
 
-### 2.3 Tamanhos e Proporções Calibrados
+### 2.3 Tamanhos e proporções calibrados
 
 Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmonia visual.
 
@@ -293,7 +291,7 @@ Estes valores foram calibrados para simetria visual. Alterá-los quebra a harmon
 
 ---
 
-### 2.4 Estética Geométrica — Bordas e Cantos
+### 2.4 Estética geométrica: bordas e cantos
 
 **A lógica dos cantos:**
 
@@ -309,7 +307,7 @@ Os `.d-item` têm `border: 1px solid transparent`. A borda existe no DOM (evita 
 
 ---
 
-### 2.5 JavaScript — Estrutura do Código
+### 2.5 JavaScript: estrutura do código
 
 **IIFE obrigatório:**
 ```js
@@ -355,11 +353,11 @@ O IIFE isola o escopo — funções chamadas por atributos HTML inline (`onclick
 
 ---
 
-## 3. Unicidade de Nomes — Prevenção de Colisões no ZIP
+## 3. Unicidade de nomes — prevenção de colisões no ZIP
 
 **O problema:** Nomes duplicados num ZIP causam comportamento imprevisível no Windows Explorer, macOS Archive Utility, e outros descompressores.
 
-### Mecanismo de Identificadores (genId)
+### Mecanismo de identificadores (genId)
 Para evitar colisões na base de dados, a função `genId(prefix)` é utilizada na criação de novos itens. Ela gera uma string única com **3 partes** separadas por `_`:
 
 ```
@@ -392,13 +390,13 @@ imagem-1 → imagem-1-1            ❌
 
 **Comparação case-insensitive:** Toda a deduplicação usa `.toLowerCase()` para evitar colisões entre `Imagem-1.png` e `imagem-1.png` no Windows (que é case-insensitive).
 
-### 3.1 Nomes de Sessões sem Título
+### 3.1 Nomes de sessões sem título
 
 Sessões sem nome digitado recebem um identificador cronológico com zeros à esquerda: `#0001`, `#0002`, etc. O número é a **posição da sessão entre as que existem no momento**, ordenadas por `createdAt` (`sortedOldest.findIndex(...) + 1`) — não há contador persistido. Consequência: apagar ou purgar uma sessão mais antiga **renumera** as seguintes, por isso o identificador não é estável ao longo do tempo. Não usar como referência externa. (Até a V26 este parágrafo dizia «ordem de criação absoluta», o que sugeria estabilidade que o código não dá.)
 
 ---
 
-## 4. Ciclo de Vida da Sessão
+## 4. Ciclo de vida da sessão
 
 Este é o comportamento mais complexo do motor. Qualquer agente que edite código relacionado com sessões deve compreender este fluxo completamente.
 
@@ -441,7 +439,7 @@ init() → interface em branco (Pristine State)
 
 > **Por que nunca criar sessão em `deleteSessionId`?** Porque o usuário que apaga a última sessão decide ter uma interface vazia. Criar uma sessão automática seria ignorar a intenção do usuário — e causaria um loop onde apagar sempre gerava uma sessão nova no histórico.
 
-### isDirty — O flag de alterações pendentes
+### isDirty: o flag de alterações pendentes
 
 `isDirty` é um boolean que indica se há dados não salvos. É `true` sempre que algo muda (captura de imagem, edição de legenda, reordenação). O auto-save de 5 segundos só roda quando `isDirty === true`. Após salvar, `isDirty` volta a `false`.
 
@@ -449,7 +447,7 @@ Digitação em campos de texto chama `triggerSave()` imediatamente (sem esperar 
 
 ---
 
-## 5. Comment Markers — Blocos de Código Removíveis
+## 5. Comment markers — blocos de código removíveis
 
 Os markers são comentários especiais que o Quine Engine usa para identificar e remover blocos inteiros no export de User.
 
@@ -496,7 +494,7 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 
 ---
 
-## 6. IndexedDB — Schema Completo
+## 6. IndexedDB — schema completo
 
 **Nome da base de dados:** `CaptureEngineDB`
 
@@ -621,14 +619,14 @@ Mesmos campos das tabelas ativas, com adição de:
 
 **Nota:** a barra «Removidos» **ordena por `removedAt`**, não por `order`. O campo `order` continua presente nos registros movidos para os «Removidos» — `delImg`/`delDoc` fazem `splice` do array e acrescentam `removedAt`, sem apagar o `order` anterior. Até a V26 esta nota dizia que os itens «não têm» o campo; têm, apenas não é usado para os ordenar. O valor antigo é ignorado na restauração, que atribui uma ordem nova.
 
-### Chaves de LocalStorage
+### Chaves do localStorage
 
 O sistema utiliza localStorage para preferências que devem sobreviver a diferentes abas ou arquivos na mesma origem:
 - `theme`: Controla o modo visual. Valores possíveis: `'dark'`, `'light'` ou `null` (neste caso cai para a preferência do OS).
 - *Histórico:* A chave `ec_pending_session` foi utilizada em versões antigas e removida na V17.
 Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB apaga os dados reais das sessões.
 
-### Auto-save e Purge
+### Auto-save e purge
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o navegador for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
@@ -644,11 +642,11 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 ---
 
-## 7. Funções Críticas — Referência Rápida
+## 7. Funções críticas — referência rápida
 
 Esta seção documenta as funções mais importantes. Consultar antes de editar qualquer uma delas.
 
-### Funções de Sessão
+### Funções de sessão
 
 | Função | Assinatura | O que faz | Quando chamar |
 |---|---|---|---|
@@ -677,7 +675,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `idbDelBatch(store, ids)` | `(string, string[]) → Promise` | Apaga múltiplos registros da store `store` em **uma única transação** `readwrite`. Mais eficiente que N chamadas a `idbDel` em loop. Usa `tx.oncomplete` em vez de `r.onsuccess`. |
 | `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registros onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
 
-### Funções de Captura
+### Funções de captura
 
 | Função | Assinatura | O que faz |
 |---|---|---|
@@ -690,7 +688,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `captureImg(blob)` | `async (Blob) → void` | Captura imagem: gera rótulo único, salva em IndexedDB, renderiza thumb |
 | `captureDoc(blob, name, type)` | `async (Blob, string, string) → void` | Captura documento: gera nome único, salva em IndexedDB, renderiza card |
 
-### Funções de Renderização
+### Funções de renderização
 
 | Função | Assinatura | O que faz |
 |---|---|---|
@@ -708,7 +706,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 > **Nota (round-trip de purge/max-dim):** `applyTokens` marca o radio do Visual Builder cujo `value` corresponde ao token. Se o token tiver um valor sem radio correspondente (ex: `TOKEN_AUTO_PURGE_HOURS=8760`), nenhum radio é marcado e o default (`48` para purge, `0` para max-dim) permanece — o reexport usa esse default, não o valor do token. Por design, os valores suportados são os dos radios. Não recomendar valores fora dos radios na documentação de usuário.
 
-### Funções do Modal de Imagem
+### Funções do modal de imagem
 
 | Função | O que faz | Notas |
 |---|---|---|
@@ -726,7 +724,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 **`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`. O resultado é um nome como `CAPTURE-ENGINE-14h22m-11-jun-2026.html`, e não um nome derivado da sessão.
 
-### Funções dos Motores PDF e ZIP
+### Funções dos motores PDF e ZIP
 
 Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-dependência) — escrevem os bytes do formato à mão. Compartilham os helpers `ENC` (`TextEncoder`), `dlBlob(blob, filename)` (cria Object URL, dispara o download e revoga ao fim de 1 s) e `buildFilename(ext)`.
 
@@ -745,7 +743,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 | `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem a partir de **`img.blob`** (extensão por MIME). **Nunca lê `origBlob`.** Numa imagem anotada, rodada ou recortada, o `img.blob` é o PNG regenerado pelo `ann-save`. O original fica em `origBlob` e não se exporta por nenhuma via. É intencional, porque as edições devem acompanhar a exportação; a limitação está no `README §6.7` e em «Uso como prova» (§9). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
 | `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`.<br><br>**Codificação dos nomes (não alterar sem ler isto):** os nomes são escritos em UTF-8 por `ENC.encode()`. O **bit 11 (`0x0800`) do *general purpose bit flag*** declara-o, nos **dois** cabeçalhos (APPNOTE.TXT §4.4.4). Os dois andam sempre juntos. Com o bit a `0`, o descompressor lê os bytes como CP437/ANSI, e um nome com acentos sai ilegível (`Diagnóstico` → `Diagn+¦stico`). O `validate.sh` check #26 protege esta invariante. Ver D21. |
 
-### Motor de Reordenação (`initReorder`)
+### Motor de reordenação (`initReorder`)
 
 O arrastar e soltar da reordenação foi reescrito na V23 com Pointer Events e animações FLIP. O FLIP (*First-Last-Invert-Play*) mede a posição inicial e a final, aplica a diferença como `transform` e anima-a até zero. Documentado aqui porque é o código mais complexo da versão e não é inferível sem leitura direta do changelog.
 
@@ -799,7 +797,7 @@ ativar arrasto:
 
 ---
 
-### Funções de Anotação
+### Funções de anotação
 
 | Função | O que faz | Notas |
 |---|---|---|
@@ -816,7 +814,7 @@ ativar arrasto:
 | `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exatamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no salvamento final do traço via `annDrawShape`. **Não chamar diretamente** — usar `annDrawShape` ou `annRedraw`. |
 | `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | Inativa no fluxo de desenho desde a V23 (nunca chamada); a função órfã foi removida fisicamente do código na V25 (commit D3), por decisão do mantenedor. Se suavização de traço livre for necessária em versão futura, reimplementar em contexto com decisão documentada. |
 
-### Motor de Anotação — Seleção, Edição e Desfazer
+### Motor de anotação: seleção, edição e desfazer
 
 | Comportamento | Descrição e Invariantes |
 |---|---|
@@ -850,7 +848,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 |---|---|---|
 | `deactivateAdmin()` | Oculta os botões admin (⚙️/💾) e sai do modo administrador | Definida dentro de `initAdminGate` e exposta como `window._deactivateAdmin`. Chamada por `closeSettingsModal` e pelo gate manual. **Não pertence ao motor de anotação** — é do Admin Gate (6 cliques no logo). |
 
-### Funções de Estado de Anotação (V20)
+### Funções de estado de anotação
 
 | Função | O que faz | Notas |
 |---|---|---|
@@ -859,7 +857,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário. Liga também a classe `ann-await` na barra: os outros botões ficam com `--opacity-dimmed` e sem clique durante `ANN_AWAIT_MS` | Chamada por `closeImgModal`, `imgModalNav` e o clique no fundo, quando há anotações pendentes. Um novo aviso reinicia o tempo |
 | `clearAnnAwait()` | Tira a classe `ann-await` e cancela o temporizador | Chamada pelo temporizador, pelo `pointerdown` no canvas (continuar editando) e por `annDeactivate`, que cobre o Cancelar e o Confirmar |
 
-### Funções de Segurança
+### Funções de segurança
 
 | Função | Assinatura | O que faz |
 |---|---|---|
@@ -867,7 +865,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 
 ---
 
-## 8. Fluxos de Comportamento
+## 8. Fluxos de comportamento
 
 ### Fluxo completo de captura de imagem (Ctrl+V)
 
@@ -964,7 +962,7 @@ window.deleteSessionId(id) onde id === sessId
 
 ---
 
-## 9. Variáveis de Estado Global
+## 9. Variáveis de estado global
 
 Estas variáveis existem no escopo do IIFE e representam o estado em memória da sessão atual.
 
@@ -1034,8 +1032,6 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 
 ---
 
----
-
 ### Os três sistemas de flags de estado "sujo"
 
 Existem três sistemas de flags com escopos e ciclos de vida diferentes — **não são intercambiáveis**:
@@ -1048,7 +1044,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 
 > **Regra:** use `isDirty = true` para mudanças de dados da sessão; `annDragDirty`/`annResizeDirty` apenas para undo de gestos de anotação; não substitua `annInitialState` por um boolean simples.
 
-## 10. Fluxo de trabalho de Desenvolvimento para Agentes
+## 10. Fluxo de trabalho de desenvolvimento para agentes
 
 1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas
 2. **Teste no navegador o que a mudança toca** (D-0084). O teste do Export User (§11, Parte B) continua manual, antes de cada versão.
@@ -1156,7 +1152,7 @@ Rode `bash validate.sh` e leia as linhas `[WARN] Funcao '…' com CC n`: são as
 
 ---
 
-### Exemplos Práticos de Extensão
+### Exemplos práticos de extensão
 
 As regras de §0–§9 descrevem o **que não fazer**. Esta seção mostra o **como fazer** para as duas tarefas de extensão mais comuns, do início ao fim.
 
@@ -1233,7 +1229,7 @@ annRedoStack.length = 0; // limpar redo ao iniciar novo traço
 
 ---
 
-## 11. Checklist de Validação — Antes de Declarar Completo
+## 11. Checklist de validação — antes de declarar completo
 
 Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
@@ -1284,7 +1280,7 @@ A validação tem **duas partes**:
 
 ---
 
-### Parte B — Checklist de Teste Manual no Navegador
+### Parte B — checklist de teste manual no navegador
 
 Esta é a lista **única e completa** de testes que exigem abrir a aplicação. Não depende de outros documentos — tudo o que precisa ser confirmado no navegador está aqui.
 
@@ -1423,8 +1419,8 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. O teste do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
 | D-0085 | **Comentários de código em inglês: o `validate.sh` já, o HTML depois** | Os comentários do HTML ficam perto dos marcadores do Quine e vão num plano próprio (F-0029, em «Pendentes»). Origem: auditoria de 2026-10-31, decisão 7. |
 | D-0086 | **O prefixo `-webkit-backdrop-filter` fica** | O Safari anterior à versão 18 só aplica o desfoque com o prefixo. É a única exceção ao stylelint, marcada com `stylelint-disable-next-line` na regra de `#zoom-ui`, `#img-nav-prev` e `#img-nav-next`. Origem: auditoria de 2026-10-31, passo 72 do plano. |
-| D-0087 | **O chevron «›» dos botões .pdf e .zip fica** | Aparece só com o botão ativo e some no estado «Concluído». Num botão preenchido, lê-se como «seguir em frente», perto da ação. Alternativas estudadas na 28.4.0 e na 28.5.0: ícone de baixar (pesado), contagem de páginas e arquivos, «.pdf»/«.zip» (redundante depois da mudança de nome) e o visto (diz «feito» antes de exportar e enfraquece o aviso de sucesso). Fecha a P-0002. |
-| D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até a 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. |
+| D-0087 | **O chevron «›» dos botões .pdf e .zip fica** | Aparece só com o botão ativo e some no estado «Concluído». Num botão preenchido, lê-se como «seguir em frente», perto da ação. Alternativas estudadas na 28.4.0 e na 28.5.0: ícone de baixar (pesado), contagem de páginas e arquivos, «.pdf»/«.zip» (redundante depois da mudança de nome) e o visto (diz «feito» antes de exportar e enfraquece o aviso de sucesso). Fecha a P-0002. Origem: pedido do dono, 2026-11-01 (28.5.0). |
+| D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até a 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. Origem: pedido do dono, 2026-11-01. |
 
 ### Pendentes
 
@@ -1453,7 +1449,7 @@ Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a deci
 
 ---
 
-## 14. Disaster Recovery Técnico
+## 14. Disaster recovery técnico
 
 **Modelo de armazenamento (confirmado por bateria de testes — Windows 11 25H2, Edge 148, Chrome 148):**
 
