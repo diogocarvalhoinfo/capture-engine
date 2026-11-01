@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: o editor ganha zoom e uma alça para girar o texto, e o modo texto tem uma barra mais curta. Corrige o texto que não girava com a imagem e o traço livre que não redimensionava.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Adicionado
 
 - **Alça para girar o texto.** Um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo, e prende em 0°, 90°, 180° e 270° quando passa a menos de 5°. Com Shift, anda de 15° em 15°. A caixa de seleção, as alças e o ✕ giram com o texto, como no Paint, em vez de uma caixa reta que cresce à volta dele. O texto girado pode ser redimensionado, movido e reeditado, com o campo de texto também girado. Medido no Edge 156: arrastar até 88° prende a 90°; a 32°, o centro do texto fica no mesmo ponto; o Ctrl+Z desfaz.
