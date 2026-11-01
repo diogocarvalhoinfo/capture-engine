@@ -216,7 +216,7 @@ Motor de anotação:
 - O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
   - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
-  - No modo texto (a ferramenta Texto, ou o duplo clique num texto para reeditá-lo), a barra mostra só o ← (voltar à ferramenta anterior), o T, o negrito e o itálico, além das cores, do tamanho, de desfazer e refazer, de salvar e de cancelar. O ← deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
+  - O modo texto liga com a ferramenta Texto ou com o duplo clique num texto. Nele, a barra mostra só o ←, o T, o negrito e o itálico, as cores, o tamanho, desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior e deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
