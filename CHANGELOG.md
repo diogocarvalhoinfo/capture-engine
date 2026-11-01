@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **Zoom que acelera, como no Android e no iOS.** Um clique isolado da roda continua a andar 1 %. Cliques seguidos (menos de 180 ms entre eles) aceleram, 1 % a mais por clique, até 10 %, e uma pausa volta a 1 %, para o ajuste fino. Segurar o + ou o − acelera da mesma forma. No trackpad, o zoom segue a velocidade do gesto. Medido no Edge 156: 3 cliques separados dão 103 %; 15 seguidos dão 205 %; segurar o + dá 135 % em 1 s e 290 % em 2 s.
 
+### Corrigido
+
+- **Cliques rápidos no + e no − faziam o zoom sumir.** Dois cliques seguidos num botão contavam também como duplo clique na imagem, que leva a 200 % ou volta a 100 %. Ao chegar a 100 %, a barra do zoom sumia debaixo do cursor, e o clique seguinte caía na imagem. Agora o duplo clique na barra não conta, e a barra fica enquanto o mouse estiver nela. Medido no Edge 156: 3 cliques rápidos no + levam de 105 % a 111 %; 3 cliques no − levam de 103 % a 100 %, com a barra visível; a barra some ao tirar o mouse.
+
 ## [28.1.0] - 2026-10-31
 
 Minor: cinco melhorias pedidas no uso diário. Uma imagem que o navegador não abre vai para «Documentos», o verde do PDF e do ZIP fica até a próxima ação, o zoom anda 1 %, as alças têm o mesmo tamanho na tela, e os tooltips do editor aparecem na hora.
