@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Patch: a zona vazia chama menos atenção nos notebooks com o Windows a 125 % e a 150 %.
 
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, por `file://`, sem erros no console. O nome antigo era «prova de vida» (D-0088).
+
 ### Modificado
 
 - **Zona vazia mais discreta em telas de notebook.** Até 800 px de altura, que é o caso do Windows a 125 % e a 150 % numa tela de 1920 × 1080, o ícone passa de 48 px a 40 px e o texto de 14 px a 13 px. A 100 %, nada muda. Medido no Edge 156 nas três telas.
