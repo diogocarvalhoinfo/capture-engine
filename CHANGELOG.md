@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: o zoom acelera com cliques seguidos, como no Android e no iOS, e cliques rápidos no + e no − já não fazem o zoom sumir.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Modificado
 
 - **Zoom que acelera, como no Android e no iOS.** Um clique isolado da roda continua a andar 1 %. Cliques seguidos (menos de 180 ms entre eles) aceleram, 1 % a mais por clique, até 10 %, e uma pausa volta a 1 %, para o ajuste fino. Segurar o + ou o − acelera da mesma forma. No trackpad, o zoom segue a velocidade do gesto. Medido no Edge 156: 3 cliques separados dão 103 %; 15 seguidos dão 205 %; segurar o + dá 135 % em 1 s e 290 % em 2 s.
