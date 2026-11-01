@@ -295,7 +295,7 @@ O limiar 128 divide a escala 0–255 ao meio. Em cores claras, o texto automáti
 Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
 
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
-Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
+Afeta apenas a geração do PDF — os originais ficam na sessão no formato em que foram capturados. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
 
 > **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor digitado — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. Pelo padrão HTML, um valor fora de `[0, 1]` faz o navegador usar a qualidade padrão (em geral ~0.92). Um valor em `[0, 1]`, mas fora de `[0.70, 0.95]`, é aceito sem erro e produz os artefatos ou o desperdício de espaço descritos acima.
 
