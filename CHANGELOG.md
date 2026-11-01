@@ -8,7 +8,13 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Adicionado
 
+- **Alça para girar o texto.** Um texto selecionado tem uma alça redonda acima da caixa, como no PowerPoint e no Figma. Gira em qualquer ângulo, e prende em 0°, 90°, 180° e 270° quando passa a menos de 5°. Com Shift, anda de 15° em 15°. O texto girado pode ser redimensionado, movido e reeditado, com o campo de texto também girado. Medido no Edge 156: arrastar até 88° prende a 90°; a 32°, o centro do texto fica no mesmo ponto; o Ctrl+Z desfaz.
+- **Modo texto com uma barra mais curta.** Com a ferramenta Texto, as outras ferramentas saem da barra e aparece um ← para voltar à ferramenta anterior. O ← deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar, e o vermelho descarta.
 - **Zoom no modo editar.** A roda do mouse, o trackpad e os botões + e − funcionam também no editor, com a mesma aceleração do visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse, como no Photoshop e no Figma. O campo de texto aberto e o botão ✕ da seleção acompanham o zoom, e as alças mantêm o tamanho na tela. O duplo clique continua a editar um texto. A anotação é salva na resolução original. Antes, a imagem ampliada no visualizador entrava no editor com o zoom preso: a barra «− 150 % +» ficava visível e não fazia nada. Medido no Edge 156: um retângulo feito a 205 % cai debaixo do cursor. Espaço + arrastar e o botão do meio movem a imagem sem desenhar, e o campo de texto fica no mesmo ponto da imagem de 100 % a 155 %.
+
+### Corrigido
+
+- **O texto não girava com a imagem.** A Rotação 90° girava a imagem e os traços, mas o texto ficava na horizontal e mudava de lugar. Agora o texto gira junto, e quatro rotações voltam ao ponto de partida. Medido no Edge 156: a 90°, 180° e 270° o texto acompanha a imagem; a imagem salva tem o texto girado.
 
 ## [28.2.0] - 2026-11-01
 
