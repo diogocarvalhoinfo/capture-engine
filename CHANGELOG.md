@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Seta normal nos botões desativados.** Com a sessão vazia, o «.pdf» e o «.zip» mostravam o cursor de bloqueio, um círculo vermelho que parecia um erro. Agora mostram a seta normal, como no Fluent UI e no Material Design; o cinza já diz que o botão não está disponível. Vale para todos os botões desativados. Medido no Edge 156: seta com o botão desativado, mão com o botão ativo.
+
 ## [28.5.0] - 2026-11-01
 
 Minor: um tooltip só em toda a aplicação, ícones no Layout PDF, botões «.pdf» e «.zip» com ícones novos e a zona vazia um pouco acima do meio. Corrige o «Auto» que piscava ao carregar e o tooltip do botão do tema.
