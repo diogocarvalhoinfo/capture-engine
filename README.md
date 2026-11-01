@@ -274,13 +274,13 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 | **A4 Horizontal** | Força todas as páginas em formato paisagem |
 
 **Processo de geração:**
-1. As imagens PNG originais são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
+1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
 2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada
 3. O arquivo é transferido automaticamente
 
 **Quando o botão PDF fica desativado:** Quando há documentos (não-imagens) na sessão. O motor PDF processa apenas imagens. Para sessões mistas, use o ZIP.
 
-**Os arquivos originais não são alterados.** A conversão JPEG acontece apenas na memória, durante a geração do PDF. Os originais permanecem em PNG na sessão.
+**Os arquivos originais não são alterados.** A conversão JPEG acontece apenas na memória, durante a geração do PDF. Os originais ficam na sessão no formato em que foram capturados.
 
 **GIF animados no PDF:** apenas o primeiro quadro é incluído — a animação se perde. Para preservar a animação, use o export ZIP.
 
