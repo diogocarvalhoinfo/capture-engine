@@ -460,6 +460,14 @@ A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda 
 - Padding e margens reduzidos para maximizar área útil
 - Todos os elementos comprimem proporcionalmente
 
+### `width >= 112.5rem` (1800px) e `width >= 150rem` (2400px) — telas grandes
+
+Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os textos, os ícones, os botões e a barra lateral. Antes, tudo ficava do tamanho de um notebook, e a 2560px a barra lateral ocupava 8,6 % da largura.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--app-zoom` | `1` | Escala da interface: `1.125` a partir de 1800px e `1.25` a partir de 2400px. As medidas em `vw` e `vh` das janelas dividem-se por ela, para caberem na tela |
+
 **Body Scroll Lock:** Quando o modal de histórico abre em mobile, `document.body.style.overflow = 'hidden'` previne que o conteúdo de fundo role. Ao fechar, o scroll é restaurado.
 
 ---
