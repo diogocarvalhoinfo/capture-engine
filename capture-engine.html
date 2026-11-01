@@ -2490,8 +2490,10 @@
       }
     }
 
-    /* ═══ RESPONSIVE HEIGHT (Small Laptops) ═══ */
-    @media (height <= 50rem) and (width >= 56.3125rem) {
+    /* ═══ RESPONSIVE HEIGHT (Small Laptops) ═══
+       Compact mode for short screens. Up to 700 px of height only: at 125 % Windows scaling (about 1536 x 777) the side panel fits
+       at its normal size, and compressing it there made it look cramped. At 150 % (about 1280 x 633) it compresses, but less */
+    @media (height <= 43.75rem) and (width >= 56.3125rem) {
       #top-bar {
         padding: calc(var(--spacing) * 3) calc(var(--spacing) * 16) calc(var(--spacing) * 1);
         min-height: 48px
@@ -2525,12 +2527,12 @@
       }
 
       #left-sidebar {
-        gap: clamp(4px, 1.5vh, calc(var(--spacing) * 2));
-        padding: clamp(4px, 1vh, calc(var(--spacing) * 2)) calc(var(--spacing) * 2.5)
+        gap: clamp(8px, 2.2vh, calc(var(--spacing) * 4));
+        padding: clamp(8px, 1.5vh, calc(var(--spacing) * 3)) calc(var(--spacing) * 2.5)
       }
 
       #left-sidebar>div {
-        gap: clamp(2px, 1vh, calc(var(--spacing) * 1)) !important
+        gap: clamp(4px, 1vh, calc(var(--spacing) * 2)) !important
       }
 
       #left-sidebar .sess-input {
@@ -2541,7 +2543,7 @@
       #left-sidebar .btn-send {
         height: clamp(24px, 4vh, 32px);
         min-height: 24px;
-        font-size: clamp(11px, 1.5vh, 12px);
+        font-size: var(--text-xs);
         padding: 0 calc(var(--spacing) * 3)
       }
 
@@ -3274,7 +3276,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (28.5.1) -->
+  <!-- VISUAL BUILDER MODAL (28.5.2) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3292,7 +3294,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">28.5.1</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">28.5.2</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -5892,7 +5894,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.5.1 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.5.2 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
 function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();

@@ -445,7 +445,7 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 
 ## 10. Responsividade
 
-A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 50rem) and (width >= 56.3125rem)`, para telas baixas.
+A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Com o Windows a 125 % numa tela de 1920 × 1080 (área de cerca de 1536 × 777), a barra cabe no tamanho normal; a 150 % (cerca de 1280 × 633), comprime, com espaços de cerca de 14px entre as seções e textos de 12px.
 
 ### `width <= 56.25rem` (900px) — tablets e telefones na horizontal
 
