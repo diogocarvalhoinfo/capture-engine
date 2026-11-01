@@ -1129,24 +1129,9 @@ O `validate.sh` executa 29 verificações mecânicas: 28 com regex, grep ou Pyth
 **Check adicional heurístico (Não contabiliza FAIL nem altera exit code):**
 O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS inline e emite `[WARN]` para funções com > 15 pontos de decisão (`if/else/for/while/switch/case/&&/||/?`). As funções que disparam WARN são candidatas a refatoração futura — não são erros e não bloqueiam a validação.
 
-#### Pontos de maior risco de regressão (medidos de novo na 28.0.0)
+#### Pontos de maior risco de regressão
 
-Esta lista existe porque a informação só era visível a quem corresse o script. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de partir alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções.
-
-| CC | Função | Motor |
-|---|---|---|
-| 48 | `initReorder` | Reordenação (Pointer Events + FLIP) |
-| 34 | `annSetTool` | Anotação — troca de ferramenta, entrada/saída do crop |
-| 30 | *(anônima)* | — |
-| 29 | `initVbSync` | Visual Builder |
-| 29 | `annShowTextInput` | Anotação — editor de texto |
-| 28 | `initClipboard` | Captura (Ctrl+V) |
-| 26 | `applyTokens` | Tokens e tema |
-| 22 | `generatePDF` | Motor PDF |
-| 21 | *(anônima)* | — |
-| 20 | `onclick` | — |
-| 17 | `updateStatusBar` · `annDrawShape` | Barra de estado · Anotação |
-| 16 | `loadSession` · `generateZIP` · `onUp` | Sessões · Motor ZIP · Reordenação (fim do arrasto) |
+Rode `bash validate.sh` e leia as linhas `[WARN] Funcao '…' com CC n`: são as funções com mais pontos de decisão, e a saída do script é a lista atual. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de quebrar alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções. A lista não é copiada aqui, porque uma cópia sem comparação envelhece a cada versão.
 
 > **Dois limites conhecidos que ficam por corrigir de propósito (D70).**
 >
@@ -1163,11 +1148,11 @@ Esta lista existe porque a informação só era visível a quem corresse o scrip
 > chegam **sempre** pela transação; o ramo síncrono transporta outras coisas (`DataCloneError`, `InvalidStateError`),
 > para as quais um banner de armazenamento cheio seria a mensagem errada.
 
-**Como usar isto:** antes de editar qualquer função desta tabela, leia a seção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
+**Como usar isto:** antes de editar qualquer função dessa lista, leia a seção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` apanha regressões estruturais, mas **não** apanha regressões de comportamento — estas exigem a Parte B do checklist (§11).
 
 > ⚠️ **Armadilha do medidor — apóstrofos em comentários.** O analisador de complexidade **não ignora comentários** e trata `'` como abertura de string. Um número ímpar de apóstrofos num comentário (ex.: «e'», «d'») deixa o analisador dentro de uma string falsa. A contagem de chaves corrompe-se a partir daí: as funções ficam com o nome errado, e os valores **descem**. Sintoma: acrescentar código e ver o CC baixar. Aconteceu na D54 e custou uma investigação. Escreva comentários sem apóstrofos, ou em número par.
 >
-> **Nota:** a heurística conta pontos de decisão, não complexidade real percebida. Uma função pode ter CC alto por ter muitos ramos triviais. A tabela ordena risco relativo, não é veredicto de qualidade. Regenerar com `bash validate.sh` após alterações significativas.
+> **Nota:** a heurística conta pontos de decisão, não complexidade real percebida. Uma função pode ter CC alto por ter muitos ramos triviais. A lista ordena risco relativo e não é veredicto de qualidade.
 
 ---
 
