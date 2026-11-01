@@ -4042,7 +4042,7 @@
       function annTextCenter(e) { const g = annTextGeom(e); return { x: e.x1 + g.w / 2 * g.c - g.h / 2 * g.s, y: e.y1 + g.w / 2 * g.s + g.h / 2 * g.c, g } }
       function annTextPlaceCenter(e, cx, cy) { const g = annTextGeom(e); e.x1 = cx - (g.w / 2 * g.c - g.h / 2 * g.s); e.y1 = cy - (g.w / 2 * g.s + g.h / 2 * g.c) }
       // Turning handle of a selected text: free angle, drawn to 0°, 90°, 180° and 270° within 5°; Shift turns in steps of 15°
-      const ANN_ROT_OFFSET = 28; // distance from the top of the selection box to the handle, in screen px
+      const ANN_ROT_OFFSET = 22; // distance from the top of the selection box to the centre of the handle, in screen px
       // The selection of a text turns with it, as in Paint: a point of the text's own frame (lx to the right of the text, ly down, from its centre) in canvas px, and back
       function annTextToCanvas(e, lx, ly) { const c = annTextCenter(e); return { x: c.x + lx * c.g.c - ly * c.g.s, y: c.y + lx * c.g.s + ly * c.g.c } }
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
@@ -4109,9 +4109,16 @@
           ctx.stroke();
         });
         if (_isTxt) {
-          const ry = _by - ANN_ROT_OFFSET * k;
-          ctx.globalAlpha = 0.55; ctx.lineWidth = k; ctx.beginPath(); ctx.moveTo(0, _by); ctx.lineTo(0, ry + H); ctx.stroke();
-          ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.lineWidth = 1.5 * k; ctx.beginPath(); ctx.arc(0, ry, H, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          // Turning handle as in Paint: a round button with two curved arrows, without a line to the box
+          const ry = _by - ANN_ROT_OFFSET * k, R = 9 * k, r = 4.5 * k, hs = 2.2 * k;
+          ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5 * k;
+          ctx.beginPath(); ctx.arc(0, ry, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = accent; ctx.lineCap = 'round';
+          [-Math.PI / 2, Math.PI / 2].forEach(a0 => {
+            const a1 = a0 + Math.PI * 0.62, px = r * Math.cos(a1), py = ry + r * Math.sin(a1), tx = -Math.sin(a1), ty = Math.cos(a1), nx = Math.cos(a1), ny = Math.sin(a1);
+            ctx.beginPath(); ctx.arc(0, ry, r, a0, a1); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px + tx * hs, py + ty * hs); ctx.lineTo(px - tx * hs * 0.4 + nx * hs, py - ty * hs * 0.4 + ny * hs); ctx.lineTo(px - tx * hs * 0.4 - nx * hs, py - ty * hs * 0.4 - ny * hs); ctx.closePath(); ctx.fill();
+          });
         }
         ctx.restore();
       }

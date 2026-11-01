@@ -1323,7 +1323,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
 - [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam (alerta)
-- [ ] Texto: a Rotação 90° gira também o texto; a alça redonda acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
+- [ ] Texto: a Rotação 90° gira também o texto; o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
 - [ ] Modo texto: a barra mostra só ←, T, B e I entre as ferramentas; o ← volta à ferramenta anterior e deixa o texto na imagem
 - [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor; Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
 
