@@ -402,7 +402,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
 │  [Restaurar]  [Copiar Texto]  [Download]                  │
-│   ↑ só se na lixeira  ↑ oculto em modo binário           │
+│   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -439,9 +439,9 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|
-| **Restaurar** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas se o item está na lixeira |
+| **Restaurar** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas se o item está nos «Removidos» |
 | **Copiar Texto** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
-| **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre — ativos e na lixeira |
+| **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre, ativos e nos «Removidos» |
 | **Confirmar** (anotação) | Fill verde | `var(--color-green-500)` | No modo de anotação |
 | **Cancelar** (anotação) | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | No modo de anotação |
 
