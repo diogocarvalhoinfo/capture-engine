@@ -4860,8 +4860,8 @@
                   const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
                   const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
                   const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
-                  // annResizeSnap[annSelectedIdx].pts — pts originais do estado pre-resize (imutaveis)
-                  const _origPts = annResizeSnap[annSelectedIdx].pts;
+                  // annResizeSnap.h[annSelectedIdx].pts — pts originais do estado pre-resize (imutaveis); o snapshot é { h, rot, ... } desde a Fase 5
+                  const _origPts = annResizeSnap.h[annSelectedIdx].pts;
                   for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
                     _sh.pts[_fi] = {
                       x: annResizeAnchorX + (_origPts[_fi].x - annResizeAnchorX) * _sx,

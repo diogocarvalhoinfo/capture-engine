@@ -14,6 +14,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **O traço livre não aumentava nem diminuía pelas alças.** Puxar um canto dava um erro no console a cada movimento, e o traço não mudava. O erro vinha de junho de 2026, quando o desfazer foi refeito: a cópia guardada antes de redimensionar passou a ser um objeto, e o traço livre ainda a lia como lista. As outras formas não usam essa cópia. Medido no Edge 156: o canto puxado aumenta e diminui o traço, sem erros, e o Ctrl+Z desfaz cada passo.
 - **O texto não girava com a imagem.** A Rotação 90° girava a imagem e os traços, mas o texto ficava na horizontal e mudava de lugar. Agora o texto gira junto, e quatro rotações voltam ao ponto de partida. Medido no Edge 156: a 90°, 180° e 270° o texto acompanha a imagem; a imagem salva tem o texto girado.
 
 ## [28.2.0] - 2026-11-01
