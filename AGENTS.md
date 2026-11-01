@@ -1424,6 +1424,8 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0086 | **O prefixo `-webkit-backdrop-filter` fica** | O Safari anterior à versão 18 só aplica o desfoque com o prefixo. É a única exceção ao stylelint, marcada com `stylelint-disable-next-line` na regra de `#zoom-ui`, `#img-nav-prev` e `#img-nav-next`. Origem: auditoria de 2026-10-31, passo 72 do plano. |
 | D-0087 | **O chevron «›» dos botões .pdf e .zip fica** | Aparece só com o botão ativo e some no estado «Concluído». Num botão preenchido, lê-se como «seguir em frente», perto da ação. Alternativas estudadas na 28.4.0 e na 28.5.0: ícone de baixar (pesado), contagem de páginas e arquivos, «.pdf»/«.zip» (redundante depois da mudança de nome) e o visto (diz «feito» antes de exportar e enfraquece o aviso de sucesso). Fecha a P-0002. Origem: pedido do dono, 2026-11-01 (28.5.0). |
 | D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até a 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. Origem: pedido do dono, 2026-11-01. |
+| D-0089 | **A dica das zonas vazias diminui até 800 px de altura** | Ícone de 40 px e texto de 13 px nas telas de notebook (28.5.3). Não é um modo compacto: não muda a barra lateral, e foi pedida para a dica chamar menos atenção, e não para caber. Origem: pedido do dono, 2026-11-01; confirmado no plano da auditoria do mesmo dia. |
+| D-0090 | **As frases longas das entradas publicadas do changelog ficam** | Estende a D-0083 a toda entrada com versão, também as 28.x. **Motivo:** o changelog é registro datado; reescrever uma entrada publicada muda o que se disse naquela data. As palavras ainda seguem a tabela. Origem: plano da auditoria de 2026-11-01. |
 
 ### Pendentes
 
@@ -1434,6 +1436,10 @@ O que ficou para depois, com o ID e a origem.
 | D70 | O guard de prosa do check 19 depende da frase «fica ativa até», no README. A correção estrutural deriva os termos do próprio HTML (os 7 `data-tool` e o botão de rodar). | Sexta auditoria; detalhe na §10 |
 | D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
+| F-0052 | Os nomes das ferramentas no README seguem a interface: «Rodar 90°», «Recortar», «Desenho livre». A linha das ferramentas é lida pelo check 19, que muda junto (D70). | Auditoria de 2026-11-01 |
+| F-0053 | Textos da interface num estilo só: «Clique duplo» e «Duplo clique», maiúsculas em «Reduzir Zoom», «Exportar Versão», «Configurar Distribuição», «Imagens Separadas», e «Colar do Clipboard» e «Reset». | Auditoria de 2026-11-01 |
+| F-0055 | No código, o comentário da borda do `btn-zip-cta` (`handleZipClick`) e o título «ZIP ENGINE» por cima do `updateStatusBar`. Vai junto do F-0029. | Auditoria de 2026-11-01 |
+| F-0060 | Os estilos dos avisos de armazenamento no JavaScript (`padding`, `margin-left`, `border-radius` e a cor do botão ✕) passam a tokens, com captura antes e depois. | Auditoria de 2026-11-01 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
 
 ### IDs
