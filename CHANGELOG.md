@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.3.0] - 2026-11-01
+
+Minor: o editor ganha zoom e uma alça para girar o texto, e o modo texto tem uma barra mais curta. Corrige o texto que não girava com a imagem e o traço livre que não redimensionava.
 
 ### Adicionado
 
