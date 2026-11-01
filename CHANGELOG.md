@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Aviso de anotações por salvar mais claro.** Ao fechar o editor, trocar de imagem ou clicar fora sem salvar, o Cancelar e o Confirmar ainda crescem duas vezes, como antes. Agora, durante 5 s, os outros botões da barra ficam com 30 % de opacidade e não respondem. Motivo: com pressa, a animação sozinha passava despercebida. Um clique na imagem, no Cancelar ou no Confirmar desfaz o estado antes.
+
 ## [28.5.3] - 2026-11-01
 
 Patch: a zona vazia chama menos atenção nos notebooks com o Windows a 125 % e a 150 %.
