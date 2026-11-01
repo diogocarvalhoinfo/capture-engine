@@ -3535,6 +3535,8 @@
       let lastSaveAt = 0;
       
       let sysColors = { main: TOKEN_MAIN_COLOR, fg: TOKEN_ACCENT_FG_OVERRIDE, tStart: TOKEN_TITLE_START_COLOR, tAccent: TOKEN_TITLE_ACCENT_COLOR, tEnd: TOKEN_TITLE_END_COLOR };
+      // Colours applied at once, before the first paint: boot() only runs after the database opens, and until then the text on the main colour kept the CSS white
+      updateThemeColor();
 
       function updateStatusBar() {
         const elT = $('status-time');
