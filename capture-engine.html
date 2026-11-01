@@ -1875,13 +1875,15 @@
       color: var(--color-foreground)
     }
 
+    /* The chosen chip is filled with the main colour; the text takes the colour computed for it (YIQ), as on the PDF and ZIP buttons */
     .chip-input:checked+.chip-label {
-      border: 1px solid var(--color-border-strong);
-      color: var(--color-foreground)
+      background: var(--color-primary);
+      color: var(--color-primary-foreground);
+      font-weight: 600
     }
 
     .chip-input:checked+.chip-label:hover {
-      border-color: var(--color-primary)
+      opacity: 0.9
     }
 
     /* ═══ CAPTURE BUTTONS ═══ */
