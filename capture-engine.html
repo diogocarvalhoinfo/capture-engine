@@ -742,22 +742,22 @@
       text-align: center
     }
 
-    /* Empty drop zone: a mid-grey icon (the border colour gave 1.17:1, almost invisible) and the hint in the main text colour */
+    /* Empty drop zone: a light grey icon with a thin stroke (the border colour gave 1.17:1, almost invisible) and the hint in grey */
     .empty-st svg {
       width: 48px;
       height: 48px;
       stroke: var(--color-muted-foreground);
-      opacity: 0.75;
+      opacity: 0.6;
       fill: none;
-      stroke-width: 1.5;
+      stroke-width: 1.25;
       stroke-linecap: round;
       stroke-linejoin: round
     }
 
     .empty-st-title {
       font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--color-foreground)
+      font-weight: 500;
+      color: var(--color-muted-foreground)
     }
 
     /* ═══ MOBILE PASTE FAB ═══ */
