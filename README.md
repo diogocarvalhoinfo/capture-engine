@@ -420,8 +420,10 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "Equipamento") |
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
-| `TOKEN_AUTO_PURGE_HOURS` | Horas de inatividade até purge automático. **Atenção ao redistribuir:** se reduzir este valor numa nova versão, sessões que antes sobreviveriam serão purgadas na próxima abertura — `purgeExpired()` usa sempre o valor atual do token. **ℹ️ Valor 0 desativa o purge completamente:** o código tem o guard `if (!TOKEN_AUTO_PURGE_HOURS) return` — com valor `0` o purge não executa e nenhuma sessão é apagada. Para desativar o purge completamente, use a opção **Nunca** no Visual Builder (Manutenção → Limpeza automática). **Nota:** os valores de purge suportados pelo Visual Builder são os botões disponíveis (8h, 24h, 48h, Nunca). Editar `TOKEN_AUTO_PURGE_HOURS` manualmente para um valor sem botão correspondente não é preservado ao reexportar pelo Visual Builder — o valor reverte para 48h. Use os botões para garantir que a configuração é mantida. |
+| `TOKEN_AUTO_PURGE_HOURS` | Horas sem uso até a limpeza automática: 8, 24, 48 ou 0 («Nunca»), como no Visual Builder. Ver a nota abaixo da tabela. |
 | `TOKEN_DEBUG_MODE` | Logs no console do navegador (desativado em Export User) |
+
+**Limpeza automática (`TOKEN_AUTO_PURGE_HOURS`).** A limpeza usa sempre o valor atual do token. Por isso, uma versão nova com um valor menor apaga, na primeira abertura, sessões que antes sobreviveriam. O valor 0 desliga a limpeza; no Visual Builder, é a opção «Nunca». Um valor escrito à mão sem botão correspondente volta a 48 na próxima reexportação pelo Visual Builder.
 
 ### 7.5 Distribuir uma atualização (nova versão)
 
@@ -516,12 +518,14 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação com o aviso de que as capturas deixaram de ser gravadas e a recomendação de exportar já. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
+| **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
 | **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, rodar ou recortar:** o `ann-save` regenera a imagem em PNG, a partir do canvas, e a animação perde-se também no ZIP. O arquivo sai com a extensão `.png`, e não como um `.gif` parado. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
+
+**Quota do navegador.** O navegador limita o espaço do IndexedDB. Quando ele esgota, um aviso vermelho fixo aparece no topo, e o erro fica no console (F12). O que já estava gravado não se corrompe, mas uma captura nova pode não ser gravada. Cada imagem PNG usa, em geral, de 100 KB a 2 MB. Com 100 a 150 imagens de alta resolução, uma sessão chega a 200–500 MB: a partir daí, exporte com frequência. O script de diagnóstico do `AGENTS.md` §14 mostra o uso real.
 
 ## 11. Resolução de problemas
 
@@ -610,7 +614,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
-  - ⚠️ IndexedDB no Firefox persiste no perfil do navegador — dados criados no Firefox não são visíveis no Chrome e vice-versa (origens distintas)
+  - O IndexedDB do Firefox fica no perfil dele: os dados criados no Firefox não aparecem no Chrome, nem o contrário
 - **Safari** — suporte parcial; não testado formalmente. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine; outros comportamentos não verificados
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com navegador moderno
