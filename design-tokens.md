@@ -449,7 +449,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ## 10. Responsividade
 
-A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Com o Windows a 125 % numa tela de 1920 × 1080 (área de cerca de 1536 × 777), a barra cabe no tamanho normal; a 150 % (cerca de 1280 × 633), comprime, com espaços de cerca de 14px entre as seções e textos de 12px.
+A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Numa tela de 1920 × 1080, o Windows a 125 % deixa cerca de 1536 × 777, e a barra fica no tamanho normal. A 150 % (cerca de 1280 × 633), ela comprime: cerca de 14px entre as seções e textos de 12px.
 
 O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone passa de 48px a 40px e o texto de `--text-sm` a `--text-control`. Não é um modo compacto: não muda nada da barra lateral.
 

@@ -58,7 +58,7 @@ Tudo o que você captura (capturas de tela, documentos, textos) fica guardado lo
 
 > [!CAUTION]
 > **Os dados não ficam guardados para sempre, e isto é de propósito.**
-> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para conservar um trabalho, precisa o **exportar** (botão **PDF** ou **ZIP**) e guardar o arquivo você mesmo. Fechar o programa não basta; só o que exportar fica garantido.
+> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para guardar um trabalho, exporte-o em **PDF** ou **ZIP** e guarde o arquivo. Só o que foi exportado fica garantido.
 
 ## 2. Para quem é
 
@@ -163,7 +163,7 @@ A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guard
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
 - O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
-- A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o navegador dentro dessa janela pode perder as últimas alterações)
+- A aplicação grava a cada 5 segundos. Fechar o navegador antes disso perde as últimas alterações
 
 ## 6. Funcionalidades
 
@@ -208,7 +208,7 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 **Limites de zoom:** 20% (mínimo) a 1000% (máximo).
 
-**Nota:** Quando a imagem está ampliada (zoom > 100%), clicar fora do modal não fecha a janela — isto evita fechamentos acidentais durante o panning.
+**Motivo:** com a imagem ampliada, um clique fora para mover a imagem não fecha o visualizador sem querer.
 
 ### 6.3 Anotação de imagens
 
@@ -258,7 +258,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
-> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Excluir») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que possa ainda ser precisa, exporte-a (PDF ou ZIP).
+> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Excluir») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
 
 ### 6.6 Export PDF
 
@@ -397,7 +397,7 @@ Admin configura → Export Admin (backup) → Export User → distribui aos usu�
 
 > [!NOTE]
 > **Atualizações e continuidade dos dados.**
-> Uma versão nova da ferramenta não apaga o histórico de quem a usa. No Edge e no Chrome, **o nome e a pasta do arquivo não afetam o acesso aos dados**. Todas as cópias abertas no mesmo perfil de navegador leem a mesma base `CaptureEngineDB` (testado no Edge 148 e no Chrome 148). O acesso depende do **perfil de navegador**, não do caminho. As exceções (que NÃO veem os dados) são: janela anônima, outro perfil, outro navegador, e abrir de dentro de um ZIP sem extrair. **Tudo isto vale dentro da mesma origem (`file://`)** — servir a ferramenta por HTTP/HTTPS (ex.: localhost, GitHub Pages) cria uma base separada. Ver a seção de recuperação para o detalhe completo, incluindo a nota sobre origem.
+> Uma versão nova da ferramenta não apaga o histórico de quem a usa: todas as cópias abertas no mesmo perfil de navegador leem a mesma base. As exceções estão na §11, em «Perdi o arquivo HTML. Perdi os dados?».
 
 ### 7.4 Tokens de configuração
 
