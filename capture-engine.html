@@ -357,10 +357,12 @@
       flex-shrink: 0
     }
 
+    /* Disabled: the grey already says the button is not available; the normal arrow, as in Fluent UI and Material Design,
+       instead of the red no-entry cursor, which read as an error on an empty session */
     .btn-send:disabled {
       background: var(--color-border-strong);
       color: var(--color-white);
-      cursor: not-allowed
+      cursor: default
     }
 
     .btn-send:hover:not(:disabled) {
