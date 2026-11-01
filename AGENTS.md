@@ -1445,6 +1445,7 @@ O que ficou para depois, com o ID e a origem.
 | D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
+| P-0002 | O chevron «›» dos botões PDF e ZIP. Aparece só quando há itens e preenche o botão, mas o «›» costuma querer dizer «abre outra tela», e os botões baixam o arquivo na hora. Alternativas estudadas na 28.4.0: ícone de baixar (pesado), contagem de páginas e arquivos, e «.pdf»/«.zip» (redundante). Reavaliar a escolha. | Decisão de quem mantém o projeto, na 28.4.0 |
 
 ### IDs
 
