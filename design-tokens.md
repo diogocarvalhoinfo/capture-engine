@@ -103,7 +103,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 | `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, e `let annCurrentColor` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
 | `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
 | `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
-| `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script correr. |
+| `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script rodar. |
 | `#e86b2e` | O `TOKEN_MAIN_COLOR`, os `value=` de `#cfg-cor-hex` e `#cfg-cor-principal`, e o valor de reserva do `getComputedStyle` | É o valor padrão do próprio token (§6): um `var()` aqui seria circular. |
 | `#35a800` `#ffd82b` | `stop-color` do gradiente `#ce_accent`, no logotipo SVG | Um `stop-color` com custom property não funciona da mesma forma em todos os navegadores. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | O navegador lê as metatags antes de o CSS existir. |
@@ -120,7 +120,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 > echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
 > ```
 >
-> **As duas direções importam.** A primeira apanha cor nova por declarar; a segunda apanha entradas que ficaram para
+> **As duas direções importam.** A primeira detecta cor nova não declarada; a segunda detecta entradas que ficaram para
 > trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
 > O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
 >
@@ -297,14 +297,14 @@ Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Vis
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
 Afeta apenas a geração do PDF — os arquivos originais na sessão ficam sempre em PNG. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
 
-> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor introduzido — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. Pelo padrão HTML, um valor fora de `[0, 1]` faz o navegador usar a qualidade padrão (em geral ~0.92). Um valor em `[0, 1]`, mas fora de `[0.70, 0.95]`, é aceito sem erro e produz os artefatos ou o desperdício de espaço descritos acima.
+> **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor digitado — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. Pelo padrão HTML, um valor fora de `[0, 1]` faz o navegador usar a qualidade padrão (em geral ~0.92). Um valor em `[0, 1]`, mas fora de `[0.70, 0.95]`, é aceito sem erro e produz os artefatos ou o desperdício de espaço descritos acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
 Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido (ex: `1920`), qualquer imagem com dimensão superior é reduzida ao gerar o PDF, preservando a proporção. É lido num único ponto do código — `imgToJPEG()`, chamada exclusivamente por `generatePDF()`.
 
 > ⚠️ **Importante — não reduz o armazenamento:** `captureImg()` grava sempre o blob **original**, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
 >
-> Até a V26, esta seção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e numa ferramenta de recolha de provas isso é perda de evidência.
+> Até a V26, esta seção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e numa ferramenta de coleta de provas isso é perda de evidência.
 
 > **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem entra no PDF tal como está.
 

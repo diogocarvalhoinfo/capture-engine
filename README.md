@@ -224,9 +224,9 @@ Motor de anotação (V24→V25):
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. A Rotação 90° da imagem gira também os textos
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
-- Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse. O duplo clique continua a editar um texto. A anotação é salva na resolução original, qualquer que seja o zoom
+- Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
-  - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações continuam a voltar para a posição exata.
+  - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
 
 Mobile (V25):
 - Desenho por toque funciona (Pointer Events nativos)
@@ -301,7 +301,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 >
 > A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
 
-**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) continuam a ser removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
+**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) ainda são removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
@@ -482,11 +482,11 @@ Os dados do Capture Engine estão guardados no IndexedDB do navegador. **Se limp
 
 ### Comportamento com múltiplas abas
 
-O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** todas as abas gravam na mesma base. Se a mesma sessão for editada em duas abas ao mesmo tempo, a última gravação apaga as alterações da outra. Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro a bloquear o uso; esse bloqueio foi removido.
+O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** todas as abas gravam na mesma base. Se a mesma sessão for editada em duas abas ao mesmo tempo, a última gravação apaga as alterações da outra. Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro que bloqueava o uso; esse bloqueio foi removido.
 
 ## 9. Uso como prova
 
-O Capture Engine é adequado para **recolha organizada e documentação** de evidências digitais, mas não constitui por si só uma cadeia de custódia forense verificável.
+O Capture Engine é adequado para **coleta organizada e documentação** de evidências digitais, mas não constitui por si só uma cadeia de custódia forense verificável.
 
 **O que a ferramenta garante:**
 - Timestamp de criação e última atividade registrado por sessão (gerado pelo navegador do dispositivo)
@@ -515,7 +515,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem preview de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
-| **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação a avisar que as capturas deixaram de ser gravadas e a recomendar exportação imediata. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
+| **Quota do navegador (atenção)** | O IndexedDB tem um limite de espaço definido pelo navegador. Se esse espaço esgotar, a aplicação deixa de conseguir gravar novas capturas. **Importante:** quando isto acontece, um banner vermelho fixo aparece no topo da aplicação com o aviso de que as capturas deixaram de ser gravadas e a recomendação de exportar já. O erro também fica registrado no console técnico (F12). O que já estava guardado não se corrompe, mas uma captura nova feita com o espaço esgotado pode não chegar a ser gravada. Em sessões grandes, exporte com frequência. **Referência prática:** cada imagem PNG usa tipicamente 100 KB a 2 MB. Sessões com 100–150 imagens de alta resolução podem acumular 200–500 MB — a partir desse volume exporte regularmente. Use o script de diagnóstico no `AGENTS.md §14` para verificar o uso real. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
@@ -558,7 +558,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
 - **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox; o Safari não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
-- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Tudo isto continua a encontrar os dados, desde que seja o mesmo perfil.
+- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (outra origem ou outro perfil):
   - **janela anônima ou privada**;
   - **outro perfil** do navegador;
@@ -641,9 +641,9 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 **ARIA — o que existe, exatamente (medido de novo na 28.5.0):**
 
-| Onde | Atributo | Porquê |
+| Onde | Atributo | Motivo |
 |---|---|---|
-| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia de todo — o usuário não sabe que as capturas deixaram de ser gravadas |
+| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia — o usuário não sabe que as capturas deixaram de ser gravadas |
 | Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
 | Aviso de formato que o navegador não abre | `role="status"` | Diz para onde foi o arquivo, sem tirar o foco de onde a pessoa está |
 | Elementos com tooltip, em toda a aplicação | `role="tooltip"` no balão; `aria-label` com o texto do tooltip nos que só têm ícone, e `aria-description` nos que têm texto | Muitos botões só têm um ícone. O texto que aparece por cima deles é também o nome que o leitor de tela lê |
@@ -711,7 +711,7 @@ capture-engine.html
 │
 └── <script> — IIFE com 'use strict'
     │
-    ├── SysLogger         → Logs na consola (respeitam TOKEN_DEBUG_MODE)
+    ├── SysLogger         → Logs no console (respeitam TOKEN_DEBUG_MODE)
     ├── TOKENS            → Variáveis de configuração (TOKEN_*)
     ├── escapeHTML()      → Sanitização XSS de todos os inputs
     ├── IndexedDB         → Funções de acesso à base de dados local (idbGet, idbPut, idbDel, idbAll, idbIdx)
@@ -828,7 +828,7 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    A([Admin clica Export]) --> B["capturePristine executado no arranque"]
+    A([Admin clica Export]) --> B["capturePristine executado ao abrir"]
     B --> C{"fetch(location.href)"}
     C -->|sucesso| D["HTML original limpo"]
     C -->|falha CORS| E["fallback BOOT_HTML"]
