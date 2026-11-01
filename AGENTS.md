@@ -1504,20 +1504,22 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
          // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
          // edicao, e guarda o original intacto. Extrair ambos — este procedimento
          // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
-         const base = item.label || 'imagem-' + i;
+         // Documento: o name ja traz a extensao. Imagem: a extensao vem do tipo do blob.
+         const ext = b => ({ 'image/png': '.png', 'image/jpeg': '.jpg', 'image/gif': '.gif', 'image/webp': '.webp' })[b.type] || '';
+         const base = item.name || item.label || 'imagem-' + i;
          const saidas = [[item.blob, base]];
          if (item.origBlob) saidas.push([item.origBlob, base + '-ORIGINAL']);
          saidas.forEach(([blob, nome]) => {
            const a = document.createElement('a');
            a.href = URL.createObjectURL(blob);
-           a.download = nome + '.png';
+           a.download = item.name ? nome : nome + ext(blob);
            a.click();
          });
        });
      };
    };
    ```
-   Este script faz download de todas as imagens da store. Para documentos, substituir `'images'` por `'documents'` e `item.label` por `item.name`.
+   Este script faz download de todas as imagens da store, cada uma com a extensão do seu formato. Para documentos, troque `'images'` por `'documents'` nas duas linhas da transação: o nome sai como foi gravado (ex.: `relatorio.pdf`).
 
 **Diagnosticar quota esgotada** (confirmar o uso real quando o banner vermelho de armazenamento aparece — ver `§6`; a interface **avisa**, ao contrário do que esta seção afirmava até a V26):
 ```js
@@ -1566,13 +1568,14 @@ req2.onsuccess = e => {
       // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
       // edicao, e guarda o original intacto. Extrair ambos — este procedimento
       // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
+      const ext = b => ({ 'image/png': '.png', 'image/jpeg': '.jpg', 'image/gif': '.gif', 'image/webp': '.webp' })[b.type] || '';
       const base = item.label || 'imagem-' + i;
       const saidas = [[item.blob, base]];
       if (item.origBlob) saidas.push([item.origBlob, base + '-ORIGINAL']);
       saidas.forEach(([blob, nome]) => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = nome + '.png';
+        a.download = nome + ext(blob);
         a.click();
       });
     });
