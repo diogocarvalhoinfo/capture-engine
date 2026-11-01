@@ -211,7 +211,7 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 ### 6.3 Anotação de imagens
 
-Motor de anotação (V24→V25):
+Motor de anotação:
 - O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
   - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
@@ -228,7 +228,7 @@ Motor de anotação (V24→V25):
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
   - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
 
-Mobile (V25):
+Mobile:
 - Desenho por toque funciona (Pointer Events nativos)
 - Scroll de fundo bloqueado quando qualquer modal está aberto
 - Botões de apagar e restaurar sempre visíveis em dispositivos touch
@@ -253,7 +253,7 @@ Um item removido não é apagado na hora: vai para a barra «Removidos», no fun
 
 Cada sessão guarda os seus itens removidos. Eles ficam lá até serem restaurados ou até a sessão expirar.
 
-Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo os removidos). Até a V26 esta seção descrevia um botão de apagar permanente que nunca existiu na interface.
+Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo os removidos).
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
@@ -305,7 +305,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
-> Até a V25, os nomes eram gravados em UTF-8 sem essa declaração no cabeçalho, e os acentos apareciam trocados (`Diagn+¦stico`) ao abrir o ZIP. A legenda de imagem também convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
+> Nas versões antigas, os nomes eram gravados em UTF-8 sem essa declaração no cabeçalho, e os acentos apareciam trocados (`Diagn+¦stico`) ao abrir o ZIP. A legenda de imagem também convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
 
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
@@ -591,7 +591,7 @@ Sim. Funciona no Firefox 151.0.4, testado manualmente; versão mínima abaixo de
 Sim. Pode abrir várias abas no mesmo navegador, e todas leem a mesma base local. Também pode abrir versões em navegadores diferentes, como o Edge e o Firefox, cada uma com a sua base. A única ressalva é não editar a mesma sessão em duas abas ao mesmo tempo, para uma não sobrepor a outra.
 
 **O que acontece se colocar o token `EXPORT MODAL` no rodapé?**
-Nada — a versão V15+ protege automaticamente os marcadores internos com um caractere invisível (zero-width space), impedindo que valores de tokens interfiram com o Quine Engine.
+Nada: a ferramenta protege automaticamente os marcadores internos com um caractere invisível (zero-width space), impedindo que valores de tokens interfiram com o Quine Engine.
 
 **Posso usar o Capture Engine como aplicação web (num servidor)?**
 É tecnicamente possível, mas não é o caso de uso pretendido. A ferramenta foi desenhada para uso local (protocolo `file://`). Em servidores, podem surgir restrições de CORS no Quine Engine (fetch do próprio arquivo).
@@ -633,13 +633,13 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 ### Acessibilidade
 
-**Estado avaliado na V25** (não reavaliado desde então)**:**
+**Estado avaliado em junho de 2026** (não reavaliado desde então)**:**
 - Navegação por teclado: parcialmente suportada nos controles principais
 - Razões de contraste WCAG: verificadas para a cor de destaque principal (ver `design-tokens.md §1`)
 - Leitores de tela: não testados formalmente
 - ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
 
-**ARIA — o que existe, exatamente (medido de novo na 28.5.0):**
+**ARIA — o que existe, exatamente (medido em novembro de 2026):**
 
 | Onde | Atributo | Motivo |
 |---|---|---|
