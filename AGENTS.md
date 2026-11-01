@@ -1132,8 +1132,8 @@ Rode `bash validate.sh` e leia as linhas `[WARN] Funcao '…' com CC n`: são as
 > **Dois limites conhecidos que ficam por corrigir de propósito (D70).**
 >
 > **O guard de prosa do check 19 depende de uma frase editorial.** Ele dispara ao ver «fica ativa até» na linha
-> das ferramentas. Medido: das duas linhas de prosa que a seguem, só essa contém um termo da lista (`Rotação`), pelo
-> que é a única cuja fusão abriria um furo — e é exatamente a que o guard vigia. **Hoje não há furo.** Mas se alguém
+> das ferramentas. Medido: das duas linhas de prosa que a seguem, só essa contém um termo da lista (`Rotação`). Por
+> isso, só a fusão dela abriria um furo, e é exatamente a que o guard vigia. **Hoje não há furo.** Mas se alguém
 > reescrever essa frase, o guard fica cego e a fragilidade volta em silêncio. Não foi remendado porque seria a **sexta**
 > iteração no mesmo check (D29 → D41 → D46 → D47 → e duas correções ao próprio remendo), e o padrão de cada remendo
 > deixar uma aresta nova já está estabelecido. A correção certa, quando alguém lhe voltar, é **estrutural**: derivar os
