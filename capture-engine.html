@@ -4043,10 +4043,12 @@
       function annTextPlaceCenter(e, cx, cy) { const g = annTextGeom(e); e.x1 = cx - (g.w / 2 * g.c - g.h / 2 * g.s); e.y1 = cy - (g.w / 2 * g.s + g.h / 2 * g.c) }
       // Turning handle of a selected text: free angle, drawn to 0°, 90°, 180° and 270° within 5°; Shift turns in steps of 15°
       const ANN_ROT_OFFSET = 28; // distance from the top of the selection box to the handle, in screen px
-      function annRotHandle(b, k) { const M = 6 * k; return { x: b.x + b.w / 2, y: b.y - M - ANN_ROT_OFFSET * k, top: b.y - M } }
+      // The selection of a text turns with it, as in Paint: a point of the text's own frame (lx to the right of the text, ly down, from its centre) in canvas px, and back
+      function annTextToCanvas(e, lx, ly) { const c = annTextCenter(e); return { x: c.x + lx * c.g.c - ly * c.g.s, y: c.y + lx * c.g.s + ly * c.g.c } }
+      function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
       let annRotCenter = null, annRotStart = 0, annRotStartAng = 0;
-      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const b = annBBox(annHistory[_i]); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
+      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy); if (Math.abs(l.x) <= l.g.w / 2 + 4 && Math.abs(l.y) <= l.g.h / 2 + 4) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
       // Detecta se (cx,cy) está sobre uma das 4 alças da shape selecionada.
       // Retorna 'tl','tr','bl','br' ou '' se não houver hit.
       function annHandleHitTest(cx, cy) {
@@ -4054,7 +4056,13 @@
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
         const H = ANN_HIT_SIZE * k; // hit area of 44 x 44 screen px, larger than the visible handle
-        if (annHistory[annSelectedIdx].type === 'text') { const r = annRotHandle(b, k); if (Math.abs(cx - r.x) <= H && Math.abs(cy - r.y) <= H) return 'rot'; }
+        const _e = annHistory[annSelectedIdx];
+        if (_e.type === 'text') {
+          const l = annTextLocal(_e, cx, cy), hw = l.g.w / 2 + 4 + M, hh = l.g.h / 2 + 4 + M;
+          if (Math.abs(l.x) <= H && Math.abs(l.y + hh + ANN_ROT_OFFSET * k) <= H) return 'rot';
+          for (const [id, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) if (Math.abs(l.x - sx * hw) <= H && Math.abs(l.y - sy * hh) <= H) return id;
+          return '';
+        }
         const _corners = [
           { x: _bx,        y: _by,        id: 'tl' },
           { x: _bx + _bw,  y: _by,        id: 'tr' },
@@ -4076,14 +4084,16 @@
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
+        const _e = annHistory[annSelectedIdx], _isTxt = _e.type === 'text';
+        let _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
+        if (_isTxt) { const c = annTextCenter(_e); ctx.translate(c.x, c.y); ctx.rotate((_e.rot || 0) * Math.PI / 180); _bw = c.g.w + 8 + M * 2; _bh = c.g.h + 8 + M * 2; _bx = -_bw / 2; _by = -_bh / 2; }
         // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
         ctx.strokeStyle = accent; ctx.lineWidth = k; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
-        ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
+        ctx.strokeRect(_bx, _by, _bw, _bh);
         ctx.globalAlpha = 0.04; ctx.fillStyle = accent;
-        ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2);
+        ctx.fillRect(_bx, _by, _bw, _bh);
         // ── Alças nos 4 cantos (preparação Passo 3.2) ────────────────────────────
         const H = ANN_HANDLE_SIZE * k; // half side, in canvas px
-        const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
         const _corners = [
           { x: _bx,        y: _by        }, // topo-esquerdo
           { x: _bx + _bw,  y: _by        }, // topo-direito
@@ -4098,10 +4108,10 @@
           ctx.fill();
           ctx.stroke();
         });
-        if (annHistory[annSelectedIdx].type === 'text') {
-          const r = annRotHandle(b, k);
-          ctx.globalAlpha = 0.55; ctx.lineWidth = k; ctx.beginPath(); ctx.moveTo(r.x, r.top); ctx.lineTo(r.x, r.y + H); ctx.stroke();
-          ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.lineWidth = 1.5 * k; ctx.beginPath(); ctx.arc(r.x, r.y, H, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        if (_isTxt) {
+          const ry = _by - ANN_ROT_OFFSET * k;
+          ctx.globalAlpha = 0.55; ctx.lineWidth = k; ctx.beginPath(); ctx.moveTo(0, _by); ctx.lineTo(0, ry + H); ctx.stroke();
+          ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.lineWidth = 1.5 * k; ctx.beginPath(); ctx.arc(0, ry, H, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         }
         ctx.restore();
       }
@@ -4131,8 +4141,10 @@
         // Alça top-right em coords canvas: (b.x + b.w + M, b.y - M)
         // Converter para coords do ann-viewport e centrar o botão sobre a alça
         const _BTN = 20; // dimensão do botão ✕ (quadrado)
-        const _hX = (_cvR.left - _vpR.left) + (_b.x + _b.w + _M) * _scaleX; // centro X da alça
-        const _hY = (_cvR.top  - _vpR.top)  + (_b.y - _M)         * _scaleY; // centro Y da alça
+        const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
+        const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text
+        const _hX = (_cvR.left - _vpR.left) + _cp.x * _scaleX; // centro X da alça
+        const _hY = (_cvR.top  - _vpR.top)  + _cp.y * _scaleY; // centro Y da alça
         const _finalLeft = Math.min(_hX - _BTN / 2, _vpR.width  - _BTN - 2);
         const _finalTop  = Math.max(_hY - _BTN / 2, 2);
         _annDbBtn.style.left = _finalLeft + 'px';
@@ -4670,6 +4682,10 @@
                   else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
                   else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
                   else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
+                } else if (_sh.type === 'text' && _sh.rot) {
+                  // Turned text: anchor on the opposite corner of its own box
+                  const _g = annTextGeom(_sh), _a = annTextToCanvas(_sh, (_hh[1] === 'l' ? 1 : -1) * (_g.w / 2 + 4), (_hh[0] === 't' ? 1 : -1) * (_g.h / 2 + 4));
+                  annResizeAnchorX = _a.x; annResizeAnchorY = _a.y;
                 } else if (_sh.type === 'text') {
                   // Texto: anchor no canto oposto do inner bbox
                   if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
@@ -4823,7 +4839,8 @@
                   if (_sh.rot) {
                     const _left = annResizeHandle === 'tl' || annResizeHandle === 'bl', _top = annResizeHandle === 'tl' || annResizeHandle === 'tr';
                     _sh.fontSize = _newFS; const _g = annTextGeom(_sh);
-                    annTextPlaceCenter(_sh, _left ? annResizeAnchorX - 4 - _g.ex : annResizeAnchorX + 4 + _g.ex, _top ? annResizeAnchorY - 4 - _g.ey : annResizeAnchorY + 4 + _g.ey);
+                    const _lx = (_left ? -1 : 1) * (_g.w / 2 + 4), _ly = (_top ? -1 : 1) * (_g.h / 2 + 4); // centre = fixed corner + the half box, turned
+                    annTextPlaceCenter(_sh, annResizeAnchorX + _lx * _g.c - _ly * _g.s, annResizeAnchorY + _lx * _g.s + _ly * _g.c);
                   } else if (annResizeHandle === 'tl' || annResizeHandle === 'tr') {
                     const _origH = _ob.h;
                     _sh.y1 = annResizeAnchorY - _origH * _ratio - 4;
