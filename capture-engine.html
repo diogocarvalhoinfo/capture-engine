@@ -414,6 +414,19 @@
       pointer-events: none
     }
 
+    /* PDF and ZIP: a chevron on the right while the button can be used (the session has items). It fills the button; the chevron
+       usually means "opens another screen", and these buttons download at once, so the choice is pending (P-0002) */
+    #btn-pdf:not(:disabled, .btn-zip-cta, .st-success, .st-error)::after,
+    #btn-zip:not(:disabled, .btn-zip-cta, .st-success, .st-error)::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      margin-left: auto;
+      flex-shrink: 0;
+      background: currentcolor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E") center / contain no-repeat
+    }
+
     .btn-send.btn-outline {
       background: transparent !important;
       border: 1px solid transparent !important;
