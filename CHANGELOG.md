@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Adicionado
+
+- **Zoom no modo editar.** A roda do mouse, o trackpad e os botões + e − funcionam também no editor, com a mesma aceleração do visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse, como no Photoshop e no Figma. O campo de texto aberto e o botão ✕ da seleção acompanham o zoom, e as alças mantêm o tamanho na tela. O duplo clique continua a editar um texto. A anotação é salva na resolução original. Antes, a imagem ampliada no visualizador entrava no editor com o zoom preso: a barra «− 150 % +» ficava visível e não fazia nada. Medido no Edge 156: um retângulo feito a 205 % cai debaixo do cursor. Espaço + arrastar e o botão do meio movem a imagem sem desenhar, e o campo de texto fica no mesmo ponto da imagem de 100 % a 155 %.
+
 ## [28.2.0] - 2026-11-01
 
 Minor: o zoom acelera com cliques seguidos, como no Android e no iOS, e cliques rápidos no + e no − já não fazem o zoom sumir.

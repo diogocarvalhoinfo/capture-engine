@@ -1009,6 +1009,8 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `imgPanX` / `imgPanY` | number | Offsets de pan da imagem no modal |
 | `imgPanning` | boolean | Flag de estado de pan (arrastamento) ativo |
 | `imgStartX` / `imgStartY` | number | Coordenadas iniciais do pan |
+| `annSpaceHeld` | boolean | Barra de espaço pressionada no editor, com a imagem ampliada: arrastar move a imagem, em vez de desenhar |
+| `annTextPlace` | function \| null | Coloca de novo o campo de texto sobre o seu ponto da imagem, depois de um zoom ou de um pan |
 | `trashUrls` | array | Lista de ObjectURLs das imagens na lixeira |
 | `annDrawing` | boolean | Estado de desenho em progresso na anotação |
 | `annStart` | object | Coordenadas de início do traço de anotação |
@@ -1319,6 +1321,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
 - [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam (alerta)
+- [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor; Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
 
 **Reordenação (reescrita com Pointer Events / FLIP na V23):**
 - [ ] Arrastar imagens para reordenar é **estável** (não salta nem pisca), com mouse

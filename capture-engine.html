@@ -2516,6 +2516,16 @@
       background: transparent;
     }
 
+    #ann-viewport.ann-pan,
+    #ann-viewport.ann-pan * {
+      cursor: grab !important;
+    }
+
+    #ann-viewport.ann-grabbing,
+    #ann-viewport.ann-grabbing * {
+      cursor: grabbing !important;
+    }
+
     #img-modal-overlay #ann-toolbar {
       background: var(--color-viewer-toolbar);
       border: 1px solid var(--color-viewer-border);
@@ -3562,7 +3572,7 @@
       let modalIsTrash = false, modalItemId = null;
       let imgZoomed = false, imgPanX = 0, imgPanY = 0, imgScale = 1;
       let imgPanning = false, imgStartX = 0, imgStartY = 0;
-      function applyImgZoom(anim = false) { const wrap = $('ann-wrap'); if (!wrap) return; if (anim) { wrap.classList.remove('no-anim'); void wrap.offsetWidth; } else { wrap.classList.add('no-anim'); } wrap.style.transform = `scale(${imgScale}) translate(${imgPanX / imgScale}px,${imgPanY / imgScale}px)`; const zUI = $('zoom-ui'); if (zUI) { $('zoom-level').textContent = Math.round(imgScale * 100) + '%'; /* the bar stays while the pointer is on it, so a click on − that reaches 100 % does not take the buttons away */ if (imgScale === 1 && !zUI.matches(':hover')) { zUI.style.display = 'none'; const vp = $('ann-viewport'); if (vp) vp.style.cursor = 'default' } else { zUI.style.display = 'flex'; const vp = $('ann-viewport'); if (vp && !imgPanning) vp.style.cursor = 'grab' } } }
+      function applyImgZoom(anim = false) { const wrap = $('ann-wrap'); if (!wrap) return; if (annActive) anim = false; if (anim) { wrap.classList.remove('no-anim'); void wrap.offsetWidth; } else { wrap.classList.add('no-anim'); } wrap.style.transform = `scale(${imgScale}) translate(${imgPanX / imgScale}px,${imgPanY / imgScale}px)`; const zUI = $('zoom-ui'); if (zUI) { $('zoom-level').textContent = Math.round(imgScale * 100) + '%'; /* the bar stays while the pointer is on it, so a click on − that reaches 100 % does not take the buttons away */ if (imgScale === 1 && !zUI.matches(':hover')) { zUI.style.display = 'none'; const vp = $('ann-viewport'); if (vp) vp.style.cursor = 'default' } else { zUI.style.display = 'flex'; const vp = $('ann-viewport'); if (vp && !imgPanning) vp.style.cursor = 'grab' } } if (annActive) annFollowZoom() }
       function resetImgZoom() { imgZoomed = false; imgPanX = 0; imgPanY = 0; imgScale = 1; applyImgZoom(true) }
       window.openImgModal = function (id, trash) {
         const arr = trash ? removed : images, o = arr.find(x => x.id === id);
@@ -3690,7 +3700,7 @@
       // --- ZOOM & PAN LOGIC ---
       const vp = $('ann-viewport');
       if (vp) {
-        function doImgZoom(delta, px, py, anim = false) { if (annActive) return; const oldScale = imgScale; let nScale = Math.round((imgScale + delta) * 100) / 100; if (nScale < 0.2) nScale = 0.2; if (nScale > 10) nScale = 10; const r = nScale / oldScale; imgPanX -= px * (r - 1) * oldScale; imgPanY -= py * (r - 1) * oldScale; imgScale = nScale; if (imgScale !== 1) imgZoomed = true; else { imgZoomed = false; imgPanX = 0; imgPanY = 0 } applyImgZoom(anim) }
+        function doImgZoom(delta, px, py, anim = false) { const oldScale = imgScale; let nScale = Math.round((imgScale + delta) * 100) / 100; if (nScale < 0.2) nScale = 0.2; if (nScale > 10) nScale = 10; const r = nScale / oldScale; imgPanX -= px * (r - 1) * oldScale; imgPanY -= py * (r - 1) * oldScale; imgScale = nScale; if (imgScale !== 1) imgZoomed = true; else { imgZoomed = false; imgPanX = 0; imgPanY = 0 } applyImgZoom(anim) }
         // Zoom like on phones: an isolated step is 1 %, and steps that follow each other speed up
         // (+1 % per step, up to 10 %). A pause longer than ZOOM_STREAK_MS goes back to 1 %, for the fine adjustment at the end.
         const ZOOM_STEP = 0.01, ZOOM_MAX_STEP = 0.10, ZOOM_STREAK_MS = 180;
@@ -3700,11 +3710,17 @@
         [['zoom-in', 1], ['zoom-out', -1]].forEach(([id, dir]) => { const b = $(id); let hold = null, rep = null; const stop = () => { clearTimeout(hold); clearInterval(rep) }; b.onpointerdown = (e) => { e.stopPropagation(); doImgZoom(zoomStepFor(dir), 0, 0, false); hold = setTimeout(() => { let n = 0; rep = setInterval(() => { n++; doImgZoom(dir * Math.min(ZOOM_STEP * (1 + Math.floor(n / 5)), ZOOM_MAX_STEP), 0, 0, false) }, 40) }, 400) }; ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, stop)); b.onclick = (e) => { e.stopPropagation(); if (e.detail === 0) doImgZoom(zoomStepFor(dir), 0, 0, false) } });
         $('zoom-level').onclick = (e) => { e.stopPropagation(); resetImgZoom() };
         $('zoom-ui').addEventListener('pointerleave', () => { if (imgScale === 1) applyImgZoom(false) });
-        vp.addEventListener('wheel', function (e) { if (annActive) return; e.preventDefault(); const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; if (!e.deltaY) return; if (e.deltaMode === 1 || Math.abs(e.deltaY) >= 50) { doImgZoom(zoomStepFor(e.deltaY < 0 ? 1 : -1), px, py, false); return } /* trackpad: small pixel deltas, zoom follows the speed of the gesture; the remainder below 1 % is kept for the next event */ zoomAcc += -e.deltaY * 0.002; const d = Math.trunc(zoomAcc * 100) / 100; if (d) { zoomAcc -= d; doImgZoom(Math.max(-ZOOM_MAX_STEP, Math.min(ZOOM_MAX_STEP, d)), px, py, false) } }, { passive: false });
+        vp.addEventListener('wheel', function (e) { e.preventDefault(); const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; if (!e.deltaY) return; if (e.deltaMode === 1 || Math.abs(e.deltaY) >= 50) { doImgZoom(zoomStepFor(e.deltaY < 0 ? 1 : -1), px, py, false); return } /* trackpad: small pixel deltas, zoom follows the speed of the gesture; the remainder below 1 % is kept for the next event */ zoomAcc += -e.deltaY * 0.002; const d = Math.trunc(zoomAcc * 100) / 100; if (d) { zoomAcc -= d; doImgZoom(Math.max(-ZOOM_MAX_STEP, Math.min(ZOOM_MAX_STEP, d)), px, py, false) } }, { passive: false });
         vp.addEventListener('dblclick', function (e) { if (annActive) return; if (e.target.closest('#img-nav-prev,#img-nav-next,#zoom-ui')) return; if (!imgZoomed) { const rect = vp.getBoundingClientRect(); const px = e.clientX - rect.left - rect.width / 2; const py = e.clientY - rect.top - rect.height / 2; doImgZoom(1.0, px, py, true) } else { resetImgZoom() } });
-        vp.addEventListener('mousedown', function (e) { if (!imgZoomed || annActive) return; imgPanning = true; imgStartX = e.clientX - imgPanX; imgStartY = e.clientY - imgPanY; $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
-        window.addEventListener('mousemove', function (e) { if (!imgPanning) return; if (e.buttons === 0) { imgPanning = false; if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim'); return; } imgPanX = e.clientX - imgStartX; imgPanY = e.clientY - imgStartY; applyImgZoom(false) });
-        window.addEventListener('mouseup', function () { if (imgPanning) { imgPanning = false; if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim') } });
+        // In the editor a drag draws, so the zoomed image moves with Space + drag or with the middle button, as in Photoshop and Figma
+        const inField = () => { const a = document.activeElement; return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable) };
+        const spaceUp = () => { annSpaceHeld = false; vp.classList.remove('ann-pan') };
+        window.addEventListener('keydown', e => { if (e.code !== 'Space' || !annActive || !imgZoomed || inField()) return; e.preventDefault(); annSpaceHeld = true; vp.classList.add('ann-pan') });
+        window.addEventListener('keyup', e => { if (e.code === 'Space' && annSpaceHeld) { e.preventDefault(); spaceUp() } });
+        window.addEventListener('blur', spaceUp);
+        vp.addEventListener('mousedown', function (e) { if (!imgZoomed || (annActive && !annSpaceHeld && e.button !== 1)) return; if (e.button === 1) e.preventDefault(); vp.classList.add('ann-grabbing'); imgPanning = true; imgStartX = e.clientX - imgPanX; imgStartY = e.clientY - imgPanY; $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
+        window.addEventListener('mousemove', function (e) { if (!imgPanning) return; if (e.buttons === 0) { imgPanning = false; vp.classList.remove('ann-grabbing'); if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim'); return; } imgPanX = e.clientX - imgStartX; imgPanY = e.clientY - imgStartY; applyImgZoom(false) });
+        window.addEventListener('mouseup', function () { if (imgPanning) { imgPanning = false; vp.classList.remove('ann-grabbing'); if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim') } });
         vp.addEventListener('touchstart', function (e) { if (!imgZoomed || annActive || e.touches.length !== 1) return; imgPanning = true; imgStartX = e.touches[0].clientX - imgPanX; imgStartY = e.touches[0].clientY - imgPanY; $('ann-wrap').classList.add('no-anim') }, { passive: true });
         window.addEventListener('touchmove', function (e) { if (!imgPanning) return; imgPanX = e.touches[0].clientX - imgStartX; imgPanY = e.touches[0].clientY - imgStartY; applyImgZoom(false) }, { passive: true });
         window.addEventListener('touchend', function () { if (imgPanning) { imgPanning = false; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim') } });
@@ -3819,6 +3835,8 @@
       const ANN_HISTORY_MAX = 50;
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
+      let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
+      let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       let annHoverIdx = -1; // mantido para compatibilidade com annDeactivate; lógica de hover removida na Fase 1c
@@ -4083,6 +4101,8 @@
         _annDbBtn.style.top  = _finalTop  + 'px';
         _annDbBtn.style.display = 'flex';
       }
+      // The editor follows the zoom: handles and crop marks keep their size on screen, and the ✕ button and the text field move with the image
+      function annFollowZoom() { if (!annDrawing) annRenderAll(); if (annTextPlace && $('ann-text-overlay').style.display !== 'none') annTextPlace() }
       function annRenderAll() {
         annRedraw();
         annDrawSelectionOverlay();
@@ -4282,6 +4302,7 @@
         const screenX = r.left - vpR.left + (canvasX * scaleX);
         const screenY = r.top - vpR.top + (canvasY * scaleY);
         const ov = $('ann-text-overlay'); const inp = $('ann-text-input');
+        annTextPlace = () => { const r2 = cv.getBoundingClientRect(), vpR2 = vp.getBoundingClientRect(); inp.style.left = (r2.left - vpR2.left + canvasX * (r2.width / cv.width)) + 'px'; inp.style.top = (r2.top - vpR2.top + canvasY * (r2.height / cv.height)) + 'px'; const fs = ANN_TEXT_SIZES[annTextSizeIdx] * (r2.width / cv.width); inp.style.fontSize = fs + 'px'; inp.style.lineHeight = (fs * ANN_TEXT_LINE_RATIO) + 'px'; annAutosizeText() };
         vp.style.position = 'relative';
         ov.style.display = 'block'; ov.style.position = 'absolute'; ov.style.left = '0'; ov.style.top = '0'; ov.style.width = '100%'; ov.style.height = '100%'; ov.style.pointerEvents = 'none';
         inp.style.left = screenX + 'px';
@@ -4538,7 +4559,7 @@
         const cv = $('ann-canvas');
         cv.addEventListener('pointerdown', e => {
           if (!annActive) return;
-          if (e.button === 1) return;
+          if (e.button === 1 || annSpaceHeld) return;
           if (e.button === 2) {
             if (annCommitText) annCommitText();
             const p = annCanvasXY(e);
