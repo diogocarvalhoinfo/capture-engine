@@ -215,10 +215,12 @@ Motor de anotação (V24→V25):
 - O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
   - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
+  - No modo texto, a barra mostra só o ← (voltar à ferramenta anterior), o T, o negrito e o itálico, além das cores, do tamanho, de desfazer e refazer, de salvar e de cancelar. O ← deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
+- Girar o texto: um texto selecionado tem uma alça redonda acima da caixa. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A Rotação 90° da imagem gira também os textos
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse. O duplo clique continua a editar um texto. A anotação é salva na resolução original, qualquer que seja o zoom
