@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: um tooltip só em toda a aplicação, ícones no Layout PDF, botões «.pdf» e «.zip» com ícones novos e a zona vazia um pouco acima do meio. Corrige o «Auto» que piscava ao carregar e o tooltip do botão do tema.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Modificado
 
 - **Botões «.pdf» e «.zip».** Os botões de exportar passam a «.pdf» e «.zip». A folha do PDF perde o «+», e o .zip troca a seta para cima, que dava a entender «enviar», por uma folha com zíper, como os arquivos ZIP no Windows.
