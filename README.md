@@ -574,8 +574,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem ≈ 340 KB. É normal?**
-Sim. O Capture Engine é a aplicação inteira num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 340 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
+**O meu arquivo HTML tem ≈ 355 KB. É normal?**
+Sim. O Capture Engine é a aplicação inteira num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 355 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
@@ -693,7 +693,7 @@ capture-engine.html
 │   ├── Dark mode (html.dark)
 │   ├── Layout principal
 │   ├── Componentes (botões, modais, sidebar, cards)
-│   ├── Responsividade (56.25rem, 30rem)
+│   ├── Responsividade (56.25rem, 30rem; escala a partir de 112.5rem e 150rem)
 │   └── Animações
 │
 ├── <body>
