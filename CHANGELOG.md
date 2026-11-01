@@ -9,7 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **Ícones no Layout PDF.** «Horizontal» e «Vertical» passam a ícones de página, deitada e em pé, com o nome no tooltip. O «Auto» continua escrito. A barra fica menos carregada.
-- **Um tooltip só em toda a aplicação.** O tooltip do editor passa a valer para todos os botões: aparece na hora, acima do elemento, e fica enquanto o mouse ou o foco do teclado estiverem nele. Antes, os botões fora do editor usavam o tooltip do navegador, que espera cerca de um segundo e muda de sistema para sistema. O balão é escuro no tema claro, claro no tema escuro e branco por cima do visualizador.
+- **Um tooltip só em toda a aplicação.** O tooltip do editor passa a valer para todos os botões: aparece na hora, acima do elemento, e fica enquanto o mouse ou o foco do teclado estiverem nele. Antes, os botões fora do editor usavam o tooltip do navegador, que espera cerca de um segundo e muda de sistema para sistema. O tooltip só aparece onde não há um nome visível: ícones e símbolos como ✕, B, I e 90°. Onde há uma palavra («Auto», «PDF», «Layout PDF») ou numa miniatura inteira, não aparece, e o texto fica só para o leitor de tela. O balão é escuro no tema claro, claro no tema escuro e branco por cima do visualizador.
 
 ### Corrigido
 
