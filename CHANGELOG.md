@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.6.0] - 2026-11-01
+
+Minor: com anotações por salvar, o resto da barra do editor apaga por 5 s, e só o Cancelar e o Confirmar respondem.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, com o arquivo do commit `a2480b6`. Este commit só troca o número da versão.
 
 ### Modificado
 
