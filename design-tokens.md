@@ -142,10 +142,10 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 |---|---|---|
 | `--font-sans` | `'Segoe UI', arial, sans-serif` | Fonte de toda a interface: a do sistema, sem fontes externas |
 | `--text-micro` | `0.625rem` | Rodapé e botão de remover da miniatura (10px) |
-| `--text-caption` | `0.6875rem` | Títulos de seção, contadores, datas e legendas (11px) |
-| `--text-xs` | `0.75rem` | Nomes no histórico (12px) |
+| `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra «Removidos» (11px) |
+| `--text-xs` | `0.75rem` | Títulos das seções e dos blocos, chips, botões «Adicionar», nomes no histórico e tooltip (12px) |
 | `--text-code` | `calc(12.5rem / 16)` | Visualizador de texto, em fonte monoespaçada (12.5px) |
-| `--text-control` | `0.8125rem` | Botões, campos e chips (13px) |
+| `--text-control` | `0.8125rem` | Botões principais e campos; chips no mobile (13px) |
 | `--text-sm` | `0.875rem` | Texto geral (14px) |
 | `--text-subtitle` | `0.9375rem` | Título do aviso de documento binário (15px) |
 | `--text-base` | `1rem` | Títulos de modal e campos no mobile (16px) |
@@ -416,12 +416,13 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 | Elemento | Tamanho | Peso | Notas |
 |---|---|---|---|
 | Nome da marca (topo) | `var(--text-xl)` (20px) | `600` | Logo principal |
-| Section titles (rótulos uppercase) | `var(--text-caption)` (11px) | `600` | `letter-spacing: 0.6px` |
+| Títulos das seções `.sb-section-title` | `var(--text-xs)` (12px) | `600` | Maiúsculas, `letter-spacing: 0.6px`, ícone de 14px |
 | Texto geral | `var(--text-sm)` (14px) | `400` | Body text |
 | Botões `.btn-send` | `var(--text-control)` (13px) | `600` | Altura `36px` |
 | Ícones em botões | `14px` | — | `stroke-width: 2` |
 | Ícones de cabeçalho `.blk-hdr svg` | `16px` | — | |
-| Títulos de bloco `.blk-hdr-title` | `var(--text-caption)` (11px) | `600` | Uppercase |
+| Títulos de bloco `.blk-hdr-title` | `var(--text-xs)` (12px) | `600` | Maiúsculas |
+| Chips `.chip-label` | `var(--text-xs)` (12px) | `500`; `600` no escolhido | O escolhido tem fundo `--color-primary` |
 | Badges `.count-badge`, `#trash-badge` | `var(--text-caption)` (11px) | `700` | |
 | Item de histórico — nome | `var(--text-xs)` (12px) | `400` | |
 | Item de histórico — data | `var(--text-caption)` (11px) | `400` | `--color-muted-foreground` |
@@ -447,6 +448,8 @@ html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'[^']*'/, "const TOKEN_MAIN_COLOR = '
 ## 10. Responsividade
 
 A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Com o Windows a 125 % numa tela de 1920 × 1080 (área de cerca de 1536 × 777), a barra cabe no tamanho normal; a 150 % (cerca de 1280 × 633), comprime, com espaços de cerca de 14px entre as seções e textos de 12px.
+
+O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone passa de 48px a 40px e o texto de `--text-sm` a `--text-control`. Não é um modo compacto: não muda nada da barra lateral.
 
 ### `width <= 56.25rem` (900px) — tablets e telefones na horizontal
 
@@ -477,31 +480,24 @@ Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os 
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
-### Botões de Captura ("Adicionar Imagem" / "Adicionar Documento")
+### Botões «Adicionar Imagem», «Adicionar Documento» e as duas escolhas do modo ZIP (`.btn-capture`, `.btn-zip-cta`)
 
-| Estado | Borda |
+| Estado | Visual |
 |---|---|
-| **Repouso** | `1px solid var(--color-border-strong)` — sempre visível, cinzenta |
-| **Hover** | `border-color: var(--color-primary)` — transição suave para a cor accent |
-| **Regra** | A borda **nunca desaparece**. Elimina layout shift. |
+| **Repouso, tema claro** | Sem borda; fundo `--color-card` e sombra `--shadow-button` |
+| **Repouso, tema escuro** | Sem borda nem sombra; fundo `--color-hover-overlay-dark`, 6 % mais claro que o painel |
+| **Hover** | Contorno fino na cor principal (`--shadow-input-focus`) e texto `--color-foreground` |
 
-### Botões de Export ZIP em Modo ZIP Ativo (`.btn-zip-cta`)
+A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanho no hover.
 
-| Estado | Borda |
+### Chips do «Layout PDF» (Auto, Horizontal, Vertical)
+
+| Estado | Visual |
 |---|---|
-| **Repouso** | `1px solid var(--color-primary)` — accent permanente |
-| **Hover** | Fundo sutil `color-mix(in srgb, var(--color-primary) 6%, transparent)` + texto mais escuro |
-| **Regra** | A borda accent **não desaparece** ao sair com o cursor. |
+| **Escolhido** | Fundo `--color-primary`, texto `--color-primary-foreground`, peso 600 |
+| **Não escolhido** | Sem borda nem fundo; texto `--color-muted-foreground`, e `--color-foreground` no hover |
 
-### Chips de Modo (Auto / A4 Vertical / A4 Horizontal)
-
-| Estado | Borda | Texto |
-|---|---|---|
-| **Selecionado — repouso** | `1px solid var(--color-border-strong)` | `var(--color-foreground)` |
-| **Selecionado — hover** | `border-color: var(--color-primary)` | `var(--color-foreground)` |
-| **Não selecionado — qualquer estado** | `border: none` | `var(--color-muted-foreground)` |
-
-*Chips inativos são sem borda em todos os estados — comunica claramente "este não está selecionado".*
+«Horizontal» e «Vertical» são ícones de página, com o nome no tooltip; «Auto» é escrito.
 
 ### FAB Mobile (`#mobile-paste-fab`)
 
