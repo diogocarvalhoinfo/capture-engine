@@ -440,8 +440,8 @@
       pointer-events: none
     }
 
-    /* PDF and ZIP: a chevron on the right while the button can be used (the session has items). It fills the button; the chevron
-       usually means "opens another screen", and these buttons download at once, so the choice is pending (P-0002) */
+    /* PDF and ZIP: a chevron on the right while the button can be used (the session has items). On a filled button it reads
+       as "go ahead", and it leaves the check mark to the Concluído state alone (D-0087) */
     #btn-pdf:not(:disabled, .btn-zip-cta, .st-success, .st-error)::after,
     #btn-zip:not(:disabled, .btn-zip-cta, .st-success, .st-error)::after {
       content: "";
