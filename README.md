@@ -793,7 +793,7 @@ flowchart TD
     subgraph ADMIN["Administração"]
         VB["Visual Builder<br>GUI de tokens"]
         AG["Admin Gate<br>6 cliques no logo"]
-        TK["TOKEN_*<br>configuracao"]
+        TK["TOKEN_*<br>configuração"]
     end
     IDB[("IndexedDB<br>CaptureEngineDB<br>5 stores")]
     CE --> IDB

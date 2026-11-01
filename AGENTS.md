@@ -500,7 +500,7 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 
 **Nome da base de dados:** `CaptureEngineDB`
 
-> **Escopo de armazenamento (origem):** o IndexedDB é particionado por **origem** = protocolo + host + porta. A mesma `CaptureEngineDB` aberta via `file://`, `http://localhost:8080` e `https://<user>.github.io` são **três bases distintas e isoladas** — sem compartilha entre elas, mesmo no mesmo perfil de navegador. Dentro de `file://`, o caminho do arquivo não altera a origem (mesma base). Decorre disto que distribuir a ferramenta hospedada vs como arquivo local resulta em históricos separados.
+> **Escopo de armazenamento (origem):** o IndexedDB é particionado por **origem** = protocolo + host + porta. A mesma `CaptureEngineDB` aberta via `file://`, `http://localhost:8080` e `https://<user>.github.io` são **três bases distintas e isoladas** — sem compartilhamento entre elas, mesmo no mesmo perfil de navegador. Dentro de `file://`, o caminho do arquivo não altera a origem (mesma base). Decorre disto que distribuir a ferramenta hospedada vs como arquivo local resulta em históricos separados.
 **Versão do schema:** `2`
 
 > **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V25+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
@@ -1413,7 +1413,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + amostras de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
 | D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A barra «Removidos» cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
 | D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fechamento (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
-| D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true, disabled=false, opacidade=1, `cursor=pointer``, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
+| D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true`, `disabled=false`, `opacidade=1` e `cursor=pointer`, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
 | D-0078 | **Versões em SemVer a partir de 28.0.0** | O critério de major, minor e patch está na §12. As tags `v1` a `v27` e as entradas `[V7]` a `[V27]` ficam. Origem: auditoria de 2026-10-31, decisão 1. |
 | D-0079 | **Purge às 48 horas e sem backup automático** | Por privacidade: para guardar, o usuário exporta PDF ou ZIP. Origem: `CHANGELOG.md`, «Decisões mantidas» da V23. |
 | D-0080 | **O aviso de quota fica por cima da barra do topo, em `#b91c1c` e branco** | É um aviso que não pode ser ignorado. As duas cores são literais declarados no `design-tokens.md` §2.1. Origem: `CHANGELOG.md`, D23. |
@@ -1532,9 +1532,9 @@ navigator.storage.estimate().then(e =>
   )
 );
 ```
-Se o uso estiver acima de 80%, a quota pode estar causando falhas silenciosas. **Solucao:** exportar (PDF/ZIP) e apagar sessoes antigas no historico.
+Acima de 80 % de uso, a quota pode causar falhas na gravação. **Solução:** exporte (PDF ou ZIP) e apague as sessões antigas no histórico.
 
-**Listar sessoes com nome, usuário e data** (identificar qual sessao extrair antes de usar o script abaixo):
+**Listar sessões com nome, usuário e data** (para saber qual sessão extrair com o script abaixo):
 ```js
 const req = indexedDB.open('CaptureEngineDB', 2);
 req.onsuccess = e => {
@@ -1554,7 +1554,7 @@ req.onsuccess = e => {
 };
 ```
 
-**Extrair imagens de uma sessao especifica** (usar o ID obtido no script acima):
+**Extrair imagens de uma sessão específica** (com o ID obtido no script acima):
 ```js
 const SESSION_ID = 'COLE_O_ID_AQUI'; // ID do console.log acima
 const req2 = indexedDB.open('CaptureEngineDB', 2);
