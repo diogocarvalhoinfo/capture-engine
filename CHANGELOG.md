@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Patch: a barra lateral deixa de ficar apertada nos notebooks com o Windows a 125 % e a 150 %.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Corrigido
 
 - **Barra lateral apertada com o Windows a 125 % e a 150 %.** Numa tela de 1920 × 1080, o Windows a 125 % deixa ao navegador cerca de 1536 × 777 px, e a 150 % cerca de 1280 × 633. Abaixo de 800 px de altura, a barra entrava num modo compacto, com 8 px entre as seções, 4 px dentro delas e textos de 11 px, mesmo quando cabia no tamanho normal. Agora o modo compacto só liga até 700 px de altura, e fica menos apertado: cerca de 14 px entre as seções, 6 px dentro delas e textos de 12 px. Medido no Edge 156, de 600 a 937 px de altura: a barra cabe sem rolar, e a página também.
