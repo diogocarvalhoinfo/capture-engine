@@ -8,7 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
-- **Botões «.pdf» e «.zip».** Os botões de exportar passam a «.pdf» e «.zip», e a folha do PDF perde o «+».
+- **Botões «.pdf» e «.zip».** Os botões de exportar passam a «.pdf» e «.zip». A folha do PDF perde o «+», e o .zip troca a seta para cima, que dava a entender «enviar», por uma folha com zíper, como os arquivos ZIP no Windows.
+- **Zona vazia um pouco acima do meio.** O ícone e o «Ctrl+V ou arrastar» sobem do centro (50 %) para 45 % da altura, onde o olho sente o centro.
 - **Ícones no Layout PDF.** «Horizontal» e «Vertical» passam a ícones de página, deitada e em pé, com o nome no tooltip. O «Auto» continua escrito. A barra fica menos carregada.
 - **Um tooltip só em toda a aplicação.** O tooltip do editor passa a valer para todos os botões: aparece acima do elemento e fica enquanto o mouse ou o foco do teclado estiverem nele. O primeiro espera 250 ms com o mouse parado, como no Fluent UI da Microsoft, para cruzar a barra não acender um balão em cada botão. Com um tooltip visível há menos de 500 ms, o seguinte aparece na hora; pelo teclado, também. Antes, os botões fora do editor usavam o tooltip do navegador, que espera cerca de um segundo e muda de sistema para sistema. O tooltip só aparece onde não há um nome visível: ícones e símbolos como ✕, B, I e 90°. Onde há uma palavra («Auto», «PDF», «Layout PDF») ou numa miniatura inteira, não aparece, e o texto fica só para o leitor de tela. O balão é escuro no tema claro, claro no tema escuro e branco por cima do visualizador.
 
