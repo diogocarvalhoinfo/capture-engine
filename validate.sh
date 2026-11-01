@@ -386,10 +386,10 @@ done
 AGOT=$(echo "$AGOT" | sed 's/^ *//')
 check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
 
-# 25) File size (admin) within the range in README section 12 (~340KB).
+# 25) File size (admin) within a fixed range; README section 12 gives only the rough size (about 350 KB).
 SZ=$(wc -c < "$FILE" | tr -d ' ')
 if [ "$SZ" -ge 300000 ] && [ "$SZ" -le 390000 ]; then
-  printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~340KB)" "$SZ"; PASS=$((PASS+1));
+  printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~350KB)" "$SZ"; PASS=$((PASS+1));
 else
   printf '[FAIL] %-52s (%s, esperado 300000-390000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi

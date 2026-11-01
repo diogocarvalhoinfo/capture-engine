@@ -161,6 +161,7 @@ A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guard
 - **Ctrl+V** cola qualquer coisa da área de transferência: imagem, arquivo ou texto
 - **Arrastar e soltar** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
+- O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
 - A aplicação guarda automaticamente a cada 5 segundos — mas só o que exportar (PDF/ZIP) fica garantido (fechar o navegador dentro dessa janela pode perder as últimas alterações)
 
@@ -575,8 +576,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem ≈ 355 KB. É normal?**
-Sim. O Capture Engine é a aplicação inteira num único arquivo — inclui todo o CSS, toda a lógica JavaScript, e todos os ícones SVG inline. A versão de administrador (com o Visual Builder) ronda os ≈ 355 KB; a versão exportada para usuário final (Export User), sem o painel de admin, fica menor. Ambos os tamanhos são esperados para uma aplicação deste tipo.
+**O meu arquivo HTML tem cerca de 350 KB. É normal?**
+Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 350 KB, e a do Export User fica menor, sem o Visual Builder.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
