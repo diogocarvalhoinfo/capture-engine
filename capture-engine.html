@@ -4768,6 +4768,7 @@
                 const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
                 if (_bb) _bb.classList.toggle('active', annTextBold);
                 if (_ib) _ib.classList.toggle('active', annTextItalic);
+                if (annTool !== 'text') annSetTool('text'); // editing a text shows the text bar (← T B I); the ← goes back to the tool in use
                 annRenderAll(); // original text hidden; overlay update
                 annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
                 return;
