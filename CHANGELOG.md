@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: a barra lateral e as zonas vazias ganham um visual novo, os textos pequenos passam a 12 px, e a interface cresce nas telas grandes.
 
+Prova de vida do Export User (`AGENTS.md` §11, Parte B): feita por quem mantém o projeto, por `file://`, sem erros no console.
+
 ### Modificado
 
 - **Ícones nos títulos das seções.** «Identificação», «Layout PDF», «Captura» e «Exportar» ganham um ícone cinza de 14 px, com o mesmo traço dos ícones dos blocos «Imagens» e «Documentos».
