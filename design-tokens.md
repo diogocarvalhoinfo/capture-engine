@@ -260,11 +260,11 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_TITLE_START` | `string` | `'Capture '` | ✅ | Interface → «Texto inicial» |
 | `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | ✅ | Interface → «Texto em destaque» |
 | `TOKEN_TITLE_END` | `string` | `''` | ✅ | Interface → «Texto final» (terceira parte do título; espaços manuais) |
-| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto inicial» (vazio = herda cor do texto) |
-| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto em destaque» (vazio = herda cor accent) |
-| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → swatch de cor do «Texto final» (vazio = herda cor do texto) |
-| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → color seletor principal |
-| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → color seletor de texto |
+| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto inicial» (vazio = herda cor do texto) |
+| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto em destaque» (vazio = herda a cor principal) |
+| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto final» (vazio = herda cor do texto) |
+| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → seletor da «Cor principal» |
+| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → seletor da «Cor do texto sobre destaque» |
 | `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → «Texto do rodapé» |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → «Primeiro campo», interruptor |
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → «Segundo campo», interruptor |
@@ -281,7 +281,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 Terceira parte do título da aplicação. Renderizado como `<span id="ui-title-end">` com `font-weight: 600`. A cor é controlada por `TOKEN_TITLE_END_COLOR` (vazio = herda cor do texto). Espaços entre partes do título são manuais — incluir no valor do token.
 
 **`TOKEN_ACCENT_FG_OVERRIDE` (vazio = automático):**
-Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor accent deve ser branco ou preto. O algoritmo usado é **YIQ** — uma ponderação perceptual dos canais RGB calibrada para a sensibilidade do olho humano:
+Quando vazio (`''`), o motor calcula automaticamente se o texto sobre a cor principal deve ser branco ou preto. O algoritmo usado é **YIQ** — uma ponderação perceptual dos canais RGB calibrada para a sensibilidade do olho humano:
 
 ```
 yiq = (R × 299 + G × 587 + B × 114) / 1000
@@ -431,7 +431,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Título de modal `.modal-title` | `var(--text-base)` (16px) | `600` | Centrado horizontalmente |
 | Campo de documento `.d-input` | `var(--text-control)` (13px) | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
 | Legenda de imagem `.t-label` | `var(--text-caption)` (11px) | `400` | **Sem negrito** — discreta, não distrai da imagem |
-| Links de ação `.pick-link` | `var(--text-control)` (13px) | `400` | Em empty states |
+| Links de ação `.pick-link` | `var(--text-control)` (13px) | `400` | Nas zonas vazias |
 
 ---
 
@@ -439,8 +439,8 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|
-| **Restaurar** | Fill accent | `var(--color-primary)` + branco | Apenas se o item está na lixeira |
-| **Copiar Texto** | Fill accent | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
+| **Restaurar** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas se o item está na lixeira |
+| **Copiar Texto** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
 | **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre — ativos e na lixeira |
 | **Confirmar** (anotação) | Fill verde | `var(--color-green-500)` | No modo de anotação |
 | **Cancelar** (anotação) | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | No modo de anotação |
@@ -509,7 +509,7 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | **Hover** | Ícone `var(--color-foreground)`, borda `var(--color-muted-foreground)` — reforço sutil |
 | **`:active` (toque)** | Ícone e borda em `var(--color-primary)` — feedback preciso no momento do toque |
 
-*O accent aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
+*A cor principal aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
 
 
 ---
@@ -555,5 +555,5 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 | `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
 | `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Salvo com **os mesmos pontos do preview** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
+| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Salvo com **os mesmos pontos da pré-visualização** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
 | `text` | `x1, y1, txt, bold, italic, fontSize` | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
