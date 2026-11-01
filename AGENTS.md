@@ -1048,7 +1048,7 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 ## 10. Fluxo de trabalho de Desenvolvimento para Agentes
 
 1. **Nunca sobrescrever o arquivo inteiro** — sempre edições incrementais e cirúrgicas
-2. **Teste no navegador o que a mudança toca** (D-0084). A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão.
+2. **Teste no navegador o que a mudança toca** (D-0084). O teste do Export User (§11, Parte B) continua manual, antes de cada versão.
 3. **Após cada alteração significativa, atualizar:**
    - `README.md` — se for nova funcionalidade visível ao usuário
    - `design-tokens.md` — se for novo token CSS ou JS
@@ -1083,11 +1083,11 @@ O `validate.sh` executa 29 verificações mecânicas: 28 com regex, grep ou Pyth
 
 1. **Comment markers (linhas grep)**: Verifica a integridade dos 11 locais de inserção de blocos dinâmicos do Quine. Falha indica corrupção da estrutura de export.
 2. **Função definida: window.exportFile**: Casa a **sintaxe de definição** (`nome = function`), não a mera ocorrência do nome. Garante que o ponto de entrada do Quine existe como função.
-3. **Função definida: capturePristine**: Idem. Garante que a função existe — **não** que a leitura do HTML original funcione; isso é a prova de vida da §11 Parte B.
+3. **Função definida: capturePristine**: Idem. Garante que a função existe — **não** que a leitura do HTML original funcione; isso é o teste do Export User da §11 Parte B.
 4. **Função definida: sanitizeForQuine**: Idem. Garante que a função existe — **não** que sanitize corretamente.
 5. **Função definida: escapeHTML**: Idem. Garante que a função existe — **não** que esteja aplicada em todos os pontos de entrada, que é o que «proteção XSS» exigiria. Um check de presença não pode sustentar essa promessa; a cobertura real é matéria da §1.3.
 
-> ⚠️ **O que os checks 2 a 5 provam, e o que não provam (D67).** Provam que a **sintaxe de definição não desapareceu** do arquivo. Não provam que a função corre — isso é a prova de vida da `§11 Parte B` e o check 27. E não distinguem código de **contexto não executado**. Uma definição escrita num comentário **ou numa string literal** satisfaz o check; os dois casos foram medidos (D72). O âmbito é textual, não sintático. Isto é um limite **declarado, não um descuido**. Tirar os comentários de forma confiável exigiria um parser de JavaScript. O arquivo tem regex com aspas lá dentro (`/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`) e comentários com apóstrofos. **Os dois partem qualquer scanner ingênuo**: foi assim que a D54 corrompeu a contagem de complexidade. Escrever mais um scanner frágil para fechar este furo seria repetir o defeito que o projeto passa a vida a corrigir.
+> ⚠️ **O que os checks 2 a 5 provam, e o que não provam (D67).** Provam que a **sintaxe de definição não desapareceu** do arquivo. Não provam que a função corre — isso é o teste do Export User da `§11 Parte B` e o check 27. E não distinguem código de **contexto não executado**. Uma definição escrita num comentário **ou numa string literal** satisfaz o check; os dois casos foram medidos (D72). O âmbito é textual, não sintático. Isto é um limite **declarado, não um descuido**. Tirar os comentários de forma confiável exigiria um parser de JavaScript. O arquivo tem regex com aspas lá dentro (`/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/`) e comentários com apóstrofos. **Os dois partem qualquer scanner ingênuo**: foi assim que a D54 corrompeu a contagem de complexidade. Escrever mais um scanner frágil para fechar este furo seria repetir o defeito que o projeto passa a vida a corrigir.
 6. **Span de titulo: ui-title-start**: Verifica o span obrigatório do título (parte 1).
 7. **Span de titulo: ui-title-accent**: Verifica o span obrigatório do título (parte 2).
 8. **Span de titulo: ui-title-end**: Verifica o span obrigatório do título (parte 3).
@@ -1251,7 +1251,7 @@ Nenhuma tarefa está concluída sem validar todos os pontos abaixo:
 
 A validação tem **duas partes**:
 - **Parte A — sem navegador:** verificações mecânicas e de leitura de código. O `validate.sh` faz as mecânicas: markers, funções do Quine, partes do título, APIs proibidas, zero-dependência e sintaxe JS (ver a Seção 10, «Como executar»). As restantes confirmam-se lendo o código.
-- **Parte B — teste no navegador:** comportamento que só se confirma a abrir e a usar a aplicação. O agente pode fazer estes testes, por exemplo com o Playwright (D-0084). A «Prova de vida do Export User» é sempre feita por quem mantém o projeto, antes de cada versão.
+- **Parte B — teste no navegador:** comportamento que só se confirma a abrir e a usar a aplicação. O agente pode fazer estes testes, por exemplo com o Playwright (D-0084). O «Teste do Export User» é sempre feito por quem mantém o projeto, antes de cada versão.
 
 ---
 
@@ -1346,7 +1346,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 ---
 
-#### Prova de vida do Export User — obrigatória em toda a release
+#### Teste do Export User — obrigatório em toda a release
 
 > ⚠️ **AVISO CRÍTICO — este é o teste que faltou durante 15 versões:** entre a V11 e a V25, o Export User produziu um arquivo que **nunca inicializava** (ver changelog D25). Não foi detectado porque o `validate.sh` só valida o arquivo de administrador, e nunca o produto do export. Os itens antigos deste checklist só conferiam o que devia estar **ausente** (botões de admin, Visual Builder, logs), e um artefato morto cumpre isso. **Nunca substituir este bloco por verificações de ausência.**
 
@@ -1362,11 +1362,11 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
 
-> ⚠️ **O protocolo em que corre a prova muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha e o Quine exporta o `BOOT_HTML`, que é `document.documentElement.outerHTML` capturado no arranque: HTML equivalente mas **re-serializado pelo navegador** — tags SVG auto-fechadas passam a ter fecho explícito, atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registro que não diga qual protocolo usou não é reproduzível.
+> ⚠️ **O protocolo em que corre o teste muda o artefato — declare qual usou.** Em `http(s)` o Export Admin sai **byte a byte igual** ao `capture-engine.html` de origem. Em `file://` o `fetch` falha e o Quine exporta o `BOOT_HTML`, que é `document.documentElement.outerHTML` capturado no arranque: HTML equivalente mas **re-serializado pelo navegador** — tags SVG auto-fechadas passam a ter fecho explícito, atributos multi-linha colapsam. Medido na V26: `316.308` bytes / `eab02cb0` em `http(s)`, contra `316.354` / `f94ac992` em `file://`. **Ambos são pontos fixos:** G1 = G2 = G3 dentro de cada protocolo, e todas as gerações abrem vivas. Não há deriva a acumular — mas os dois números não são o mesmo número, e um registro que não diga qual protocolo usou não é reproduzível.
 
 > **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25, a interface aparecia inteira, com a barra de estado a dizer «Pronto», porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
 
-> ℹ️ **Nota:** o check 27 do `validate.sh` simula a remoção e apanha esta classe de defeito. Só cobre o código síncrono de nível de módulo, porque o `init()` é `async`. **Não substitui esta prova de vida.**
+> ℹ️ **Nota:** o check 27 do `validate.sh` simula a remoção e apanha esta classe de defeito. Só cobre o código síncrono de nível de módulo, porque o `init()` é `async`. **Não substitui este teste.**
 
 **Multi-aba:**
 - [ ] Abrir o arquivo numa segunda aba do mesmo navegador → **carrega normalmente** (sem tela de erro vermelha); ambas as abas funcionam e compartilham a mesma base de dados
@@ -1396,15 +1396,15 @@ Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um
 1. Troque `## [Unreleased]` por `## [X.Y.Z] - AAAA-MM-DD`.
 2. Mude a linha «Versão» do README e as 3 referências do HTML.
 3. Rode `bash validate.sh`, que deve dar 0 FAIL.
-4. Faça um commit só com estas mudanças: `docs(changelog): versão X.Y.Z`.
-5. Crie a tag leve nesse commit: `git tag vX.Y.Z`. O push da tag pede a palavra CONFIRMO de quem mantém o projeto.
-6. Publique a release da tag com o `capture-engine.html` anexado: `gh release create vX.Y.Z capture-engine.html --title "X.Y.Z" --notes-file <entrada do changelog>`. O botão «Download» do README baixa o arquivo da release mais recente. Publicar pede o mesmo CONFIRMO.
-7. Faça a «Prova de vida do Export User» da §11, Parte B, com o arquivo gerado pelo botão.
+4. Antes do commit, quem mantém o projeto faz o «Teste do Export User» da §11, Parte B, com o arquivo já com a versão nova.
+5. Faça um commit só com estas mudanças e a linha do teste do Export User no changelog: `docs(changelog): versão X.Y.Z`. Um commit só para o teste não é preciso.
+6. Crie a tag leve nesse commit: `git tag vX.Y.Z`. O push da tag pede a palavra CONFIRMO de quem mantém o projeto.
+7. Publique a release da tag com o `capture-engine.html` anexado: `gh release create vX.Y.Z capture-engine.html --title "X.Y.Z" --notes-file <entrada do changelog>`. O botão «Download» do README baixa o arquivo da release mais recente. Publicar pede o mesmo CONFIRMO. Depois, confira que o arquivo do botão é igual ao do commit da tag.
 
 **Motivo da tag no protocolo:** a V26 saiu sem tag, e seis auditorias não o apanharam. Este protocolo não falava de tags, e uma auditoria só encontra o que o protocolo manda procurar.
 
 > [!CAUTION]
-> **Nenhuma versão fecha sem a prova de vida do Export User.**
+> **Nenhuma versão fecha sem o teste do Export User.**
 > Da V11 à V25, o Export User gerou um arquivo que não inicializava, e ninguém notou. O teste custa dois minutos.
 
 **Numeração dos checks:** os comentários do `validate.sh` numeram os checks de outra forma que a lista da §10 (D69). Ao citar um check, diga de que lista fala.
@@ -1432,10 +1432,11 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0081 | **Sem o botão «Nova Sessão»** | Abrir uma sessão numa janela separada só fazia sentido com o launcher `CaptureEngineApp.vbs`. Fora dele, abria várias instâncias sem necessidade. Origem: `CHANGELOG.md`, V18. |
 | D-0082 | **Tamanhos de fonte, espaços e cortes do layout em `rem`** | O texto acompanha o tamanho de letra escolhido no navegador. Com a letra padrão (16 px), nenhum pixel muda. Revoga a regra antiga «Usar `px`» do §2.2. Origem: auditoria de 2026-10-31, decisão 2. |
 | D-0083 | **Entradas antigas do changelog: as palavras seguem a tabela, as frases ficam** | As formas de Portugal e os anglicismos da lista são trocados também nas entradas `[V7]` a `[V27]`. As frases longas antigas ficam, porque são registro datado. Origem: auditoria de 2026-10-31, decisão 4. |
-| D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. A prova de vida do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
+| D-0084 | **O agente testa no navegador o que muda** | Uma regra antiga mandava o agente nunca abrir o navegador. O teste do Export User (§11, Parte B) continua manual, antes de cada versão. Origem: auditoria de 2026-10-31, decisão 5. |
 | D-0085 | **Comentários de código em inglês: o `validate.sh` já, o HTML depois** | Os comentários do HTML ficam perto dos marcadores do Quine e vão num plano próprio (F-0029, em «Pendentes»). Origem: auditoria de 2026-10-31, decisão 7. |
 | D-0086 | **O prefixo `-webkit-backdrop-filter` fica** | O Safari anterior à versão 18 só aplica o desfoque com o prefixo. É a única exceção ao stylelint, marcada com `stylelint-disable-next-line` na regra de `#zoom-ui`, `#img-nav-prev` e `#img-nav-next`. Origem: auditoria de 2026-10-31, passo 72 do plano. |
 | D-0087 | **O chevron «›» dos botões .pdf e .zip fica** | Aparece só com o botão ativo e some no estado «Concluído». Num botão preenchido, lê-se como «seguir em frente», perto da ação. Alternativas estudadas na 28.4.0 e na 28.5.0: ícone de baixar (pesado), contagem de páginas e arquivos, «.pdf»/«.zip» (redundante depois da mudança de nome) e o visto (diz «feito» antes de exportar e enfraquece o aviso de sucesso). Fecha a P-0002. |
+| D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até à 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. |
 
 ### Pendentes
 
@@ -1457,7 +1458,7 @@ Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não v
 | `D1`–`D8` | Decisões do proprietário | Esta seção |
 | `D9`–`D76` | Entradas do changelog: correções, triagens e registros. O `D9` é o commit `a5656f5` (guarda de blob na lixeira e aviso de IndexedDB indisponível) | `CHANGELOG.md` e títulos de commit |
 | `M1`–`M6`, `M-1`, `B8`, `B-1`–`B-3` | Achados das auditorias externas da V26 | `CHANGELOG.md`, entrada `[V26]` |
-| `G1`–`G3` | Gerações sucessivas do Export Admin numa prova de vida | `CHANGELOG.md`, entrada `[V26]` |
+| `G1`–`G3` | Gerações sucessivas do Export Admin num teste do Export User | `CHANGELOG.md`, entrada `[V26]` |
 | `V7`–`V27` | Versões anteriores ao SemVer | `CHANGELOG.md` e tags `v1` a `v27` |
 
 Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a decisão seguinte foi a `D-0077`.
