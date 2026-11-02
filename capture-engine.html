@@ -4720,53 +4720,53 @@
         });
         $('ann-canvas').addEventListener('pointermove', e => { if (annTool !== 'select' || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); cv.style.cursor = annHandleHitTest(p.x, p.y) === 'rot' ? 'grab' : 'default' });
         $('ann-cancel').onclick = annDeactivate;
-        $('ann-save').onclick = async () => {
-          if (annCommitText) annCommitText();
-          const img = $('img-modal-img'), cv = document.createElement('canvas');
-          let fW = img.naturalWidth, fH = img.naturalHeight, cX = 0, cY = 0;
-          if (annCropBox) {
-            fW = Math.round(annCropBox.w); fH = Math.round(annCropBox.h);
-            cX = Math.round(annCropBox.x); cY = Math.round(annCropBox.y);
-          }
+        // The image as saved: the visible image with the annotations drawn on it, cut to the crop box when there is one
+        function annRenderSaved(img, fW, fH, cX, cY) {
+          const cv = document.createElement('canvas');
           cv.width = fW; cv.height = fH;
           const ctx = cv.getContext('2d');
           ctx.drawImage(img, -cX, -cY);
           const aCv = $('ann-canvas');
           annRedraw(); /* strip selection overlay from saved image */
           ctx.drawImage(aCv, -cX, -cY);
-          const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+          return new Promise(r => cv.toBlob(r, 'image/png'));
+        }
+        // Saving with Recortar on: the annotations move onto the cut image, which keeps its box (none when the box is the whole image)
+        function annSaveCrop(o, img, cX, cY, fW, fH) {
+          annShiftAll(-cX, -cY);
+          const imgW = img.naturalWidth, imgH = img.naturalHeight;
+          if (cX === 0 && cY === 0 && fW === imgW && fH === imgH) delete o.cropBox;
+          else o.cropBox = { x: cX, y: cY, w: fW, h: fH };
+          annCropBox = null;
+        }
+        // An image left with no annotation, rotation or crop goes back to its original blob, without editor data
+        function annForgetIfUntouched(o) {
+          if (annHistory.length !== 0 || annRedoStack.length !== 0 || annCurrentRotation !== 0 || o.cropBox) return;
+          o.blob = o.origBlob;
+          delete o.origBlob;
+          delete o.annHistory;
+          delete o.annRedoStack;
+          delete o.rotation;
+          delete o.cropBox;
+        }
+        $('ann-save').onclick = async () => {
+          if (annCommitText) annCommitText();
+          const img = $('img-modal-img');
+          let fW = img.naturalWidth, fH = img.naturalHeight, cX = 0, cY = 0;
+          if (annCropBox) {
+            fW = Math.round(annCropBox.w); fH = Math.round(annCropBox.h);
+            cX = Math.round(annCropBox.x); cY = Math.round(annCropBox.y);
+          }
+          const blob = await annRenderSaved(img, fW, fH, cX, cY);
           const o = images.find(x => x.id === modalItemId);
           if (o && blob) {
             if (!o.origBlob) o.origBlob = o.blob;
             o.blob = blob;
-            if (annCropBox) {
-              function shift(pts) { pts.forEach(p => { p.x -= cX; p.y -= cY; }); }
-              [annHistory, ...annUndoStack.map(s => s.h), ...annRedoStack.map(s => s.h)].forEach(arr => {
-                arr.forEach(e => {
-                  if (e.type === 'free') shift(e.pts);
-                  else if (e.type === 'text') { e.x1 -= cX; e.y1 -= cY; }
-                  else { e.x1 -= cX; e.y1 -= cY; e.x2 -= cX; e.y2 -= cY; }
-                });
-              });
-              const imgW = img.naturalWidth, imgH = img.naturalHeight;
-              if (cX === 0 && cY === 0 && fW === imgW && fH === imgH) {
-                 delete o.cropBox;
-              } else {
-                 o.cropBox = { x: cX, y: cY, w: fW, h: fH };
-              }
-              annCropBox = null;
-            }
+            if (annCropBox) annSaveCrop(o, img, cX, cY, fW, fH);
             o.annHistory = JSON.parse(JSON.stringify(annHistory));
             o.annRedoStack = JSON.parse(JSON.stringify(annRedoStack));
             o.rotation = annCurrentRotation;
-            if (annHistory.length === 0 && annRedoStack.length === 0 && annCurrentRotation === 0 && !o.cropBox) {
-              o.blob = o.origBlob;
-              delete o.origBlob;
-              delete o.annHistory;
-              delete o.annRedoStack;
-              delete o.rotation;
-              delete o.cropBox;
-            }
+            annForgetIfUntouched(o);
             await idbPut('images', o);
             const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`);
             if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u }
