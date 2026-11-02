@@ -5196,38 +5196,35 @@
           else if (annDragging) { if (!annDragRafId) annDragRafId = requestAnimationFrame(() => annDragStep(e)); }
           else if (annDrawing) annMoveDraw(e);
         });
-        window.addEventListener('pointerup', e => {
-          if (!annActive) return;
-          if (annDraggingCrop) {
-            annDraggingCrop = false;
-            if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
-            annRenderAll();
-            return;
-          }
-          // Phase 3: end the resize
-          if (annResizing) {
-            if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
-            annResizing = false;
-            if (annResizeHandle === 'rot') $('ann-canvas').style.cursor = 'default';
-            annResizeHandle = '';
-            // M9: commit the pre-resize snapshot ONLY if the gesture really changed the shape
-            if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
-            annRenderAll();
-            return;
-          }
-          // Phase 2.3: end the drag
-          if (annDragging) {
-            if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
-            annDragging = false;
-            annDragStartX = 0; annDragStartY = 0;
-            annDragLastX = 0; annDragLastY = 0;
-            annDragOriginX = 0; annDragOriginY = 0;
-            // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
-            if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
-            annRenderAll();
-            return;
-          }
-          if (!annDrawing || !annActive) return;
+        // End of a crop drag: a box smaller than 10 px is dropped
+        function annUpCrop() {
+          annDraggingCrop = false;
+          if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
+          annRenderAll();
+        }
+        // Phase 3: end the resize
+        function annUpResize() {
+          if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
+          annResizing = false;
+          if (annResizeHandle === 'rot') $('ann-canvas').style.cursor = 'default';
+          annResizeHandle = '';
+          // M9: commit the pre-resize snapshot ONLY if the gesture really changed the shape
+          if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
+          annRenderAll();
+        }
+        // Phase 2.3: end the drag
+        function annUpDrag() {
+          if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
+          annDragging = false;
+          annDragStartX = 0; annDragStartY = 0;
+          annDragLastX = 0; annDragLastY = 0;
+          annDragOriginX = 0; annDragOriginY = 0;
+          // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
+          if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
+          annRenderAll();
+        }
+        // End of a drawing: the shape joins annHistory (a free stroke needs at least two points)
+        function annUpDraw(e) {
           annDrawing = false;
           if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; }
           annLastEvt = null;
@@ -5247,6 +5244,13 @@
             setAnnDirty(true);
           }
           annRenderAll();
+        }
+        window.addEventListener('pointerup', e => {
+          if (!annActive) return;
+          if (annDraggingCrop) annUpCrop();
+          else if (annResizing) annUpResize();
+          else if (annDragging) annUpDrag();
+          else if (annDrawing) annUpDraw(e);
         });
 
         // ── Floating ✕ button that deletes annotations ───────────────────────────────
