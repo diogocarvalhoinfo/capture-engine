@@ -5052,132 +5052,131 @@
           else if (annTool === 'free') { annCR(ctx, annPath, false); }
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
-        window.addEventListener('pointermove', e => {
-          if (!annActive) return;
-          if (annDraggingCrop) {
-            const p = annCanvasXY(e);
-            const dx = p.x - annStart.x, dy = p.y - annStart.y;
-            annStart = p;
-            if (annCropHandle === 'tl') { annCropBox.x += dx; annCropBox.y += dy; annCropBox.w -= dx; annCropBox.h -= dy; }
-            else if (annCropHandle === 'tr') { annCropBox.y += dy; annCropBox.w += dx; annCropBox.h -= dy; }
-            else if (annCropHandle === 'bl') { annCropBox.x += dx; annCropBox.w -= dx; annCropBox.h += dy; }
-            else if (annCropHandle === 'br') { annCropBox.w += dx; annCropBox.h += dy; }
-            else if (annCropHandle === 't') { annCropBox.y += dy; annCropBox.h -= dy; }
-            else if (annCropHandle === 'b') { annCropBox.h += dy; }
-            else if (annCropHandle === 'l') { annCropBox.x += dx; annCropBox.w -= dx; }
-            else if (annCropHandle === 'r') { annCropBox.w += dx; }
-            else if (annCropHandle === 'move') { annCropBox.x += dx; annCropBox.y += dy; }
-            if (annCropBox.w < 0) { annCropBox.x += annCropBox.w; annCropBox.w = Math.abs(annCropBox.w); annCropHandle = { tl: 'tr', tr: 'tl', bl: 'br', br: 'bl', l: 'r', r: 'l', t: 't', b: 'b' }[annCropHandle] || 'move'; }
-            if (annCropBox.h < 0) { annCropBox.y += annCropBox.h; annCropBox.h = Math.abs(annCropBox.h); annCropHandle = { tl: 'bl', bl: 'tl', tr: 'br', br: 'tr', t: 'b', b: 't', l: 'l', r: 'r' }[annCropHandle] || 'move'; }
-            const cw = $('ann-canvas').width, ch = $('ann-canvas').height;
-            if (annCropHandle === 'move') {
-              if (annCropBox.x < 0) annCropBox.x = 0;
-              if (annCropBox.y < 0) annCropBox.y = 0;
-              if (annCropBox.x + annCropBox.w > cw) annCropBox.x = cw - annCropBox.w;
-              if (annCropBox.y + annCropBox.h > ch) annCropBox.y = ch - annCropBox.h;
-            } else {
-              if (annCropBox.x < 0) { annCropBox.w += annCropBox.x; annCropBox.x = 0; }
-              if (annCropBox.y < 0) { annCropBox.h += annCropBox.y; annCropBox.y = 0; }
-              if (annCropBox.x + annCropBox.w > cw) annCropBox.w = cw - annCropBox.x;
-              if (annCropBox.y + annCropBox.h > ch) annCropBox.h = ch - annCropBox.y;
-            }
-            annRenderAll();
-            return;
+        // Recortar: how each handle moves the box, as multipliers of dx and dy for [x, y, w, h]
+        const ANN_CROP_DRAG = { tl: [1, 1, -1, -1], tr: [0, 1, 1, -1], bl: [1, 0, -1, 1], br: [0, 0, 1, 1], t: [0, 1, 0, -1], b: [0, 0, 0, 1], l: [1, 0, -1, 0], r: [0, 0, 1, 0], move: [1, 1, 0, 0] };
+        function annCropDrag(dx, dy) {
+          const k = ANN_CROP_DRAG[annCropHandle];
+          if (!k) return;
+          if (k[0]) annCropBox.x += k[0] * dx;
+          if (k[1]) annCropBox.y += k[1] * dy;
+          if (k[2]) annCropBox.w += k[2] * dx;
+          if (k[3]) annCropBox.h += k[3] * dy;
+        }
+        // A box dragged past its opposite side turns over: the size becomes positive again and the handle swaps sides
+        function annCropFlip() {
+          if (annCropBox.w < 0) { annCropBox.x += annCropBox.w; annCropBox.w = Math.abs(annCropBox.w); annCropHandle = { tl: 'tr', tr: 'tl', bl: 'br', br: 'bl', l: 'r', r: 'l', t: 't', b: 'b' }[annCropHandle] || 'move'; }
+          if (annCropBox.h < 0) { annCropBox.y += annCropBox.h; annCropBox.h = Math.abs(annCropBox.h); annCropHandle = { tl: 'bl', bl: 'tl', tr: 'br', br: 'tr', t: 'b', b: 't', l: 'l', r: 'r' }[annCropHandle] || 'move'; }
+        }
+        // Keeps the box inside the canvas: a moved box slides back in; a resized box is cut at the edge
+        function annCropClamp() {
+          const cw = $('ann-canvas').width, ch = $('ann-canvas').height;
+          if (annCropHandle === 'move') {
+            if (annCropBox.x < 0) annCropBox.x = 0;
+            if (annCropBox.y < 0) annCropBox.y = 0;
+            if (annCropBox.x + annCropBox.w > cw) annCropBox.x = cw - annCropBox.w;
+            if (annCropBox.y + annCropBox.h > ch) annCropBox.y = ch - annCropBox.h;
+          } else {
+            if (annCropBox.x < 0) { annCropBox.w += annCropBox.x; annCropBox.x = 0; }
+            if (annCropBox.y < 0) { annCropBox.h += annCropBox.y; annCropBox.y = 0; }
+            if (annCropBox.x + annCropBox.w > cw) annCropBox.w = cw - annCropBox.x;
+            if (annCropBox.y + annCropBox.h > ch) annCropBox.h = ch - annCropBox.y;
           }
-          // Phase 3: resize by the handles
-          if (annResizing && annActive) {
-            if (!annResizeRafId) {
-              annResizeRafId = requestAnimationFrame(() => {
-                annResizeRafId = 0;
-                if (!annResizing || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-                const _p = annCanvasXY(e);
-                const _sh = annHistory[annSelectedIdx];
-                if (annResizeHandle === 'rot') {
-                  const _ang = Math.atan2(_p.y - annRotCenter.y, _p.x - annRotCenter.x) * 180 / Math.PI;
-                  _sh.rot = annSnapAngle(annRotStart + _ang - annRotStartAng, e.shiftKey); if (!_sh.rot) delete _sh.rot;
-                  annTextPlaceCenter(_sh, annRotCenter.x, annRotCenter.y);
-                  annResizeDirty = true; annRenderAll(); return;
-                }
-                if (_sh.type === 'text') {
-                  const _dx0 = annResizeStartX - annResizeAnchorX, _dy0 = annResizeStartY - annResizeAnchorY;
-                  const _dx1 = _p.x            - annResizeAnchorX, _dy1 = _p.y            - annResizeAnchorY;
-                  const _d0 = Math.sqrt(_dx0 * _dx0 + _dy0 * _dy0);
-                  const _d1 = Math.sqrt(_dx1 * _dx1 + _dy1 * _dy1);
-                  const _scale = _d0 > 2 ? _d1 / _d0 : 1;
-                  const _newFS = Math.max(8, Math.min(96, Math.round(annResizeOriginFS * _scale)));
-                  const _ob = annResizeOriginBBox;
-                  const _ratio = _newFS / annResizeOriginFS;
-                  if (_sh.rot) {
-                    const _left = annResizeHandle === 'tl' || annResizeHandle === 'bl', _top = annResizeHandle === 'tl' || annResizeHandle === 'tr';
-                    _sh.fontSize = _newFS; const _g = annTextGeom(_sh);
-                    const _lx = (_left ? -1 : 1) * (_g.w / 2 + 4), _ly = (_top ? -1 : 1) * (_g.h / 2 + 4); // centre = fixed corner + the half box, turned
-                    annTextPlaceCenter(_sh, annResizeAnchorX + _lx * _g.c - _ly * _g.s, annResizeAnchorY + _lx * _g.s + _ly * _g.c);
-                  } else if (annResizeHandle === 'tl' || annResizeHandle === 'tr') {
-                    const _origH = _ob.h;
-                    _sh.y1 = annResizeAnchorY - _origH * _ratio - 4;
-                  }
-                  if (!_sh.rot && (annResizeHandle === 'tl' || annResizeHandle === 'bl')) {
-                    const _origW = _ob.w;
-                    _sh.x1 = annResizeAnchorX - _origW * _ratio - 4;
-                  }
-                  _sh.fontSize = _newFS;
-                } else if (_sh.type === 'free' && annResizeOriginBBox) {
-                  // Free: scales every point from the state snapshot (avoids accumulated error)
-                  // Takes the original points from the snapshot to compute the right scale
-                  const _ob = annResizeOriginBBox;
-                  const _newW = _p.x - annResizeAnchorX;
-                  const _newH = _p.y - annResizeAnchorY;
-                  const _origW = (annResizeHandle === 'tl' || annResizeHandle === 'bl') ? -_ob.w : _ob.w;
-                  const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
-                  const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
-                  const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
-                  // annResizeSnap.h[annSelectedIdx].pts: original points of the pre-resize state (immutable); the snapshot is { h, rot, ... } since phase 5
-                  const _origPts = annResizeSnap.h[annSelectedIdx].pts;
-                  for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
-                    _sh.pts[_fi] = {
-                      x: annResizeAnchorX + (_origPts[_fi].x - annResizeAnchorX) * _sx,
-                      y: annResizeAnchorY + (_origPts[_fi].y - annResizeAnchorY) * _sy
-                    };
-                  }
-                } else if (_sh.type !== 'free') {
-                  _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY;
-                  _sh.x2 = _p.x;             _sh.y2 = _p.y;
-                }
-                annResizeDirty = true;
-                annRenderAll();
-              });
-            }
-            return;
+        }
+        function annMoveCrop(e) {
+          const p = annCanvasXY(e);
+          const dx = p.x - annStart.x, dy = p.y - annStart.y;
+          annStart = p;
+          annCropDrag(dx, dy);
+          annCropFlip();
+          annCropClamp();
+          annRenderAll();
+        }
+        // Turning a text by its round handle: free angle, drawn to the right angles nearby (Shift: steps of 15 degrees)
+        function annResizeTurn(_sh, _p, e) {
+          const _ang = Math.atan2(_p.y - annRotCenter.y, _p.x - annRotCenter.x) * 180 / Math.PI;
+          _sh.rot = annSnapAngle(annRotStart + _ang - annRotStartAng, e.shiftKey); if (!_sh.rot) delete _sh.rot;
+          annTextPlaceCenter(_sh, annRotCenter.x, annRotCenter.y);
+        }
+        // Text resize: the font size follows the distance from the fixed corner, between 8 and 96 px
+        function annResizeText(_sh, _p) {
+          const _dx0 = annResizeStartX - annResizeAnchorX, _dy0 = annResizeStartY - annResizeAnchorY;
+          const _dx1 = _p.x            - annResizeAnchorX, _dy1 = _p.y            - annResizeAnchorY;
+          const _d0 = Math.sqrt(_dx0 * _dx0 + _dy0 * _dy0);
+          const _d1 = Math.sqrt(_dx1 * _dx1 + _dy1 * _dy1);
+          const _scale = _d0 > 2 ? _d1 / _d0 : 1;
+          const _newFS = Math.max(8, Math.min(96, Math.round(annResizeOriginFS * _scale)));
+          const _ob = annResizeOriginBBox;
+          const _ratio = _newFS / annResizeOriginFS;
+          if (_sh.rot) {
+            const _left = annResizeHandle === 'tl' || annResizeHandle === 'bl', _top = annResizeHandle === 'tl' || annResizeHandle === 'tr';
+            _sh.fontSize = _newFS; const _g = annTextGeom(_sh);
+            const _lx = (_left ? -1 : 1) * (_g.w / 2 + 4), _ly = (_top ? -1 : 1) * (_g.h / 2 + 4); // centre = fixed corner + the half box, turned
+            annTextPlaceCenter(_sh, annResizeAnchorX + _lx * _g.c - _ly * _g.s, annResizeAnchorY + _lx * _g.s + _ly * _g.c);
+          } else {
+            if (annResizeHandle === 'tl' || annResizeHandle === 'tr') _sh.y1 = annResizeAnchorY - _ob.h * _ratio - 4;
+            if (annResizeHandle === 'tl' || annResizeHandle === 'bl') _sh.x1 = annResizeAnchorX - _ob.w * _ratio - 4;
           }
-          // Phase 2.2: drag of the selected shape with live visual movement
-          if (annDragging && annActive) {
-            if (!annDragRafId) {
-              annDragRafId = requestAnimationFrame(() => {
-                annDragRafId = 0;
-                if (!annDragging || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-                const _p = annCanvasXY(e);
-                const _dx = _p.x - annDragLastX;
-                const _dy = _p.y - annDragLastY;
-                annDragLastX = _p.x;
-                annDragLastY = _p.y;
-                const _sh = annHistory[annSelectedIdx];
-                if (_sh.type === 'free') {
-                  for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
-                    _sh.pts[_fi] = { x: _sh.pts[_fi].x + _dx, y: _sh.pts[_fi].y + _dy };
-                  }
-                } else if (_sh.type === 'text') {
-                  _sh.x1 += _dx; _sh.y1 += _dy;
-                } else {
-                  _sh.x1 += _dx; _sh.y1 += _dy;
-                  _sh.x2 += _dx; _sh.y2 += _dy;
-                }
-                annDragDirty = true;
-                annRenderAll();
-              });
-            }
-            return;
+          _sh.fontSize = _newFS;
+        }
+        // Free stroke resize: scales every point from the state snapshot (avoids accumulated error)
+        function annResizeFree(_sh, _p) {
+          const _ob = annResizeOriginBBox;
+          const _newW = _p.x - annResizeAnchorX;
+          const _newH = _p.y - annResizeAnchorY;
+          const _origW = (annResizeHandle === 'tl' || annResizeHandle === 'bl') ? -_ob.w : _ob.w;
+          const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
+          const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
+          const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
+          // annResizeSnap.h[annSelectedIdx].pts: original points of the pre-resize state (immutable); the snapshot is { h, rot, ... } since phase 5
+          const _origPts = annResizeSnap.h[annSelectedIdx].pts;
+          for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
+            _sh.pts[_fi] = {
+              x: annResizeAnchorX + (_origPts[_fi].x - annResizeAnchorX) * _sx,
+              y: annResizeAnchorY + (_origPts[_fi].y - annResizeAnchorY) * _sy
+            };
           }
-          if (!annDrawing || !annActive) return;
+        }
+        // One resize frame (requestAnimationFrame): turn, text, rectangle/circle/arrow or free stroke
+        function annResizeStep(e) {
+          annResizeRafId = 0;
+          if (!annResizing || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+          const _p = annCanvasXY(e);
+          const _sh = annHistory[annSelectedIdx];
+          if (annResizeHandle === 'rot') annResizeTurn(_sh, _p, e);
+          else if (_sh.type === 'text') annResizeText(_sh, _p);
+          else if (_sh.type !== 'free') { _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY; _sh.x2 = _p.x; _sh.y2 = _p.y; }
+          else if (annResizeOriginBBox) annResizeFree(_sh, _p);
+          annResizeDirty = true;
+          annRenderAll();
+        }
+        // Moves a shape by (dx, dy): every point of a free stroke, the anchor of a text, both corners of the other shapes
+        function annMoveShapeBy(_sh, _dx, _dy) {
+          if (_sh.type === 'free') {
+            for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
+              _sh.pts[_fi] = { x: _sh.pts[_fi].x + _dx, y: _sh.pts[_fi].y + _dy };
+            }
+          } else if (_sh.type === 'text') {
+            _sh.x1 += _dx; _sh.y1 += _dy;
+          } else {
+            _sh.x1 += _dx; _sh.y1 += _dy;
+            _sh.x2 += _dx; _sh.y2 += _dy;
+          }
+        }
+        // One drag frame (requestAnimationFrame) of the selected shape, with live visual movement
+        function annDragStep(e) {
+          annDragRafId = 0;
+          if (!annDragging || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+          const _p = annCanvasXY(e);
+          const _dx = _p.x - annDragLastX;
+          const _dy = _p.y - annDragLastY;
+          annDragLastX = _p.x;
+          annDragLastY = _p.y;
+          annMoveShapeBy(annHistory[annSelectedIdx], _dx, _dy);
+          annDragDirty = true;
+          annRenderAll();
+        }
+        // Drawing: the free stroke keeps smoothed points (EMA) at least 5 px apart; every tool repaints the preview
+        function annMoveDraw(e) {
           annLastEvt = e;
           if (annTool === 'free') {
             const p = annCanvasXYClamped(e); const alpha = 0.35;
@@ -5189,6 +5188,13 @@
             annSmoothLast = sp; annPath.push(sp);
           }
           annScheduledPaint();
+        }
+        window.addEventListener('pointermove', e => {
+          if (!annActive) return;
+          if (annDraggingCrop) annMoveCrop(e);
+          else if (annResizing) { if (!annResizeRafId) annResizeRafId = requestAnimationFrame(() => annResizeStep(e)); }
+          else if (annDragging) { if (!annDragRafId) annDragRafId = requestAnimationFrame(() => annDragStep(e)); }
+          else if (annDrawing) annMoveDraw(e);
         });
         window.addEventListener('pointerup', e => {
           if (!annActive) return;
