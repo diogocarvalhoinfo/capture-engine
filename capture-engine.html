@@ -1019,7 +1019,7 @@
       cursor: pointer;
       z-index: var(--z-raised);
       opacity: 0;
-      transition: all var(--duration-moderate-01);
+      transition: opacity var(--duration-moderate-01);
       font-size: var(--text-micro);
       font-weight: bold;
       box-shadow: var(--shadow-control)
@@ -1029,10 +1029,6 @@
       content: '';
       position: absolute;
       inset: -10px
-    }
-
-    .t-del:hover {
-      transform: scale(1.15)
     }
 
     .t-item:hover .t-del {
@@ -1055,7 +1051,7 @@
       cursor: pointer;
       z-index: var(--z-raised);
       opacity: 0;
-      transition: all var(--duration-moderate-01);
+      transition: opacity var(--duration-moderate-01);
       box-shadow: var(--shadow-control)
     }
 
@@ -1063,10 +1059,6 @@
       content: '';
       position: absolute;
       inset: -10px
-    }
-
-    .t-restore:hover {
-      transform: scale(1.15)
     }
 
     .t-item:hover .t-restore {
