@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.6.3] - 2026-11-02
+
+Patch: os botões «Remover» e «Restaurar» deixam de crescer ao passar o mouse.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, com o arquivo já na 28.6.3.
 
 ### Modificado
 
