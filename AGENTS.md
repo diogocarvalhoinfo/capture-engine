@@ -630,7 +630,7 @@ Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB ap
 
 **Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o navegador for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
 
-**Esgotamento de Quota:** Se o limite de disco do navegador for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação. Num `QuotaExceededError`, chamam `showQuotaBanner()`, que injeta um aviso vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`). O aviso é criado em runtime e **não** está no HTML estático. Diz que as capturas deixaram de ser gravadas e recomenda exportar já. Tem um botão ✕, e volta na falha seguinte, porque a guarda testa se o elemento existe. `SysLogger.error` registra a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
+**Esgotamento de Quota:** Se o limite de disco do navegador for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e também o erro que o `put` ou o `delete` lança na hora. Num `QuotaExceededError`, e só nele, chamam `showQuotaBanner()`, que injeta um aviso vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`). O aviso é criado em runtime e **não** está no HTML estático. Diz que as capturas deixaram de ser gravadas e recomenda exportar já. Tem um botão ✕, e volta na falha seguinte, porque a guarda testa se o elemento existe. `SysLogger.error` registra a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
 
 > **Correção histórica:** até a V26 esta seção afirmava que «a aplicação falha silenciosamente na interface para não causar pânico de UX». Era falso e contradizia o README. O banner existe desde a correção D9 (commit `a5656f5`).
 
@@ -1129,13 +1129,6 @@ O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS
 
 Rode `bash validate.sh` e leia as linhas `[WARN] Funcao '…' com CC n`: são as funções com mais pontos de decisão, e a saída do script é a lista atual. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de quebrar alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções. A lista não é copiada aqui, porque uma cópia sem comparação envelhece a cada versão.
 
-> **Um limite conhecido que fica por corrigir de propósito (D70).**
->
-> **O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona.** O `_chkQ` do `idbTx` está ligado
-> aos handlers de erro da transação, que só correm no caminho assíncrono. Não foi corrigido porque erros de quota
-> chegam **sempre** pela transação; o ramo síncrono transporta outras coisas (`DataCloneError`, `InvalidStateError`),
-> para as quais um banner de armazenamento cheio seria a mensagem errada.
-
 **Como usar isto:** antes de editar qualquer função dessa lista, leia a seção correspondente do motor (§4, §7) e confirme as invariantes documentadas. Depois da edição, o `validate.sh` detecta regressões estruturais, mas **não** detecta regressões de comportamento — estas exigem a Parte B do checklist (§11).
 
 > ⚠️ **Armadilha do medidor — apóstrofos em comentários.** O analisador de complexidade **não ignora comentários** e trata `'` como abertura de string. Um número ímpar de apóstrofos num comentário (ex.: «e'», «d'») deixa o analisador dentro de uma string falsa. A contagem de chaves corrompe-se a partir daí: as funções ficam com o nome errado, e os valores **descem**. Sintoma: acrescentar código e ver o CC baixar. Aconteceu na D54 e custou uma investigação. Escreva comentários sem apóstrofos, ou em número par.
@@ -1425,10 +1418,8 @@ O que ficou para depois, com o ID e a origem.
 
 | ID | Pendente | Origem |
 |---|---|---|
-| D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
 | F-0055 | No código, o comentário da borda do `btn-zip-cta` (`handleZipClick`) e o título «ZIP ENGINE» por cima do `updateStatusBar`. Vai junto do F-0029. | Auditoria de 2026-11-01 |
-| F-0060 | Os estilos dos avisos de armazenamento no JavaScript (`padding`, `margin-left`, `border-radius` e a cor do botão ✕) passam a tokens, com captura antes e depois. | Auditoria de 2026-11-01 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
 
 ### IDs
