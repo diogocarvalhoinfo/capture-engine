@@ -175,7 +175,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | Token | Valor | Uso |
 |---|---|---|
 | `--shadow-card` | `0 2px 8px rgb(0 0 0 / 2%)` | Painéis e barras |
-| `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno (Adicionar Imagem e Documento, as duas escolhas do modo ZIP), no tema claro |
+| `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno («Adicionar imagem» e «Adicionar documento», as duas escolhas do modo ZIP), no tema claro |
 | `--shadow-control` | `0 2px 4px rgb(0 0 0 / 20%)` | Botões pequenos sobre a miniatura e o interruptor |
 | `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
 | `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
@@ -401,7 +401,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  │   Faça download para visualizar o documento        │  │    (textarea oculta)
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
-│  [Restaurar]  [Copiar Texto]  [Download]                  │
+│  [Restaurar]  [Copiar texto]  [Download]                  │
 │   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -440,7 +440,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|
 | **Restaurar** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas se o item está nos «Removidos» |
-| **Copiar Texto** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
+| **Copiar texto** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
 | **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre, ativos e nos «Removidos» |
 | **Confirmar** (anotação) | Fill verde | `var(--color-green-500)` | No modo de anotação |
 | **Cancelar** (anotação) | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | No modo de anotação |
@@ -482,7 +482,7 @@ Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os 
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
-### Botões «Adicionar Imagem», «Adicionar Documento» e as duas escolhas do modo ZIP (`.btn-capture`, `.btn-zip-cta`)
+### Botões «Adicionar imagem», «Adicionar documento» e as duas escolhas do modo ZIP (`.btn-capture`, `.btn-zip-cta`)
 
 | Estado | Visual |
 |---|---|

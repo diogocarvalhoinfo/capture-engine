@@ -149,7 +149,7 @@ A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guard
            ↓
 2. Identificar (opcional) → Escrever nome do usuário e equipamento
            ↓
-3. Capturar → Ctrl+V, arrastar arquivos, ou clicar "Adicionar Imagem"/"Adicionar Documento"
+3. Capturar → Ctrl+V, arrastar arquivos, ou clicar "Adicionar imagem"/"Adicionar documento"
            ↓
 4. Organizar → Arrastar itens para reordenar, clicar para ver ou anotar
            ↓
@@ -175,7 +175,7 @@ O Capture Engine aceita conteúdo de três formas:
 |---|---|---|
 | **Ctrl+V** | Pressione Ctrl+V com a app em foco | Imagem da área de transferência, arquivo copiado, ou texto |
 | **Arrastar e soltar** | Arraste o arquivo para a área de destino | Qualquer arquivo |
-| **Seletor** | Clique em "Adicionar Imagem" ou "Adicionar Documento" | Qualquer arquivo pelo seletor do sistema |
+| **Seletor** | Clique em "Adicionar imagem" ou "Adicionar documento" | Qualquer arquivo pelo seletor do sistema |
 
 **Tipos de arquivo aceitos:**
 
@@ -310,7 +310,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
-- **Imagens Separadas** — inclui tudo como arquivos individuais
+- **Imagens separadas** — inclui tudo como arquivos individuais
 
 ### 6.8 Sessões e histórico
 

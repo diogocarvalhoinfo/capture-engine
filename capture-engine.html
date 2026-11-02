@@ -2037,7 +2037,7 @@
     }
 
     /* ═══ CAPTURE BUTTONS ═══
-       Secondary buttons (Adicionar Imagem/Documento, and the two choices of the ZIP mode): no outline, a soft shadow in the light theme.
+       Secondary buttons (Adicionar imagem/documento, and the two choices of the ZIP mode): no outline, a soft shadow in the light theme.
        In the dark theme a shadow does not show on the panel (1.12:1), so the button gets a slightly lighter fill instead.
        On hover, a thin edge in the main colour, as the outline had before. */
     .btn-capture {
@@ -2912,7 +2912,7 @@
             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </svg>
       </button>
-      <button class="action-btn" id="btn-admin-save" style="display:none" title="Exportar Versão">
+      <button class="action-btn" id="btn-admin-save" style="display:none" title="Exportar versão">
         <svg viewBox="0 0 24 24">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
           <polyline points="17 21 17 13 7 13 7 21" />
@@ -2969,7 +2969,7 @@
         <div class="chips-group">
           <input type="radio" name="pdf-layout" value="auto" class="chip-input" id="pdf-l-auto" checked>
           <label class="chip-label" for="pdf-l-auto"
-            title="Misto (Páginas A4 verticais ou horizontais dependendo da imagem)">Auto</label>
+            title="Misto (páginas A4 verticais ou horizontais, conforme a imagem)">Auto</label>
 
           <input type="radio" name="pdf-layout" value="horizontal" class="chip-input" id="pdf-l-horz">
           <label class="chip-label" for="pdf-l-horz" title="Horizontal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2" /><line x1="6" y1="10" x2="18" y2="10" /><line x1="6" y1="14" x2="13" y2="14" /></svg></label>
@@ -2987,7 +2987,7 @@
             <circle cx="8.5" cy="8.5" r="1.5" />
             <polyline points="21 15 16 10 5 21" />
           </svg>
-          Adicionar Imagem
+          Adicionar imagem
         </button>
         <button class="btn-send btn-capture" onclick="document.getElementById('file-doc-input').click()">
           <svg viewBox="0 0 24 24">
@@ -2996,7 +2996,7 @@
             <line x1="16" y1="13" x2="8" y2="13" />
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
-          Adicionar Documento
+          Adicionar documento
         </button>
       </div>
 
@@ -3066,7 +3066,7 @@
               <line x1="16" y1="13" x2="8" y2="13" />
               <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
-            <span class="blk-hdr-title">Documentos &amp; Logs</span>
+            <span class="blk-hdr-title">Documentos</span>
             <span class="count-badge zero" id="doc-badge">0</span>
           </div>
           <div class="drop-zone" id="doc-zone">
@@ -3168,15 +3168,15 @@
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
           style="display:none;position:absolute;bottom:16px;background:var(--color-viewer-floating);border:1px solid var(--color-viewer-border);border-radius:var(--radius-lg);padding:calc(var(--spacing) * 1) calc(var(--spacing) * 2);gap:calc(var(--spacing) * 2);align-items:center;z-index:var(--z-viewer-controls);box-shadow:var(--shadow-viewer-zoom)">
-          <button class="action-btn" id="zoom-out" title="Reduzir Zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
+          <button class="action-btn" id="zoom-out" title="Reduzir zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg></button>
           <span id="zoom-level"
             style="color:var(--color-white);font-size:var(--text-xs);font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
-            title="Reset">100%</span>
-          <button class="action-btn" id="zoom-in" title="Aumentar Zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
+            title="Voltar a 100 %">100%</span>
+          <button class="action-btn" id="zoom-in" title="Aumentar zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -3261,7 +3261,7 @@
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
           <div class="ann-sep"></div>
-          <button class="ann-btn" id="ann-rotate-btn" title="Rodar 90°"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="ann-btn" id="ann-rotate-btn" title="Girar 90°"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
             </svg></button>
           <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3358,7 +3358,7 @@
               stroke-linejoin="round" style="width:14px; height:14px">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg> Copiar Texto
+            </svg> Copiar texto
           </button>
           <button class="btn-send" id="text-modal-dl"
             style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
@@ -3428,7 +3428,7 @@
           <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="hex-input" id="cfg-fg-hex" value="#ffffff" maxlength="7" spellcheck="false"
               placeholder="Automático">
-            <div class="swatch-wrap" id="wrap-cor-fg" title="Cor (Clique duplo para Automático)">
+            <div class="swatch-wrap" id="wrap-cor-fg" title="Cor (duplo clique para Automático)">
               <div class="swatch-bg" id="sw-fg-bg"></div>
               <input type="color" id="cfg-cor-fg" value="#ffffff">
             </div>
@@ -3440,7 +3440,7 @@
           </div>
           <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-start" value="Capture " placeholder="Capture " style="max-width:130px">
-            <div class="swatch-wrap is-empty" id="wrap-cor-tstart" title="Cor (Duplo clique para Automático)">
+            <div class="swatch-wrap is-empty" id="wrap-cor-tstart" title="Cor (duplo clique para Automático)">
               <div class="swatch-bg" id="sw-tstart-bg"></div>
               <input type="color" id="cfg-cor-tstart">
             </div>
@@ -3452,7 +3452,7 @@
           </div>
           <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-accent" value="Engine" placeholder="Engine" style="max-width:130px">
-            <div class="swatch-wrap is-empty" id="wrap-cor-taccent" title="Cor (Duplo clique para Automático)">
+            <div class="swatch-wrap is-empty" id="wrap-cor-taccent" title="Cor (duplo clique para Automático)">
               <div class="swatch-bg" id="sw-taccent-bg"></div>
               <input type="color" id="cfg-cor-taccent">
             </div>
@@ -3465,7 +3465,7 @@
           </div>
           <div style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <input type="text" class="text-input-sm" id="cfg-title-end" value="" placeholder="" style="max-width:130px">
-            <div class="swatch-wrap is-empty" id="wrap-cor-tend" title="Cor (Duplo clique para Automático)">
+            <div class="swatch-wrap is-empty" id="wrap-cor-tend" title="Cor (duplo clique para Automático)">
               <div class="swatch-bg" id="sw-tend-bg"></div>
               <input type="color" id="cfg-cor-tend">
             </div>
@@ -3510,7 +3510,7 @@
         <div class="sb-row">
           <div class="sb-info">
             <div class="sb-row-title">Qualidade do PDF</div>
-            <div class="sb-row-desc">As imagens PNG são convertidas para JPEG ao gerar o PDF (92% recomendado)</div>
+            <div class="sb-row-desc">As imagens são convertidas para JPEG ao gerar o PDF (92 % recomendado)</div>
           </div>
           <div style="display:flex;align-items:center;gap:calc(var(--spacing) * 2)"><input type="range" id="cfg-jpeg-quality" min="70"
               max="95" value="92" style="width:100px"><span id="cfg-jpeg-label"
@@ -3565,7 +3565,7 @@
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg></button>
       <div class="sb-header">
-        <div class="sb-title">Configurar Distribuição</div>
+        <div class="sb-title">Configurar distribuição</div>
         <p class="sb-subtitle">Escolha o perfil de exportação</p>
       </div>
       <div style="padding:0 calc(var(--spacing) * 8) calc(var(--spacing) * 8)">
@@ -3594,7 +3594,7 @@
   <!-- FIM EXPORT MODAL -->
 
   <!-- FAB MOBILE -->
-  <button id="mobile-paste-fab" title="Colar do Clipboard"><svg viewBox="0 0 24 24">
+  <button id="mobile-paste-fab" title="Colar da área de transferência"><svg viewBox="0 0 24 24">
       <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
       <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
     </svg></button>
@@ -5968,7 +5968,7 @@
 
       /* ═══ ZIP ENGINE ═══ */
       function resetZipMode() { zipModeActive = false; const bPdf = $('btn-pdf'), bZip = $('btn-zip'); bPdf.classList.remove('btn-outline'); bPdf.classList.remove('btn-zip-cta'); bZip.classList.remove('btn-outline'); bZip.classList.remove('btn-zip-cta'); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; initPdfModal(); bZip.onclick = handleZipClick; updateBtns(); updateBtnTitles() }
-      function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* V20: Use btn-zip-cta for persistent accent border on Export CTAs */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.setAttribute('aria-description', "Exportar imagens num único PDF dentro do ZIP"); bZip.setAttribute('aria-description', "Exportar imagens em arquivos separados dentro do ZIP"); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens Separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
+      function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* V20: Use btn-zip-cta for persistent accent border on Export CTAs */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.setAttribute('aria-description', "Exportar imagens num único PDF dentro do ZIP"); bZip.setAttribute('aria-description', "Exportar imagens em arquivos separados dentro do ZIP"); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
       document.addEventListener('click', (e) => { if (zipModeActive && !e.target.closest('#export-section')) resetZipMode() });
       async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Chave em minusculas: imagens e documentos sao deduplicados a montante em
    namespaces separados, mas partilham UM namespace aqui. Windows e macOS sao
