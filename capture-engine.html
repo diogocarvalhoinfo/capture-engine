@@ -3898,55 +3898,51 @@
       $('img-modal-dl').onclick = function () { const arr = modalIsTrash ? removed : images, o = arr.find(x => x.id === modalItemId); if (o) { const ext = o.blob.type === 'image/jpeg' ? 'jpg' : 'png', name = o.label ? o.label + '.' + ext : 'imagem.' + ext, url = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000) } };
 
       // Keyboard navigation
-      window.addEventListener('keydown', function (e) {
-        // Guard: if the focus is in a text field (e.g. the annotation text editor), let the
-        // native Ctrl+Z/Ctrl+Y of the field undo the TYPING, not the annotation undo/redo.
-        const _annUndoInField = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
-        if (annActive && (e.ctrlKey || e.metaKey) && !_annUndoInField) {
-          if (e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            if (e.shiftKey) {
-              // Ctrl+Shift+Z = Redo
-              annDoRedo().catch(()=>{});
-            } else {
-              // Ctrl+Z = Undo
-              annDoUndo().catch(()=>{});
-            }
-            return;
-          }
-          if (e.key.toLowerCase() === 'y') {
-            e.preventDefault();
-            annDoRedo().catch(()=>{});
-            return;
-          }
-        }
-        // Delete: removes the selected annotation (no Ctrl, no active text field)
-        if (annActive && e.key === 'Delete' && !_annUndoInField && annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+      // A focused text field (e.g. the annotation text editor) keeps its own keys: its native Ctrl+Z/Ctrl+Y
+      // undo the TYPING, not the annotation undo/redo
+      const typingInField = () => document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
+      // Ctrl+Z undoes; Ctrl+Shift+Z and Ctrl+Y redo. Returns true when the key was used
+      function annUndoKey(e) {
+        const k = e.key.toLowerCase();
+        if (!(e.ctrlKey || e.metaKey) || (k !== 'z' && k !== 'y')) return false;
+        e.preventDefault();
+        (k === 'z' && !e.shiftKey ? annDoUndo() : annDoRedo()).catch(()=>{});
+        return true;
+      }
+      // Delete removes the selected annotation. Returns true when the key was used
+      function annDeleteKey(e) {
+        if (e.key !== 'Delete' || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return false;
+        e.preventDefault();
+        annPushUndo(); // M7: snapshot BEFORE deleting with the Delete key
+        annHistory.splice(annSelectedIdx, 1);
+        setAnnDirty(true);
+        annSelectedIdx = -1;
+        annRenderAll();
+        return true;
+      }
+      // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
+      const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e));
+      // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
+      function viewerKey(e) {
+        if (e.key === 'ArrowLeft') {
           e.preventDefault();
-          annPushUndo(); // M7: snapshot BEFORE deleting with the Delete key
-          annHistory.splice(annSelectedIdx, 1);
-          setAnnDirty(true);
-          annSelectedIdx = -1;
-          annRenderAll();
-          return;
+          window.imgModalNav(-1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.imgModalNav(1);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          if (annActive) annDeactivate();
+          else closeImgModal();
         }
+      }
+      window.addEventListener('keydown', function (e) {
+        if (annEditorKey(e)) return;
         if ($('img-modal-overlay').classList.contains('open')) {
-          if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable)) return;
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            window.imgModalNav(-1);
-          } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            window.imgModalNav(1);
-          } else if (e.key === 'Escape') {
-            e.preventDefault();
-            if (annActive) annDeactivate();
-            else closeImgModal();
-          }
+          if (typingInField()) return;
+          viewerKey(e);
         }
-        if ($('text-modal-overlay').classList.contains('open')) {
-          if (e.key === 'Escape') { e.preventDefault(); closeTextModal(); }
-        }
+        if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeTextModal(); }
       });
 
       // --- ZOOM & PAN LOGIC ---
