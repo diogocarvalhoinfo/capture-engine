@@ -212,6 +212,11 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 ### 6.3 Anotação de imagens
 
+<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#ann-canvas, #img-modal-ann-actions; passos=arrastar #ann-canvas 6%,94% 61%,73% | clicar #ann-save -->
+![Editor de anotação: uma seta vermelha é desenhada até o botão azul de uma captura, e o Confirmar salva a anotação na imagem](docs/images/annotation-arrow.gif)
+
+Com a ferramenta Seta, um arraste desenha a seta, e o Confirmar a salva na imagem.
+
 Motor de anotação:
 - O editor tem 7 ferramentas (desenho livre, retângulo, círculo, seta, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
@@ -673,7 +678,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← as imagens anotadas deste README
+├── docs/images/          ← as imagens anotadas e o GIF deste README
 └── LICENSE               ← licença MIT
 ```
 
