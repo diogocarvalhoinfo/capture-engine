@@ -347,7 +347,10 @@ for match in func_pattern.finditer(js):
                 
     if end_idx != -1:
         body = js[brace_start:end_idx]
-        kw_count = len(re.findall(r"\b(if|else|for|while|switch|case)\b|\?|&&|\|\|", body))
+        # Counts each keyword in the shape it has in code, so the words of a comment do not count (A-03, D-0092):
+        # if/for/while/switch before "(", else after "}" ";" or ")", case before a quote or a digit.
+        # Comments are NOT stripped: a stripper breaks on the regex literals of this file (D67, D72).
+        kw_count = len(re.findall(r"\b(?:if|for|while|switch)\s*\(|[};)]\s*else\b|\bcase\s+[\x27\x22\d]|\?|&&|\|\|", body))
         functions.append((name, kw_count))
 
 limit = 15
