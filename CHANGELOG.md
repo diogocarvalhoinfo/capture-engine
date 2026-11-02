@@ -4,6 +4,26 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+Patch: os pendentes da auditoria de 2026-11-01, as funções do script divididas e o GIF do editor no README.
+
+### Corrigido
+
+- **Aviso de armazenamento cheio também no erro síncrono (D70).** O navegador pode recusar a gravação já no pedido, antes do evento de erro. Nesse caso o aviso não aparecia; agora aparece. Testado no Edge: um erro de quota mostra o aviso, e um `DataCloneError` não mostra.
+
+### Modificado
+
+- **Textos da interface num estilo só (F-0053).** «Rodar 90°» passa a «Girar 90°». Os títulos e os botões têm uma só maiúscula: «Reduzir zoom», «Aumentar zoom», «Exportar versão», «Adicionar imagem», «Copiar texto», «Configurar distribuição». «Reset» passa a «Voltar a 100 %», e «Colar do Clipboard» a «Colar da área de transferência». O bloco «Documentos & Logs» passa a «Documentos». A imagem de visão geral do README é gerada de novo.
+- **Ferramentas com os nomes da interface (F-0052, D70).** O README lista as 7 ferramentas do editor como a interface as chama. O check 19 do `validate.sh` lê os nomes dos botões no HTML, em vez de uma lista própria.
+- **Estilos dos avisos de armazenamento por tokens (F-0060).** Os dois avisos usam as classes `.ce-banner` e `.ce-banner-close` e os tokens `--color-banner-critical` e `--color-banner-close`. Nada muda na tela: 0 pixels diferentes em 6 capturas.
+- **Comentários do código em inglês (F-0029, F-0055).** Cerca de 170 comentários do HTML. Sem os comentários, o código é idêntico, e os 11 marcadores do Quine ficam intactos.
+- **Funções do script divididas.** As 13 funções com complexidade acima de 15, medida com o lizard, foram divididas em funções menores. A maior tinha 45; agora nenhuma passa de 15. Um roteiro de 102 passos no Edge deu o mesmo resultado da 28.6.3 depois de cada divisão, com os PDFs iguais byte a byte.
+
+### Adicionado
+
+- **GIF do editor no README §6.3 (P-0001).** Uma seta desenhada até um botão de uma captura, e o Confirmar. É gravado com o verbo `arrastar`, novo no `gif.py` do repositório dos prompts. A D-0091 diz quando gravá-lo de novo.
+
 ## [28.6.3] - 2026-11-02
 
 Patch: os botões «Remover» e «Restaurar» deixam de crescer ao passar o mouse.
