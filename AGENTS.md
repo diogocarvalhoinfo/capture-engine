@@ -1411,14 +1411,13 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até a 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. Origem: pedido do dono, 2026-11-01. |
 | D-0089 | **A dica das zonas vazias diminui até 800 px de altura** | Ícone de 40 px e texto de 13 px nas telas de notebook (28.5.3). Não é um modo compacto: não muda a barra lateral, e foi pedida para a dica chamar menos atenção, e não para caber. Origem: pedido do dono, 2026-11-01; confirmado no plano da auditoria do mesmo dia. |
 | D-0090 | **As frases longas das entradas publicadas do changelog ficam** | Estende a D-0083 a toda entrada com versão, também as 28.x. **Motivo:** o changelog é registro datado; reescrever uma entrada publicada muda o que se disse naquela data. As palavras ainda seguem a tabela. Origem: plano da auditoria de 2026-11-01. |
+| D-0091 | **O GIF do editor é refeito com o editor** | O GIF de destaque do README §6.3 (`docs/images/annotation-arrow.gif`) mostra o editor, a barra de ferramentas e o visualizador depois de salvar. Uma mudança numa dessas partes grava o GIF de novo no mesmo commit, com o `gif.py` do repositório dos prompts (preparo `capture-engine-editor-arrow`), e confere com `--verificar`. A seta parte do canto de baixo à esquerda. Assim, o cursor atravessa a barra pelo vão entre Selecionar e Girar 90°. Por cima de um botão, o efeito de passar o mouse mudaria de uma gravação para outra. Fecha a P-0001. Origem: plano dos pendentes, 2026-11-02. |
 
 ### Pendentes
 
 O que ficou para depois, com o ID e a origem.
 
-| ID | Pendente | Origem |
-|---|---|---|
-| P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
+Nenhum.
 
 ### IDs
 
