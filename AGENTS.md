@@ -700,7 +700,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
 | `updateBtnTitles()` | `() → void` | Atualiza o `aria-description` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex.: `Exportar: 13h29m-16-ago-2026.pdf`). Os dois botões não têm `title` desde a 28.5.0. Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
 | `updateStatusBar()` | `() → void` | Atualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`). Chamada pelo auto-save de 5 segundos e diretamente em `boot()` para estado inicial. |
-| `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--color-primary`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. |
+| `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--color-primary`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. Os campos do Visual Builder são preenchidos por `vbFillColorsAndTitle` e `vbFillSessionFields`, só quando existem: o Export User não os tem. |
 | `initVbSync()` | `() → void` | Registra todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. **Sem nome de sessão, o prefixo é omitido junto com o seu hífen** — o nome fica só com o timestamp (`13h29m-16-ago-2026.zip`), nunca com um hífen inicial órfão. O mesmo acontece se a sanitização esvaziar o nome (ex.: título só com pontuação). Usada por `updateBtnTitles()`. |
 
@@ -732,7 +732,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`) e cria um XObject `/Image` com `/Filter /DCTDecode`, com os bytes JPEG sem reprocessamento. Cria também uma `/Page` e um content stream que escala a imagem para caber na página, centrada e com a proporção mantida. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
+| `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`) e cria um XObject `/Image` com `/Filter /DCTDecode`, com os bytes JPEG sem reprocessamento. Cria também uma `/Page` e um content stream que escala a imagem para caber na página, centrada e com a proporção mantida. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. A escrita do arquivo fica em `buildPdfBlob`, e o lugar da imagem na página em `pdfPagePlacement`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
 | `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais ficam na sessão no formato capturado; a conversão para JPEG é só para o PDF. |
 | `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
 
@@ -803,7 +803,7 @@ ativar arrasto:
 |---|---|---|
 | `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra a barra de ferramentas; oculta `#img-nav-prev` e `#img-nav-next` | Chamada pelo botão "Editar" (id `ann-toggle`) |
 | `annDeactivate()` | Desativa anotação: esconde canvas e barra de ferramentas, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
-| `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I conforme `t==='text'` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. |
+| `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I conforme `t==='text'` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. A entrada e a saída ficam em `annEnterCrop` e `annLeaveCrop`; o deslocamento de todas as anotações, também das pilhas de desfazer e refazer, em `annShiftAll`. |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
 | `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap girado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
@@ -838,7 +838,7 @@ original.
 Ferramenta `annSetTool('crop')`. Comportamento:
 - **Primeira ativação (sem cropBox salvo):** define `annCropBox = {0, 0, w, h}` abrangendo toda a imagem; mostra máscara escurecida (60%) fora da área selecionada; 4 alças em "L" nos cantos para ajuste.
 - **Reativação (com cropBox salvo):** expande o canvas para as dimensões do `origBlob`, com a rotação aplicada, e desloca as coordenadas +cx/+cy. Mostra a área de crop anterior, para reajustar ou recuperar áreas cortadas.
-- **Salvar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações, persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy, chama `annDeactivate()`.
+- **Salvar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações (`annRenderSaved`), persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy (`annSaveCrop`), chama `annDeactivate()`.
 - **`annCropBox`**: estado ativo do recorte em memória (`{x, y, w, h}`) durante a edição. Null fora do modo crop.
 - **Invariante:** `origBlob` nunca é cortado. Todo recorte é reversível.
 
@@ -874,10 +874,14 @@ Usuário pressiona Ctrl+V
       │
       ▼
 Listener 'paste' verifica:
-  - activeElement é INPUT/TEXTAREA? → devolver ao elemento nativo
+  - activeElement é INPUT, TEXTAREA ou editável? → devolver ao elemento nativo
       │
       ▼
-Iterar items do clipboard (índice numérico, não for...of)
+Caminho 1: clipboardData.files (arquivos copiados do sistema)
+  → captureFile(f) para cada um, e fim
+      │
+      ▼
+Caminho 2: pasteItems(Array.from(items)), com for...of: primeiro as imagens, depois os outros arquivos
       │
       ├── Tipo image/* encontrado
       │         ↓
@@ -899,7 +903,7 @@ Iterar items do clipboard (índice numérico, não for...of)
       │         ↓
       │   captureDoc(blob, name, type)  [mesmo fluxo, tabela 'documents']
       │
-      └── Nenhum arquivo — verificar texto
+      └── Nenhum arquivo — pasteText() verifica o texto
                 ↓
           clipboard.getData('text/plain')
                 ↓
