@@ -67,6 +67,8 @@
       --text-lg: 1.125rem;
       --text-xl: 1.25rem;
       --color-white: #fff;
+      --color-banner-critical: #b91c1c;
+      --color-banner-close: rgb(255 255 255 / 25%);
       --color-green-600: #16a34a;
       --color-orange-500: #f97316;
       --color-blue-500: #3b82f6;
@@ -496,6 +498,41 @@
 
     .ce-notice.show {
       display: block
+    }
+
+    /* Storage warnings (full or unavailable): fixed on top of everything, also of the modals, so a capture that was not
+       saved never goes unnoticed (D-0080) */
+    .ce-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--z-toast);
+      background: var(--color-banner-critical);
+      color: var(--color-white);
+      text-align: center;
+      padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+      font-size: var(--text-sm);
+      font-weight: 400;
+      line-height: 1.4
+    }
+
+    .ce-banner-close {
+      margin-left: calc(var(--spacing) * 4);
+      background: var(--color-banner-close);
+      border: none;
+      color: var(--color-white);
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      font-size: var(--text-control);
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      cursor: pointer;
+      border-radius: var(--radius-sm)
     }
 
     /* Tooltip in the contrast of the screen: dark in the light theme, light in the dark theme; white over the image viewer, which is always dark */
@@ -3693,8 +3730,10 @@
 
       /* ═══ INDEXEDDB ═══ */
       function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
-      function showQuotaBanner() { if (document.getElementById('ce-quota-banner')) return; const b = document.createElement('div'); b.id = 'ce-quota-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:var(--z-toast);background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento cheio'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function() { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
-      function showStorageBanner() { if (document.getElementById('ce-storage-banner')) return; const b = document.createElement('div'); b.id = 'ce-storage-banner'; b.setAttribute('role', 'alert'); b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:var(--z-toast);background:#b91c1c;color:#fff;text-align:center;padding:12px 16px;font-size:var(--text-sm);font-weight:400;line-height:1.4;'; const t = document.createElement('strong'); t.textContent = 'Armazenamento indisponível'; b.appendChild(t); b.appendChild(document.createTextNode(' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.')); const btn = document.createElement('button'); btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.style.cssText = 'margin-left:16px;background:rgb(255 255 255 / 25%);border:none;color:#fff;width:24px;height:24px;padding:0;font-size:var(--text-control);line-height:1;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer;border-radius:4px'; btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      // The two storage warnings: one builder, with the look in the .ce-banner classes. The guard on the id shows each warning once.
+      function showBanner(id, title, text) { if (document.getElementById(id)) return; const b = document.createElement('div'); b.id = id; b.className = 'ce-banner'; b.setAttribute('role', 'alert'); const t = document.createElement('strong'); t.textContent = title; b.appendChild(t); b.appendChild(document.createTextNode(text)); const btn = document.createElement('button'); btn.className = 'ce-banner-close'; btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
+      function showQuotaBanner() { showBanner('ce-quota-banner', 'Armazenamento cheio', ' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.') }
+      function showStorageBanner() { showBanner('ce-storage-banner', 'Armazenamento indisponível', ' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.') }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store), r = fn(st); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d));
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
