@@ -5884,6 +5884,51 @@
       }
 
       /* ═══ APPLY INITIAL TOKENS ═══ */
+      // Visual Builder (Export Admin): the color and title fields show the live tokens
+      function vbFillColorsAndTitle() {
+        $('cfg-cor-principal').value = sysColors.main;
+        $('cfg-cor-hex').value = sysColors.main.toUpperCase();
+        $('cfg-cor-fg').value = sysColors.fg || '#ffffff';
+        $('cfg-fg-hex').value = sysColors.fg ? sysColors.fg.toUpperCase() : '';
+
+        $('cfg-title-start').value = TOKEN_TITLE_START;
+        $('cfg-title-accent').value = TOKEN_TITLE_ACCENT;
+        $('cfg-title-end').value = TOKEN_TITLE_END;
+      }
+      // Visual Builder (Export Admin): the session, footer and JPEG fields
+      function vbFillSessionFields() {
+        $('cfg-show-user').checked = TOKEN_SHOW_SESSION_USER;
+        $('cfg-show-pc').checked = TOKEN_SHOW_SESSION_PC;
+        $('cfg-user-label').value = TOKEN_USER_LABEL || 'User';
+        $('cfg-user-label').placeholder = '';
+        $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
+        $('cfg-equip-label').placeholder = '';
+        $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
+
+        $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
+        $('cfg-jpeg-label').textContent = Math.round(TOKEN_JPEG_QUALITY * 100) + '%';
+      }
+      // Checks the radio button of the group name whose value is value; with no such button, none stays checked
+      function checkRadioByValue(name, value) {
+        const r = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (r) r.checked = true;
+        else document.querySelectorAll(`input[name="${name}"]`).forEach(x => x.checked = false);
+      }
+      // The User and Equipamento fields show as the tokens say; with both hidden, their whole section hides
+      function applySessionVisibility() {
+        $('session-user').style.display = TOKEN_SHOW_SESSION_USER ? '' : 'none';
+        $('session-pc').style.display = TOKEN_SHOW_SESSION_PC ? '' : 'none';
+        const idWrap = $('id-section-wrap');
+        if (idWrap) { idWrap.style.display = (!TOKEN_SHOW_SESSION_USER && !TOKEN_SHOW_SESSION_PC) ? 'none' : 'flex'; }
+      }
+      // The header title and the tab title come from the three title tokens, when any of them is set
+      function applyTitleTokens() {
+        if (!TOKEN_TITLE_START && !TOKEN_TITLE_ACCENT && !TOKEN_TITLE_END) return;
+        $('ui-title-start').textContent = TOKEN_TITLE_START;
+        $('ui-title-accent').textContent = TOKEN_TITLE_ACCENT;
+        $('ui-title-end').textContent = TOKEN_TITLE_END;
+        document.title = (TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END).trim() || 'Capture Engine';
+      }
       function applyTokens() {
         sysColors.main = TOKEN_MAIN_COLOR || '#e86b2e';
         sysColors.fg = TOKEN_ACCENT_FG_OVERRIDE || '';
@@ -5895,60 +5940,24 @@
            with work the end user depends on (sysColors, placeholders,
            footer). A return here would leave the app with no theme and no labels (see D25). */
         const _vbPresente = !!$('cfg-cor-principal');
-        if (_vbPresente) {
-          $('cfg-cor-principal').value = sysColors.main;
-          $('cfg-cor-hex').value = sysColors.main.toUpperCase();
-          $('cfg-cor-fg').value = sysColors.fg || '#ffffff';
-          $('cfg-fg-hex').value = sysColors.fg ? sysColors.fg.toUpperCase() : '';
-
-          $('cfg-title-start').value = TOKEN_TITLE_START;
-          $('cfg-title-accent').value = TOKEN_TITLE_ACCENT;
-          $('cfg-title-end').value = TOKEN_TITLE_END;
-        }
+        if (_vbPresente) vbFillColorsAndTitle();
         sysColors.tStart = TOKEN_TITLE_START_COLOR;
         sysColors.tAccent = TOKEN_TITLE_ACCENT_COLOR;
         sysColors.tEnd = TOKEN_TITLE_END_COLOR;
         applySwatchVisuals();
         updateThemeColor();
 
-        if (_vbPresente) {
-          $('cfg-show-user').checked = TOKEN_SHOW_SESSION_USER;
-          $('cfg-show-pc').checked = TOKEN_SHOW_SESSION_PC;
-          $('cfg-user-label').value = TOKEN_USER_LABEL || 'User';
-          $('cfg-user-label').placeholder = '';
-          $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
-          $('cfg-equip-label').placeholder = '';
-          $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
-        }
+        if (_vbPresente) vbFillSessionFields();
         const footerYear = TOKEN_FOOTER_TEXT.replace(/\{YEAR\}/g, new Date().getFullYear());
         $('session-user').placeholder = TOKEN_USER_LABEL || 'User';
         $('session-pc').placeholder = TOKEN_EQUIP_LABEL || 'Equipamento';
         const fc = $('footer-credits');
         if (fc) fc.textContent = footerYear;
 
-        if (_vbPresente) {
-          $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
-          $('cfg-jpeg-label').textContent = Math.round(TOKEN_JPEG_QUALITY * 100) + '%';
-        }
-
-        const rDim = document.querySelector(`input[name="cfg-max-dim"][value="${TOKEN_MAX_IMG_DIMENSION}"]`);
-        if (rDim) rDim.checked = true;
-        else document.querySelectorAll('input[name="cfg-max-dim"]').forEach(r => r.checked = false);
-
-        const rPurge = document.querySelector(`input[name="cfg-purge"][value="${TOKEN_AUTO_PURGE_HOURS}"]`);
-        if (rPurge) rPurge.checked = true;
-        else document.querySelectorAll('input[name="cfg-purge"]').forEach(r => r.checked = false);
-
-        $('session-user').style.display = TOKEN_SHOW_SESSION_USER ? '' : 'none';
-        $('session-pc').style.display = TOKEN_SHOW_SESSION_PC ? '' : 'none';
-        const idWrap = $('id-section-wrap');
-        if (idWrap) { idWrap.style.display = (!TOKEN_SHOW_SESSION_USER && !TOKEN_SHOW_SESSION_PC) ? 'none' : 'flex'; }
-        if (TOKEN_TITLE_START || TOKEN_TITLE_ACCENT || TOKEN_TITLE_END) {
-          $('ui-title-start').textContent = TOKEN_TITLE_START;
-          $('ui-title-accent').textContent = TOKEN_TITLE_ACCENT;
-          $('ui-title-end').textContent = TOKEN_TITLE_END;
-          document.title = (TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END).trim() || 'Capture Engine';
-        }
+        checkRadioByValue('cfg-max-dim', TOKEN_MAX_IMG_DIMENSION);
+        checkRadioByValue('cfg-purge', TOKEN_AUTO_PURGE_HOURS);
+        applySessionVisibility();
+        applyTitleTokens();
         applySwatchVisuals();
       }
 
