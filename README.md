@@ -129,7 +129,7 @@ Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospita
 **XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine sanitiza (limpa) todos os dados inseridos pelo usuário antes de apresentá-los, impedindo este tipo de ataque.
 
 ### EMA (Exponential Moving Average)
-**EMA** (média móvel exponencial) é o filtro que suaviza o traço livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
+**EMA** (média móvel exponencial) é o filtro que suaviza o desenho livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
 
 ## 5. Início rápido
 
@@ -213,8 +213,8 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 ### 6.3 Anotação de imagens
 
 Motor de anotação:
-- O editor tem 7 ferramentas (traço livre, retângulo, círculo, seta, texto, selecionar e Crop) e o botão Rotação 90°.
-  - Cada ferramenta fica ativa até se escolher outra. A rotação gira a imagem e termina.
+- O editor tem 7 ferramentas (desenho livre, retângulo, círculo, seta, texto, selecionar e recortar) e o botão Girar 90°.
+  - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
   - O modo texto liga com a ferramenta Texto ou com o duplo clique num texto. Nele, a barra mostra só o ←, o T, o negrito e o itálico, as cores, o tamanho, desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior e deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
@@ -227,7 +227,7 @@ Motor de anotação:
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
-  - Nota: durante a edição, Desfazer/Refazer também revertem Crop e Rotação 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
+  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
 
 Mobile:
 - Desenho por toque funciona (Pointer Events nativos)
@@ -291,14 +291,14 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 
 **O que é incluído:**
 - Imagens **não anotadas** em PNG, byte a byte iguais ao original, sem recompressão
-- Imagens **anotadas, rodadas ou recortadas** como PNG novo, com as edições incorporadas (ver nota abaixo)
-- GIF animados **não editados** no formato original, com a animação intacta — anotar, rodar ou recortar converte-os num PNG estático, tal como qualquer outra imagem (ver a nota abaixo)
+- Imagens **anotadas, giradas ou recortadas** como PNG novo, com as edições incorporadas (ver nota abaixo)
+- GIF animados **não editados** no formato original, com a animação intacta — anotar, girar ou recortar converte-os num PNG estático, tal como qualquer outra imagem (ver a nota abaixo)
 - Documentos em todos os formatos
 - Nomes de arquivo limpos baseados nas legendas/nomes definidos (ex: `imagem-1.png`, `relatorio.pdf`)
 
 > [!CAUTION]
 > **O ZIP leva a imagem que você vê, e não a que colou.**
-> Assim que uma imagem é **anotada, rodada ou recortada**, o ZIP leva a versão editada. É um PNG novo, gerado a partir do canvas, com as edições incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
+> Assim que uma imagem é **anotada, girada ou recortada**, o ZIP leva a versão editada. É um PNG novo, gerado a partir do canvas, com as edições incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
 >
 > A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
 
@@ -501,7 +501,7 @@ O Capture Engine é adequado para **coleta organizada e documentação** de evid
 - Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio navegador
 - Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
 - **Exportação PDF:** as imagens são recomprimidas como JPEG em memória, com perda. Não serve como prova primária quando se exige a integridade pixel a pixel; para isso, use o ZIP de imagens não editadas
-- **Exportação ZIP de imagens editadas:** anotar, rodar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no navegador, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
+- **Exportação ZIP de imagens editadas:** anotar, girar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no navegador, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
 
 > [!CAUTION]
 > **O original de uma imagem editada não se recupera depois.**
@@ -523,7 +523,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
-| **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, rodar ou recortar:** o `ann-save` regenera a imagem em PNG, a partir do canvas, e a animação perde-se também no ZIP. O arquivo sai com a extensão `.png`, e não como um `.gif` parado. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
+| **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, girar ou recortar:** o `ann-save` regenera a imagem em PNG, a partir do canvas, e a animação perde-se também no ZIP. O arquivo sai com a extensão `.png`, e não como um `.gif` parado. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
 
 **Quota do navegador.** O navegador limita o espaço do IndexedDB. Quando ele esgota, um aviso vermelho fixo aparece no topo, e o erro fica no console (F12). O que já estava gravado não se corrompe, mas uma captura nova pode não ser gravada. Cada imagem PNG usa, em geral, de 100 KB a 2 MB. Com 100 a 150 imagens de alta resolução, uma sessão chega a 200–500 MB: a partir daí, exporte com frequência. O script de diagnóstico do `AGENTS.md` §14 mostra o uso real.
 

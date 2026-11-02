@@ -740,7 +740,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem a partir de **`img.blob`** (extensão por MIME). **Nunca lê `origBlob`.** Numa imagem anotada, rodada ou recortada, o `img.blob` é o PNG regenerado pelo `ann-save`. O original fica em `origBlob` e não se exporta por nenhuma via. É intencional, porque as edições devem acompanhar a exportação; a limitação está no `README §6.7` e em «Uso como prova» (§9). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
+| `generateZIP(usePdf=false)` | Reúne os arquivos da sessão e chama `buildZIP`. Com `usePdf=true` e imagens presentes, gera **um** PDF (`generatePDF(true)`) como `Imagens.pdf`; senão adiciona cada imagem a partir de **`img.blob`** (extensão por MIME). **Nunca lê `origBlob`.** Numa imagem anotada, girada ou recortada, o `img.blob` é o PNG regenerado pelo `ann-save`. O original fica em `origBlob` e não se exporta por nenhuma via. É intencional, porque as edições devem acompanhar a exportação; a limitação está no `README §6.7` e em «Uso como prova» (§9). Adiciona os documentos com o nome sanitizado (remove travessias de path `../`, `..\`). Nomes deduplicados por `dedupeZipName`. | Corresponde às duas opções do modo ZIP: "Imagens em PDF" e "Imagens Separadas" (ver `handleZipClick`). |
 | `buildZIP(files)` | Escreve um ZIP à mão pelo método **STORE (`0` — sem compressão)**: por arquivo, um *local file header* (`PK\x03\x04`) seguido dos dados; depois o *central directory* (`PK\x01\x02`) e o *EOCD* (`PK\x05\x06`). CRC32 por tabela própria; data/hora em formato DOS. | Sem `deflate` — empacota sem recomprimir (PNG/GIF entram intactos). Devolve `Blob` `application/zip`.<br><br>**Codificação dos nomes (não alterar sem ler isto):** os nomes são escritos em UTF-8 por `ENC.encode()`. O **bit 11 (`0x0800`) do *general purpose bit flag*** declara-o, nos **dois** cabeçalhos (APPNOTE.TXT §4.4.4). Os dois andam sempre juntos. Com o bit a `0`, o descompressor lê os bytes como CP437/ANSI, e um nome com acentos sai ilegível (`Diagnóstico` → `Diagn+¦stico`). O `validate.sh` check #26 protege esta invariante. Ver D21. |
 
 ### Motor de reordenação (`initReorder`)
@@ -806,12 +806,12 @@ ativar arrasto:
 | `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I conforme `t==='text'` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
-| `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap rodado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
+| `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap girado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
 | `annShowTextInput(x, y, prefill?)` | Posiciona e mostra o editor de texto (`#ann-text-input`, um `<textarea>` multilinha) no canvas, com B/I sync e `line-height = fontSize escalado × ANN_TEXT_LINE_RATIO`. **Enter insere nova linha**; a confirmação acontece no blur (clicar fora), ao clicar em outro ponto do canvas, e no botão Confirmar; `Escape` cancela. Chama `annAutosizeText()` ao abrir | `prefill` opcional para reedição via dblclick |
 | `annAutosizeText()` | Faz o `<textarea>` de texto crescer em altura (`scrollHeight`) e largura (linha mais longa medida com `measureText` na fonte escalada, + 4px). Necessário porque `wrap="off"` não quebra linhas automaticamente | Chamada em `oninput`, ao abrir o editor (`annShowTextInput`) e após cada resize ao vivo pelos botões −/+ |
 | `annCanvasXY(e)` | Converte coordenadas do evento para coordenadas do canvas (sem clamping) | Para posicionamento de texto |
 | `annCanvasXYClamped(e)` | Converte + clamp aos limites do canvas | Para formas (evita saírem do canvas) |
-| `annCR(ctx, pts, closed)` | Interpola e renderiza um traço livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exatamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no salvamento final do traço via `annDrawShape`. **Não chamar diretamente** — usar `annDrawShape` ou `annRedraw`. |
+| `annCR(ctx, pts, closed)` | Interpola e renderiza um desenho livre usando o algoritmo **Catmull-Rom** (spline cúbica). Recebe o contexto canvas (`ctx`), um array de pontos `[{x,y}]` (`pts`) e um booleano `closed`. Produz curvas suaves que passam exatamente por todos os pontos sem overshooting. Chamada em dois momentos: no preview em tempo real durante o `pointermove` (via `annPath`) e no salvamento final do traço via `annDrawShape`. **Não chamar diretamente** — usar `annDrawShape` ou `annRedraw`. |
 | `rdp(pts, eps)` | Ramer-Douglas-Peucker — simplifica um path removendo pontos colineares | Inativa no fluxo de desenho desde a V23 (nunca chamada); a função órfã foi removida fisicamente do código na V25 (commit D3), por decisão do mantenedor. Se suavização de traço livre for necessária em versão futura, reimplementar em contexto com decisão documentada. |
 
 ### Motor de anotação: seleção, edição e desfazer
@@ -825,7 +825,7 @@ ativar arrasto:
 | **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
 | **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annCommitUndo` ignora snapshots idênticos ao topo (deduplicação introduzida na D18). `annDoUndo` e `annDoRedo` são `async`. Detectam mudanças em `rot` e `crop` no snapshot. Se `rot` mudou, regeneram o bitmap base com `getRotatedBlob(origBlob, _prev.rot)` e atualizam `annCurrentRotation`. Se `crop` mudou, trocam a imagem base entre `o.blob` e `origBlob` e redimensionam o canvas. Se o snapshot tiver `pcrop`, restaura também a `o.cropBox` persistida. Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `annDragDirty` / `annResizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `annDragDirty`/`annResizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
 
-**Ferramenta de Rotação (90°)**
+**Ferramenta «Girar 90°»**
 Botão `ann-rotate-btn` na barra de ferramentas do editor. Cada clique roda a imagem 90° no
 sentido horário: recalcula o bitmap via canvas temporário, atualiza
 `annCurrentRotation = (annCurrentRotation + 90) % 360`, redimensiona o canvas
@@ -834,7 +834,7 @@ pilhas undo/redo com a matriz de rotação 90° e transforma também a caixa de 
 rotação para permitir Ctrl+Z. Não-destrutivo: `origBlob` mantém a orientação
 original.
 
-**Ferramenta de Crop (Recorte)**
+**Ferramenta «Recortar»**
 Ferramenta `annSetTool('crop')`. Comportamento:
 - **Primeira ativação (sem cropBox salvo):** define `annCropBox = {0, 0, w, h}` abrangendo toda a imagem; mostra máscara escurecida (60%) fora da área selecionada; 4 alças em "L" nos cantos para ajuste.
 - **Reativação (com cropBox salvo):** expande o canvas para as dimensões do `origBlob`, com a rotação aplicada, e desloca as coordenadas +cx/+cy. Mostra a área de crop anterior, para reajustar ou recuperar áreas cortadas.
@@ -1102,7 +1102,7 @@ O `validate.sh` executa 29 verificações mecânicas: 28 com regex, grep ou Pyth
 16. **Versão: CHANGELOG = HTML**: a mesma versão deve estar nas 3 referências de produto do HTML.
 17. **Sintaxe JavaScript valida (node)**: Extrai todo script e roda `new Function()` para validar sintaxe de forma pura via Node. Se o node faltar, é dado como `[SKIP]`.
 18. **TOKEN_MAIN_COLOR consistente (HTML vs design-tokens.md)**: confirma que a cor principal declarada no HTML bate com a documentada. FAIL = deriva de cor.
-19. **Ferramentas de anotação no README (8/8)**: confirma as 7 ferramentas do editor (valores de `annTool`) e a Rotação 90° na linha «O editor tem 7 ferramentas» do README. A contagem exibida deriva da lista testada, não é hardcoded. FAIL = ferramenta não documentada.
+19. **Ferramentas de anotação no README**: lê os nomes no próprio HTML (o `title` de cada botão `data-tool` e do `#ann-rotate-btn`) e confirma cada um na linha «O editor tem N ferramentas» do README, sem diferenciar maiúsculas. A linha precisa ter uma frase só: uma explicação junto dela poderia repetir um nome e esconder uma ferramenta que falta. Não há lista para manter (D70, fechado em 2026-11-02). FAIL = ferramenta não documentada, ou nomes que não se leem no HTML.
 20. **Guard de purge presente**: confirma que `if (!TOKEN_AUTO_PURGE_HOURS) return` existe no HTML. FAIL = risco de purge destrutivo com valor 0.
 21. **Tokens com aspas simples**: confirma que nenhum TOKEN_* usa aspas duplas. FAIL = quebra do contrato de substituição do Quine.
 22. **Declaração única de token (ZT1)**: confirma que cada TOKEN_* substituído pelo exportFile tem exatamente 1 declaração real. FAIL = risco de substituição silenciosamente errada (String.replace pega só a 1ª ocorrência).
@@ -1129,15 +1129,7 @@ O `validate.sh` inclui um check heurístico (Python) que analisa funções do JS
 
 Rode `bash validate.sh` e leia as linhas `[WARN] Funcao '…' com CC n`: são as funções com mais pontos de decisão, e a saída do script é a lista atual. **Não é uma lista de defeitos.** É o mapa de onde uma edição tem mais probabilidade de quebrar alguma coisa. As divergências entre código e documentação das auditorias da V26 concentraram-se nestas funções. A lista não é copiada aqui, porque uma cópia sem comparação envelhece a cada versão.
 
-> **Dois limites conhecidos que ficam por corrigir de propósito (D70).**
->
-> **O guard de prosa do check 19 depende de uma frase editorial.** Ele dispara ao ver «fica ativa até» na linha
-> das ferramentas. Medido: das duas linhas de prosa que a seguem, só essa contém um termo da lista (`Rotação`). Por
-> isso, só a fusão dela abriria um furo, e é exatamente a que o guard vigia. **Hoje não há furo.** Mas se alguém
-> reescrever essa frase, o guard fica cego e a fragilidade volta em silêncio. Não foi remendado porque seria a **sexta**
-> iteração no mesmo check (D29 → D41 → D46 → D47 → e duas correções ao próprio remendo), e o padrão de cada remendo
-> deixar uma aresta nova já está estabelecido. A correção certa, quando alguém lhe voltar, é **estrutural**: derivar os
-> termos esperados do próprio HTML (os 7 `data-tool` mais o botão de rodar) em vez de os manter numa lista à parte.
+> **Um limite conhecido que fica por corrigir de propósito (D70).**
 >
 > **O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona.** O `_chkQ` do `idbTx` está ligado
 > aos handlers de erro da transação, que só correm no caminho assíncrono. Não foi corrigido porque erros de quota
@@ -1309,7 +1301,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
 - [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam, e o resto da barra fica meio transparente e sem clique por 5 s
 - [ ] Durante esse aviso, um clique na imagem desfaz o estado antes dos 5 s
-- [ ] Texto: a Rotação 90° gira também o texto
+- [ ] Texto: o «Girar 90°» gira também o texto
 - [ ] Texto: o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
 - [ ] Modo texto: a barra mostra só ←, T, B e I entre as ferramentas; o ← volta à ferramenta anterior e deixa o texto na imagem
 - [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor
@@ -1433,11 +1425,8 @@ O que ficou para depois, com o ID e a origem.
 
 | ID | Pendente | Origem |
 |---|---|---|
-| D70 | O guard de prosa do check 19 depende da frase «fica ativa até», no README. A correção estrutural deriva os termos do próprio HTML (os 7 `data-tool` e o botão de rodar). | Sexta auditoria; detalhe na §10 |
 | D70 | O banner de quota não aparece se o `put` do IndexedDB lançar de forma síncrona. | Sexta auditoria; detalhe na §10 |
 | F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
-| F-0052 | Os nomes das ferramentas no README seguem a interface: «Rodar 90°», «Recortar», «Desenho livre». A linha das ferramentas é lida pelo check 19, que muda junto (D70). | Auditoria de 2026-11-01 |
-| F-0053 | Textos da interface num estilo só: «Clique duplo» e «Duplo clique», maiúsculas em «Reduzir Zoom», «Exportar Versão», «Configurar Distribuição», «Imagens Separadas», e «Colar do Clipboard» e «Reset». | Auditoria de 2026-11-01 |
 | F-0055 | No código, o comentário da borda do `btn-zip-cta` (`handleZipClick`) e o título «ZIP ENGINE» por cima do `updateStatusBar`. Vai junto do F-0029. | Auditoria de 2026-11-01 |
 | F-0060 | Os estilos dos avisos de armazenamento no JavaScript (`padding`, `margin-left`, `border-radius` e a cor do botão ✕) passam a tokens, com captura antes e depois. | Auditoria de 2026-11-01 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
@@ -1505,7 +1494,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
      const store = tx.objectStore('images');
      store.getAll().onsuccess = ev => {
        ev.target.result.forEach((item, i) => {
-         // item.blob e' a imagem COMO ESTA: se foi anotada, rodada ou recortada,
+         // item.blob e' a imagem COMO ESTA: se foi anotada, girada ou recortada,
          // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
          // edicao, e guarda o original intacto. Extrair ambos — este procedimento
          // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
@@ -1569,7 +1558,7 @@ req2.onsuccess = e => {
     .objectStore('images').index('sessionId');
   idx.getAll(SESSION_ID).onsuccess = ev => {
     ev.target.result.forEach((item, i) => {
-      // item.blob e' a imagem COMO ESTA: se foi anotada, rodada ou recortada,
+      // item.blob e' a imagem COMO ESTA: se foi anotada, girada ou recortada,
       // e' o PNG regenerado pelo ann-save. item.origBlob so existe quando houve
       // edicao, e guarda o original intacto. Extrair ambos — este procedimento
       // e' o recurso para obter os dados puros, e o puro e' o origBlob. Ver D55.
