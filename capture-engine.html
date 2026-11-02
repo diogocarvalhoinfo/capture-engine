@@ -360,7 +360,7 @@
       color: var(--color-primary-foreground)
     }
 
-    /* Seleção suave/translúcida só no editor de texto da anotação (não força a cor do texto) */
+    /* Soft, translucent selection only in the annotation text editor (it does not force the text colour) */
     #ann-text-input::selection {
       background: var(--color-annotation-selection);
       color: inherit
@@ -395,7 +395,7 @@
       background: var(--color-muted-foreground)
     }
 
-    /* ═══ MOBILE: scrollbar oculta + sem zoom (aspeto app nativo) ═══ */
+    /* ═══ MOBILE: hidden scrollbar + no zoom (native app look) ═══ */
     @media (width <= 48rem) {
       *, *::-webkit-scrollbar {
         scrollbar-width: none !important;
@@ -985,12 +985,12 @@
       pointer-events: none
     }
 
-    /* Reordenacao estilo telemovel: itens deslizam suavemente para o novo lugar */
+    /* Phone-style reordering: items slide smoothly to their new place */
     .t-item.reorder-anim, .d-item.reorder-anim {
       transition: transform var(--duration-moderate-02) cubic-bezier(0.2, 0, 0, 1)
     }
 
-    /* O item arrastado flutua, encolhe para ~75% e segue o cursor (sem transition, cola ao dedo) */
+    /* The dragged item floats, shrinks to about 75% and follows the cursor (no transition, it sticks to the finger) */
     .t-item.dragging, .d-item.dragging {
       position: fixed;
       margin: 0;
@@ -1005,8 +1005,8 @@
       pointer-events: none
     }
 
-    /* Espaco reservado para onde o item vai cair: area muito suave (quase um buraco).
-       Ajustavel via --color-drop-placeholder / --color-drop-placeholder-border, no :root. */
+    /* Reserved space where the item will land: a very soft area (almost a hole).
+       Adjustable via --color-drop-placeholder / --color-drop-placeholder-border, in :root. */
     .reorder-placeholder {
       box-sizing: border-box;
       border-radius: var(--radius-md);
@@ -3066,7 +3066,7 @@
       </div>
     </div>
 
-    <!-- ─── BLOCO IMAGENS ─── -->
+    <!-- ─── IMAGES BLOCK ─── -->
     <div id="right-col">
       <div id="center-row">
 
@@ -3094,7 +3094,7 @@
           <input type="file" id="file-img-input" accept="image/*" multiple style="display:none">
         </div>
 
-        <!-- ─── BLOCO DOCUMENTOS ─── -->
+        <!-- ─── DOCUMENTS BLOCK ─── -->
         <div class="ev-block" id="block-docs">
           <div class="blk-hdr">
             <svg viewBox="0 0 24 24">
@@ -3180,7 +3180,7 @@
 
   <div id="footer-credits">© 2026 • CAPTURE ENGINE • DIOGO CARVALHO</div>
 
-  <!-- ═══ MODAL: VISUALIZAR IMAGEM ═══ -->
+  <!-- ═══ MODAL: IMAGE VIEWER ═══ -->
   <div class="modal-overlay" id="img-modal-overlay">
     <div class="modal-box">
       <div class="modal-hdr">
@@ -3360,7 +3360,7 @@
 
 
 
-  <!-- ═══ MODAL: VISUALIZAR DOCUMENTO/TEXTO ═══ -->
+  <!-- ═══ MODAL: DOCUMENT/TEXT VIEWER ═══ -->
   <div class="modal-overlay" id="text-modal-overlay">
     <div class="modal-box" style="max-width:calc(85vw / var(--app-zoom)); width:650px; height:calc(80vh / var(--app-zoom))">
       <div class="modal-hdr">
@@ -3665,7 +3665,7 @@
       const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO';
       const TOKEN_JPEG_QUALITY = 0.92;
       const TOKEN_MAX_IMG_DIMENSION = 0;
-      const TOKEN_AUTO_PURGE_HOURS = 48; // 0 = nunca purgar
+      const TOKEN_AUTO_PURGE_HOURS = 48; // 0 = never purge
       const TOKEN_DEBUG_MODE = true;
 
       /* ═══ UTILITIES ═══ */
@@ -3675,11 +3675,11 @@
       const uiZoom = () => parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
       function escapeHTML(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/`/g, '&#x60;') }
       function genId(p) { return p + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) }
-      /* Proxima ordem livre. NAO usar arr.length: delImg/delDoc removem do array
-         sem renumerar os restantes, logo o length volta a colidir com um order ja
-         existente (apagar do meio + capturar/restaurar = duas entradas com o mesmo
-         order, e o sort de loadSession passa a devolver ordens diferentes entre
-         recarregamentos). max+1 nunca colide. Ver D45. */
+      /* Next free order. Do NOT use arr.length: delImg/delDoc remove from the array
+         without renumbering the rest, so the length collides again with an existing
+         order (delete from the middle + capture/restore = two entries with the same
+         order, and the sort in loadSession then returns different orders between
+         reloads). max+1 never collides. See D45. */
       function nextOrder(arr) { return arr.length ? Math.max(...arr.map(x => x.order)) + 1 : 0 }
       function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(1) + ' MB' }
       const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -3899,8 +3899,8 @@
 
       // Keyboard navigation
       window.addEventListener('keydown', function (e) {
-        // Guard: se o foco está num campo de texto (ex: editor de texto da anotação), deixar o
-        // Ctrl+Z/Ctrl+Y nativos do campo desfazerem a DIGITAÇÃO — não o undo/redo da anotação.
+        // Guard: if the focus is in a text field (e.g. the annotation text editor), let the
+        // native Ctrl+Z/Ctrl+Y of the field undo the TYPING, not the annotation undo/redo.
         const _annUndoInField = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
         if (annActive && (e.ctrlKey || e.metaKey) && !_annUndoInField) {
           if (e.key.toLowerCase() === 'z') {
@@ -3920,10 +3920,10 @@
             return;
           }
         }
-        // Delete: apaga a anotação seleccionada (sem Ctrl, sem campo de texto activo)
+        // Delete: removes the selected annotation (no Ctrl, no active text field)
         if (annActive && e.key === 'Delete' && !_annUndoInField && annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
           e.preventDefault();
-          annPushUndo(); // M7: snapshot ANTES de apagar via tecla Delete
+          annPushUndo(); // M7: snapshot BEFORE deleting with the Delete key
           annHistory.splice(annSelectedIdx, 1);
           setAnnDirty(true);
           annSelectedIdx = -1;
@@ -4082,7 +4082,7 @@
         });
       }
       let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
-      // Fase 5 — pilhas de Undo/Redo por snapshots de estado completo
+      // Phase 5: Undo/Redo stacks of full-state snapshots
       let annUndoStack = [], annRedoStack = [];
       const ANN_HISTORY_MAX = 50;
       const ANN_AWAIT_MS = 5000; // unsaved changes: how long the rest of the toolbar stays dimmed
@@ -4094,28 +4094,28 @@
       let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
-      let annHoverIdx = -1; // mantido para compatibilidade com annDeactivate; lógica de hover removida na Fase 1c
-      // Fase 2 — variáveis de arrasto de anotações
-      let annDragging = false;       // true enquanto o utilizador arrasta uma forma selecionada
-      let annDragStartX = 0, annDragStartY = 0; // ponto do canvas onde o arrasto começou (reservado para uso futuro)
-      let annDragLastX  = 0, annDragLastY  = 0; // posição do rato no frame anterior — delta incremental
-      let annDragOriginX = 0, annDragOriginY = 0; // coords x1,y1 originais da forma (reservado)
-      let annDragRafId = 0;          // RAF id para coalescing do render durante o arrasto
+      let annHoverIdx = -1; // kept for compatibility with annDeactivate; hover logic removed in phase 1c
+      // Phase 2: annotation drag variables
+      let annDragging = false;       // true while the user drags a selected shape
+      let annDragStartX = 0, annDragStartY = 0; // canvas point where the drag started (reserved for future use)
+      let annDragLastX  = 0, annDragLastY  = 0; // mouse position in the previous frame: incremental delta
+      let annDragOriginX = 0, annDragOriginY = 0; // original x1,y1 coords of the shape (reserved)
+      let annDragRafId = 0;          // RAF id to coalesce the render during the drag
       let annDragSnap = null, annDragDirty = false;
-      // Fase 3 — variáveis de redimensionamento via alças
-      let annResizing = false;       // true enquanto o utilizador arrasta uma alça
+      // Phase 3: resize variables (handles)
+      let annResizing = false;       // true while the user drags a handle
       let annResizeHandle = '';      // 'tl','tr','bl','br'
-      let annResizeAnchorX = 0, annResizeAnchorY = 0; // canto oposto à alça (permanece fixo)
-      let annResizeRafId = 0;        // RAF id para coalescing do render durante resize
+      let annResizeAnchorX = 0, annResizeAnchorY = 0; // corner opposite the handle (stays fixed)
+      let annResizeRafId = 0;        // RAF id to coalesce the render during the resize
       let annResizeSnap = null, annResizeDirty = false;
-      let annResizeOriginFS = 0;     // fontSize original da shape de texto no inicio do resize
-      let annResizeStartX = 0, annResizeStartY = 0; // posicao canvas no inicio do resize (distancia diagonal)
-      let annResizeOriginBBox = null; // bbox canvas da shape no inicio do resize (para escala de free)
+      let annResizeOriginFS = 0;     // original fontSize of the text shape at the start of the resize
+      let annResizeStartX = 0, annResizeStartY = 0; // canvas position at the start of the resize (diagonal distance)
+      let annResizeOriginBBox = null; // canvas bbox of the shape at the start of the resize (to scale free strokes)
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
-      let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for live preview (evita flicker)
+      let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for the live preview (avoids flicker)
       const ANN_TEXT_SIZES = [14, 18, 24, 36, 48]; let annTextSizeIdx = 2; // default 24px (index 2)
-      const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio — usado no textarea E no canvas (WYSIWYG multilinha)
+      const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio, used in the textarea AND in the canvas (multi-line WYSIWYG)
       function annLineW() { return ANN_SIZES[annSizeIdx] }
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
 
@@ -4171,7 +4171,7 @@
         const cv = $('ann-canvas');
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
         cv.style.display = 'block';
-        // Carregar fundo limpo (origBlob sem anotações baked) para edição
+        // Load the clean background (origBlob without baked annotations) for editing
         await annLoadCleanBg();
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
@@ -4182,8 +4182,8 @@
       }
       function annDeactivate() {
         clearAnnAwait();
-        annActive = false; annDrawing = false; annSelectedIdx = -1; annHoverIdx = -1; // reset por segurança
-        // Restaurar imagem baked como fundo (para o modo de visualização)
+        annActive = false; annDrawing = false; annSelectedIdx = -1; annHoverIdx = -1; // reset to be safe
+        // Restore the baked image as the background (for the viewer)
         const _restoreO = images.find(x => x.id === modalItemId);
         if (_restoreO) {
           const _rimg = $('img-modal-img');
@@ -4227,7 +4227,7 @@
         if (t === 'crop') {
           if (o && o.cropBox && o.origBlob && !annCropBox) {
              let rBlob = o.origBlob;
-             if (annCurrentRotation) rBlob = await getRotatedBlob(o.origBlob, annCurrentRotation); // D19: usar rotacao viva, nao a guardada (o.rotation), senao desfasa apos rotacoes sem salvar
+             if (annCurrentRotation) rBlob = await getRotatedBlob(o.origBlob, annCurrentRotation); // D19: use the live rotation, not the saved one (o.rotation), or it drifts after rotations not yet saved
              const u = URL.createObjectURL(rBlob);
              await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
              _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
@@ -4293,8 +4293,8 @@
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
       let annRotCenter = null, annRotStart = 0, annRotStartAng = 0;
       function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy); if (Math.abs(l.x) <= l.g.w / 2 + 4 && Math.abs(l.y) <= l.g.h / 2 + 4) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
-      // Detecta se (cx,cy) está sobre uma das 4 alças da shape selecionada.
-      // Retorna 'tl','tr','bl','br' ou '' se não houver hit.
+      // Detects whether (cx,cy) is on one of the 4 handles of the selected shape.
+      // Returns 'tl','tr','bl','br' or '' when there is no hit.
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
@@ -4331,18 +4331,18 @@
         const _e = annHistory[annSelectedIdx], _isTxt = _e.type === 'text';
         let _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
         if (_isTxt) { const c = annTextCenter(_e); ctx.translate(c.x, c.y); ctx.rotate((_e.rot || 0) * Math.PI / 180); _bw = c.g.w + 8 + M * 2; _bh = c.g.h + 8 + M * 2; _bx = -_bw / 2; _by = -_bh / 2; }
-        // ── Caixa de seleção: linha sólida fina e discreta ────────────────────────
+        // ── Selection box: thin, discreet solid line ───────────────────────────────
         ctx.strokeStyle = accent; ctx.lineWidth = k; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
         ctx.strokeRect(_bx, _by, _bw, _bh);
         ctx.globalAlpha = 0.04; ctx.fillStyle = accent;
         ctx.fillRect(_bx, _by, _bw, _bh);
-        // ── Alças nos 4 cantos (preparação Passo 3.2) ────────────────────────────
+        // ── Handles on the 4 corners (step 3.2) ─────────────────────────────────────
         const H = ANN_HANDLE_SIZE * k; // half side, in canvas px
         const _corners = [
-          { x: _bx,        y: _by        }, // topo-esquerdo
-          { x: _bx + _bw,  y: _by        }, // topo-direito
-          { x: _bx,        y: _by + _bh  }, // baixo-esquerdo
-          { x: _bx + _bw,  y: _by + _bh  }, // baixo-direito
+          { x: _bx,        y: _by        }, // top-left
+          { x: _bx + _bw,  y: _by        }, // top-right
+          { x: _bx,        y: _by + _bh  }, // bottom-left
+          { x: _bx + _bw,  y: _by + _bh  }, // bottom-right
         ];
         _corners.forEach(c => {
           ctx.globalAlpha = 1;
@@ -4366,15 +4366,15 @@
         }
         ctx.restore();
       }
-      // Posiciona e mostra/esconde o botão ✕ flutuante para apagar anotações.
-      // Overlay DOM puro — nunca desenhado no canvas, nunca exportado para PDF/imagem.
-      // ann-save usa annRedraw() (não annRenderAll()), garantindo canvas sempre limpo.
-      // Mostra o botão ✕ apenas quando há anotação seleccionada (annSelectedIdx >= 0).
-      // Sem lógica de hover — botão aparece/desaparece exclusivamente com a selecção.
+      // Places and shows or hides the floating ✕ button that deletes annotations.
+      // Pure DOM overlay: never drawn on the canvas, never exported to PDF or image.
+      // ann-save uses annRedraw() (not annRenderAll()), so the canvas is always clean.
+      // Shows the ✕ button only while an annotation is selected (annSelectedIdx >= 0).
+      // No hover logic: the button appears and disappears only with the selection.
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
         if (!_annDbBtn) return;
-        // Durante o arrasto ou resize: esconde sem recalcular posição (evita efeito elástico)
+        // During a drag or resize: hide without recomputing the position (avoids a rubber-band effect)
         if (annDragging || annResizing) { _annDbBtn.style.display = 'none'; return; }
         if (!annActive || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) {
           _annDbBtn.style.display = 'none';
@@ -4389,14 +4389,14 @@
         const _scaleY = _cvR.height / _annCv.height;
         const _b = annBBox(annHistory[annSelectedIdx]);
         const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
-        // Alça top-right em coords canvas: (b.x + b.w + M, b.y - M)
-        // Converter para coords do ann-viewport e centrar o botão sobre a alça
-        const _BTN = 20; // dimensão do botão ✕ (quadrado)
+        // Top-right handle in canvas coords: (b.x + b.w + M, b.y - M)
+        // Convert to ann-viewport coords and centre the button on the handle
+        const _BTN = 20; // size of the ✕ button (square)
         const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
         const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text
         const _z = uiZoom();
-        const _hX = ((_cvR.left - _vpR.left) + _cp.x * _scaleX) / _z; // centro X da alça
-        const _hY = ((_cvR.top  - _vpR.top)  + _cp.y * _scaleY) / _z; // centro Y da alça
+        const _hX = ((_cvR.left - _vpR.left) + _cp.x * _scaleX) / _z; // handle centre X
+        const _hY = ((_cvR.top  - _vpR.top)  + _cp.y * _scaleY) / _z; // handle centre Y
         const _finalLeft = Math.min(_hX - _BTN / 2, _vpR.width / _z - _BTN - 2);
         const _finalTop  = Math.max(_hY - _BTN / 2, 2);
         _annDbBtn.style.left = _finalLeft + 'px';
@@ -4463,20 +4463,20 @@
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
-        const sw = [1, 1.5, 2, 2.5, 3, 4]; // stroke-width visual do icone SVG — paralelo ao ANN_SIZES (6 entradas)
+        const sw = [1, 1.5, 2, 2.5, 3, 4]; // visual stroke-width of the SVG icon, parallel to ANN_SIZES (6 entries)
         const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
         const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
         const td = $('ann-thickness-down'), tu = $('ann-thickness-up');
         if (annTool === 'text') { if (td) td.title = 'Texto menor'; if (tu) tu.title = 'Texto maior' } else { if (td) td.title = 'Espessura menor'; if (tu) tu.title = 'Espessura maior' }
       }
-      // Mostra/oculta os botoes de espessura de acordo com a selecao atual.
-      // Chamada por annRenderAll() (que chama annUpdateDelBtn(), seguido daqui).
-      // Regras: texto selecionado -> ocultar; forma nao-texto selecionada -> mostrar; sem selecao -> mostrar.
+      // Shows or hides the thickness buttons according to the current selection.
+      // Called by annRenderAll() (which calls annUpdateDelBtn(), then this one).
+      // Rules: text selected -> hide; non-text shape selected -> show; no selection -> show.
       function annUpdateThicknessVis() {
-        // Botoes sao sempre visiveis — sem logica de ocultacao
+        // The buttons are always visible: no hiding logic
       }
-      // Fase 5 — Novo sistema Undo/Redo por snapshots de estado completo
-      // annCloneState: deep clone perfeito (shapes sao POJOs, JSON round-trip e seguro)
+      // Phase 5: new Undo/Redo system of full-state snapshots
+      // annCloneState: exact deep clone (shapes are POJOs, a JSON round trip is safe)
       function annCloneState() {
         const _po = images.find(x => x.id === modalItemId);
         return {
@@ -4486,18 +4486,18 @@
           pcrop: (_po && _po.cropBox) ? JSON.parse(JSON.stringify(_po.cropBox)) : null
         };
       }
-      // annCommitUndo: grava snapshot ANTES de uma mutacao; limpa redoStack (intencao nova do utilizador)
+      // annCommitUndo: saves a snapshot BEFORE a mutation; clears redoStack (a new intent of the user)
       function annCommitUndo(snap) {
         const _top = annUndoStack[annUndoStack.length - 1];
-        if (_top && JSON.stringify(_top) === JSON.stringify(snap)) return; // ignora snapshot identico ao topo (acao sem efeito)
+        if (_top && JSON.stringify(_top) === JSON.stringify(snap)) return; // ignores a snapshot identical to the top (an action with no effect)
         annUndoStack.push(snap);
-        if (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift(); // aplica teto
-        annRedoStack.length = 0; // nova mutacao invalida o futuro
+        if (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift(); // applies the cap
+        annRedoStack.length = 0; // a new mutation invalidates the future
       }
-      // atalho conveniente: captura o estado atual e enfia no undoStack
+      // shortcut: captures the current state and pushes it on the undoStack
       function annPushUndo() { annCommitUndo(annCloneState()); }
-      // Carrega o fundo limpo (origBlob sem anotações baked) no img-modal-img.
-      // Usa annCurrentRotation e annCropBox para determinar a vista correcta.
+      // Loads the clean background (origBlob without baked annotations) into img-modal-img.
+      // Uses annCurrentRotation and annCropBox to find the right view.
       async function annLoadCleanBg() {
         const o = images.find(x => x.id === modalItemId);
         if (!o || !o.origBlob) return;
@@ -4505,8 +4505,8 @@
         if (!img || !_cv) return;
         let bgBlob = o.origBlob;
         if (annCurrentRotation > 0) bgBlob = await getRotatedBlob(o.origBlob, annCurrentRotation);
-        // Se NÃO está em modo crop mas a imagem tem cropBox persistido,
-        // recortar o fundo limpo para corresponder à região recortada
+        // If NOT in crop mode but the image has a persisted cropBox,
+        // crop the clean background to match the cropped region
         if (!annCropBox && o.cropBox) {
           const _ti = new Image();
           const _tu = URL.createObjectURL(bgBlob);
@@ -4520,17 +4520,17 @@
         await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
         _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
       }
-      // annDoUndo / annDoRedo — sem casos especiais, simetricos
+      // annDoUndo / annDoRedo: no special cases, symmetric
       async function annDoUndo() {
         if (!annUndoStack.length) return;
-        annRedoStack.push(annCloneState()); // guarda estado atual para redo
+        annRedoStack.push(annCloneState()); // keeps the current state for redo
         const _prev = annUndoStack.pop();
         const prevCrop = annCropBox;
         const prevRot = annCurrentRotation;
-        annHistory.splice(0, annHistory.length, ..._prev.h); // mutar NO LUGAR — nunca reatribuir
+        annHistory.splice(0, annHistory.length, ..._prev.h); // mutate IN PLACE, never reassign
         annCropBox = _prev.crop ? JSON.parse(JSON.stringify(_prev.crop)) : null;
         annCurrentRotation = _prev.rot;
-        // D19: restaurar crop persistido (o.cropBox) quando o snapshot o capturou; a rotacao altera-o fora do annCropBox
+        // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
         if ('pcrop' in _prev) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_prev.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_prev.pcrop)); else delete _ro.cropBox; } }
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
@@ -4543,7 +4543,7 @@
             else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
           });
         }
-        // Recarregar fundo limpo se estado visual mudou (rotação ou crop)
+        // Reload the clean background if the visual state changed (rotation or crop)
         if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
           await annLoadCleanBg();
         }
@@ -4551,14 +4551,14 @@
       }
       async function annDoRedo() {
         if (!annRedoStack.length) return;
-        annUndoStack.push(annCloneState()); // guarda estado atual para undo
+        annUndoStack.push(annCloneState()); // keeps the current state for undo
         const _next = annRedoStack.pop();
         const prevCrop = annCropBox;
         const prevRot = annCurrentRotation;
-        annHistory.splice(0, annHistory.length, ..._next.h); // mutar NO LUGAR — nunca reatribuir
+        annHistory.splice(0, annHistory.length, ..._next.h); // mutate IN PLACE, never reassign
         annCropBox = _next.crop ? JSON.parse(JSON.stringify(_next.crop)) : null;
         annCurrentRotation = _next.rot;
-        // D19: restaurar crop persistido (o.cropBox) quando o snapshot o capturou; a rotacao altera-o fora do annCropBox
+        // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
         if ('pcrop' in _next) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_next.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_next.pcrop)); else delete _ro.cropBox; } }
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
@@ -4571,7 +4571,7 @@
             else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
           });
         }
-        // Recarregar fundo limpo se estado visual mudou (rotação ou crop)
+        // Reload the clean background if the visual state changed (rotation or crop)
         if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
           await annLoadCleanBg();
         }
@@ -4581,8 +4581,8 @@
         if (annCommitText) { annCommitText(); annCommitText = null; }
         const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
       }
-      // Cresce o textarea em altura (scrollHeight) e largura (linha mais longa medida na fonte escalada).
-      // wrap="off" => as linhas só quebram com Enter; o textarea tem de mostrar tudo sem cortar nem scroll.
+      // Grows the textarea in height (scrollHeight) and width (longest line measured in the scaled font).
+      // wrap="off" => lines break only with Enter; the textarea must show everything without cutting or scrolling.
       function annAutosizeText() {
         const inp = $('ann-text-input'); if (!inp) return;
         inp.style.height = 'auto';
@@ -4594,9 +4594,9 @@
         inp.style.width = (maxW + 4) + 'px';
       }
       function annShowTextInput(canvasX, canvasY, prefillText, rot = 0) {
-        // Texto novo (sem prefill): o ponto clicado é o CENTRO vertical do cursor I-beam, por isso
-        // ancoramos a 1.ª linha pelo meio (sobe meia altura de linha) em vez do topo — senão o texto
-        // aparece abaixo do cursor. Na reedição (com prefill) mantém-se a âncora gravada (topo).
+        // New text (no prefill): the clicked point is the vertical CENTRE of the I-beam cursor, so
+        // the first line is anchored by its middle (half a line up) instead of its top, or the text
+        // appears below the cursor. When editing again (with prefill) the saved anchor (top) is kept.
         if (!prefillText) canvasY -= (ANN_TEXT_SIZES[annTextSizeIdx] * ANN_TEXT_LINE_RATIO) / 2;
         const cv = $('ann-canvas'), vp = $('ann-viewport'), r = cv.getBoundingClientRect(), vpR = vp.getBoundingClientRect();
         const scaleX = r.width / cv.width;
@@ -4630,23 +4630,23 @@
           committed = true;
           const txt = inp.value.trim();
           annCommitText = null;
-          annSelectedIdx = -1; /* limpa seleção residual ao confirmar texto */
+          annSelectedIdx = -1; /* clears the leftover selection when the text is confirmed */
           const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none';
           if (txt) {
-            annPushUndo(); // M3/M4: snapshot ANTES de novo texto ou edicao de texto existente
+            annPushUndo(); // M3/M4: snapshot BEFORE a new text or an edit of an existing text
             const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: ANN_TEXT_SIZES[annTextSizeIdx], lw: annLineW() }; if (rot) entry.rot = rot;
             if (annEditingTextIdx >= 0 && annEditingTextIdx < annHistory.length) { annHistory[annEditingTextIdx] = entry } else { annHistory.push(entry) }
             setAnnDirty(true);
             annEditingTextIdx = -1;
             annRenderAll();
           } else if (annEditingTextIdx >= 0) {
-            annPushUndo(); // M5: snapshot ANTES de remover texto vazio
+            annPushUndo(); // M5: snapshot BEFORE removing an empty text
             annHistory.splice(annEditingTextIdx, 1);
             setAnnDirty(true);
             annEditingTextIdx = -1;
             annRenderAll();
           } else {
-            annRenderAll(); /* limpa canvas mesmo sem texto (botão ✕ esconde) */
+            annRenderAll(); /* clears the canvas even without text (hides the ✕ button) */
           }
         }
         annCommitText = commit;
@@ -4784,14 +4784,14 @@
               }
             });
           });
-          // D19: transformar a caixa de crop pela mesma rotacao 90 CW, mantendo
-          // o.cropBox no espaco da base ja rotacionada (invariante de annLoadCleanBg).
+          // D19: turn the crop box by the same 90 CW rotation, keeping
+          // o.cropBox in the space of the already rotated base (invariant of annLoadCleanBg).
           if (annCropBox) {
-            // Caso A: em modo crop, a img exibida e a base cheia rotacionada -> BH = h
+            // Case A: in crop mode, the image shown is the full rotated base -> BH = h
             const _cb = annCropBox;
             annCropBox = { x: h - (_cb.y + _cb.h), y: _cb.x, w: _cb.h, h: _cb.w };
           } else {
-            // Caso B: crop salvo fora do modo crop -> BH = altura da base cheia na rotacao actual (de origBlob)
+            // Case B: crop saved outside crop mode -> BH = height of the full base in the current rotation (from origBlob)
             const _o = images.find(x => x.id === modalItemId);
             if (_o && _o.cropBox && _o.origBlob) {
               const _ob = new Image();
@@ -4812,22 +4812,22 @@
         };
         $('ann-undo').onclick = () => annDoUndo().catch(()=>{});
         $('ann-redo').onclick = () => annDoRedo().catch(()=>{});
-        // Color swatches — mousedown.preventDefault impede blur no text input
+        // Colour swatches: mousedown.preventDefault stops the blur of the text input
         document.querySelectorAll('.ann-swatch').forEach(b => {
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
           b.onclick = () => {
             const _color = b.dataset.color;
             if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-              annPushUndo(); // M10: snapshot ANTES de mudar cor da anotacao selecionada
+              annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
               const _s = annHistory[annSelectedIdx];
               _s.color = _color;
-              annCurrentColor = _color; // sincroniza cor da ferramenta
+              annCurrentColor = _color; // syncs the tool colour
               document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
               const inp = $('ann-text-input');
               if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = _color; inp.focus() }
               setAnnDirty(true); annRenderAll();
             } else {
-              // Sem selecao: comportamento original (define cor da ferramenta)
+              // No selection: original behaviour (sets the tool colour)
               annCurrentColor = _color;
               document.querySelectorAll('.ann-swatch').forEach(s => s.classList.remove('active'));
               b.classList.add('active');
@@ -4836,7 +4836,7 @@
             }
           };
         });
-        // Bold / Italic buttons — mesmo tratamento
+        // Bold / Italic buttons: same handling
         const _boldBtn = $('ann-bold-btn'), _italicBtn = $('ann-italic-btn');
         if (_boldBtn) {
           _boldBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
@@ -4846,8 +4846,8 @@
           _italicBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
           _italicBtn.onclick = () => { annTextItalic = !annTextItalic; _italicBtn.classList.toggle('active', annTextItalic); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
         }
-        // Thickness minus/plus — em modo texto controla o tamanho da fonte (resize ao vivo); fora do texto, a espessura.
-        // mousedown.preventDefault impede o blur/commit do editor de texto (mesmo padrão das swatches e dos botões B/I).
+        // Thickness minus/plus: in text mode it sets the font size (live resize); outside text, the thickness.
+        // mousedown.preventDefault stops the blur/commit of the text editor (same pattern as the swatches and the B/I buttons).
         function annTextLiveResize() {
           const inp = $('ann-text-input');
           if (!inp || annTool !== 'text' || $('ann-text-overlay').style.display === 'none') return;
@@ -4862,7 +4862,7 @@
         $('ann-thickness-down').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx];
-            annPushUndo(); // M11/M12: snapshot ANTES de diminuir espessura ou fontSize
+            annPushUndo(); // M11/M12: snapshot BEFORE reducing the thickness or the fontSize
             if (_s.type === 'text') {
               const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
               const _ni = _idx > 0 ? _idx - 1 : 0;
@@ -4880,7 +4880,7 @@
         $('ann-thickness-up').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx];
-            annPushUndo(); // M11/M12: snapshot ANTES de aumentar espessura ou fontSize
+            annPushUndo(); // M11/M12: snapshot BEFORE increasing the thickness or the fontSize
             if (_s.type === 'text') {
               const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
               const _ni = _idx < ANN_TEXT_SIZES.length - 1 ? _idx + 1 : ANN_TEXT_SIZES.length - 1;
@@ -4952,22 +4952,22 @@
           if (annTool === 'select') {
             if (annCommitText) annCommitText();
             const p = annCanvasXY(e);
-            // Fase 3: verificar alças ANTES do drag normal (alças têm prioridade)
+            // Phase 3: check the handles BEFORE the normal drag (handles come first)
             if (annSelectedIdx >= 0) {
               const _hh = annHandleHitTest(p.x, p.y);
               if (_hh) {
                 const _sh = annHistory[annSelectedIdx];
-                // M9: snapshot do estado inteiro ANTES do resize (flag dirty para commit no mouseup)
+                // M9: snapshot of the whole state BEFORE the resize (dirty flag for the commit on mouseup)
                 annResizeSnap = annCloneState(); annResizeDirty = false;
                 annResizing = true;
                 annResizeHandle = _hh;
-                annResizeStartX = p.x; annResizeStartY = p.y; // posicao inicial do rato (para escala de texto)
+                annResizeStartX = p.x; annResizeStartY = p.y; // initial mouse position (for the text scale)
                 annResizeOriginFS = _sh.fontSize || 24;
                 if (_hh === 'rot') { const _c = annTextCenter(_sh); annRotCenter = { x: _c.x, y: _c.y }; annRotStart = _sh.rot || 0; annRotStartAng = Math.atan2(p.y - _c.y, p.x - _c.x) * 180 / Math.PI; $('ann-canvas').style.cursor = 'grabbing'; return; }
                 const b = annBBox(_sh);
-                annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox sem M (denominadores corretos)
+                annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox without M (right denominators)
                 if (_sh.type === 'free') {
-                  // Free: anchor nos cantos do inner bbox
+                  // Free: anchor on the corners of the inner bbox
                   if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
                   else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
                   else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
@@ -4977,13 +4977,13 @@
                   const _g = annTextGeom(_sh), _a = annTextToCanvas(_sh, (_hh[1] === 'l' ? 1 : -1) * (_g.w / 2 + 4), (_hh[0] === 't' ? 1 : -1) * (_g.h / 2 + 4));
                   annResizeAnchorX = _a.x; annResizeAnchorY = _a.y;
                 } else if (_sh.type === 'text') {
-                  // Texto: anchor no canto oposto do inner bbox
+                  // Text: anchor on the opposite corner of the inner bbox
                   if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
                   else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
                   else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
                   else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
                 } else {
-                  // rect, circle, arrow: anchor nas coords brutas da shape (min/max de x1,x2,y1,y2)
+                  // rect, circle, arrow: anchor on the raw coords of the shape (min/max of x1,x2,y1,y2)
                   const _minX = Math.min(_sh.x1, _sh.x2), _minY = Math.min(_sh.y1, _sh.y2);
                   const _maxX = Math.max(_sh.x1, _sh.x2), _maxY = Math.max(_sh.y1, _sh.y2);
                   if (_hh === 'tl') { annResizeAnchorX = _maxX; annResizeAnchorY = _maxY; }
@@ -4997,20 +4997,20 @@
             }
             const _hitIdx = annHitTest(p.x, p.y);
             if (_hitIdx >= 0) {
-              // Clique numa forma: selecionar (se necessario) e iniciar arrasto imediatamente
+              // Click on a shape: select it (if needed) and start the drag at once
               annSelectedIdx = _hitIdx;
               annDragging = true;
               annDragStartX = p.x; annDragStartY = p.y;
               annDragLastX  = p.x; annDragLastY  = p.y;
               const _sh = annHistory[annSelectedIdx];
-              // M8: snapshot do estado inteiro ANTES do drag (flag dirty para commit no mouseup)
+              // M8: snapshot of the whole state BEFORE the drag (dirty flag for the commit on mouseup)
               annDragSnap = annCloneState(); annDragDirty = false;
               annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
               annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
-              annRenderAll(); // mostra caixa de selecao imediatamente
+              annRenderAll(); // shows the selection box at once
               SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
             } else {
-              // Clique no vazio: desselectionar
+              // Click on empty space: deselect
               annSelectedIdx = -1;
               annRenderAll();
             }
@@ -5104,7 +5104,7 @@
             annRenderAll();
             return;
           }
-          // Fase 3: redimensionamento via alças
+          // Phase 3: resize by the handles
           if (annResizing && annActive) {
             if (!annResizeRafId) {
               annResizeRafId = requestAnimationFrame(() => {
@@ -5142,8 +5142,8 @@
                   }
                   _sh.fontSize = _newFS;
                 } else if (_sh.type === 'free' && annResizeOriginBBox) {
-                  // Free: escala todos os pontos a partir do snapshot do estado (evita acumulacao de erro)
-                  // Recupera pts originais do snapshot para calcular a escala correcta
+                  // Free: scales every point from the state snapshot (avoids accumulated error)
+                  // Takes the original points from the snapshot to compute the right scale
                   const _ob = annResizeOriginBBox;
                   const _newW = _p.x - annResizeAnchorX;
                   const _newH = _p.y - annResizeAnchorY;
@@ -5151,7 +5151,7 @@
                   const _origH = (annResizeHandle === 'tl' || annResizeHandle === 'tr') ? -_ob.h : _ob.h;
                   const _sx = Math.abs(_origW) > 1 ? _newW / _origW : 1;
                   const _sy = Math.abs(_origH) > 1 ? _newH / _origH : 1;
-                  // annResizeSnap.h[annSelectedIdx].pts — pts originais do estado pre-resize (imutaveis); o snapshot é { h, rot, ... } desde a Fase 5
+                  // annResizeSnap.h[annSelectedIdx].pts: original points of the pre-resize state (immutable); the snapshot is { h, rot, ... } since phase 5
                   const _origPts = annResizeSnap.h[annSelectedIdx].pts;
                   for (let _fi = 0; _fi < _sh.pts.length; _fi++) {
                     _sh.pts[_fi] = {
@@ -5169,7 +5169,7 @@
             }
             return;
           }
-          // Fase 2.2: arrasto de forma selecionada com movimento visual em tempo real
+          // Phase 2.2: drag of the selected shape with live visual movement
           if (annDragging && annActive) {
             if (!annDragRafId) {
               annDragRafId = requestAnimationFrame(() => {
@@ -5205,7 +5205,7 @@
             const sy = annSmoothLast ? alpha * p.y + (1 - alpha) * annSmoothLast.y : p.y;
             const sp = { x: sx, y: sy }; const lastPt = annPath[annPath.length - 1];
             const dx = sp.x - lastPt.x, dy = sp.y - lastPt.y;
-            if (dx * dx + dy * dy < 25) return; // ignora micro-movimentos
+            if (dx * dx + dy * dy < 25) return; // ignores tiny moves
             annSmoothLast = sp; annPath.push(sp);
           }
           annScheduledPaint();
@@ -5218,25 +5218,25 @@
             annRenderAll();
             return;
           }
-          // Fase 3: terminar redimensionamento
+          // Phase 3: end the resize
           if (annResizing) {
             if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
             annResizing = false;
             if (annResizeHandle === 'rot') $('ann-canvas').style.cursor = 'default';
             annResizeHandle = '';
-            // M9: commit do snapshot pre-resize SE o gesto de facto mudou a shape
+            // M9: commit the pre-resize snapshot ONLY if the gesture really changed the shape
             if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
             annRenderAll();
             return;
           }
-          // Fase 2.3: terminar arrasto
+          // Phase 2.3: end the drag
           if (annDragging) {
             if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
             annDragging = false;
             annDragStartX = 0; annDragStartY = 0;
             annDragLastX = 0; annDragLastY = 0;
             annDragOriginX = 0; annDragOriginY = 0;
-            // M8: commit do snapshot pre-drag SE o gesto de facto moveu a shape
+            // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
             if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
             annRenderAll();
             return;
@@ -5251,37 +5251,37 @@
             if (annPath.length > 1) {
               const closed = false;
               const simplified = annPath.slice();
-              annPushUndo(); // M1: snapshot ANTES de adicionar traçado livre
+              annPushUndo(); // M1: snapshot BEFORE adding a free stroke
               annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed });
               setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
-            annPushUndo(); // M2: snapshot ANTES de adicionar rect/circle/arrow
+            annPushUndo(); // M2: snapshot BEFORE adding rect/circle/arrow
             annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() });
             setAnnDirty(true);
           }
           annRenderAll();
         });
 
-        // ── Botão ✕ flutuante para apagar anotações ───────────────────────────────
-        // Criado via createElement (não HTML inline), conforme requisito da Fase 1c v2.
-        // Vive no #ann-viewport como overlay puro; z-index 300 (intra-modal, acima de
-        // text-overlay:200 e nav-buttons:100). Nunca toca no canvas → nunca exportado.
-        // Fase 1c simplificada: botão visível apenas quando annSelectedIdx >= 0.
-        // Visual: usa a classe .t-del — idêntico ao botão de delete das miniaturas.
+        // ── Floating ✕ button that deletes annotations ───────────────────────────────
+        // Created with createElement (not inline HTML), as phase 1c v2 required.
+        // Lives in #ann-viewport as a pure overlay; z-index 300 (inside the modal, above
+        // text-overlay:200 and nav-buttons:100). Never touches the canvas, so it is never exported.
+        // Phase 1c, simplified: the button is visible only when annSelectedIdx >= 0.
+        // Look: uses the .t-del class, the same as the delete button of the thumbnails.
         const _annDelBtnEl = document.createElement('button');
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
         _annDelBtnEl.title = 'Remover';
         _annDelBtnEl.textContent = '✕';
-        // Sobrepõe apenas os valores que diferem do contexto das miniaturas:
-        // opacity:1 (não precisa de :hover do pai), z-index alto (intra-modal)
+        // Overrides only the values that differ from the thumbnail context:
+        // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
-        // Clicar no ✕: apaga a anotação seleccionada
+        // Click on ✕: deletes the selected annotation
         _annDelBtnEl.onclick = (e) => {
           e.stopPropagation();
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            annPushUndo(); // M6: snapshot ANTES de apagar via botao X
+            annPushUndo(); // M6: snapshot BEFORE deleting with the X button
             annHistory.splice(annSelectedIdx, 1);
             setAnnDirty(true);
             annSelectedIdx = -1;
@@ -5300,13 +5300,13 @@
             e.preventDefault();
             const items = e.clipboardData?.items;
             if (!items) return;
-            // Via 1: ficheiros copiados do sistema operativo (suporta múltiplos)
+            // Path 1: files copied from the operating system (several at once)
             const dtFiles = Array.from(e.clipboardData.files || []);
             if (dtFiles.length > 0) {
               for (const f of dtFiles) await captureFile(f);
               document.body.focus(); return;
             }
-            // Via 2: items (screenshots, imagens do clipboard, sem ficheiros reais)
+            // Path 2: items (screen captures, clipboard images, no real files)
             const arr = Array.from(items);
             let fileCount = 0;
             for (const it of arr) {
@@ -5367,11 +5367,11 @@
       /* ═══ DRAG-DROP REORDER ═══ */
       function initReorder() {
         const tg = $('thumb-grid'), dl = $('doc-list');
-        // Reordenacao estilo telemovel com PLACEHOLDER:
-        // - ao segurar, o item encolhe para ~75% e flutua (position:fixed) seguindo o cursor;
-        // - um espaco reservado (placeholder) marca onde vai cair e desloca-se com o cursor;
-        // - os outros itens fluem naturalmente a' volta do placeholder;
-        // - so ao soltar e' que o item assume a posicao final (encaixa no placeholder).
+        // Phone-style reordering with a PLACEHOLDER:
+        // - while held, the item shrinks to about 75% and floats (position:fixed) following the cursor;
+        // - a reserved space (placeholder) marks where it will land and moves with the cursor;
+        // - the other items flow naturally around the placeholder;
+        // - only on release does the item take its final position (it snaps into the placeholder).
         const DRAG_THRESHOLD = 6;
         const LONG_PRESS_DELAY = 500;
 
@@ -5389,18 +5389,18 @@
             return p;
           }
 
-          // Decide antes de que elemento (entre os irmaos visiveis) o placeholder deve ficar.
+          // Decides before which element (among the visible siblings) the placeholder goes.
           function targetBefore(cx, cy) {
-            // Usa a geometria de REPOUSO (offsetLeft/offsetTop), que NAO e' afetada pelos
-            // transforms da animacao FLIP em curso. Medir getBoundingClientRect durante a
-            // animacao apanhava posicoes intermedias e mandava o placeholder para o sitio errado.
+            // Uses the RESTING geometry (offsetLeft/offsetTop), which is NOT affected by the
+            // transforms of the running FLIP animation. Measuring getBoundingClientRect during the
+            // animation caught in-between positions and sent the placeholder to the wrong place.
             const els = [...container.querySelectorAll(itemSel)].filter(el => el !== dragEl);
             if (!els.length) return null;
             const cRect = container.getBoundingClientRect();
-            // cursor em coordenadas internas do contentor (inclui scroll)
+            // cursor in inner coords of the container (includes scroll)
             const px = (cx - cRect.left) / uiZoom() + container.scrollLeft;
             const py = (cy - cRect.top) / uiZoom() + container.scrollTop;
-            const HX = Math.max(10, w * 0.18), HY = Math.max(10, h * 0.18); // zona morta (histerese)
+            const HX = Math.max(10, w * 0.18), HY = Math.max(10, h * 0.18); // dead zone (hysteresis)
             for (const el of els) {
               const ox = el.offsetLeft, oy = el.offsetTop, ow = el.offsetWidth, oh = el.offsetHeight;
               const mx = ox + ow / 2, my = oy + oh / 2;
@@ -5415,7 +5415,7 @@
           }
 
           function positionFloat(cx, cy) {
-            // canto superior-esquerdo do item = cursor - offset de pega (em coords de viewport)
+            // top-left corner of the item = cursor - grab offset (in viewport coords)
             dragEl.style.left = (cx - grabDX) / uiZoom() + 'px';
             dragEl.style.top = (cy - grabDY) / uiZoom() + 'px';
           }
@@ -5424,12 +5424,12 @@
             if (!dragEl) return;
             const cx = e.clientX, cy = e.clientY;
             if (!active) {
-              if (Math.hypot(cx - startX, cy - startY) < DRAG_THRESHOLD) return; // ainda e' clique
+              if (Math.hypot(cx - startX, cy - startY) < DRAG_THRESHOLD) return; // still a click
               active = true;
               const r = dragEl.getBoundingClientRect();
               w = r.width / uiZoom(); h = r.height / uiZoom();
               const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
-              // cria placeholder no lugar atual e tira o item do fluxo
+              // creates the placeholder in the current place and takes the item out of the flow
               ph = makePlaceholder(r);
               container.insertBefore(ph, dragEl.nextSibling);
               dragEl.style.width = w + 'px';
@@ -5441,12 +5441,12 @@
             }
             e.preventDefault();
             positionFloat(cx, cy);
-            // move o placeholder para a posicao alvo (os irmaos deslizam via FLIP)
+            // moves the placeholder to the target position (the siblings slide via FLIP)
             const before = targetBefore(cx, cy);
-            // Ignora se o alvo ja' corresponde ao lugar atual do placeholder (evita FLIP a' toa).
+            // Skips when the target already matches the current place of the placeholder (no useless FLIP).
             const samePlace = (before === ph) || (before === ph.nextElementSibling) || (!before && container.lastElementChild === ph);
             if (!samePlace) {
-              // FLIP: mede irmaos ANTES, move o placeholder, anima do lugar antigo para o novo
+              // FLIP: measures the siblings BEFORE, moves the placeholder, animates from the old place to the new one
               const movers = [...container.querySelectorAll(itemSel)].filter(el => el !== dragEl);
               const firsts = new Map();
               movers.forEach(el => firsts.set(el, el.getBoundingClientRect()));
@@ -5473,38 +5473,38 @@
             dragEl = null; ph = null; active = false; pointerId = null;
             if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
             if (movedEl) movedEl.style.touchAction = '';
-            if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // foi so um clique
+            if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
 
-            // encaixa o item real no lugar do placeholder
+            // snaps the real item into the place of the placeholder
             if (placeholder && movedEl) container.insertBefore(movedEl, placeholder);
             if (placeholder) placeholder.remove();
-            // limpa quaisquer transforms residuais dos irmaos
+            // clears any leftover transforms of the siblings
             container.querySelectorAll(itemSel).forEach(el => { el.classList.remove('reorder-anim'); el.style.transform = ''; });
             if (movedEl) {
               clearFloat(movedEl);
-              // suprime o 'click' fantasma que dispara apos arrastar
+              // suppresses the ghost click that fires after a drag
               const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
               movedEl.addEventListener('click', swallow, { capture: true, once: true });
               setTimeout(() => { try { movedEl.removeEventListener('click', swallow, { capture: true }); } catch (_) {} }, 0);
             }
 
-            // persiste a nova ordem
+            // saves the new order
             const isImg = container === tg;
             const items = container.querySelectorAll(isImg ? '.t-item' : '.d-item');
             const arr = isImg ? images : docs, store = isImg ? 'images' : 'documents';
             const ordered = [];
             items.forEach((el, i) => { const obj = arr.find(x => x.id === el.dataset.id); if (obj) { obj.order = i; ordered.push(obj) } });
             if (isImg) images = ordered; else docs = ordered;
-            /* A ordem fica escrita registo a registo: idbPut nao agrupa, logo esta
-               sequencia NAO tem atomicidade. Se falhar a meio (o modo de falha
-               documentado desta app fica no esgotamento de quota), o array em memoria
-               ja esta renumerado enquanto o IndexedDB ficou misto, e o ecra passaria a
-               mostrar uma ordem que nao sobrevive a recarga. O banner de quota ja vem
-               do idbTx, uma camada abaixo; o que falta aqui fica em nao deixar o ecra
-               mentir. Recarregar a sessao repoe a vista a partir do que ficou gravado.
-               NOTA: sem apostrofos neste comentario. O medidor de complexidade do
-               validate.sh nao ignora comentarios e trata o apostrofo como abertura de
-               string; um numero impar deles corrompe a contagem de chavetas. Ver D54. */
+            /* The order is written record by record: idbPut does not group, so this
+               sequence has NO atomicity. If it fails in the middle (the failure mode
+               documented for this app is a full quota), the array in memory
+               is already renumbered while IndexedDB is mixed, and the screen would
+               show an order that does not survive a reload. The quota warning already comes
+               from idbTx, one layer below; what is left here is to keep the screen
+               from lying. Reloading the session restores the view from what was saved.
+               NOTE: no apostrophes in this comment. The complexity counter of
+               validate.sh does not skip comments and takes an apostrophe as the start of a
+               string; an odd number of them corrupts the brace count. See D54. */
             try {
               for (const o of ordered) await idbPut(store, o);
             } catch (e) {
@@ -5521,7 +5521,7 @@
           }
 
           container.addEventListener('pointerdown', e => {
-            if (e.button != null && e.button !== 0) return; // so botao principal
+            if (e.button != null && e.button !== 0) return; // main button only
             const item = e.target.closest(itemSel);
             if (!item || !container.contains(item)) return;
             if (e.target.closest('input, textarea, button, .t-del, .d-del')) return;
@@ -5704,10 +5704,10 @@
       window.closeExportModal = function () { const o = $('export-overlay'); if (o) o.classList.remove('open') };
 
       let _expOverlayMdOnBackdrop = false;
-      /* Guarda obrigatoria: #export-overlay vive no bloco do modal de export, removido
-         no Export User. Sem ela, getElementById devolve null e o TypeError aborta o
-         IIFE inteiro (ver D25). Nao escrever o nome literal do marcador neste
-         comentario: o check 1 do validate.sh conta ocorrencias e falharia. */
+      /* Required guard: #export-overlay lives in the block of the export modal, removed
+         in the Export User. Without it, getElementById returns null and the TypeError aborts the
+         whole IIFE (see D25). Do not write the literal name of the marker in this
+         comment: check 1 of validate.sh counts occurrences and would fail. */
       const _expOv = $('export-overlay');
       if (_expOv) {
         _expOv.addEventListener('mousedown', function (e) { _expOverlayMdOnBackdrop = (e.target === this) });
@@ -5716,8 +5716,8 @@
 
       /* ═══ LIVE SYNC ENGINE ═══ */
       function initVbSync() {
-        /* O Visual Builder inteiro vive no bloco ADMIN_EDIT, removido no Export User.
-           Sem este early return, boot() aborta e a app nunca inicializa (ver D25). */
+        /* The whole Visual Builder lives in the ADMIN_EDIT block, removed in the Export User.
+           Without this early return, boot() aborts and the app never starts (see D25). */
         if (!$('cfg-cor-principal')) return;
         // Main color input
         $('cfg-cor-principal').addEventListener('input', (e) => {
@@ -5841,7 +5841,7 @@
         $('cfg-title-accent').addEventListener('input', syncTitleSpans);
         $('cfg-title-end').addEventListener('input', syncTitleSpans);
 
-        // Live footer preview — atualiza #footer-credits enquanto se edita (espelha {YEAR} do applyTokens)
+        // Live footer preview: updates #footer-credits while editing (mirrors the {YEAR} of applyTokens)
         $('cfg-footer-text').addEventListener('input', (e) => {
           const fc = $('footer-credits');
           if (fc) fc.textContent = (e.target.value || '').replace(/\{YEAR\}/g, new Date().getFullYear());
@@ -5900,10 +5900,10 @@
         updateThemeColor();
 
         // Programmatically populate DOM inputs with live token values at boot
-        /* Os campos cfg-* vivem no bloco ADMIN_EDIT, removido no Export User.
-           Guardados por grupo, e nao com early return, porque estao intercalados
-           com trabalho de que o usuario final depende (sysColors, placeholders,
-           rodape). Um return aqui deixaria a app sem tema nem rotulos (ver D25). */
+        /* The cfg-* fields live in the ADMIN_EDIT block, removed in the Export User.
+           Guarded per group, and not with an early return, because they are mixed
+           with work the end user depends on (sysColors, placeholders,
+           footer). A return here would leave the app with no theme and no labels (see D25). */
         const _vbPresente = !!$('cfg-cor-principal');
         if (_vbPresente) {
           $('cfg-cor-principal').value = sysColors.main;
@@ -5963,11 +5963,11 @@
       }
 
       /* ═══ PDF FORMAT MODAL ═══ */
-      /* Le o layout A4 escolhido na interface e devolve-o no formato interno.
-         NAO guardar o resultado num global: era assim que o PDF gerado dentro do
-         ZIP saia com o layout errado -- o generateZIP nunca escrevia o global, e
-         por isso usava o valor deixado pela ultima vez que o botao PDF fora
-         premido, ou 'auto' se nunca o tivesse sido. Ver D74. */
+      /* Reads the A4 layout chosen in the interface and returns it in the internal format.
+         Do NOT keep the result in a global: that is how the PDF made inside the
+         ZIP came out with the wrong layout -- generateZIP never wrote the global, and
+         so it used the value left by the last time the PDF button was
+         pressed, or 'auto' if it never was. See D74. */
       function lerLayoutPDF() {
         const sel = document.querySelector('input[name="pdf-layout"]:checked');
         const v = sel ? sel.value : 'auto';
@@ -5979,10 +5979,10 @@
 
       /* ═══ ADMIN GATE ═══ */
       function initAdminGate() {
-        /* Os botoes admin vivem no bloco ADMIN_BUTTONS, removido no Export User.
-           Sem gate nao ha o que instalar, e a linha final desta funcao
-           ($('btn-admin-save').onclick) abortaria o boot() (ver D25).
-           closeSettingsModal ja testa window._deactivateAdmin antes de o chamar. */
+        /* The admin buttons live in the ADMIN_BUTTONS block, removed in the Export User.
+           Without a gate there is nothing to install, and the last line of this function
+           ($('btn-admin-save').onclick) would abort boot() (see D25).
+           closeSettingsModal already tests window._deactivateAdmin before calling it. */
         if (!$('btn-admin-config')) return;
         let clicks = [], adminOn = false;
         function deactivateAdmin() {
@@ -6009,15 +6009,15 @@
       function resetZipMode() { zipModeActive = false; const bPdf = $('btn-pdf'), bZip = $('btn-zip'); bPdf.classList.remove('btn-outline'); bPdf.classList.remove('btn-zip-cta'); bZip.classList.remove('btn-outline'); bZip.classList.remove('btn-zip-cta'); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; initPdfModal(); bZip.onclick = handleZipClick; updateBtns(); updateBtnTitles() }
       function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* V20: Use btn-zip-cta for persistent accent border on Export CTAs */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.setAttribute('aria-description', "Exportar imagens num único PDF dentro do ZIP"); bZip.setAttribute('aria-description', "Exportar imagens em arquivos separados dentro do ZIP"); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
       document.addEventListener('click', (e) => { if (zipModeActive && !e.target.closest('#export-section')) resetZipMode() });
-      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Chave em minusculas: imagens e documentos sao deduplicados a montante em
-   namespaces separados, mas partilham UM namespace aqui. Windows e macOS sao
-   case-insensitive, logo 'Relatorio.png' e 'relatorio.png' colidiriam ao extrair.
-   Mesma invariante que AGENTS.md secao 3 exige para toda a deduplicacao (D26). */
-function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const extMap = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' }; const ext = extMap[img.blob.type] || 'jpg'; const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Alem da travessia de path, remove os caracteres que o Windows nao aceita em
-   nome de arquivo (< > : " | ? *) e os de controlo. Um documento renomeado na
-   app para 'rel:atorio.txt' gerava uma entrada que o Explorer nao extrai. As
-   legendas de imagem ja eram protegidas por lista branca; isto fecha a
-   assimetria entre os dois caminhos de nomeacao (D27). */
+      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Lower-case key: images and documents are deduplicated upstream in
+   separate namespaces, but they share ONE namespace here. Windows and macOS are
+   case-insensitive, so 'Relatorio.png' and 'relatorio.png' would collide when extracted.
+   The same invariant that AGENTS.md section 3 requires for all deduplication (D26). */
+function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const extMap = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' }; const ext = extMap[img.blob.type] || 'jpg'; const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
+   a file name (< > : " | ? *) and the control characters. A document renamed in the
+   app to 'rel:atorio.txt' made an entry that Explorer does not extract. The image
+   captions were already protected by an allow list; this closes the
+   asymmetry between the two naming paths (D27). */
 const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replace(/\.\.\\/g, '').replace(/^\.*\//g, '').replace(/^\.+/, '').replace(/[<>:"|?*\u0000-\u001f]/g, '').replace(/[. ]+$/, '').trim() || 'documento'; files.push({ name: dedupeZipName(safeDocName), data: u8 }) } const zipBlob = buildZIP(files); dlBlob(zipBlob, buildFilename('zip')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success'); $('btn-pdf').disabled = (!images.length || docs.length > 0); holdSuccess(() => { btn.classList.remove('st-success'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }); SysLogger.info('ZIP gerado: ' + fmtSize(zipBlob.size)) } catch (e) { SysLogger.error('ZIP: ' + e.message); btn.classList.add('st-error'); btn.textContent = 'Erro'; setTimeout(() => { btn.classList.remove('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }, 2500) } }
       function buildZIP(files) { const crc32Tab = (function () { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++)c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c } return t })(); function crc32(buf) { let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++)c = crc32Tab[(c ^ buf[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0 } function u16(v) { return [v & 0xFF, (v >> 8) & 0xFF] } function u32(v) { return [v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF, (v >> 24) & 0xFF] } const localParts = [], centralParts = []; let localOfs = 0; for (const f of files) { const nameU8 = ENC.encode(f.name); const crc = crc32(f.data); const now = new Date(); const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF; const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF; const local = new Uint8Array([0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, ...nameU8]); const central = new Uint8Array([0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(localOfs), ...nameU8]); localParts.push(local, f.data); centralParts.push(central); localOfs += local.length + f.data.length } const centralOfs = localOfs; let centralSize = 0; centralParts.forEach(p => centralSize += p.length); const eocd = new Uint8Array([0x50, 0x4B, 0x05, 0x06, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(centralSize), ...u32(centralOfs), 0, 0]); return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' }) }
 
