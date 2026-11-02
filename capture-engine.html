@@ -5305,6 +5305,31 @@
       }
 
       /* ═══ CLIPBOARD HANDLER ═══ */
+      // Paste, path 2: items (screen captures, clipboard images, no real files). Images first, then the other files; returns how many were taken
+      async function pasteItems(arr) {
+        let fileCount = 0;
+        for (const it of arr) {
+          if (it.type.startsWith('image/')) {
+            const b = it.getAsFile();
+            if (b) { await captureFile(b); fileCount++; }
+          }
+        }
+        for (const it of arr) {
+          if (it.kind === 'file' && !it.type.startsWith('image/')) {
+            const f = it.getAsFile();
+            if (f) { await captureDoc(f, f.name, f.type); fileCount++; }
+          }
+        }
+        return fileCount;
+      }
+      // Paste, last path: plain text becomes a text document
+      async function pasteText(cd) {
+        const txt = cd.getData('text/plain');
+        if (txt && txt.trim()) {
+          const b = new Blob([txt], { type: 'text/plain' });
+          await captureDoc(b, 'texto-1.txt', 'text/plain');
+        }
+      }
       function initClipboard() {
         document.addEventListener('paste', async function (e) {
           try {
@@ -5319,28 +5344,7 @@
               for (const f of dtFiles) await captureFile(f);
               document.body.focus(); return;
             }
-            // Path 2: items (screen captures, clipboard images, no real files)
-            const arr = Array.from(items);
-            let fileCount = 0;
-            for (const it of arr) {
-              if (it.type.startsWith('image/')) {
-                const b = it.getAsFile();
-                if (b) { await captureFile(b); fileCount++; }
-              }
-            }
-            for (const it of arr) {
-              if (it.kind === 'file' && !it.type.startsWith('image/')) {
-                const f = it.getAsFile();
-                if (f) { await captureDoc(f, f.name, f.type); fileCount++; }
-              }
-            }
-            if (fileCount === 0) {
-              const txt = e.clipboardData.getData('text/plain');
-              if (txt && txt.trim()) {
-                const b = new Blob([txt], { type: 'text/plain' });
-                await captureDoc(b, 'texto-1.txt', 'text/plain');
-              }
-            }
+            if (await pasteItems(Array.from(items)) === 0) await pasteText(e.clipboardData);
             document.body.focus();
           } catch (err) { SysLogger.error('Erro no paste: ' + err.message); }
         }, { passive: false });
