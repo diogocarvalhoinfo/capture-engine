@@ -200,38 +200,43 @@ else
 fi
 
 # 12) Cross-check: annotation tools documented in README.md.
+#     The names come from the HTML itself: the title of each data-tool button
+#     and of the 90-degree button. There is no list to keep in sync (D70).
 #     Looks at the LINE that lists the editor tools, not the whole README:
-#     words like "texto" appear dozens of times elsewhere, and the check
-#     passed even with the tool removed from the list (see D41).
-#     The count shown comes from the array itself -- there is no constant
-#     to fall out of sync if the list changes.
-ANN_TOOLS=("traço livre" "retângulo" "círculo" "seta" "texto" "selecionar" "Rotação" "Crop")
+#     words like "texto" appear dozens of times elsewhere (see D41). The line
+#     holds one sentence only: an explanation merged into it could repeat a
+#     name and hide a missing tool (D46, D47), so a second sentence fails.
+ANN_TOOLS=()
+while IFS= read -r T; do [ -n "$T" ] && ANN_TOOLS+=("$T"); done < <(
+  grep -o 'data-tool="[a-z]*" title="[^"]*"' "$FILE" | sed 's/.*title="\([^"]*\)"/\1/'
+  grep -o 'id="ann-rotate-btn" title="[^"]*"' "$FILE" | sed 's/.*title="\([^"]*\)"/\1/')
+N_TOOLS=$(grep -o 'data-tool="[a-z]*" title=' "$FILE" | wc -l | tr -d ' ')
 ANN_FAIL=0
-ANN_LINHA=$(grep -n "O editor tem 7 ferramentas" README.md 2>/dev/null | head -1 | cut -d: -f1)
-if [ -z "$ANN_LINHA" ]; then
-  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'O editor tem 7 ferramentas' nao encontrada)"
+ANN_LINHA=$(grep -n "O editor tem ${N_TOOLS} ferramentas" README.md 2>/dev/null | head -1 | cut -d: -f1)
+if [ "${#ANN_TOOLS[@]}" -ne $((N_TOOLS + 1)) ] || [ "$N_TOOLS" -eq 0 ]; then
+  printf "[FAIL] %-52s %s\n" "Ferramentas nao lidas do HTML" "(${#ANN_TOOLS[@]} nomes para ${N_TOOLS} data-tool + 1)"
+  FAIL=$((FAIL+1))
+elif [ -z "$ANN_LINHA" ]; then
+  printf "[FAIL] %-52s %s\n" "Lista de ferramentas ausente do README.md" "(linha 'O editor tem ${N_TOOLS} ferramentas' nao encontrada)"
   FAIL=$((FAIL+1))
 else
   ANN_TEXTO=$(sed -n "${ANN_LINHA}p" README.md)
-  # The line must hold ONLY the list. The explanation lives on the next,
-  # indented line, because it repeats terms ("a rotacao gira a imagem e termina")
-  # and would make the check pass with the tool removed -- the D41 hole,
-  # caught in D46. If the two lines are merged again, this fails instead of
-  # degrading silently. See D47.
-  if printf '%s' "$ANN_TEXTO" | grep -qi "fica ativa até"; then
-    printf "[FAIL] %-52s %s\n" "Linha das ferramentas tem prosa misturada" "(mover a explicacao para a linha seguinte)"
+  if printf '%s' "$ANN_TEXTO" | sed 's/^ *- *//' | grep -q '\. '; then
+    printf "[FAIL] %-52s %s\n" "Linha das ferramentas tem prosa misturada" "(uma frase so; a explicacao vai na linha seguinte)"
     FAIL=$((FAIL+1))
     ANN_FAIL=$((ANN_FAIL+1))
   fi
+  ANN_TEXTO_LC="${ANN_TEXTO,,}"
   for TOOL in "${ANN_TOOLS[@]}"; do
-    if ! printf '%s' "$ANN_TEXTO" | grep -qi -- "$TOOL"; then
+    TOOL_LC="${TOOL,,}"
+    if [[ "$ANN_TEXTO_LC" != *"$TOOL_LC"* ]]; then
       printf "[FAIL] %-52s %s\n" "Ferramenta ausente da lista no README.md:" "'$TOOL'"
       FAIL=$((FAIL+1))
       ANN_FAIL=$((ANN_FAIL+1))
     fi
   done
   if [ "$ANN_FAIL" -eq 0 ]; then
-    printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "(${#ANN_TOOLS[@]}/${#ANN_TOOLS[@]})"
+    printf "[PASS] %-52s %s\n" "Ferramentas de anotação no README.md" "(${#ANN_TOOLS[@]}/${#ANN_TOOLS[@]}, nomes do HTML)"
     PASS=$((PASS+1))
   fi
 fi
