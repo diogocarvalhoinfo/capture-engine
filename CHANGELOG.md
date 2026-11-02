@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O zoom do navegador aumenta a interface a cada passo.** Numa tela de 1920 px, a interface tinha escala 1,125 a 100 % e 1,10 a 110 %: o aumento das telas grandes desligava quando o zoom tirava largura. Agora o aumento é uma rampa de 16 degraus de 40 px, de 1 até 1600 px a 1,25 a partir de 2240 px. A 100 %, nada muda nas telas de 1920 e 2560 px. Medido no Edge, de 80 % a 200 %, nas telas de 1536, 1920 e 2560 px: a escala cresce a cada passo. Calculado nos passos de zoom do Edge, de 25 % a 300 %, em telas de 1280 a 3840 px: nenhum passo diminui, contra 163 antes. O traço do editor e o tooltip ficam no lugar a 90 %, 100 %, 110 % e 125 %.
+
 ## [28.6.1] - 2026-11-01
 
 Patch: as correções da auditoria de 2026-11-01, todas na documentação. O arquivo só muda no número da versão.
