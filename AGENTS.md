@@ -224,7 +224,7 @@ Cada zona tem a sua regra.
 
 - **Documentação** (README, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, mensagens de commit): português neutro, sem formas só do Brasil nem só de Portugal. Onde os dois países usam palavras diferentes, vale a tabela abaixo. Um termo da interface aparece como está na interface, entre aspas («User»).
 - **Interface** (o texto que o usuário vê): português neutro. **Motivo:** a ferramenta serve equipes de suporte de qualquer país de língua portuguesa.
-- **Código** (ids, classes, tokens, variáveis, funções e comentários técnicos): inglês. Os comentários do HTML ainda estão em português (pendente F-0029, D-0085).
+- **Código** (ids, classes, tokens, variáveis, funções e comentários técnicos): inglês. Os comentários do HTML estão em inglês desde a 28.6.4 (F-0029, D-0085). Sem apóstrofos neles: a heurística de complexidade do `validate.sh` lê os comentários (§10).
 
 **Tabela de palavras:**
 
@@ -1418,8 +1418,6 @@ O que ficou para depois, com o ID e a origem.
 
 | ID | Pendente | Origem |
 |---|---|---|
-| F-0029 | Os comentários técnicos do `capture-engine.html` em inglês (D-0085). | Auditoria de 2026-10-31 |
-| F-0055 | No código, o comentário da borda do `btn-zip-cta` (`handleZipClick`) e o título «ZIP ENGINE» por cima do `updateStatusBar`. Vai junto do F-0029. | Auditoria de 2026-11-01 |
 | P-0001 | O GIF da anotação de uma captura. O `anotacoes/gif.py` não tem um verbo para arrastar, e em 5 s cabem só 2 passos. Com um verbo `arrastar`, o GIF cabe em 2 passos: desenhar a seta e confirmar. | Briefing do projeto; a mudança é no repositório dos prompts |
 
 ### IDs
