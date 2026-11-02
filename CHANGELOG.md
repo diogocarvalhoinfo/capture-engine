@@ -4,6 +4,23 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+Patch: os achados da auditoria de regressão da 28.6.4. O arquivo para baixar só muda no número da versão.
+
+### Corrigido
+
+- **«Girar 90°» também no girar do texto (A-01).** O README §6.3 ainda dizia «A Rotação 90° da imagem gira também os textos». A troca de nomes da 28.6.4 não pegou esta frase, que usava outra palavra.
+- **Nome atual do modo ZIP (A-02).** O `AGENTS.md` §7 citava «Imagens Separadas»; o botão chama-se «Imagens separadas».
+- **A contagem de complexidade não lê mais as palavras dos comentários (A-03).** O check 10 do `validate.sh` contava `if`, `else`, `for` e as outras também no inglês dos comentários. Avisava `annDoUndo` e `annDoRedo`, que não tinham mudado. Agora conta cada palavra só na forma que ela tem no código, como `if (`. Medido em 207 funções com código igual na 28.6.3 e na 28.6.4: 6 mudavam de número só pelos comentários, e nenhuma muda agora. Os avisos da 28.6.4 caem de 11 para 9. Os comentários continuam sem ser removidos (D67, D72). A decisão é a D-0092.
+- **Ícone na página de redirecionamento do GitHub Pages (O-02).** O `index.html` não declarava ícone, e o navegador pedia às vezes um `favicon.ico` que não existe, com um erro 404 no console. Ganha o mesmo ícone do aplicativo, embutido no arquivo.
+
+### Cobertura da auditoria de regressão de 2026-11-02
+
+- A 28.6.4 publicada contra a 28.6.3, nas duas versões com os mesmos arquivos e gestos: o roteiro de 102 passos e 11 cenários novos (teclado, colar, texto, recorte, volta ao original, alças, botão .pdf, ZIP, reordenação, tokens raros e o Quine em duas gerações). Nenhuma diferença além das feitas de propósito.
+- 48 telas por versão, em 4 tamanhos e 2 temas. Com só os textos novos aplicados à 28.6.3, as 48 ficam iguais às da 28.6.4, pixel a pixel.
+- Ficam como estão: o Export Admin de segunda geração guarda na tag `<html>` a cor do arquivo de origem até o script rodar (O-01), e as observações já registradas na 28.6.4.
+
 ## [28.6.4] - 2026-11-02
 
 Patch: os pendentes da auditoria de 2026-11-01, as funções do script divididas e o GIF do editor no README.
