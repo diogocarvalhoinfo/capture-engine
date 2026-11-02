@@ -249,7 +249,7 @@ Cada zona tem a sua regra.
 - Espaços (`padding`, `margin`, `gap`): múltiplos de `--spacing: 0.25rem`, escritos `calc(var(--spacing) * n)`.
 - Cortes do layout: em `rem`, na notação de intervalo (`@media (width <= 56.25rem)`).
 - Bordas, alturas, larguras e ícones podem ficar em `px`.
-- Telas grandes: a interface cresce com `zoom: var(--app-zoom)` no `html` (1,125 a partir de 112.5rem e 1,25 a partir de 150rem). Uma medida em `vw` ou `vh` divide-se por `var(--app-zoom)`. Uma posição medida na tela (`getBoundingClientRect`, `clientX`) que vai para um estilo em `px` divide-se por `uiZoom()`, porque o `zoom` volta a multiplicá-la.
+- Telas grandes: a interface cresce com `zoom: var(--app-zoom)` no `html` (uma rampa de 1 até 100rem a 1,25 a partir de 140rem, em 16 degraus de 2.5rem). **Motivo da rampa:** o zoom do navegador diminui a largura útil; com um degrau grande, um passo de zoom deixava a interface menor. Uma medida em `vw` ou `vh` divide-se por `var(--app-zoom)`. Uma posição medida na tela (`getBoundingClientRect`, `clientX`) que vai para um estilo em `px` divide-se por `uiZoom()`, porque o `zoom` volta a multiplicá-la.
 
 **Motivo:** em `rem`, o texto acompanha o tamanho de letra escolhido no navegador. Com a letra padrão (16 px), cada valor dá o mesmo pixel que dava em `px`.
 

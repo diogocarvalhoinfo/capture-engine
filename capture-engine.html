@@ -161,14 +161,100 @@
     }
 
     /* Large screens: the whole interface grows (text, icons, buttons and side panel together), instead of staying at notebook size.
+       The growth is a ramp in 16 small steps, from 1 up to 100rem (1600 px) to 1.25 from 140rem (2240 px): browser zoom
+       takes width away, and with fine steps each zoom step still makes the interface larger (one big step made it smaller).
        Sizes in vw and vh are divided by --app-zoom, so the windows still fit on the screen. */
+    @media (width >= 102.5rem) {
+      :root {
+        --app-zoom: 1.0156
+      }
+    }
+
+    @media (width >= 105rem) {
+      :root {
+        --app-zoom: 1.0312
+      }
+    }
+
+    @media (width >= 107.5rem) {
+      :root {
+        --app-zoom: 1.0469
+      }
+    }
+
+    @media (width >= 110rem) {
+      :root {
+        --app-zoom: 1.0625
+      }
+    }
+
     @media (width >= 112.5rem) {
+      :root {
+        --app-zoom: 1.0781
+      }
+    }
+
+    @media (width >= 115rem) {
+      :root {
+        --app-zoom: 1.0938
+      }
+    }
+
+    @media (width >= 117.5rem) {
+      :root {
+        --app-zoom: 1.1094
+      }
+    }
+
+    @media (width >= 120rem) {
       :root {
         --app-zoom: 1.125
       }
     }
 
-    @media (width >= 150rem) {
+    @media (width >= 122.5rem) {
+      :root {
+        --app-zoom: 1.1406
+      }
+    }
+
+    @media (width >= 125rem) {
+      :root {
+        --app-zoom: 1.1562
+      }
+    }
+
+    @media (width >= 127.5rem) {
+      :root {
+        --app-zoom: 1.1719
+      }
+    }
+
+    @media (width >= 130rem) {
+      :root {
+        --app-zoom: 1.1875
+      }
+    }
+
+    @media (width >= 132.5rem) {
+      :root {
+        --app-zoom: 1.2031
+      }
+    }
+
+    @media (width >= 135rem) {
+      :root {
+        --app-zoom: 1.2188
+      }
+    }
+
+    @media (width >= 137.5rem) {
+      :root {
+        --app-zoom: 1.2344
+      }
+    }
+
+    @media (width >= 140rem) {
       :root {
         --app-zoom: 1.25
       }
