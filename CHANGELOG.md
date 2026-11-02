@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **«Remover» e «Restaurar» com tamanho fixo.** O ✕ das miniaturas e o ↶ dos «Removidos» cresciam 15 % ao passar o mouse, de 18 px para 20,7 px. Agora ficam sempre com 18 px; o cursor de mão e o tooltip continuam. Vale também para o ✕ que apaga uma anotação no editor, que usa o mesmo estilo. Medido no Edge, nos dois temas: 18 px antes e durante o hover, e os três botões funcionam.
+
 ## [28.6.2] - 2026-11-02
 
 Patch: o zoom do navegador aumenta a interface a cada passo, também entre 100 % e 110 %.
