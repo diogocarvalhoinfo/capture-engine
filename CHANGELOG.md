@@ -4,9 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.6.5] - 2026-11-02
 
 Patch: os achados da auditoria de regressão da 28.6.4. O arquivo para baixar só muda no número da versão.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, com o arquivo já na 28.6.5.
 
 ### Corrigido
 
