@@ -4703,7 +4703,21 @@
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
         initTips();
         // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
-        $('ann-canvas').addEventListener('pointermove', e => { const cv = e.currentTarget; if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return } const p = annCanvasXY(e), hr = ANN_HIT_SIZE * annPx(), { x, y, w, h } = annCropBox; const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr; let c = 'crosshair'; if (near(x, y) || near(x + w, y + h)) c = 'nwse-resize'; else if (near(x + w, y) || near(x, y + h)) c = 'nesw-resize'; else if (near(x + w / 2, y) || near(x + w / 2, y + h)) c = 'ns-resize'; else if (near(x, y + h / 2) || near(x + w, y + h / 2)) c = 'ew-resize'; else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) c = 'move'; cv.style.cursor = c; cv.dataset.cropCursor = '1' });
+        function annCropCursorAt(p, box, hr) {
+          const { x, y, w, h } = box;
+          const near = (px, py) => Math.hypot(p.x - px, p.y - py) < hr;
+          if (near(x, y) || near(x + w, y + h)) return 'nwse-resize';
+          if (near(x + w, y) || near(x, y + h)) return 'nesw-resize';
+          if (near(x + w / 2, y) || near(x + w / 2, y + h)) return 'ns-resize';
+          if (near(x, y + h / 2) || near(x + w, y + h / 2)) return 'ew-resize';
+          if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) return 'move';
+          return 'crosshair';
+        }
+        $('ann-canvas').addEventListener('pointermove', e => {
+          const cv = e.currentTarget;
+          if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
+          cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
+        });
         $('ann-canvas').addEventListener('pointermove', e => { if (annTool !== 'select' || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); cv.style.cursor = annHandleHitTest(p.x, p.y) === 'rot' ? 'grab' : 'default' });
         $('ann-cancel').onclick = annDeactivate;
         $('ann-save').onclick = async () => {
