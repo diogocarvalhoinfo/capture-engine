@@ -43,7 +43,9 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-green-500` | `#22c55e` | — | Sucesso, estado «Gravado», confirmar a anotação |
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
-| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contadores, spinner, botões verdes e vermelhos) |
+| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contadores, spinner, botões verdes e vermelhos, avisos de armazenamento) |
+| `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
+| `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
 | `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
 | `--color-orange-500` | `#f97316` | — | Amostra laranja da paleta de anotação |
 | `--color-blue-500` | `#3b82f6` | — | Amostra azul da paleta de anotação |
@@ -99,7 +101,6 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 
 | Cor | Onde | Motivo |
 |---|---|---|
-| `#b91c1c` `#fff` | Fundo e texto dos avisos `#ce-quota-banner` e `#ce-storage-banner`, montados no JavaScript | Decisão do proprietário (D-0080): o vermelho é mais escuro que o `--color-red-500`, para o bloco de largura total. |
 | `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, e `let annCurrentColor` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
 | `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
 | `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
@@ -114,7 +115,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 > **Como verificar que esta tabela continua completa.** Uma versão anterior listava 5 categorias, e o código tinha 9. A lacuna sobreviveu a duas auditorias, porque ninguém comparou as duas listas com um comando. O comando abaixo faz essa comparação e deve devolver vazio:
 >
 > ```bash
-> CODIGO=$(grep -hvE '^[[:space:]]*--[a-z-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> CODIGO=$(grep -hvE '^[[:space:]]*--[a-z0-9-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
 > DOC=$(sed -n '/^### 2.1/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
 > echo "no codigo e nao declaradas:"; comm -23 <(echo "$CODIGO") <(echo "$DOC")
 > echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
