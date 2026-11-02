@@ -5480,18 +5480,8 @@
             }
           }
 
-          async function onUp() {
-            container.removeEventListener('pointermove', onMove);
-            window.removeEventListener('pointerup', onUp);
-            window.removeEventListener('pointercancel', onUp);
-            const wasActive = active;
-            const movedEl = dragEl;
-            const placeholder = ph;
-            dragEl = null; ph = null; active = false; pointerId = null;
-            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-            if (movedEl) movedEl.style.touchAction = '';
-            if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
-
+          // Drop: the item takes the place of the placeholder, the siblings lose their slide, and the click after the drag is swallowed
+          function dropInPlace(movedEl, placeholder) {
             // snaps the real item into the place of the placeholder
             if (placeholder && movedEl) container.insertBefore(movedEl, placeholder);
             if (placeholder) placeholder.remove();
@@ -5504,8 +5494,9 @@
               movedEl.addEventListener('click', swallow, { capture: true, once: true });
               setTimeout(() => { try { movedEl.removeEventListener('click', swallow, { capture: true }); } catch (_) {} }, 0);
             }
-
-            // saves the new order
+          }
+          // Saves the new order of the list in memory and in IndexedDB
+          async function saveOrder() {
             const isImg = container === tg;
             const items = container.querySelectorAll(isImg ? '.t-item' : '.d-item');
             const arr = isImg ? images : docs, store = isImg ? 'images' : 'documents';
@@ -5530,6 +5521,22 @@
               return;
             }
             isDirty = true; triggerSave();
+          }
+
+          async function onUp() {
+            container.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onUp);
+            const wasActive = active;
+            const movedEl = dragEl;
+            const placeholder = ph;
+            dragEl = null; ph = null; active = false; pointerId = null;
+            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            if (movedEl) movedEl.style.touchAction = '';
+            if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
+
+            dropInPlace(movedEl, placeholder);
+            await saveOrder();
           }
 
           function clearFloat(el) {
