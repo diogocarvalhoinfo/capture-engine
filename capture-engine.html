@@ -4900,135 +4900,115 @@
         // Back from the text mode: the text being written stays on the image (saved to the file only with the green button)
         $('ann-text-back').onclick = () => { if (annCommitText) annCommitText(); annSetTool(annPrevTool) };
         const cv = $('ann-canvas');
+        // Starts dragging the shape at index idx from the canvas point p (right button in any tool, or a click in Selecionar)
+        function annStartShapeDrag(p, idx) {
+          annSelectedIdx = idx;
+          annDragging = true;
+          annDragStartX = p.x; annDragStartY = p.y;
+          annDragLastX  = p.x; annDragLastY  = p.y;
+          const _sh = annHistory[annSelectedIdx];
+          // M8: snapshot of the whole state BEFORE the drag (dirty flag for the commit on mouseup)
+          annDragSnap = annCloneState(); annDragDirty = false;
+          annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
+          annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
+          annRenderAll(); // shows the selection box at once
+        }
+        // A click on a shape grabs it; a click on empty space clears the selection. Returns the index hit, or -1
+        function annGrabAt(p) {
+          const _hitIdx = annHitTest(p.x, p.y);
+          if (_hitIdx >= 0) annStartShapeDrag(p, _hitIdx);
+          else { annSelectedIdx = -1; annRenderAll(); }
+          return _hitIdx;
+        }
+        // The corner opposite the handle hh of the box from (x1, y1) to (x2, y2): it stays fixed while resizing
+        function annOppositeCorner(hh, x1, y1, x2, y2) {
+          if (hh === 'tl') return [x2, y2];
+          if (hh === 'tr') return [x1, y2];
+          if (hh === 'bl') return [x2, y1];
+          return [x1, y1]; // br
+        }
+        // Starts resizing (or turning, with the handle rot) the selected shape from the handle hh
+        function annStartResize(p, hh) {
+          const _sh = annHistory[annSelectedIdx];
+          // M9: snapshot of the whole state BEFORE the resize (dirty flag for the commit on mouseup)
+          annResizeSnap = annCloneState(); annResizeDirty = false;
+          annResizing = true;
+          annResizeHandle = hh;
+          annResizeStartX = p.x; annResizeStartY = p.y; // initial mouse position (for the text scale)
+          annResizeOriginFS = _sh.fontSize || 24;
+          if (hh === 'rot') { const _c = annTextCenter(_sh); annRotCenter = { x: _c.x, y: _c.y }; annRotStart = _sh.rot || 0; annRotStartAng = Math.atan2(p.y - _c.y, p.x - _c.x) * 180 / Math.PI; $('ann-canvas').style.cursor = 'grabbing'; return; }
+          const b = annBBox(_sh);
+          annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox without M (right denominators)
+          let _a;
+          if (_sh.type === 'text' && _sh.rot) {
+            // Turned text: anchor on the opposite corner of its own box
+            const _g = annTextGeom(_sh), _t = annTextToCanvas(_sh, (hh[1] === 'l' ? 1 : -1) * (_g.w / 2 + 4), (hh[0] === 't' ? 1 : -1) * (_g.h / 2 + 4));
+            _a = [_t.x, _t.y];
+          } else if (_sh.type === 'free' || _sh.type === 'text') {
+            // Free stroke and text: anchor on the opposite corner of the inner bbox
+            _a = annOppositeCorner(hh, b.x, b.y, b.x + b.w, b.y + b.h);
+          } else {
+            // rect, circle, arrow: anchor on the raw coords of the shape (min/max of x1,x2,y1,y2)
+            _a = annOppositeCorner(hh, Math.min(_sh.x1, _sh.x2), Math.min(_sh.y1, _sh.y2), Math.max(_sh.x1, _sh.x2), Math.max(_sh.y1, _sh.y2));
+          }
+          annResizeAnchorX = _a[0]; annResizeAnchorY = _a[1];
+          SysLogger.info('Ann resize start: handle=' + hh + ' idx=' + annSelectedIdx);
+        }
+        // Crop handle under the point p: the corners, then the middle of each side, then inside the box (move). null outside the box
+        function annCropHandleAt(p, box, hr) {
+          const { x, y, w, h } = box;
+          const spots = [['tl', x, y], ['tr', x + w, y], ['bl', x, y + h], ['br', x + w, y + h], ['t', x + w / 2, y], ['b', x + w / 2, y + h], ['l', x, y + h / 2], ['r', x + w, y + h / 2]];
+          for (const [name, hx, hy] of spots) if (Math.hypot(p.x - hx, p.y - hy) < hr) return name;
+          if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) return 'move';
+          return null;
+        }
+        // Right button: grab and move a shape in any tool (it never draws)
+        function annDownGrab(e) {
+          if (annCommitText) annCommitText();
+          annGrabAt(annCanvasXY(e));
+        }
+        // Recortar: a handle or the inside of the box moves it; anywhere else starts a new box
+        function annDownCrop(e) {
+          const p = annCanvasXY(e);
+          annStart = p;
+          annDraggingCrop = true;
+          const _h = annCropBox ? annCropHandleAt(p, annCropBox, ANN_HIT_SIZE * annPx()) : null;
+          annCropHandle = _h || 'br';
+          if (!_h) annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
+        }
+        // Selecionar: the handles of the selected shape come first, then a shape under the point, then empty space
+        function annDownSelect(e) {
+          if (annCommitText) annCommitText();
+          const p = annCanvasXY(e);
+          const _hh = annSelectedIdx >= 0 ? annHandleHitTest(p.x, p.y) : '';
+          if (_hh) { annStartResize(p, _hh); return; }
+          if (annGrabAt(p) >= 0) SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
+        }
+        // Texto: a click places a new text after 220 ms, so that a double click can edit an existing one instead
+        function annDownText(e) {
+          if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
+          const p = annCanvasXY(e);
+          annTextClickTimer = setTimeout(() => {
+            annTextClickTimer = null;
+            if (annCommitText) annCommitText();
+            annEditingTextIdx = -1;
+            annShowTextInput(p.x, p.y);
+          }, 220);
+        }
+        // Drawing tools (free stroke, rectangle, circle, arrow): the stroke starts here and ends on pointerup
+        function annDownDraw(e) {
+          if (annCommitText) annCommitText();
+          const p = annCanvasXY(e); annSelectedIdx = -1; annDrawing = true; annStart = p; annPath = [p];
+        }
         cv.addEventListener('pointerdown', e => {
           if (!annActive) return;
           clearAnnAwait(); // a click on the image means: keep editing
           if (e.button === 1 || annSpaceHeld) return;
-          if (e.button === 2) {
-            if (annCommitText) annCommitText();
-            const p = annCanvasXY(e);
-            const _hitIdx = annHitTest(p.x, p.y);
-            if (_hitIdx >= 0) {
-              annSelectedIdx = _hitIdx;
-              annDragging = true;
-              annDragStartX = p.x; annDragStartY = p.y;
-              annDragLastX  = p.x; annDragLastY  = p.y;
-              const _sh = annHistory[annSelectedIdx];
-              annDragSnap = annCloneState(); annDragDirty = false;
-              annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
-              annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
-              annRenderAll();
-            } else {
-              annSelectedIdx = -1;
-              annRenderAll();
-            }
-            return;
-          }
-          if (annTool === 'crop') {
-            const p = annCanvasXY(e);
-            annStart = p;
-            annDraggingCrop = true;
-            if (!annCropBox) {
-              annCropHandle = 'br';
-              annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
-            } else {
-              const hr = ANN_HIT_SIZE * annPx(), {x, y, w, h} = annCropBox;
-              if (Math.hypot(p.x - x, p.y - y) < hr) annCropHandle = 'tl';
-              else if (Math.hypot(p.x - (x + w), p.y - y) < hr) annCropHandle = 'tr';
-              else if (Math.hypot(p.x - x, p.y - (y + h)) < hr) annCropHandle = 'bl';
-              else if (Math.hypot(p.x - (x + w), p.y - (y + h)) < hr) annCropHandle = 'br';
-              else if (Math.hypot(p.x - (x + w / 2), p.y - y) < hr) annCropHandle = 't';
-              else if (Math.hypot(p.x - (x + w / 2), p.y - (y + h)) < hr) annCropHandle = 'b';
-              else if (Math.hypot(p.x - x, p.y - (y + h / 2)) < hr) annCropHandle = 'l';
-              else if (Math.hypot(p.x - (x + w), p.y - (y + h / 2)) < hr) annCropHandle = 'r';
-              else if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) annCropHandle = 'move';
-              else {
-                annCropHandle = 'br';
-                annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
-              }
-            }
-            return;
-          }
-          if (annTool === 'select') {
-            if (annCommitText) annCommitText();
-            const p = annCanvasXY(e);
-            // Phase 3: check the handles BEFORE the normal drag (handles come first)
-            if (annSelectedIdx >= 0) {
-              const _hh = annHandleHitTest(p.x, p.y);
-              if (_hh) {
-                const _sh = annHistory[annSelectedIdx];
-                // M9: snapshot of the whole state BEFORE the resize (dirty flag for the commit on mouseup)
-                annResizeSnap = annCloneState(); annResizeDirty = false;
-                annResizing = true;
-                annResizeHandle = _hh;
-                annResizeStartX = p.x; annResizeStartY = p.y; // initial mouse position (for the text scale)
-                annResizeOriginFS = _sh.fontSize || 24;
-                if (_hh === 'rot') { const _c = annTextCenter(_sh); annRotCenter = { x: _c.x, y: _c.y }; annRotStart = _sh.rot || 0; annRotStartAng = Math.atan2(p.y - _c.y, p.x - _c.x) * 180 / Math.PI; $('ann-canvas').style.cursor = 'grabbing'; return; }
-                const b = annBBox(_sh);
-                annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox without M (right denominators)
-                if (_sh.type === 'free') {
-                  // Free: anchor on the corners of the inner bbox
-                  if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
-                  else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
-                  else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
-                  else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
-                } else if (_sh.type === 'text' && _sh.rot) {
-                  // Turned text: anchor on the opposite corner of its own box
-                  const _g = annTextGeom(_sh), _a = annTextToCanvas(_sh, (_hh[1] === 'l' ? 1 : -1) * (_g.w / 2 + 4), (_hh[0] === 't' ? 1 : -1) * (_g.h / 2 + 4));
-                  annResizeAnchorX = _a.x; annResizeAnchorY = _a.y;
-                } else if (_sh.type === 'text') {
-                  // Text: anchor on the opposite corner of the inner bbox
-                  if (_hh === 'tl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y + b.h; }
-                  else if (_hh === 'tr') { annResizeAnchorX = b.x;        annResizeAnchorY = b.y + b.h; }
-                  else if (_hh === 'bl') { annResizeAnchorX = b.x + b.w; annResizeAnchorY = b.y; }
-                  else                   { annResizeAnchorX = b.x;        annResizeAnchorY = b.y; } // br
-                } else {
-                  // rect, circle, arrow: anchor on the raw coords of the shape (min/max of x1,x2,y1,y2)
-                  const _minX = Math.min(_sh.x1, _sh.x2), _minY = Math.min(_sh.y1, _sh.y2);
-                  const _maxX = Math.max(_sh.x1, _sh.x2), _maxY = Math.max(_sh.y1, _sh.y2);
-                  if (_hh === 'tl') { annResizeAnchorX = _maxX; annResizeAnchorY = _maxY; }
-                  else if (_hh === 'tr') { annResizeAnchorX = _minX; annResizeAnchorY = _maxY; }
-                  else if (_hh === 'bl') { annResizeAnchorX = _maxX; annResizeAnchorY = _minY; }
-                  else                   { annResizeAnchorX = _minX; annResizeAnchorY = _minY; } // br
-                }
-                SysLogger.info('Ann resize start: handle=' + _hh + ' idx=' + annSelectedIdx);
-                return;
-              }
-            }
-            const _hitIdx = annHitTest(p.x, p.y);
-            if (_hitIdx >= 0) {
-              // Click on a shape: select it (if needed) and start the drag at once
-              annSelectedIdx = _hitIdx;
-              annDragging = true;
-              annDragStartX = p.x; annDragStartY = p.y;
-              annDragLastX  = p.x; annDragLastY  = p.y;
-              const _sh = annHistory[annSelectedIdx];
-              // M8: snapshot of the whole state BEFORE the drag (dirty flag for the commit on mouseup)
-              annDragSnap = annCloneState(); annDragDirty = false;
-              annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
-              annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
-              annRenderAll(); // shows the selection box at once
-              SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
-            } else {
-              // Click on empty space: deselect
-              annSelectedIdx = -1;
-              annRenderAll();
-            }
-            return;
-          }
-          if (annTool === 'text') {
-            if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
-            const p = annCanvasXY(e);
-            annTextClickTimer = setTimeout(() => {
-              annTextClickTimer = null;
-              if (annCommitText) annCommitText();
-              annEditingTextIdx = -1;
-              annShowTextInput(p.x, p.y);
-            }, 220);
-            return;
-          }
-          if (annCommitText) annCommitText();
-          const p = annCanvasXY(e); annSelectedIdx = -1; annDrawing = true; annStart = p; annPath = [p];
+          if (e.button === 2) annDownGrab(e);
+          else if (annTool === 'crop') annDownCrop(e);
+          else if (annTool === 'select') annDownSelect(e);
+          else if (annTool === 'text') annDownText(e);
+          else annDownDraw(e);
         });
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
