@@ -5028,30 +5028,39 @@
           if (!annActive) return;
           e.preventDefault();
         });
+        // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
+        function annTextAt(p) {
+          for (let _i = annHistory.length - 1; _i >= 0; _i--) {
+            const _h = annHistory[_i];
+            if (_h.type !== 'text' || !_h.txt) continue;
+            const _tb = annBBox(_h);
+            if (p.x >= _tb.x - 2 && p.x <= _tb.x + _tb.w + 2 && p.y >= _tb.y - 2 && p.y <= _tb.y + _tb.h + 2) return _i;
+          }
+          return -1;
+        }
+        // Opens the text at index i for editing, with its own color, bold, italic and size
+        function annEditText(i) {
+          const _h = annHistory[i];
+          annEditingTextIdx = i;
+          annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
+          const _si = ANN_TEXT_SIZES.indexOf(_h.fontSize || 24); annTextSizeIdx = _si >= 0 ? _si : 2;
+          document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _h.color));
+          const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
+          if (_bb) _bb.classList.toggle('active', annTextBold);
+          if (_ib) _ib.classList.toggle('active', annTextItalic);
+          if (annTool !== 'text') annSetTool('text'); // editing a text shows the text bar (← T B I); the ← goes back to the tool in use
+          annRenderAll(); // original text hidden; overlay update
+          annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
+        }
+        // Double click (Texto or Selecionar): edits the text under the pointer; in Texto, a new text where there is none
         cv.addEventListener('dblclick', e => {
           if (!annActive || (annTool !== 'text' && annTool !== 'select')) return;
           e.stopPropagation();
           if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
           if (annCommitText) { annCommitText(); annCommitText = null; }
           const p = annCanvasXY(e);
-          for (let _i = annHistory.length - 1; _i >= 0; _i--) {
-            const _h = annHistory[_i];
-            if (_h.type === 'text' && _h.txt) {
-              const _tb = annBBox(_h); if (p.x >= _tb.x - 2 && p.x <= _tb.x + _tb.w + 2 && p.y >= _tb.y - 2 && p.y <= _tb.y + _tb.h + 2) {
-                annEditingTextIdx = _i;
-                annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
-                const _si = ANN_TEXT_SIZES.indexOf(_h.fontSize || 24); annTextSizeIdx = _si >= 0 ? _si : 2;
-                document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _h.color));
-                const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
-                if (_bb) _bb.classList.toggle('active', annTextBold);
-                if (_ib) _ib.classList.toggle('active', annTextItalic);
-                if (annTool !== 'text') annSetTool('text'); // editing a text shows the text bar (← T B I); the ← goes back to the tool in use
-                annRenderAll(); // original text hidden; overlay update
-                annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
-                return;
-              }
-            }
-          }
+          const _i = annTextAt(p);
+          if (_i >= 0) { annEditText(_i); return; }
           annEditingTextIdx = -1;
           if (annTool !== 'select') annShowTextInput(p.x, p.y);
         });
