@@ -4,9 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.6.4] - 2026-11-02
 
 Patch: os pendentes da auditoria de 2026-11-01, as funções do script divididas e o GIF do editor no README.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): feito por quem mantém o projeto, com o arquivo já na 28.6.4.
 
 ### Corrigido
 
