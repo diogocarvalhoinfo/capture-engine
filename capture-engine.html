@@ -4333,6 +4333,8 @@
           for (const [id, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) if (Math.abs(l.x - sx * hw) <= H && Math.abs(l.y - sy * hh) <= H) return id;
           return '';
         }
+        // An arrow has one handle on each end, as in PowerPoint: 'p1' moves the start, 'p2' moves the tip
+        if (_e.type === 'arrow') { if (Math.hypot(cx - _e.x2, cy - _e.y2) <= H) return 'p2'; if (Math.hypot(cx - _e.x1, cy - _e.y1) <= H) return 'p1'; return ''; }
         const _corners = [
           { x: _bx,        y: _by,        id: 'tl' },
           { x: _bx + _bw,  y: _by,        id: 'tr' },
@@ -4355,6 +4357,12 @@
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
         const _e = annHistory[annSelectedIdx], _isTxt = _e.type === 'text';
+        if (_e.type === 'arrow') {
+          // Arrow: a round handle on each end and no box, so a handle never stands for a corner of the box
+          ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5 * k;
+          [[_e.x1, _e.y1], [_e.x2, _e.y2]].forEach(([hx, hy]) => { ctx.beginPath(); ctx.arc(hx, hy, ANN_HANDLE_SIZE * k, 0, Math.PI * 2); ctx.fill(); ctx.stroke() });
+          ctx.restore(); return;
+        }
         let _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
         if (_isTxt) { const c = annTextCenter(_e); ctx.translate(c.x, c.y); ctx.rotate((_e.rot || 0) * Math.PI / 180); _bw = c.g.w + 8 + M * 2; _bh = c.g.h + 8 + M * 2; _bx = -_bw / 2; _by = -_bh / 2; }
         // ── Selection box: thin, discreet solid line ───────────────────────────────
@@ -4397,6 +4405,9 @@
       // ann-save uses annRedraw() (not annRenderAll()), so the canvas is always clean.
       // Shows the ✕ button only while an annotation is selected (annSelectedIdx >= 0).
       // No hover logic: the button appears and disappears only with the selection.
+      // The ✕ of an arrow: beside its middle, 28 screen px away on the upper side (the right side on an upright arrow),
+      // so it is at least 28 px from both end handles and a click on a handle never deletes the arrow
+      function annArrowDelPoint(e) { const k = annPx(), dx = e.x2 - e.x1, dy = e.y2 - e.y1, L = Math.hypot(dx, dy) || 1; let nx = -dy / L, ny = dx / L; if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny } return { x: (e.x1 + e.x2) / 2 + nx * 28 * k, y: (e.y1 + e.y2) / 2 + ny * 28 * k } }
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
         if (!_annDbBtn) return;
@@ -4419,7 +4430,7 @@
         // Convert to ann-viewport coords and centre the button on the handle
         const _BTN = 20; // size of the ✕ button (square)
         const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
-        const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text
+        const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : _sel.type === 'arrow' ? annArrowDelPoint(_sel) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text; beside the middle of an arrow
         const _z = uiZoom();
         const _hX = ((_cvR.left - _vpR.left) + _cp.x * _scaleX) / _z; // handle centre X
         const _hY = ((_cvR.top  - _vpR.top)  + _cp.y * _scaleY) / _z; // handle centre Y
@@ -4744,7 +4755,7 @@
           if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
-        $('ann-canvas').addEventListener('pointermove', e => { if (annTool !== 'select' || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); cv.style.cursor = annHandleHitTest(p.x, p.y) === 'rot' ? 'grab' : 'default' });
+        $('ann-canvas').addEventListener('pointermove', e => { if (annTool !== 'select' || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h === 'rot' ? 'grab' : (_h === 'p1' || _h === 'p2') ? 'crosshair' : 'default' });
         $('ann-cancel').onclick = annDeactivate;
         // The image as saved: the visible image with the annotations drawn on it, cut to the crop box when there is one
         function annRenderSaved(img, fW, fH, cX, cY) {
@@ -4977,6 +4988,7 @@
           annResizeStartX = p.x; annResizeStartY = p.y; // initial mouse position (for the text scale)
           annResizeOriginFS = _sh.fontSize || 24;
           if (hh === 'rot') { const _c = annTextCenter(_sh); annRotCenter = { x: _c.x, y: _c.y }; annRotStart = _sh.rot || 0; annRotStartAng = Math.atan2(p.y - _c.y, p.x - _c.x) * 180 / Math.PI; $('ann-canvas').style.cursor = 'grabbing'; return; }
+          if (hh === 'p1' || hh === 'p2') { annResizeAnchorX = hh === 'p1' ? _sh.x2 : _sh.x1; annResizeAnchorY = hh === 'p1' ? _sh.y2 : _sh.y1; SysLogger.info('Ann resize start: handle=' + hh + ' idx=' + annSelectedIdx); return; }
           const b = annBBox(_sh);
           annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox without M (right denominators)
           let _a;
@@ -5193,6 +5205,8 @@
           const _sh = annHistory[annSelectedIdx];
           if (annResizeHandle === 'rot') annResizeTurn(_sh, _p, e);
           else if (_sh.type === 'text') annResizeText(_sh, _p);
+          else if (annResizeHandle === 'p1') { _sh.x1 = _p.x; _sh.y1 = _p.y; }
+          else if (annResizeHandle === 'p2') { _sh.x2 = _p.x; _sh.y2 = _p.y; }
           else if (_sh.type !== 'free') { _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY; _sh.x2 = _p.x; _sh.y2 = _p.y; }
           else if (annResizeOriginBBox) annResizeFree(_sh, _p);
           annResizeDirty = true;
