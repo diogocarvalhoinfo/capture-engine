@@ -535,6 +535,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Navegação privada** | Em alguns navegadores, a navegação privada não deixa gravar as capturas. Elas ficam na aba aberta, a barra de estado diz «Só nesta aba», e um aviso vermelho aparece no topo. Exporte em PDF ou ZIP antes de fechar a aba. |
+| **Aba recarregada no iPhone** | O Safari do iPhone recarrega uma aba que ficou um tempo em segundo plano. Ao voltar, a ferramenta abre uma sessão nova, vazia; a anterior está no Histórico (ícone de relógio), com tudo. Numa aba privada, a sessão anterior se perde: exporte antes de sair do Safari. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
@@ -580,12 +581,13 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - **Editar uma imagem duplica, mais ou menos, o espaço que ela ocupa.** Ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs: o original (`origBlob`, para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
-- **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox; o Safari não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
+- **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox, e no Safari do iPhone (iOS 26.5), no site publicado. O Safari do Mac não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
 - **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (outra origem ou outro perfil):
   - **janela anônima ou privada**;
   - **outro perfil** do navegador;
   - **outro navegador** (o Edge e o Chrome têm bases separadas);
+  - no iPhone, o **atalho do site na Tela de Início**, que tem uma base própria, separada da do Safari;
   - abrir **de dentro de um ZIP**, sem extrair.
 - **A base é por origem (protocolo, host e porta), e não só por perfil.** A *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) tem **três bases independentes**. As sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
 - **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, abrir a mesma conta/perfil **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
@@ -633,7 +635,9 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
   - O IndexedDB do Firefox fica no perfil dele: os dados criados no Firefox não aparecem no Chrome, nem o contrário
-- **Safari** — suporte parcial; não testado formalmente. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine; outros comportamentos não verificados
+- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. No toque, o visualizador e o editor ainda falham: o gesto de pinça amplia a página inteira, e o «Editar» e o ✕ ficam escondidos
+  - No iPhone, use o site: o arquivo baixado abre no app Arquivos só como pré-visualização, sem funcionar
+- **Safari no Mac** — não testado. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com navegador moderno
 
@@ -646,13 +650,17 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 | **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Firefox** | 151.0.4, Windows | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
-| **Safari** | — | ⚠️ Parcial | ⚠️ Não testado | ⚠️ Pode falhar (CORS) | ⚠️ Não testado |
+| **Safari** | iOS 26.5, iPhone 14 Pro | ⚠️ Parcial: o visualizador e o editor falham no toque | ⚠️ Não se aplica no iPhone; no Mac, não testado | ✅ Verificado no site; no Mac, pode falhar (CORS) | ✅ Verificado |
 
 **Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
 
 > [!NOTE]
 > **Firefox.**
 > O Disaster Recovery foi confirmado — o IndexedDB persiste mesmo após remoção do arquivo HTML. Os dados ficam no perfil do navegador, independentes do arquivo.
+
+> [!NOTE]
+> **Safari no iPhone.**
+> Testado em 06/11/2026, no site publicado da 28.7.0. As sessões continuam no Histórico depois de recarregar e de fechar o Safari. A cópia do Export Admin feita no iPhone saiu igual ao arquivo publicado, byte a byte. Numa aba privada, as capturas ficam «Só nesta aba», com o aviso vermelho. O atalho do site na Tela de Início tem uma base própria, separada da do Safari, como outro perfil.
 
 ### Acessibilidade
 
