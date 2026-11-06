@@ -4210,6 +4210,14 @@
       function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy); if (Math.abs(l.x) <= l.g.w / 2 + 4 && Math.abs(l.y) <= l.g.h / 2 + 4) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
       // Detects whether (cx,cy) is on one of the 4 handles of the selected shape.
       // Returns 'tl','tr','bl','br' or '' when there is no hit.
+      // The resize cursor of a handle points the way it pulls: the corner direction, turned with a turned text
+      function annHandleCursor(h) {
+        if (h === 'rot') return 'grab'; if (h === 'p1' || h === 'p2') return 'crosshair';
+        const d = { tl: [-1, -1], tr: [1, -1], bl: [-1, 1], br: [1, 1] }[h]; if (!d) return 'default';
+        const e = annHistory[annSelectedIdx], r = e && e.type === 'text' ? (e.rot || 0) : 0;
+        const a = ((Math.atan2(d[1], d[0]) * 180 / Math.PI + r) % 180 + 180) % 180;
+        return ['ew-resize', 'nwse-resize', 'ns-resize', 'nesw-resize'][Math.round(a / 45) % 4];
+      }
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
@@ -4640,7 +4648,7 @@
           if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
-        $('ann-canvas').addEventListener('pointermove', e => { const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h === 'rot' ? 'grab' : (_h === 'p1' || _h === 'p2') ? 'crosshair' : _h ? 'nwse-resize' : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' });
+        $('ann-canvas').addEventListener('pointermove', e => { const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' });
         $('ann-cancel').onclick = annDeactivate;
         // The image as saved: the visible image with the annotations drawn on it, cut to the crop box when there is one
         function annRenderSaved(img, fW, fH, cX, cY) {
@@ -4905,7 +4913,7 @@
         // Right button: grab and move a shape in any tool (it never draws)
         function annDownGrab(e) {
           if (annCommitText) annCommitText();
-          annGrabAt(annCanvasXY(e));
+          if (annGrabAt(annCanvasXY(e)) >= 0) annQuasiSelect(true);
         }
         // Recortar: a handle or the inside of the box moves it; anywhere else starts a new box
         function annDownCrop(e) {
@@ -4921,8 +4929,11 @@
         // released, so no handles are left that the current tool cannot use (D-0101)
         let annCtrlHeld = false;
         const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
-        function annCtrlUp() { annCtrlHeld = false; const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
-        window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlHeld = true; });
+        // While Ctrl is held, or a shape is grabbed with the right or middle button, the Selecionar button lights up instead of the
+        // current tool, which lights up again on release
+        function annQuasiSelect(on) { if (annTool === 'select' || annTool === 'crop' || $('img-modal-ann-actions').classList.contains('ann-sub-mode')) return; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === (on ? 'select' : annTool))); }
+        function annCtrlUp() { annCtrlHeld = false; if (!annDragging && !annResizing) annQuasiSelect(false); const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
+        window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive && annTool !== 'crop') { annCtrlHeld = true; annQuasiSelect(true); const cv = $('ann-canvas'); if (cv && annTool !== 'select') cv.style.cursor = 'default'; } });
         window.addEventListener('keyup', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlUp(); });
         window.addEventListener('blur', () => { if (annCtrlHeld) annCtrlUp(); });
         function annDownSelect(e) {
@@ -5182,6 +5193,7 @@
           annResizing = false;
           if (annResizeHandle === 'rot') $('ann-canvas').style.cursor = 'default';
           annResizeHandle = '';
+          if (!annCtrlHeld) { annQuasiSelect(false); if (annTool !== 'select') annSelectedIdx = -1; }
           // M9: commit the pre-resize snapshot ONLY if the gesture really changed the shape
           if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
           annRenderAll();
@@ -5196,6 +5208,7 @@
           // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
           if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
           if (annTool !== 'select' && !annCtrlHeld) annSelectedIdx = -1; // grabbed with the right or middle button in another tool: no handles left that this tool cannot use
+          annQuasiSelect(annCtrlHeld);
           annRenderAll();
         }
         // End of a drawing: the shape joins annHistory (a free stroke needs at least two points)

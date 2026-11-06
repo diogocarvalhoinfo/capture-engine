@@ -16,7 +16,7 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
 - **Modo «Maiúsculas» da identificação (D-0096).** Token `TOKEN_ID_UPPERCASE`, com o interruptor no Visual Builder. Ligado, o valor dos campos vira maiúsculas ao digitar; desligado, fica como foi digitado. O placeholder mostra o rótulo como foi escrito.
 - **Botão do meio do mouse (D-0100).** Sobre uma anotação, agarra e move, como o botão direito.
-- **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona; ao soltar, a ferramenta de antes volta.
+- **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona, e o botão Selecionar fica aceso no lugar dela; ao soltar, a ferramenta de antes volta. O mesmo botão acende enquanto o botão direito ou o do meio arrasta uma anotação. O cursor de cada alça aponta para o lado que ela puxa.
 - **Cartões «Download» e «Abrir o site»** no topo do README, gerados pelo `cartoes.py` do repositório do método.
 
 ### Modificado
@@ -24,7 +24,7 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **A seta tem uma alça em cada ponta (F-0067, F-0079).** Cada alça move só a sua ponta, e a seta nunca troca de direção. O ✕ fica ao lado do meio da seta, longe das alças.
 - **«Diminuir» e «Aumentar» (D-0094)** no lugar de «Espessura menor» e «Espessura maior», em todas as ferramentas.
 - **Botões do visualizador (D-0098).** «Download» e «Restaurar» seguem a regra das ferramentas do editor, e «Editar», «Download» e «Restaurar» medem 120 × 36 px.
-- **GIF do editor (D-0099).** Uma cena neutra, sem datas, com a seta saindo de dentro da janela.
+- **GIF do editor (D-0099).** Uma cena neutra, sem datas. Começa no visualizador: clica em «Editar», escolhe a Seta e a desenha de dentro da janela até a DLL, e termina com as ferramentas abertas.
 - **Visual Builder:** fecha só pelo ✕, também com o teclado; o Esc não o fecha (D-0097).
 - **Menos movimento:** quando o sistema pede menos movimento, os botões do editor mudam de estado sem transição.
 
