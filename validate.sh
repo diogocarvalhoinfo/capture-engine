@@ -396,10 +396,10 @@ check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
 
 # 25) File size (admin) within a fixed range; README section 12 gives only the rough size (about 400 KB).
 SZ=$(wc -c < "$FILE" | tr -d ' ')
-if [ "$SZ" -ge 300000 ] && [ "$SZ" -le 430000 ]; then
+if [ "$SZ" -ge 300000 ] && [ "$SZ" -le 400000 ]; then
   printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (~400KB)" "$SZ"; PASS=$((PASS+1));
 else
-  printf '[FAIL] %-52s (%s, esperado 300000-430000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
+  printf '[FAIL] %-52s (%s, esperado 300000-400000)\n' "Tamanho fora da faixa" "$SZ"; FAIL=$((FAIL+1));
 fi
 
 # 26) ZIP: the UTF-8 encoding flag (bit 11 = 0x0800 of the general purpose
