@@ -2675,8 +2675,8 @@
     }
 
 
-    /* Tool options (D-0102): a tool with variants has a dot just above it, outside the button; a double click, or a press of 1 s,
-       opens its options in a tray above it, side by side like the toolbar: the first option right above the tool, always in the same order */
+    /* Tool options (D-0102): each drawing tool has a dot just above it, outside the button. A click on the chosen tool, a double click,
+       a press of 1 s or the up arrow opens its options in a tray above it, side by side like the toolbar, the first right above the tool */
     .ann-tool-wrap {
       position: relative;
       display: flex
@@ -2729,15 +2729,14 @@
       font: 700 var(--text-sm) / 1 sans-serif
     }
 
-    /* The size in the tray: − and + without the box, then the current size. The box stays on the options, which are a choice;
-       the bare signs only adjust a value. The bar keeps its own − and + */
-    #img-modal-overlay .ann-flyout .ann-size-btn {
+    /* The size in the tray: − and + without the box, then the current size (D-0102) */
+    #img-modal-overlay .ann-size-btn {
       width: 24px;
       background: transparent;
       border-color: transparent
     }
 
-    #img-modal-overlay .ann-flyout .ann-size-btn:hover {
+    #img-modal-overlay .ann-size-btn:hover {
       background: var(--color-viewer-control-hover);
       border-color: transparent
     }
@@ -3227,8 +3226,8 @@
               <rect x="3" y="3" width="18" height="18" rx="2" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
-              <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
-              <button class="ann-btn ann-opt" id="ann-rect-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-rect-fill" title="Preenchido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3236,8 +3235,8 @@
               <circle cx="12" cy="12" r="9" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do círculo">
-              <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
-              <button class="ann-btn ann-opt" id="ann-circle-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-circle-fill" title="Preenchido"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" /></svg></button>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3255,8 +3254,8 @@
               <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do marca-texto">
-              <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
-              <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3264,8 +3263,8 @@
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do texto">
-              <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)" aria-pressed="false">B</button>
-              <button class="ann-btn ann-opt ann-opt-letter ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)" aria-pressed="false">I</button>
+              <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)">B</button>
+              <button class="ann-btn ann-opt ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)">I</button>
             </div>
           </div>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
@@ -3718,8 +3717,7 @@
       function showStorageBanner() { showBanner('ce-storage-banner', 'Armazenamento indisponível', ' - as capturas não serão gravadas. Verifique se o navegador está em modo privado ou com restrições de armazenamento.') }
       function showMemOnlyBanner() { showBanner('ce-memonly-banner', 'Capturas só nesta aba', ' - o navegador não deixou gravar. Elas ficam até fechar a aba: exporte em PDF ou ZIP antes.') }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; let r; try { r = fn(st) } catch (e) { _chkQ(e); throw e } /* a quota error can also come synchronously from put() */ tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
-      /* Items kept only in this tab, because the browser refused to store them (private browsing, a storage error).
-         A later write of the same item fails in silence: the banner was already shown once in this page. */
+      /* Items kept only in this tab, because the browser refused to store them; the banner shows once per page (F-0063) */
       const memOnly = new WeakSet(); let memOnlyNoticeShown = false;
       const idbPut = (s, d) => idbTx(s, 'readwrite', st => st.put(d)).then(r => { memOnly.delete(d); return r }, e => { if (memOnly.has(d)) return; throw e });
       function keepInTab(o, e) { memOnly.add(o); SysLogger.warn('Item kept only in this tab: ' + ((e && e.name) || e)); if (e && e.name === 'QuotaExceededError') return; /* the quota banner already says it */ if (memOnlyNoticeShown) return; memOnlyNoticeShown = true; showMemOnlyBanner() }
@@ -3764,7 +3762,7 @@
       }
       async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
-      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = idUpper ? (s.user || '').toLocaleUpperCase('pt') : (s.user || ''); $('session-pc').value = idUpper ? (s.pc || '').toLocaleUpperCase('pt') : (s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
+      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
       function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
@@ -3896,17 +3894,15 @@
         (k === 'z' && !e.shiftKey ? annDoUndo() : annDoRedo()).catch(()=>{});
         return true;
       }
-      // Delete removes the selected annotation. Returns true when the key was used
-      function annDeleteKey(e) {
-        if (e.key !== 'Delete' || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return false;
-        e.preventDefault();
-        annPushUndo(); // M7: snapshot BEFORE deleting with the Delete key
-        annHistory.splice(annSelectedIdx, 1);
-        setAnnDirty(true);
-        annSelectedIdx = -1;
+      // Removes the selected annotation, from the Delete key or its ✕; then the tool of before (D-0103). Returns true when there was one
+      function annDeleteSelected() {
+        if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return false;
+        annPushUndo(); // M6, M7: snapshot BEFORE deleting
+        annHistory.splice(annSelectedIdx, 1); setAnnDirty(true); annSelectedIdx = -1;
         annRenderAll(); annEndTempSelect();
         return true;
       }
+      function annDeleteKey(e) { if (e.key !== 'Delete' || !annDeleteSelected()) return false; e.preventDefault(); return true }
       // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
       const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e));
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
@@ -3934,9 +3930,8 @@
         const _exOv = $('export-overlay'); if (_exOv && _exOv.classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeExportModal(); }
       });
 
-      /* Modal layers: Tab stays in the top layer, and closing it gives the focus back to where it was. Everything outside the
-         top layer is inert, except the storage banners, the notice and the tooltip. One observer covers every way a modal
-         opens or closes. The Visual Builder and the export modal do not exist in the Export User, hence the filter. */
+      /* Modal layers: Tab stays in the top layer, and closing it gives the focus back. Outside it all is inert but the banners,
+         the notice and the tooltip. The Visual Builder and the export modal do not exist in the Export User, hence the filter. */
       function initModalLayers() { const stack = []; const keep = el => el.matches('script, .ce-banner, .ce-notice, .ce-tip'); const apply = () => { const top = stack.length ? stack[stack.length - 1].el : null; [...document.body.children].forEach(ch => { if (keep(ch)) return; if (top && ch !== top) { if (!ch.inert) { ch.inert = true; ch.dataset.layerInert = '1' } } else if (ch.dataset.layerInert) { ch.inert = false; delete ch.dataset.layerInert } }) }; const sync = el => { const open = el.classList.contains('open'), i = stack.findIndex(l => l.el === el); if (open && i < 0) { stack.push({ el, from: document.activeElement }); apply(); if (!el.contains(document.activeElement)) el.focus({ preventScroll: true }) } else if (!open && i >= 0) { const l = stack.splice(i, 1)[0]; apply(); if (l.from && l.from.isConnected && !l.from.closest('[inert]')) l.from.focus({ preventScroll: true }) } }; ['img-modal-overlay', 'text-modal-overlay', 'vb-overlay', 'export-overlay'].map(id => $(id)).filter(Boolean).forEach(el => { el.tabIndex = -1; new MutationObserver(() => sync(el)).observe(el, { attributes: true, attributeFilter: ['class'] }) }) }
 
       // --- ZOOM & PAN LOGIC ---
@@ -4071,7 +4066,7 @@
           i.src = u;
         });
       }
-      let annIsDirty = false, annInitialState = null, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
+      let annIsDirty = false, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
       // Phase 5: Undo/Redo stacks of full-state snapshots
       let annUndoStack = [], annRedoStack = [];
       const ANN_HISTORY_MAX = 50;
@@ -4092,15 +4087,13 @@
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       // Phase 2: annotation drag variables
       let annDragging = false;       // true while the user drags a selected shape
-      let annDragStartX = 0, annDragStartY = 0; // canvas point where the drag started (reserved for future use)
       let annDragLastX  = 0, annDragLastY  = 0; // mouse position in the previous frame: incremental delta
-      let annDragOriginX = 0, annDragOriginY = 0; // original x1,y1 coords of the shape (reserved)
       let annDragRafId = 0;          // RAF id to coalesce the render during the drag
       let annDragSnap = null, annDragDirty = false;
       // Phase 3: resize variables (handles)
       let annResizing = false;       // true while the user drags a handle
-      let annResizeHandle = '';      // 'tl','tr','bl','br'
-      let annResizeAnchorX = 0, annResizeAnchorY = 0; // corner opposite the handle (stays fixed)
+      let annResizeHandle = '';      // 'tl','tr','bl','br', 'rot' on a text, 'p1','p2' on an arrow
+      let annResizeAnchorX = 0, annResizeAnchorY = 0; // the point that stays fixed: the corner opposite the handle, or the other end of an arrow
       let annResizeRafId = 0;        // RAF id to coalesce the render during the resize
       let annResizeSnap = null, annResizeDirty = false;
       let annResizeOriginFS = 0;     // original fontSize of the text shape at the start of the resize
@@ -4119,11 +4112,12 @@
       const ANN_HL_SIZES = [8, 12, 18, 26, 36, 48];
       function annLineW() { return (annTool === 'highlight' ? ANN_HL_SIZES : ANN_SIZES)[annSizeIdx] }
       const annIsStroke = () => annTool === 'free' || annTool === 'highlight';
-      /* Translucent (default) or solid: kept in this browser, as the theme */
-      let annHlSolid = (() => { try { return localStorage.getItem('hl-solid') === '1' } catch (_) { return false } })();
-      const annHlMode = () => annHlSolid ? 'solid' : 'soft';
-      /* A highlighter stroke is a free stroke with hl ('soft' or 'solid'): flat cut ends, and 40 % opacity when soft. One path, so a second pass over the same place does not darken it */
+      const annHlMode = () => annFill.highlight ? 'solid' : 'soft';
+      /* A highlighter stroke is a free stroke with hl ('soft' or 'solid'): flat ends, 40 % opacity when soft, one path so it does not darken itself */
       function annStrokeStyle(ctx, color, lw, hl) { ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineJoin = 'round'; ctx.lineCap = hl ? 'butt' : 'round'; ctx.globalAlpha = hl === 'soft' ? 0.4 : 1 }
+      const annTyping = () => $('ann-text-overlay').style.display !== 'none'; // the text field is open
+      const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
+      const annLightTool = t => document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === t)); // the lit tool
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
 
       function setAnnDirty(val) {
@@ -4160,7 +4154,6 @@
         const o = images.find(x => x.id === modalItemId);
         annCurrentRotation = o ? (o.rotation || 0) : 0;
         annHistory = (o && o.annHistory) ? JSON.parse(JSON.stringify(o.annHistory)) : [];
-        annInitialState = JSON.stringify(annHistory);
         setAnnDirty(false);
         annUndoStack = [];
         annRedoStack = (o && o.annRedoStack) ? JSON.parse(JSON.stringify(o.annRedoStack)) : [];
@@ -4183,7 +4176,7 @@
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
+        annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
         annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
@@ -4275,13 +4268,10 @@
         const _t = document.querySelector('.ann-btn[data-tool="text"]'), s = annHistory[annSelectedIdx], st = !!s && s.type === 'text';
         _t.classList.toggle('ann-txt-selected', st); _t.classList.toggle('ann-txt-b', st ? s.bold !== false : annTextBold); _t.classList.toggle('ann-txt-i', st ? !!s.italic : annTextItalic);
       }
-      // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a click on the tool
-      // once chosen, a double click, a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
-      // the focus elsewhere, Esc or another tool. Each option keeps its place, so the hand learns where it is
+      // Tool options (D-0102): a tray stays open while its options are clicked, and closes with a click or the focus elsewhere, Esc or another tool
       let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
       function annOpenFlyout(btn) {
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
-        if (annFlyoutOpen && annFlyoutOpen !== f) annCloseFlyout();
         f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal(); annPlaceFlyout(f);
         const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show'); // the name of the tool would cover its first option
       }
@@ -4296,9 +4286,9 @@
         f.classList.remove('open'); annFlyoutOpen = null;
         const b = f.parentElement.querySelector('[aria-haspopup]'); if (b) { b.setAttribute('aria-expanded', 'false'); if (focusTool) b.focus() }
       }
-      // Retângulo and Círculo: «Contorno» or «Preenchido», kept for the next time
-      const annFill = { rect: false, circle: false };
-      try { annFill.rect = localStorage.getItem('fill-rect') === '1'; annFill.circle = localStorage.getItem('fill-circle') === '1' } catch (_) { }
+      // The two options of a tool, kept in this browser: [first, second, key]. annFill[t] is true with the second, and the tool icon is full
+      const ANN_OPT2 = { rect: ['ann-rect-outline', 'ann-rect-fill', 'fill-rect'], circle: ['ann-circle-outline', 'ann-circle-fill', 'fill-circle'], highlight: ['ann-hl-soft', 'ann-hl-solid', 'hl-solid'] };
+      const annFill = {}; for (const t in ANN_OPT2) { try { annFill[t] = localStorage.getItem(ANN_OPT2[t][2]) === '1' } catch (_) { annFill[t] = false } }
       // Leaves the Selecionar of a right or middle click: no selection, and the tool of before. Returns true when it did (D-0103)
       function annEndTempSelect() {
         if (!annTempSelectFrom) return false;
@@ -4314,12 +4304,12 @@
         annSyncSwatches();
         annTool = t;
         if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
-        document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
+        annLightTool(t);
         const _isText = t === 'text', _s = annHistory[annSelectedIdx];
-        // Another tool lets go of the selection, so its − + and colours change the tool; a tool of the same kind keeps it, and its options change it (F-0091)
+        // Another tool lets go of the selection; a tool of the same kind keeps it, so its options change it
         if (_s && t !== 'select' && (_isText || (_s.hl ? 'highlight' : _s.type) !== t)) { annSelectedIdx = -1; annRenderAll(); }
         const _cv = $('ann-canvas');
-        if (_cv) _cv.style.cursor = _isText ? 'text' : (t === 'select' ? 'default' : 'crosshair');
+        if (_cv) _cv.style.cursor = annToolCursor();
         const o = images.find(x => x.id === modalItemId);
         if (t === 'crop') await annEnterCrop(o, _cv);
         else if (annCropBox) await annLeaveCrop(o, _cv);
@@ -4341,7 +4331,7 @@
       function annTextPlaceCenter(e, cx, cy) { const g = annTextGeom(e); e.x1 = cx - (g.w / 2 * g.c - g.h / 2 * g.s); e.y1 = cy - (g.w / 2 * g.s + g.h / 2 * g.c) }
       // Turning handle of a selected text: free angle, drawn to 0°, 90°, 180° and 270° within 5°; Shift turns in steps of 15°
       const ANN_ROT_OFFSET = 22; // distance from the top of the selection box to the centre of the handle, in screen px
-      // The selection of a text turns with it, as in Paint: a point of the text's own frame (lx to the right of the text, ly down, from its centre) in canvas px, and back
+      // The selection of a text turns with it: a canvas point to the frame of the text (lx right, ly down, from its centre), and back
       function annTextToCanvas(e, lx, ly) { const c = annTextCenter(e); return { x: c.x + lx * c.g.c - ly * c.g.s, y: c.y + lx * c.g.s + ly * c.g.c } }
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
@@ -4355,7 +4345,7 @@
         const a = ((Math.atan2(d[1], d[0]) * 180 / Math.PI + r) % 180 + 180) % 180;
         return ['ew-resize', 'nwse-resize', 'ns-resize', 'nesw-resize'][Math.round(a / 45) % 4];
       }
-      // The Selecionar cursor at a canvas point: the handle's own, move over a shape, or the arrow
+      // The Selecionar cursor at a canvas point: the one of the handle, move over a shape, or the arrow
       let annPtr = null; // the last pointer position on the canvas, in canvas px
       function annSelectCursorAt(p) { const _h = annHandleHitTest(p.x, p.y); return _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' }
       // The handle of the selected shape under (cx,cy): 'tl','tr','bl','br', 'rot' on a text, 'p1','p2' on an arrow, or ''
@@ -4443,8 +4433,7 @@
       // ann-save uses annRedraw() (not annRenderAll()), so the canvas is always clean.
       // Shows the ✕ button only while an annotation is selected (annSelectedIdx >= 0).
       // No hover logic: the button appears and disappears only with the selection.
-      // The ✕ of an arrow: beside its middle, 28 screen px away on the upper side (the right side on an upright arrow),
-      // so it is at least 28 px from both end handles and a click on a handle never deletes the arrow
+      // The ✕ of an arrow: 28 screen px beside its middle, away from both end handles
       function annArrowDelPoint(e) { const k = annPx(), dx = e.x2 - e.x1, dy = e.y2 - e.y1, L = Math.hypot(dx, dy) || 1; let nx = -dy / L, ny = dx / L; if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny } return { x: (e.x1 + e.x2) / 2 + nx * 28 * k, y: (e.y1 + e.y2) / 2 + ny * 28 * k } }
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
@@ -4479,7 +4468,7 @@
         _annDbBtn.style.display = 'flex';
       }
       // The editor follows the zoom: handles and crop marks keep their size on screen, and the ✕ button and the text field move with the image
-      function annFollowZoom() { if (!annDrawing) annRenderAll(); if (annTextPlace && $('ann-text-overlay').style.display !== 'none') annTextPlace() }
+      function annFollowZoom() { if (!annDrawing) annRenderAll(); if (annTextPlace && annTyping()) annTextPlace() }
       function annRenderAll() {
         annRedraw();
         annDrawSelectionOverlay();
@@ -4537,8 +4526,7 @@
         ['free', 'arrow'].forEach(t => { const s = document.querySelector(`.ann-btn[data-tool="${t}"] svg`); if (s) s.style.strokeWidth = sw[t === annTool ? annSizeIdx : annSizeByTool[t]] });
         annSyncSizeVal();
       }
-      // The size shown after − and + in the trays: what they change. The selected annotation first, as the − and + do, else the tool.
-      // A dot that grows by step for a line, the number for a text
+      // The size after − and + in the trays: of the selected annotation, else of the tool. A dot by step for a line, the number for a text
       function annSyncSizeVal() {
         const s = annHistory[annSelectedIdx];
         let txt = null, idx, px;
@@ -4774,9 +4762,11 @@
       }
       function initAnnotation() {
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
-        // Every tray ends with − and + without the box and the current size, after a separator when it has options (D-0102).
-        // Written here, before initTips reads the titles and after BOOT_HTML, so the Quine copies the HTML without them
-        document.querySelectorAll('.ann-flyout').forEach(f => f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>'));
+        // Every tray ends with − and + and the current size (D-0102). Written here, before initTips reads the titles and after BOOT_HTML,
+        // so the Quine copies the HTML without them
+        document.querySelectorAll('.ann-flyout').forEach(f => {
+          f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>');
+        });
         initTips();
         // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
         function annCropCursorAt(p, box, hr) {
@@ -4900,54 +4890,43 @@
           setAnnDirty(true);
           annRenderAll();
         };
+        const annKeepTyping = b => b.addEventListener('mousedown', e => { if (annTyping()) e.preventDefault() });
         $('ann-undo').onclick = () => annDoUndo().catch(()=>{});
         $('ann-redo').onclick = () => annDoRedo().catch(()=>{});
         // Colour swatches: mousedown.preventDefault stops the blur of the text input
         document.querySelectorAll('.ann-swatch').forEach(b => {
-          b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
+          annKeepTyping(b);
           b.onclick = () => {
             const _color = b.dataset.color;
             if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
               annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
               const _s = annHistory[annSelectedIdx];
               _s.color = _color;
-              const _k = _s.hl ? 'hl' : 'line'; if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
+              const _k = annColorKey(_s.hl ? 'highlight' : _s.type); if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
               document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
               const inp = $('ann-text-input');
-              if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = _color; inp.focus() }
+              if (inp && annTyping()) { inp.style.color = _color; inp.focus() }
               setAnnDirty(true); annRenderAll();
             } else {
               // No selection: original behaviour (sets the tool colour)
-              annCurrentColor = _color;
-              document.querySelectorAll('.ann-swatch').forEach(s => s.classList.remove('active'));
-              b.classList.add('active');
+              annCurrentColor = _color; annSyncSwatches();
               const inp = $('ann-text-input');
-              if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = annCurrentColor; inp.focus() }
+              if (inp && annTyping()) { inp.style.color = annCurrentColor; inp.focus() }
             }
           };
         });
         // Bold / Italic buttons: same handling
         const _boldBtn = $('ann-bold-btn'), _italicBtn = $('ann-italic-btn');
         if (_boldBtn) {
-          _boldBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
-          _boldBtn.onclick = () => { annTextBold = !annTextBold; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.focus() } }
+          annKeepTyping(_boldBtn);
+          _boldBtn.onclick = () => { annTextBold = !annTextBold; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && annTyping()) { inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.focus() } }
         }
         if (_italicBtn) {
-          _italicBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
-          _italicBtn.onclick = () => { annTextItalic = !annTextItalic; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
+          annKeepTyping(_italicBtn);
+          _italicBtn.onclick = () => { annTextItalic = !annTextItalic; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && annTyping()) { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
         }
-        // Thickness minus/plus: with the Texto tool it sets the font size (live resize); outside text, the thickness.
-        // mousedown.preventDefault stops the blur/commit of the text editor (same pattern as the swatches and the B/I buttons).
-        function annTextLiveResize() {
-          const inp = $('ann-text-input');
-          if (!inp || annTool !== 'text' || $('ann-text-overlay').style.display === 'none') return;
-          const cv = $('ann-canvas'), scaleX = cv.getBoundingClientRect().width / cv.width / uiZoom();
-          const scaledFontSize = annTextSize * scaleX;
-          inp.style.fontSize = scaledFontSize + 'px';
-          inp.style.lineHeight = (scaledFontSize * ANN_TEXT_LINE_RATIO) + 'px';
-          annAutosizeText();
-          inp.focus();
-        }
+        // With the Texto tool and its field open, the − and + resize the field live
+        function annTextLiveResize() { if (annTool === 'text' && annTextPlace && annTyping()) { annTextPlace(); $('ann-text-input').focus() } }
         // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
         function annSizeStep(dir) {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
@@ -4956,34 +4935,36 @@
             if (_v === (_s.type === 'text' ? _s.fontSize || 24 : _s.lw)) return; // at the end of the scale: no empty undo step (F-0097)
             annPushUndo(); // M11/M12: snapshot BEFORE changing the thickness or the fontSize
             if (_s.type === 'text') _s.fontSize = annTextSize = _v; else _s.lw = _v; // the Texto tool takes the size too
-            setAnnDirty(true); annRenderAll();
+            setAnnDirty(true); annRenderAll(); annSyncSizeVal();
           } else if (annTool === 'text') {
             annTextSize = annTextStep(annTextSize, dir); annUpdateThicknessIcon(); annTextLiveResize();
           } else {
             const _n = annSizeIdx + dir; if (_n >= 0 && _n < ANN_SIZES.length) { annSizeIdx = _n; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
           }
-          annSyncSizeVal();
         }
         document.querySelectorAll('#ann-thickness-down, #ann-thickness-up, .ann-size-btn').forEach(b => {
-          b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
+          annKeepTyping(b);
           b.onclick = () => annSizeStep(b.id === 'ann-thickness-up' || b.dataset.step === '1' ? 1 : -1);
         });
-        function annSyncHlBtns() { annPress('ann-hl-soft', !annHlSolid); annPress('ann-hl-solid', annHlSolid); document.querySelector('.ann-btn[data-tool="highlight"]').classList.toggle('ann-filled', annHlSolid) }
-        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
-        annSyncHlBtns();
-        // Contorno or Preenchido; a selected shape of the same kind changes too, with undo
-        function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { annPress('ann-' + t + '-outline', !annFill[t]); annPress('ann-' + t + '-fill', annFill[t]); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
-        ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
+        // A selected annotation of the same kind changes too, with undo
+        function annSyncFillBtns() { for (const t in ANN_OPT2) { annPress(ANN_OPT2[t][0], !annFill[t]); annPress(ANN_OPT2[t][1], annFill[t]); document.querySelector(`.ann-btn[data-tool="${t}"]`).classList.toggle('ann-filled', annFill[t]) } }
+        for (const t in ANN_OPT2) ANN_OPT2[t].slice(0, 2).forEach((id, on) => {
+          $(id).onclick = () => {
+            annFill[t] = !!on; try { localStorage.setItem(ANN_OPT2[t][2], on ? '1' : '0') } catch (_) { } annSyncFillBtns();
+            const _s = annHistory[annSelectedIdx];
+            if (_s && (t === 'highlight' ? _s.hl && _s.hl !== annHlMode() : _s.type === t && !!_s.fill !== !!on)) { annPushUndo(); if (t === 'highlight') _s.hl = annHlMode(); else if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) }
+            annRenderAll();
+          };
+        });
         annSyncFillBtns();
-        // Tool buttons. A tool with options opens them with a click on it once chosen (a touch on a phone), a double click,
-        // a press of 1 s or the up arrow; a click on it with the tray open closes it
+        // Tool buttons: a click on the chosen tool opens or closes its tray (D-0102)
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
           let _hold = 0, _held = false;
           const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
           b.onclick = e => {
             const _skip = (_held && e.detail) || e.detail > 1; _held = false; if (_skip) return; // the press of 1 s or the double click already opened it; a key always counts (F-0096)
             if (annTool !== b.dataset.tool || !b.hasAttribute('aria-haspopup')) annSetTool(b.dataset.tool);
-            else if (annFlyoutOpen && annFlyoutOpen.parentElement === b.parentElement) annCloseFlyout(); else annOpenFlyout(b);
+            else if (annFlyoutOpen && annFlyoutOpen.dataset.tool === b.dataset.tool) annCloseFlyout(); else annOpenFlyout(b);
           };
           if (!b.hasAttribute('aria-haspopup')) return;
           b.addEventListener('dblclick', open);
@@ -5002,17 +4983,14 @@
         // The focus that goes to the viewer is a mouse click in WebKit, which the pointerdown already handles (F-0094)
         document.addEventListener('focusin', e => { if (annFlyoutOpen && e.target !== $('img-modal-overlay') && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
         const cv = $('ann-canvas');
-        // Starts dragging the shape at index idx from the canvas point p (right button in any tool, or a click in Selecionar)
+        // Starts dragging the shape at index idx from the canvas point p (right or middle button in any tool, the Ctrl, or a click in Selecionar)
         function annStartShapeDrag(p, idx) {
           annSelectedIdx = idx;
           annDragging = true;
-          annDragStartX = p.x; annDragStartY = p.y;
           annDragLastX  = p.x; annDragLastY  = p.y;
           const _sh = annHistory[annSelectedIdx];
           // M8: snapshot of the whole state BEFORE the drag (dirty flag for the commit on mouseup)
           annDragSnap = annCloneState(); annDragDirty = false;
-          annDragOriginX = _sh.type === 'free' ? _sh.pts[0].x : _sh.x1;
-          annDragOriginY = _sh.type === 'free' ? _sh.pts[0].y : _sh.y1;
           annRenderAll(); // shows the selection box at once
         }
         // A click on a shape grabs it; a click on empty space clears the selection. Returns the index hit, or -1
@@ -5065,8 +5043,7 @@
           if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) return 'move';
           return null;
         }
-        // Right or middle button on an annotation: it is selected, with its handles and ✕, and can be moved at once (it never draws).
-        // Outside Selecionar, the tool goes to Selecionar until a click off the annotations or a delete, which bring it back (D-0103)
+        // Right or middle button on an annotation: it is selected and can be moved at once, in Selecionar until a click off it or a delete (D-0103)
         function annDownGrab(e) {
           if (annCommitText) annCommitText();
           const p = annCanvasXY(e);
@@ -5085,13 +5062,10 @@
           if (!_h) annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
         }
         // Selecionar: the handles of the selected shape come first, then a shape under the point, then empty space
-        // Ctrl (Cmd on a Mac) held: any tool works as Selecionar. The selection stays while the key is held and goes when it is
-        // released, so no handles are left that the current tool cannot use (D-0101)
+        // Ctrl (Cmd on a Mac) held: any tool works as Selecionar; the selection goes with the key (D-0101)
         let annCtrlHeld = false;
-        const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
-        // While Ctrl is held, or a shape is grabbed with the right or middle button, the Selecionar button lights up instead of the
-        // current tool, which lights up again on release
-        function annQuasiSelect(on) { if (annTool === 'select' || annTool === 'crop') return; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === (on ? 'select' : annTool))); }
+        // Meanwhile, the Selecionar button lights up instead of the current tool
+        function annQuasiSelect(on) { if (annTool !== 'select' && annTool !== 'crop') annLightTool(on ? 'select' : annTool) }
         function annCtrlUp() { annCtrlHeld = false; if (!annDragging && !annResizing) annQuasiSelect(false); const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
         window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive && annTool !== 'crop' && !e.repeat) { annCtrlHeld = true; annQuasiSelect(true); const cv = $('ann-canvas'); if (cv && annTool !== 'select' && !annDragging && !annResizing) cv.style.cursor = annPtr ? annSelectCursorAt(annPtr) : 'default'; } }); // the key repeats while held: only the first press counts, so the cursor does not flicker
         window.addEventListener('keyup', e => { if (e.key === 'Control' || e.key === 'Meta') { if (annActive) annCtrlUp(); else annCtrlHeld = false } }); // a Ctrl let go with the editor closed (F-0100)
@@ -5152,8 +5126,7 @@
           annEditingTextIdx = i;
           annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
           annTextSize = _h.fontSize || 24;
-          document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _h.color));
-          annShowTextStyleBtns();
+          annSyncSwatches(); annShowTextStyleBtns();
           if (annTool !== 'text') annSetTool('text'); // editing a text switches to the Texto tool; its options (B, I) show what the text uses
           annRenderAll(); // original text hidden; overlay update
           annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
@@ -5170,9 +5143,8 @@
           annEditingTextIdx = -1;
           if (annTool !== 'select') annShowTextInput(p.x, p.y);
         });
-        // Shift, as in PowerPoint and Figma: a rectangle becomes a square and an ellipse a circle ('box'); an arrow and a free
-        // stroke go in steps of 45° ('line'). a is the fixed point. annShift is read on every pointer event and also on the
-        // Shift key itself, so pressing or releasing it in the middle of a gesture redraws at once.
+        // Shift (D-0093): a square or a circle ('box'), steps of 45° for an arrow or a free stroke ('line'); a is the fixed point.
+        // annShift is read on every pointer event and on the key itself, so it acts in the middle of a gesture
         let annShift = false;
         function annShiftPoint(kind, a, p) {
           const dx = p.x - a.x, dy = p.y - a.y;
@@ -5288,7 +5260,7 @@
           else if (_sh.type !== 'free') { _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY; _sh.x2 = _p.x; _sh.y2 = _p.y; }
           else if (annResizeOriginBBox) annResizeFree(_sh, _p);
           annResizeDirty = true;
-          annRenderAll(); annSyncSizeVal();
+          annRenderAll(); if (_sh.type === 'text') annSyncSizeVal(); // only a text changes its size by the handles
         }
         // Moves a shape by (dx, dy): every point of a free stroke, the anchor of a text, both corners of the other shapes
         function annMoveShapeBy(_sh, _dx, _dy) {
@@ -5359,9 +5331,7 @@
         function annUpDrag() {
           if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
           annDragging = false;
-          annDragStartX = 0; annDragStartY = 0;
           annDragLastX = 0; annDragLastY = 0;
-          annDragOriginX = 0; annDragOriginY = 0;
           // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
           if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
           if (annTool !== 'select' && !annCtrlHeld) annSelectedIdx = -1; // grabbed with the right or middle button in another tool: no handles left that this tool cannot use
@@ -5386,8 +5356,7 @@
               setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
-            // A click without a drag (F-0087), up to 6 px of the screen: the arrow comes whole and short, 2 heads long and at least 30 px of the screen,
-            // with its tip on the spot and inside the image; no other shape
+            // A click without a drag, up to 6 screen px (F-0087): a short arrow, 2 heads and at least 30 screen px, its tip on the spot; no other shape
             const _px = annPx(), _c = Math.hypot(p.x - annStart.x, p.y - annStart.y) < 6 * _px, _L = Math.max((12 + annLineW() * 2) * 2, 30 * _px), _w = $('ann-canvas').width;
             if (_c && annTool === 'arrow') annStart = { x: Math.max(0, Math.min(_w, p.x - _L < 0 ? p.x + _L : p.x - _L)), y: p.y };
             if (_c && annTool !== 'arrow') { annRenderAll(); return }
@@ -5422,16 +5391,7 @@
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
         // Click on ✕: deletes the selected annotation
-        _annDelBtnEl.onclick = (e) => {
-          e.stopPropagation();
-          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            annPushUndo(); // M6: snapshot BEFORE deleting with the X button
-            annHistory.splice(annSelectedIdx, 1);
-            setAnnDirty(true);
-            annSelectedIdx = -1;
-            annRenderAll(); annEndTempSelect();
-          }
-        };
+        _annDelBtnEl.onclick = (e) => { e.stopPropagation(); annDeleteSelected() };
         $('ann-viewport').appendChild(_annDelBtnEl);
       }
 
@@ -5746,13 +5706,12 @@
       function initTheme() { try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.documentElement.classList.add('dark'); else if (_t === 'light') document.documentElement.classList.remove('dark'); else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark') } catch (e) { } const themeTip = () => { const b = $('theme-btn'), t = document.documentElement.classList.contains('dark') ? 'Modo claro' : 'Modo noturno'; b.removeAttribute('title'); b.dataset.tip = t; b.setAttribute('aria-label', t); b.dataset.tipLabel = '1'; const tip = $('ce-tip'); if (tip && tip.classList.contains('show') && b.matches(':hover')) tip.textContent = t }; themeTip(); $('theme-btn').onclick = function () { document.documentElement.classList.toggle('dark'); try { localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') } catch (e) { } themeTip() } }
 
       /* ═══ TRASH BAR ═══ */
-      /* Enter and Space on a control that is not a native button (role button or tab) do what its click does.
+      /* Enter and Space on a control that is not a native button (role button, tab or radio) do what its click does.
          Native buttons and fields keep their own behavior. An SVG has no click(), hence the event. */
       function initKeyClick() { document.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const t = e.target; if (!(t instanceof Element) || !t.matches('[role="button"], [role="tab"], [role="radio"]') || t.matches('button, input, select, textarea, a[href]')) return; e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })) }) }
-      /* Each chip is a Tab stop, as the owner asked: the label takes the focus, Enter or Space picks it, and aria-checked follows the radio */
-      function initChips() { const label = r => document.querySelector(`label[for="${r.id}"]`); const sync = name => document.querySelectorAll(`.chip-input[name="${name}"]`).forEach(x => { const l = label(x); if (l) l.setAttribute('aria-checked', String(x.checked)) }); document.querySelectorAll('.chip-input').forEach(r => { const l = label(r); if (!l) return; r.tabIndex = -1; l.tabIndex = 0; l.setAttribute('role', 'radio'); r.addEventListener('change', () => sync(r.name)); l.addEventListener('click', () => setTimeout(() => sync(r.name), 0)) }); new Set([...document.querySelectorAll('.chip-input')].map(r => r.name)).forEach(sync) }
-      /* A collapsed bar leaves the Tab order: only the arrow that opens it stays reachable (for the Removidos, its chevron). Before, Tab reached the hidden items,
-         and the browser scrolled the bar to show them, which moved the layout until a reload. One observer covers every way the bars open or close. */
+      /* Each chip is a Tab stop: the label takes the focus, Enter or Space picks it, and aria-checked follows the radio */
+      function initChips() { const label = r => document.querySelector(`label[for="${r.id}"]`); const sync = name => document.querySelectorAll(`.chip-input[name="${name}"]`).forEach(x => { const l = label(x); if (l) l.setAttribute('aria-checked', String(x.checked)) }); document.querySelectorAll('.chip-input').forEach(r => { const l = label(r); if (!l) return; r.tabIndex = -1; l.tabIndex = 0; l.setAttribute('role', 'radio'); r.addEventListener('change', () => sync(r.name)) }); new Set([...document.querySelectorAll('.chip-input')].map(r => r.name)).forEach(sync) }
+      /* A collapsed bar leaves the Tab order: only the arrow that opens it stays reachable (F-0064) */
       function initCollapsedBars() { const sb = $('sidebar'), tb = $('trash-bar'), ch = $('trash-chevron'); const sync = () => { const sbOpen = sb.classList.contains('expanded') || sb.classList.contains('mobile-open'), tbOpen = tb.classList.contains('expanded'); $('sb-content').inert = !sbOpen; $('trash-grid').inert = !tbOpen; $('sb-btn-toggle').setAttribute('aria-expanded', String(sbOpen)); ch.setAttribute('aria-expanded', String(tbOpen)); ch.setAttribute('aria-label', tbOpen ? 'Ocultar removidos' : 'Mostrar removidos') }; ch.setAttribute('tabindex', '0'); ch.setAttribute('role', 'button'); [sb, tb].forEach(el => new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['class'] })); sync() }
       function initTrashBar() { $('trash-hdr').onclick = function () { const tb = $('trash-bar'); const isExp = tb.classList.toggle('expanded'); const ch = $('trash-chevron'); ch.dataset.tip = isExp ? 'Ocultar removidos' : 'Mostrar removidos'; if (isExp) { tb.style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' } else { tb.style.maxHeight = '' } } }
 
@@ -6113,7 +6072,7 @@
         applySwatchVisuals();
       }
 
-      /* ═══ PDF FORMAT MODAL ═══ */
+      /* ═══ PDF LAYOUT ═══ */
       /* Reads the A4 layout chosen in the interface and returns it in the internal format.
          Do NOT keep the result in a global: that is how the PDF made inside the
          ZIP came out with the wrong layout -- generateZIP never wrote the global, and
@@ -6148,11 +6107,11 @@
       }
 
       /* ═══ SESSION INPUT SYNC ═══ */
-      /* Capitals mode (D-0096): the value itself turns into capitals as it is typed, the cursor stays where it was (ß becomes SS,
-         so the position is measured on the converted text), and nothing changes in the middle of a composition (accents, IME) */
-      let idUpper = TOKEN_ID_UPPERCASE;
+      /* Capitals mode (D-0096): the value turns into capitals as it is typed, the cursor stays (measured on the converted text,
+         as ß becomes SS), and nothing changes in the middle of a composition (accents, IME) */
+      let idUpper = TOKEN_ID_UPPERCASE; const idCase = v => idUpper ? v.toLocaleUpperCase('pt') : v;
       function upperKeepCaret(f) { const v = f.value, up = v.toLocaleUpperCase('pt'); if (up === v) return; const a = v.slice(0, f.selectionStart).toLocaleUpperCase('pt').length, z = v.slice(0, f.selectionEnd).toLocaleUpperCase('pt').length; f.value = up; f.setSelectionRange(a, z) }
-      function initSessionSync() { async function up(e) { if (idUpper && e && e.target && !e.isComposing) upperKeepCaret(e.target); await ensureSession(); const fx = v => idUpper ? v.toLocaleUpperCase('pt') : v; const u = fx($('session-user').value.trim()), p = fx($('session-pc').value.trim()); const parts = [u, p].filter(Boolean); const name = parts.join('-'); $('session-name').value = name; updateBtnTitles(); isDirty = true; triggerSave(); const ae = document.querySelector('.sb-sess-item.active .sb-sess-name'); if (ae) ae.textContent = name || ae.dataset.fallback || ae.textContent } $('session-user').oninput = up; $('session-pc').oninput = up; $('session-user').addEventListener('compositionend', up); $('session-pc').addEventListener('compositionend', up) }
+      function initSessionSync() { async function up(e) { if (idUpper && e && e.target && !e.isComposing) upperKeepCaret(e.target); await ensureSession(); const u = idCase($('session-user').value.trim()), p = idCase($('session-pc').value.trim()); const parts = [u, p].filter(Boolean); const name = parts.join('-'); $('session-name').value = name; updateBtnTitles(); isDirty = true; triggerSave(); const ae = document.querySelector('.sb-sess-item.active .sb-sess-name'); if (ae) ae.textContent = name || ae.dataset.fallback || ae.textContent } $('session-user').oninput = up; $('session-pc').oninput = up; $('session-user').addEventListener('compositionend', up); $('session-pc').addEventListener('compositionend', up) }
 
 
       /* ═══ PDF ENGINE (JPEG COMPRESSED) ═══ */
@@ -6244,7 +6203,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
         html = html.replace(/const TOKEN_TITLE_END\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END = '" + te + "'");
           html = html.replace(/const TOKEN_TITLE_START_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_START_COLOR = '" + sanitizeForQuine(sysColors.tStart || '') + "'");
           html = html.replace(/const TOKEN_TITLE_ACCENT_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_ACCENT_COLOR = '" + sanitizeForQuine(sysColors.tAccent || '') + "'");
-          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_ID_UPPERCASE\s*=\s*(?:true|false)/, 'const TOKEN_ID_UPPERCASE = ' + ($('cfg-id-upper') ? $('cfg-id-upper').checked : idUpper)); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
+          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_ID_UPPERCASE\s*=\s*[^;]+/, 'const TOKEN_ID_UPPERCASE = ' + idUpper); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
           html = html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html',(ts+' '+ta+(te?' '+te:''))+(isUser?' USER':' ADMIN')));/* the name says the profile (F-0069) */SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
             /* ADMIN_JS_END */
 
