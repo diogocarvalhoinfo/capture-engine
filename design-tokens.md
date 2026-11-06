@@ -269,7 +269,7 @@ yiq < 128  →  texto branco (#ffffff)
 O limiar 128 divide a escala 0–255 ao meio. Em cores claras, o texto automático é escuro, e o contraste pode ficar abaixo do WCAG AA (4.5:1 para texto normal). Exemplos: amarelo `#eab308` (yiq ≈ 176), ciano `#06b6d4` (yiq ≈ 133), laranja `#f97316` (yiq ≈ 145). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
 
 **`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` (vazio = padrão visual):**
-Um valor vazio significa "usar o padrão visual" (`User` / `Equipamento`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
+Um valor vazio significa "usar o padrão visual" (`Quem` / `O que`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
 
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
 Afeta apenas a geração do PDF — os originais ficam na sessão no formato em que foram capturados. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
@@ -324,8 +324,8 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 ├──────────────┬────────────────────────────┬──────────────────┬───────┤
 │ LEFT SIDEBAR │  PAINEL IMAGENS            │  PAINEL DOCS     │ SB    │
 │              │  [▲ IMAGENS  ] [count]     │  [≡ DOCUMENTOS ] │  ☰   │
-│ [User     ]  │  ┌──────────────────────┐  │  ┌────────────┐  │       │
-│ [Equipam. ]  │  │  drop zone / grid    │  │  │ doc list   │  │       │
+│ [Quem     ]  │  ┌──────────────────────┐  │  ┌────────────┐  │       │
+│ [O que    ]  │  │  drop zone / grid    │  │  │ doc list   │  │       │
 │              │  │  (thumbnails 140px)  │  │  └────────────┘  │       │
 │ [Auto]       │  └──────────────────────┘  │                  │       │
 │ [A4V][A4H]   │                            │                  │       │

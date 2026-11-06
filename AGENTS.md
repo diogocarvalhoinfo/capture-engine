@@ -236,8 +236,8 @@ Cada zona tem a sua regra.
 | presente simples («usa») | «está a usar», «está usando» |
 
 **Palavras de propósito na interface:**
-- **«User»**, rótulo padrão do primeiro campo da identificação. **Motivo:** é o padrão que o administrador troca no Visual Builder (`TOKEN_USER_LABEL`). É também o nome do perfil «Export User».
-- **«Equipamento»**, rótulo padrão do segundo campo, é a forma dos dois países e não precisa de motivo.
+- **«Quem»** e **«O que»**, rótulos padrão dos dois campos da identificação desde a 28.7.0, no lugar de «User» e «Equipamento». **Motivo:** dizem o que escrever em cada campo, sem termo técnico e com as mesmas palavras no Brasil e em Portugal. O administrador troca os dois no Visual Builder (`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL`). Origem: pedido do dono, 2026-11-06.
+- **«User»** fica só como nome do perfil «Export User» e da opção «User» do botão de exportar.
 - **«Histórico»**, e não «Sessões». **Motivo:** é mais claro para quem não é técnico.
 - No Visual Builder, os dois campos da identificação chamam-se «Primeiro campo» e «Segundo campo». **Motivo:** o nome segue a ordem da barra lateral e vale para qualquer rótulo; o exemplo por baixo diz para que serve. Foram descartados «Campo 1», «Identificação 1», «Título» e «Identificação primária». Os números liam-se mal, «Título» sugere um título, e «primária» uma hierarquia que não existe.
 
@@ -431,7 +431,7 @@ init() → interface em branco (Pristine State)
 |---|---|
 | **Abrir a aplicação** | `init()` → interface em branco (Pristine State). Nunca reutilizar sessão existente. |
 | **Primeira interação** | `ensureSession()` confirma e registra a sessão; `renderSbSessions()` faz-a aparecer no histórico. |
-| **Digitar em User/Equipamento/Nome** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
+| **Digitar em Quem/O que/Nome** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
 | **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
 | **Apagar sessão ATIVA com vizinha** | Capturar `neighbor` *antes* da deleção: `allBefore[idx+1] \|\| allBefore[idx-1]`. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
 | **Apagar sessão ATIVA sem vizinha** | Reset completo: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos zerados. **Não criar nova sessão.** |
@@ -1327,7 +1327,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 **Ciclo de vida da sessão:**
 - [ ] Abrir o arquivo → interface limpa, campos vazios, histórico vazio
-- [ ] Digitar no campo User → estado "Gravado" aparece **sem aguardar 5 segundos**
+- [ ] Digitar no campo Quem → estado "Gravado" aparece **sem aguardar 5 segundos**
 - [ ] Capturar uma imagem (Ctrl+V) → sessão aparece no histórico
 - [ ] Apagar sessão ativa **com** histórico existente → navegação automática para a sessão adjacente
 - [ ] Apagar a **última** sessão ativa → interface volta ao estado limpo inicial (sem sessão nova no histórico)
@@ -1393,7 +1393,7 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
    - O Export User não tem o bloco `ADMIN_JS`, por isso não chama o `capturePristine()` nem faz o `fetch(location.href)`. Aberto por `file://` ou servido por `http(s)`, o console fica sem erro nenhum.
    - O par `Access to fetch at 'file:///…' … CORS` e `[CE] Quine fallback: BOOT_HTML` é normal só no `capture-engine.html` principal e no Export Admin abertos por `file://` (§1.2). **Num Export User, esse par reprova o passo:** quer dizer que o bloco `ADMIN_JS` não foi removido.
 4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
-5. [ ] **A sessão persiste:** escrever no campo User, recarregar a página, e confirmar que a sessão está no histórico
+5. [ ] **A sessão persiste:** escrever no campo Quem, recarregar a página, e confirmar que a sessão está no histórico
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
 
@@ -1611,7 +1611,7 @@ req.onsuccess = e => {
         console.log(
           'ID:', s.id,
           '| Nome:', s.name || '(sem nome)',
-          '| User:', s.user || '-',
+          '| Quem:', s.user || '-',
           '| Criado:', new Date(s.createdAt).toLocaleString()
         )
       );
