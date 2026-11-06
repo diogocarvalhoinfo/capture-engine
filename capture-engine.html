@@ -3923,7 +3923,7 @@
         annHistory.splice(annSelectedIdx, 1);
         setAnnDirty(true);
         annSelectedIdx = -1;
-        annRenderAll();
+        annRenderAll(); annEndTempSelect();
         return true;
       }
       // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
@@ -4099,7 +4099,14 @@
       let annCommitText = null;
       let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
       let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
-      const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
+      const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 2; // the step of the current tool: index 2 = lw 4px
+      /* Each tool keeps its own step: the lines start at 4 px, the highlighter at 12 px (D-0104) */
+      const annSizeByTool = { free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 };
+      /* The highlighter has its own colour, yellow at first; the other tools share theirs (D-0104) */
+      const annColorBy = { hl: '#eab308', line: '#ef4444' };
+      const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
+      function annSyncSwatches() { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === annCurrentColor)) }
+      let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       let annHoverIdx = -1; // kept for compatibility with annDeactivate; hover logic removed in phase 1c
       // Phase 2: annotation drag variables
@@ -4121,7 +4128,11 @@
       let annTextClickTimer = null;
       let annSmoothLast = null; // EMA smoothing state for free draw
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for the live preview (avoids flicker)
-      const ANN_TEXT_SIZES = [14, 18, 24, 36, 48]; let annTextSizeIdx = 2; // default 24px (index 2)
+      /* The steps of − and + for a text; a drag of its handles gives any size between the ends (D-0105) */
+      const ANN_TEXT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 128, 160, 200, 256, 320, 400]; let annTextSize = 24;
+      const ANN_TEXT_MIN = 8, ANN_TEXT_MAX = 400;
+      // The next step above (dir 1) or below (dir -1) the size v; at an end, v stays
+      function annTextStep(v, dir) { const L = dir > 0 ? ANN_TEXT_SIZES.filter(x => x > v) : ANN_TEXT_SIZES.filter(x => x < v); return L.length ? (dir > 0 ? L[0] : L[L.length - 1]) : v }
       const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio, used in the textarea AND in the canvas (multi-line WYSIWYG)
       /* The highlighter has its own, wider scale on the same six steps of Diminuir and Aumentar */
       const ANN_HL_SIZES = [8, 12, 18, 26, 36, 48];
@@ -4191,7 +4202,7 @@
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSizeIdx = 2; annSmoothLast = null;
+        annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
         annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
@@ -4292,7 +4303,18 @@
       // Retângulo and Círculo: «Contorno» or «Preenchido», kept for the next time
       const annFill = { rect: false, circle: false };
       try { annFill.rect = localStorage.getItem('fill-rect') === '1'; annFill.circle = localStorage.getItem('fill-circle') === '1' } catch (_) { }
+      // Leaves the Selecionar of a right or middle click: no selection, and the tool of before. Returns true when it did (D-0103)
+      function annEndTempSelect() {
+        if (!annTempSelectFrom) return false;
+        const t = annTempSelectFrom; annSelectedIdx = -1; annSetTool(t); annRenderAll();
+        return true;
+      }
       async function annSetTool(t) {
+        annTempSelectFrom = null;
+        if (annTool in annSizeByTool) annSizeByTool[annTool] = annSizeIdx;
+        if (t in annSizeByTool) annSizeIdx = annSizeByTool[t];
+        const _k0 = annColorKey(annTool), _k1 = annColorKey(t);
+        if (_k0 !== _k1) { annColorBy[_k0] = annCurrentColor; annCurrentColor = annColorBy[_k1]; annSyncSwatches() }
         annTool = t;
         if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
@@ -4533,7 +4555,7 @@
         let txt = null, idx, px;
         if (s && s.type === 'text') { txt = s.fontSize || 24 }
         else if (s) { const L = s.hl ? ANN_HL_SIZES : ANN_SIZES; idx = Math.max(0, L.indexOf(s.lw)); px = s.lw }
-        else if (annTool === 'text') { txt = ANN_TEXT_SIZES[annTextSizeIdx] }
+        else if (annTool === 'text') { txt = annTextSize }
         else { idx = annSizeIdx; px = annLineW() }
         const DOT = [3, 4, 6, 8, 11, 14]; // diameter of the dot by step, parallel to ANN_SIZES and ANN_HL_SIZES
         document.querySelectorAll('.ann-size-val').forEach(v => {
@@ -4667,18 +4689,18 @@
         // New text (no prefill): the clicked point is the vertical CENTRE of the I-beam cursor, so
         // the first line is anchored by its middle (half a line up) instead of its top, or the text
         // appears below the cursor. When editing again (with prefill) the saved anchor (top) is kept.
-        if (!prefillText) canvasY -= (ANN_TEXT_SIZES[annTextSizeIdx] * ANN_TEXT_LINE_RATIO) / 2;
+        if (!prefillText) canvasY -= (annTextSize * ANN_TEXT_LINE_RATIO) / 2;
         const cv = $('ann-canvas'), vp = $('ann-viewport'), r = cv.getBoundingClientRect(), vpR = vp.getBoundingClientRect();
         const scaleX = r.width / cv.width;
         const scaleY = r.height / cv.height;
         const screenX = (r.left - vpR.left + (canvasX * scaleX)) / uiZoom();
         const screenY = (r.top - vpR.top + (canvasY * scaleY)) / uiZoom();
         const ov = $('ann-text-overlay'); const inp = $('ann-text-input');
-        annTextPlace = () => { const r2 = cv.getBoundingClientRect(), vpR2 = vp.getBoundingClientRect(), z = uiZoom(); inp.style.left = (r2.left - vpR2.left + canvasX * (r2.width / cv.width)) / z + 'px'; inp.style.top = (r2.top - vpR2.top + canvasY * (r2.height / cv.height)) / z + 'px'; const fs = ANN_TEXT_SIZES[annTextSizeIdx] * (r2.width / cv.width) / z; inp.style.fontSize = fs + 'px'; inp.style.lineHeight = (fs * ANN_TEXT_LINE_RATIO) + 'px'; annAutosizeText() };
+        annTextPlace = () => { const r2 = cv.getBoundingClientRect(), vpR2 = vp.getBoundingClientRect(), z = uiZoom(); inp.style.left = (r2.left - vpR2.left + canvasX * (r2.width / cv.width)) / z + 'px'; inp.style.top = (r2.top - vpR2.top + canvasY * (r2.height / cv.height)) / z + 'px'; const fs = annTextSize * (r2.width / cv.width) / z; inp.style.fontSize = fs + 'px'; inp.style.lineHeight = (fs * ANN_TEXT_LINE_RATIO) + 'px'; annAutosizeText() };
         vp.style.position = 'relative';
         ov.style.display = 'block'; ov.style.position = 'absolute'; ov.style.left = '0'; ov.style.top = '0'; ov.style.width = '100%'; ov.style.height = '100%'; ov.style.pointerEvents = 'none';
         inp.style.left = screenX + 'px';
-        const fontSize = ANN_TEXT_SIZES[annTextSizeIdx];
+        const fontSize = annTextSize;
         const scaledFontSize = fontSize * scaleX / uiZoom();
         inp.style.top = screenY + 'px';
         inp.style.fontSize = scaledFontSize + 'px';
@@ -4702,7 +4724,7 @@
           const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none';
           if (txt) {
             annPushUndo(); // M3/M4: snapshot BEFORE a new text or an edit of an existing text
-            const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: ANN_TEXT_SIZES[annTextSizeIdx], lw: annLineW() }; if (rot) entry.rot = rot;
+            const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: annTextSize, lw: annLineW() }; if (rot) entry.rot = rot;
             if (annEditingTextIdx >= 0 && annEditingTextIdx < annHistory.length) { annHistory[annEditingTextIdx] = entry } else { annHistory.push(entry) }
             setAnnDirty(true);
             annEditingTextIdx = -1;
@@ -4934,7 +4956,7 @@
           const inp = $('ann-text-input');
           if (!inp || annTool !== 'text' || $('ann-text-overlay').style.display === 'none') return;
           const cv = $('ann-canvas'), scaleX = cv.getBoundingClientRect().width / cv.width / uiZoom();
-          const scaledFontSize = ANN_TEXT_SIZES[annTextSizeIdx] * scaleX;
+          const scaledFontSize = annTextSize * scaleX;
           inp.style.fontSize = scaledFontSize + 'px';
           inp.style.lineHeight = (scaledFontSize * ANN_TEXT_LINE_RATIO) + 'px';
           annAutosizeText();
@@ -4950,15 +4972,13 @@
             const _s = annHistory[annSelectedIdx];
             annPushUndo(); // M11/M12: snapshot BEFORE reducing the thickness or the fontSize
             if (_s.type === 'text') {
-              const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
-              const _ni = _idx > 0 ? _idx - 1 : 0;
-              _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+              _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, -1); setAnnDirty(true); annRenderAll(); // the Texto tool takes the size too
             } else {
               const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
               _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
             }
           } else if (annTool === 'text') {
-            if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon(); annTextLiveResize() }
+            annTextSize = annTextStep(annTextSize, -1); annUpdateThicknessIcon(); annTextLiveResize();
           } else {
             if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() }
           }
@@ -4969,15 +4989,13 @@
             const _s = annHistory[annSelectedIdx];
             annPushUndo(); // M11/M12: snapshot BEFORE increasing the thickness or the fontSize
             if (_s.type === 'text') {
-              const _idx = ANN_TEXT_SIZES.indexOf(_s.fontSize || 24);
-              const _ni = _idx < ANN_TEXT_SIZES.length - 1 ? _idx + 1 : ANN_TEXT_SIZES.length - 1;
-              _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+              _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, 1); setAnnDirty(true); annRenderAll(); // the Texto tool takes the size too
             } else {
               const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx < _L.length - 1 ? _idx + 1 : _L.length - 1;
               _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
             }
           } else if (annTool === 'text') {
-            if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon(); annTextLiveResize() }
+            annTextSize = annTextStep(annTextSize, 1); annUpdateThicknessIcon(); annTextLiveResize();
           } else {
             if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
           }
@@ -5074,10 +5092,15 @@
           if (p.x > x && p.x < x + w && p.y > y && p.y < y + h) return 'move';
           return null;
         }
-        // Right button: grab and move a shape in any tool (it never draws)
+        // Right or middle button on an annotation: it is selected, with its handles and ✕, and can be moved at once (it never draws).
+        // Outside Selecionar, the tool goes to Selecionar until a click off the annotations or a delete, which bring it back (D-0103)
         function annDownGrab(e) {
           if (annCommitText) annCommitText();
-          if (annGrabAt(annCanvasXY(e)) >= 0) annQuasiSelect(true);
+          const p = annCanvasXY(e);
+          if (annTool === 'crop') { if (annGrabAt(p) >= 0) annQuasiSelect(true); return }
+          if (annHitTest(p.x, p.y) < 0) { if (!annEndTempSelect()) annGrabAt(p); return }
+          if (annTool !== 'select') { const _from = annTempSelectFrom || annTool; annSetTool('select'); annTempSelectFrom = _from }
+          annGrabAt(p);
         }
         // Recortar: a handle or the inside of the box moves it; anywhere else starts a new box
         function annDownCrop(e) {
@@ -5105,6 +5128,7 @@
           const p = annCanvasXY(e);
           const _hh = annSelectedIdx >= 0 ? annHandleHitTest(p.x, p.y) : '';
           if (_hh) { annStartResize(p, _hh); return; }
+          if (annTempSelectFrom && annHitTest(p.x, p.y) < 0) { annEndTempSelect(); return; } // a click off the annotations: the tool of before
           if (annGrabAt(p) >= 0) SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
         }
         // Texto: a click places a new text after 220 ms, so that a double click can edit an existing one instead
@@ -5154,7 +5178,7 @@
           const _h = annHistory[i];
           annEditingTextIdx = i;
           annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
-          const _si = ANN_TEXT_SIZES.indexOf(_h.fontSize || 24); annTextSizeIdx = _si >= 0 ? _si : 2;
+          annTextSize = _h.fontSize || 24;
           document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _h.color));
           annShowTextStyleBtns();
           if (annTool !== 'text') annSetTool('text'); // editing a text switches to the Texto tool; its options (B, I) show what the text uses
@@ -5246,7 +5270,7 @@
           const _d0 = Math.sqrt(_dx0 * _dx0 + _dy0 * _dy0);
           const _d1 = Math.sqrt(_dx1 * _dx1 + _dy1 * _dy1);
           const _scale = _d0 > 2 ? _d1 / _d0 : 1;
-          const _newFS = Math.max(8, Math.min(96, Math.round(annResizeOriginFS * _scale)));
+          const _newFS = Math.max(ANN_TEXT_MIN, Math.min(ANN_TEXT_MAX, Math.round(annResizeOriginFS * _scale))); annTextSize = _newFS; // the Texto tool takes the size, and the tray shows it
           const _ob = annResizeOriginBBox;
           const _ratio = _newFS / annResizeOriginFS;
           if (_sh.rot) {
@@ -5292,7 +5316,7 @@
           else if (_sh.type !== 'free') { _sh.x1 = annResizeAnchorX; _sh.y1 = annResizeAnchorY; _sh.x2 = _p.x; _sh.y2 = _p.y; }
           else if (annResizeOriginBBox) annResizeFree(_sh, _p);
           annResizeDirty = true;
-          annRenderAll();
+          annRenderAll(); annSyncSizeVal();
         }
         // Moves a shape by (dx, dy): every point of a free stroke, the anchor of a text, both corners of the other shapes
         function annMoveShapeBy(_sh, _dx, _dy) {
@@ -5428,7 +5452,7 @@
             annHistory.splice(annSelectedIdx, 1);
             setAnnDirty(true);
             annSelectedIdx = -1;
-            annRenderAll();
+            annRenderAll(); annEndTempSelect();
           }
         };
         $('ann-viewport').appendChild(_annDelBtnEl);
