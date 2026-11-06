@@ -3219,8 +3219,7 @@
           <!-- TOOLS -->
           <div class="ann-row" style="display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--spacing) * 1.5);align-items:center">
           <div class="ann-tool-wrap">
-            <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do desenho livre">
@@ -3253,8 +3252,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="highlight" title="Marca-texto"><svg viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button class="ann-btn" data-tool="highlight" title="Marca-texto"><svg viewBox="0 0 24 24">
               <path d="m9 11-6 6v3h9l3-3" />
               <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
             </svg></button>
@@ -3281,10 +3279,10 @@
               <line x1="12" y1="2" x2="12" y2="22"/>
             </svg></button>
           <div class="ann-sep"></div>
-          <button class="ann-btn" id="ann-rotate-btn" title="Girar 90°"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="ann-btn" id="ann-rotate-btn" title="Girar 90°"><svg viewBox="0 0 24 24">
               <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
             </svg></button>
-          <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24">
               <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
               <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
             </svg></button>
@@ -3305,12 +3303,12 @@
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Diminuir"
               style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
-                <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
+                <line x1="5" y1="12" x2="19" y2="12" />
               </svg></button>
             <button class="ann-btn" id="ann-thickness-up" title="Aumentar" style="width:28px;height:28px"><svg
                 viewBox="0 0 24 24">
-                <line x1="12" y1="5" x2="12" y2="19" stroke-width="2.5" />
-                <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
               </svg></button>
           </div>
           <div class="ann-sep"></div>
@@ -4072,7 +4070,7 @@
         });
       }
       let annIsDirty = false, annActive = false, annTool = 'rect', annHistory = [], annDrawing = false, annStart = { x: 0, y: 0 }, annPath = [];
-      // Phase 5: Undo/Redo stacks of full-state snapshots
+      // Undo/Redo stacks of full-state snapshots
       let annUndoStack = [], annRedoStack = [];
       const ANN_HISTORY_MAX = 50;
       const ANN_AWAIT_MS = 5000; // unsaved changes: how long the rest of the toolbar stays dimmed
@@ -4087,15 +4085,15 @@
       /* The highlighter has its own colour, yellow at first; the other tools share theirs (D-0104) */
       const annColorBy = { hl: '#eab308', line: '#ef4444' };
       const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
-      function annSyncSwatches() { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === annCurrentColor)) }
+      function annSyncSwatches(c = annCurrentColor) { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c)) }
       let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
-      // Phase 2: annotation drag variables
+      // Annotation drag variables
       let annDragging = false;       // true while the user drags a selected shape
       let annDragLastX  = 0, annDragLastY  = 0; // mouse position in the previous frame: incremental delta
       let annDragRafId = 0;          // RAF id to coalesce the render during the drag
       let annDragSnap = null, annDragDirty = false;
-      // Phase 3: resize variables (handles)
+      // Resize variables (handles)
       let annResizing = false;       // true while the user drags a handle
       let annResizeHandle = '';      // 'tl','tr','bl','br', 'rot' on a text, 'p1','p2' on an arrow
       let annResizeAnchorX = 0, annResizeAnchorY = 0; // the point that stays fixed: the corner opposite the handle, or the other end of an arrow
@@ -4268,6 +4266,12 @@
       function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
       // B and I in the Texto tray show the style in use
       function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annSyncTextIcon() }
+      // B or I, from its button or Ctrl+B and Ctrl+I: the style of the tool, and of the text field when it is open
+      function annFlipStyle(bold) {
+        if (bold) annTextBold = !annTextBold; else annTextItalic = !annTextItalic;
+        annShowTextStyleBtns();
+        if (annTyping()) { const inp = $('ann-text-input'); inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() }
+      }
       // The Texto button: lit while a text is selected, and its T in the style of that text, else of the tool
       function annSyncTextIcon() {
         const _t = document.querySelector('.ann-btn[data-tool="text"]'), s = annHistory[annSelectedIdx], st = !!s && s.type === 'text';
@@ -4310,9 +4314,9 @@
         annTool = t;
         if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
         annLightTool(t);
-        const _isText = t === 'text', _s = annHistory[annSelectedIdx];
+        const _s = annHistory[annSelectedIdx];
         // Another tool lets go of the selection; a tool of the same kind keeps it, so its options change it
-        if (_s && t !== 'select' && (_isText || (_s.hl ? 'highlight' : _s.type) !== t)) { annSelectedIdx = -1; annRenderAll(); }
+        if (_s && t !== 'select' && (t === 'text' || (_s.hl ? 'highlight' : _s.type) !== t)) { annSelectedIdx = -1; annRenderAll(); }
         const _cv = $('ann-canvas');
         if (_cv) _cv.style.cursor = annToolCursor();
         const o = images.find(x => x.id === modalItemId);
@@ -4525,10 +4529,9 @@
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
         const sw = [1, 1.5, 2, 2.5, 3, 4]; // visual stroke-width of the SVG icon, parallel to ANN_SIZES (6 entries)
-        const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
-        const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
-        // The Desenho livre and Seta buttons draw their icon with the thickness of each tool
-        ['free', 'arrow'].forEach(t => { const s = document.querySelector(`.ann-btn[data-tool="${t}"] svg`); if (s) s.style.strokeWidth = sw[t === annTool ? annSizeIdx : annSizeByTool[t]] });
+        // The − and + of the bar show the step of the tool; the Desenho livre and Seta buttons, the thickness of each tool
+        document.querySelectorAll('#ann-thickness-down svg, #ann-thickness-up svg').forEach(s => s.style.strokeWidth = sw[annSizeIdx]);
+        ['free', 'arrow'].forEach(t => { document.querySelector(`.ann-btn[data-tool="${t}"] svg`).style.strokeWidth = sw[t === annTool ? annSizeIdx : annSizeByTool[t]] });
         annSyncSizeVal();
       }
       // The size after − and + in the trays: of the selected annotation, else of the tool. A dot by step for a line, the number for a text
@@ -4547,7 +4550,7 @@
           d.style.width = d.style.height = DOT[idx] + 'px';
         });
       }
-      // Phase 5: new Undo/Redo system of full-state snapshots
+      // New Undo/Redo system of full-state snapshots
       // annCloneState: exact deep clone (shapes are POJOs, a JSON round trip is safe)
       function annCloneState() {
         const _po = images.find(x => x.id === modalItemId);
@@ -4717,8 +4720,7 @@
         }
         annCommitText = commit;
         inp.onkeydown = e => {
-          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); annTextBold = !annTextBold; inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; annShowTextStyleBtns(); return }
-          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); annTextItalic = !annTextItalic; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; annShowTextStyleBtns(); return }
+          if ((e.ctrlKey || e.metaKey) && 'bi'.includes(e.key.toLowerCase())) { e.preventDefault(); annFlipStyle(e.key.toLowerCase() === 'b'); return }
           if (e.key === 'Escape') { e.preventDefault(); committed = true; annCommitText = null; annEditingTextIdx = -1; annSelectedIdx = -1; annRenderAll(); const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none'; }
         };
         inp.oninput = annAutosizeText;
@@ -4903,47 +4905,32 @@
         document.querySelectorAll('.ann-swatch').forEach(b => {
           annKeepTyping(b);
           b.onclick = () => {
-            const _color = b.dataset.color;
-            if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+            const _color = b.dataset.color, _s = annHistory[annSelectedIdx];
+            if (_s) {
               annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
-              const _s = annHistory[annSelectedIdx];
               _s.color = _color;
               const _k = annColorKey(_s.hl ? 'highlight' : _s.type); if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
-              document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
-              const inp = $('ann-text-input');
-              if (inp && annTyping()) { inp.style.color = _color; inp.focus() }
               setAnnDirty(true); annRenderAll();
-            } else {
-              // No selection: original behaviour (sets the tool colour)
-              annCurrentColor = _color; annSyncSwatches();
-              const inp = $('ann-text-input');
-              if (inp && annTyping()) { inp.style.color = annCurrentColor; inp.focus() }
-            }
+            } else annCurrentColor = _color; // no selection: the colour of the tool
+            annSyncSwatches(_color);
+            if (annTyping()) { const inp = $('ann-text-input'); inp.style.color = _color; inp.focus() }
           };
         });
         // Bold / Italic buttons: same handling
-        const _boldBtn = $('ann-bold-btn'), _italicBtn = $('ann-italic-btn');
-        if (_boldBtn) {
-          annKeepTyping(_boldBtn);
-          _boldBtn.onclick = () => { annTextBold = !annTextBold; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && annTyping()) { inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.focus() } }
-        }
-        if (_italicBtn) {
-          annKeepTyping(_italicBtn);
-          _italicBtn.onclick = () => { annTextItalic = !annTextItalic; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && annTyping()) { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
-        }
+        ['ann-bold-btn', 'ann-italic-btn'].forEach((id, i) => { const b = $(id); annKeepTyping(b); b.onclick = () => annFlipStyle(!i) });
         // With the Texto tool and its field open, the − and + resize the field live
         function annTextLiveResize() { if (annTool === 'text' && annTextPlace && annTyping()) { annTextPlace(); $('ann-text-input').focus() } }
         // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
         function annSizeStep(dir) {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            const _s = annHistory[annSelectedIdx], _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES;
-            const _v = _s.type === 'text' ? annTextStep(_s.fontSize || 24, dir) : _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_s.lw) + dir))];
-            if (_v === (_s.type === 'text' ? _s.fontSize || 24 : _s.lw)) return; // at the end of the scale: no empty undo step (F-0097)
+            const _s = annHistory[annSelectedIdx], _t = _s.type === 'text', _o = _t ? _s.fontSize || 24 : _s.lw, _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES;
+            const _v = _t ? annTextStep(_o, dir) : _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_o) + dir))];
+            if (_v === _o) return; // at the end of the scale: no empty undo step (F-0097)
             annPushUndo(); // M11/M12: snapshot BEFORE changing the thickness or the fontSize
-            if (_s.type === 'text') _s.fontSize = annTextSize = _v; else _s.lw = _v; // the Texto tool takes the size too
+            if (_t) _s.fontSize = annTextSize = _v; else _s.lw = _v; // the Texto tool takes the size too
             setAnnDirty(true); annRenderAll(); annSyncSizeVal();
           } else if (annTool === 'text') {
-            annTextSize = annTextStep(annTextSize, dir); annUpdateThicknessIcon(); annTextLiveResize();
+            annTextSize = annTextStep(annTextSize, dir); annSyncSizeVal(); annTextLiveResize();
           } else {
             const _n = annSizeIdx + dir; if (_n >= 0 && _n < ANN_SIZES.length) { annSizeIdx = _n; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
           }
@@ -5322,7 +5309,7 @@
           if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
           annRenderAll();
         }
-        // Phase 3: end the resize
+        // End the resize
         function annUpResize() {
           if (annResizeRafId) { cancelAnimationFrame(annResizeRafId); annResizeRafId = 0; }
           annResizing = false;
@@ -5333,7 +5320,7 @@
           if (annResizeDirty) { annCommitUndo(annResizeSnap); setAnnDirty(true); SysLogger.info('Ann resize end: undo disponivel'); }
           annRenderAll();
         }
-        // Phase 2.3: end the drag
+        // End the drag
         function annUpDrag() {
           if (annDragRafId) { cancelAnimationFrame(annDragRafId); annDragRafId = 0; }
           annDragging = false;
@@ -5354,10 +5341,8 @@
           if (annIsStroke()) {
             annSmoothLast = null;
             if (annPath.length > 1) {
-              const closed = false;
-              const simplified = annPath.slice();
               annPushUndo(); // M1: snapshot BEFORE adding a free stroke
-              const _st = { type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }; if (annTool === 'highlight') _st.hl = annHlMode();
+              const _st = { type: 'free', pts: annPath.slice(), color: annCurrentColor, lw: annLineW() }; if (annTool === 'highlight') _st.hl = annHlMode();
               annHistory.push(_st);
               setAnnDirty(true);
             }
@@ -5386,7 +5371,7 @@
         // Created with createElement (not inline HTML), as phase 1c v2 required.
         // Lives in #ann-viewport as a pure overlay; z-index 300 (inside the modal, above
         // text-overlay:200 and nav-buttons:100). Never touches the canvas, so it is never exported.
-        // Phase 1c, simplified: the button is visible only when annSelectedIdx >= 0.
+        // The button is visible only when annSelectedIdx >= 0.
         // Look: uses the .t-del class, the same as the delete button of the thumbnails.
         const _annDelBtnEl = document.createElement('button');
         _annDelBtnEl.id = 'ann-shape-del-btn';
@@ -5903,7 +5888,7 @@
         $('wrap-cor-fg').addEventListener('dblclick', clearFg);
         $('wrap-cor-fg').addEventListener('contextmenu', clearFg);
 
-        // Title color swatches — bindSwatch(inputId, bgId, wrapId, sysKey, cssVar)
+        // Title color swatches — bindTitleSwatch(inputId, bgId, wrapId, sysKey, cssVar)
         function bindTitleSwatch(inputId, bgId, wrapId, sysKey, cssVar) {
           const inp = $(inputId);
           if (!inp) return;
