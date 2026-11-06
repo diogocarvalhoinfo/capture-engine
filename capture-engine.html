@@ -2682,7 +2682,7 @@
 
 
     /* Tool options (D-0102): a tool with variants has a dot just above it, outside the button; a double click, or a press of 1 s,
-       opens its options in a tray above it: the first option right above the tool, the others to the right, like the toolbar */
+       opens its options in a tray above it, side by side like the toolbar: the first option right above the tool, always in the same order */
     .ann-tool-wrap {
       position: relative;
       display: flex
@@ -2704,8 +2704,12 @@
       transform: translateX(-50%)
     }
 
+    /* Open: the dot, halfway between the tool and the tray, links the two in the primary color */
     .ann-btn[aria-haspopup][aria-expanded="true"]::after {
-      background: var(--color-viewer-muted-foreground)
+      top: -13px;
+      width: 4px;
+      height: 4px;
+      background: var(--color-primary)
     }
 
     .ann-flyout {
@@ -2720,20 +2724,6 @@
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-dragging);
       z-index: var(--z-viewer-controls)
-    }
-
-    /* The tip points at the first option, right above the tool */
-    .ann-flyout::after {
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 25px;
-      width: 10px;
-      height: 10px;
-      background: var(--color-viewer-tray);
-      border-right: 1px solid var(--color-viewer-control-border);
-      border-bottom: 1px solid var(--color-viewer-control-border);
-      transform: translateX(-50%) rotate(45deg)
     }
 
     .ann-flyout.open {
@@ -4226,7 +4216,8 @@
         [['ann-bold-btn', annTextBold], ['ann-italic-btn', annTextItalic]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } });
       }
       // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a double click,
-      // a press of 1 s or the up arrow on the tool. One choice closes them (Negrito and Itálico stay: each turns on and off)
+      // a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
+      // the focus elsewhere, Esc or another tool. Each option keeps its place, so the hand learns where it is
       let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
       function annOpenFlyout(btn) {
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
@@ -4910,11 +4901,11 @@
           }
         };
         function annSyncHlBtns() { [['ann-hl-soft', !annHlSolid], ['ann-hl-solid', annHlSolid]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }) }
-        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); annCloseFlyout(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
+        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
         annSyncHlBtns();
         // Contorno or Preenchido; a selected shape of the same kind changes too, with undo
         function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { [['outline', !annFill[t]], ['fill', annFill[t]]].forEach(([k, on]) => { const b = $('ann-' + t + '-' + k); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
-        ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); annCloseFlyout(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
+        ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
         annSyncFillBtns();
         // Tool buttons. A tool with options opens them with a double click, a press of 1 s or the up arrow
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
