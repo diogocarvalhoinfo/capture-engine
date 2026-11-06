@@ -3210,7 +3210,7 @@
         <div id="img-modal-ann-actions"
           style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS -->
-          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
+          <div class="ann-row" style="display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--spacing) * 1.5);align-items:center">
           <div class="ann-tool-wrap">
             <button class="ann-btn active" data-tool="free" title="Desenho livre" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3908,6 +3908,7 @@
       const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e));
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
       function viewerKey(e) {
+        if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Confirmar or Cancelar (F-0083)
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
           window.imgModalNav(-1);
@@ -3916,7 +3917,7 @@
           window.imgModalNav(1);
         } else if (e.key === 'Escape') {
           e.preventDefault();
-          if (annActive) annDeactivate();
+          if (annActive) { if (hasUnsavedAnnotations()) triggerUnsavedAlert(); else annDeactivate() } // unsaved annotations: the warning, as a click outside (F-0088)
           else closeImgModal();
         }
       }
@@ -4186,6 +4187,10 @@
       function annDeactivate() {
         clearAnnAwait();
         annActive = false; annDrawing = false; annSelectedIdx = -1;
+        // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
+        annDragging = annResizing = annDraggingCrop = annDragDirty = annResizeDirty = false;
+        [annDragRafId, annResizeRafId, annRafId].forEach(id => { if (id) cancelAnimationFrame(id) }); annDragRafId = annResizeRafId = annRafId = 0;
+        annTempSelectFrom = null; annCloseFlyout();
         // Restore the baked image as the background (for the viewer)
         const _restoreO = images.find(x => x.id === modalItemId);
         if (_restoreO) {
@@ -4270,6 +4275,8 @@
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
         if (annFlyoutOpen && annFlyoutOpen !== f) annCloseFlyout();
         f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal();
+        f.style.left = ''; const _r = f.getBoundingClientRect(), _vw = document.documentElement.clientWidth; // a tray that would pass an edge of the window moves in (F-0085)
+        const _dx = _r.left < 8 ? 8 - _r.left : Math.min(0, _vw - 8 - _r.right); if (_dx) f.style.left = (parseFloat(getComputedStyle(f).left) + _dx / uiZoom()) + 'px';
         const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show'); // the name of the tool would cover its first option
       }
       function annCloseFlyout(focusTool) {
@@ -4291,7 +4298,8 @@
         if (annTool in annSizeByTool) annSizeByTool[annTool] = annSizeIdx;
         if (t in annSizeByTool) annSizeIdx = annSizeByTool[t];
         const _k0 = annColorKey(annTool), _k1 = annColorKey(t);
-        if (_k0 !== _k1) { annColorBy[_k0] = annCurrentColor; annCurrentColor = annColorBy[_k1]; annSyncSwatches() }
+        if (_k0 !== _k1) { annColorBy[_k0] = annCurrentColor; annCurrentColor = annColorBy[_k1] }
+        annSyncSwatches();
         annTool = t;
         if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
@@ -4895,7 +4903,7 @@
               annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
               const _s = annHistory[annSelectedIdx];
               _s.color = _color;
-              annCurrentColor = _color; // syncs the tool colour
+              const _k = _s.hl ? 'hl' : 'line'; if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
               document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _color));
               const inp = $('ann-text-input');
               if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.color = _color; inp.focus() }
@@ -5363,6 +5371,10 @@
               setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
+            // A click without a drag (F-0087): the arrow comes whole and short, 2 heads long, with its tip on the spot; no other shape
+            const _c = p.x === annStart.x && p.y === annStart.y, _L = (12 + annLineW() * 2) * 2;
+            if (_c && annTool === 'arrow') annStart = { x: p.x - _L < 0 ? p.x + _L : p.x - _L, y: p.y };
+            if (_c && annTool !== 'arrow') { annRenderAll(); return }
             annPushUndo(); // M2: snapshot BEFORE adding rect/circle/arrow
             const _sh = { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }; if (annFill[annTool]) _sh.fill = true;
             annHistory.push(_sh);

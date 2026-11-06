@@ -47,6 +47,12 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **Os exports dizem o perfil no nome (F-0069):** `CAPTURE-ENGINE-ADMIN-…` e `CAPTURE-ENGINE-USER-…`.
 - **Botão direito fora do Selecionar (F-0082):** a anotação agarrada não fica mais selecionada, com alças que essa ferramenta não usa.
 - **A regra do «Download» que nunca valia (F-0080).**
+- **No editor, as setas ← → não trocam mais de imagem (F-0083).** Dentro da bandeja de opções, elas fechavam o editor e iam para a imagem seguinte.
+- **O Esc no meio de um arraste (F-0084)** deixava o gesto preso, e o Ctrl+Z da imagem seguinte podia trazer uma anotação da anterior.
+- **A barra do editor cabe numa tela de 360 px (F-0085).** As ferramentas quebram em duas linhas, e uma bandeja que passaria da borda entra na tela.
+- **Mudar a cor de um marca-texto selecionado (F-0086)** não troca mais a cor das outras ferramentas.
+- **O clique na imagem que fecha uma bandeja (F-0087)** já começa o desenho, sem um segundo clique. Um clique sem arraste com o Retângulo ou o Círculo não deixa mais um ponto; com a Seta, desenha uma seta inteira, com a ponta no lugar do clique, e não só a ponta.
+- **O Esc com anotações por salvar (F-0088)** mostra o aviso, como um clique fora, em vez de descartar as anotações.
 - **Documentação:** a captura que não grava no README (F-0071); a resposta sobre servidores (F-0072); a seção «Acessibilidade», medida de novo no Edge 156, no Firefox 150 e no WebKit 26.4; a legenda dos IDs `A-` e `O-` (F-0070); a lista do Histórico, que só monta ao abrir a barra (F-0076).
 
 ### Decisões e pendentes
