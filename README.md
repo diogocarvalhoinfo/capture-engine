@@ -222,18 +222,19 @@ Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), guardar e cancelar.
+  - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400.
   - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica laranja e liga a ferramenta à bandeja. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. A barra não muda de forma.
     - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles: um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
-    - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação.
+    - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação.
     - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I). Um duplo clique num texto o reabre para editar.
     - Com uma anotação do mesmo tipo selecionada, a opção escolhida muda também essa anotação, e o Ctrl+Z desfaz. As escolhas ficam guardadas no navegador.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
-- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, o botão direito ou o botão do meio do mouse agarram e movem a anotação; fora do Selecionar, ela não fica selecionada ao soltar
+- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, o botão direito ou o botão do meio do mouse sobre uma anotação a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar; um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
 - Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
-- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
+- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
 - Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
@@ -596,8 +597,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem cerca de 350 KB. É normal?**
-Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 350 KB, e a do Export User fica menor, sem o Visual Builder.
+**O meu arquivo HTML tem cerca de 400 KB. É normal?**
+Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 400 KB, e a do Export User fica menor, sem o Visual Builder.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.

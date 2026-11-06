@@ -18,6 +18,9 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
 - **Modo «Maiúsculas» da identificação (D-0096).** Token `TOKEN_ID_UPPERCASE`, com o interruptor no Visual Builder. Ligado, o valor dos campos vira maiúsculas ao digitar; desligado, fica como foi digitado. O placeholder mostra o rótulo como foi escrito.
 - **Botão do meio do mouse (D-0100).** Sobre uma anotação, agarra e move, como o botão direito.
+- **O botão direito e o do meio selecionam (D-0103).** Sobre uma anotação, em qualquer ferramenta, ela fica selecionada, com as alças e o ✕, e a barra passa ao Selecionar. Um clique fora, ou apagar a anotação, volta à ferramenta de antes.
+- **Espessura e cor por ferramenta (D-0104).** Cada ferramenta guarda a sua espessura; o desenho livre, o retângulo, o círculo e a seta começam com 4 px. O marca-texto começa no amarelo e guarda a sua cor.
+- **Texto de 12 a 400 (D-0105).** O − e o + do texto vão de 12 a 400 em 20 passos, antes de 14 a 48; o arraste das alças, de 8 a 400. O tamanho de um texto arrastado aparece na bandeja do Texto e vale para o próximo.
 - **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona, e o botão Selecionar fica aceso no lugar dela; ao soltar, a ferramenta de antes volta. O mesmo botão acende enquanto o botão direito ou o do meio arrasta uma anotação. O cursor de cada alça aponta para o lado que ela puxa.
 - **Cartões «Download» e «Abrir o site»** no topo do README, gerados pelo `cartoes.py` do repositório do método.
 
