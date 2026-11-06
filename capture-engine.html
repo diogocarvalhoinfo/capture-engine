@@ -4009,7 +4009,7 @@
         window.addEventListener('keydown', e => { if (e.code !== 'Space' || !annActive || !imgZoomed || inField()) return; e.preventDefault(); annSpaceHeld = true; vp.classList.add('ann-pan') });
         window.addEventListener('keyup', e => { if (e.code === 'Space' && annSpaceHeld) { e.preventDefault(); spaceUp() } });
         window.addEventListener('blur', spaceUp);
-        vp.addEventListener('mousedown', function (e) { if (!imgZoomed || (annActive && !annSpaceHeld && e.button !== 1)) return; if (e.button === 1) e.preventDefault(); vp.classList.add('ann-grabbing'); imgPanning = true; imgStartX = e.clientX - imgPanX * uiZoom(); imgStartY = e.clientY - imgPanY * uiZoom(); $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
+        vp.addEventListener('mousedown', function (e) { if (e.button === 1 && annDragging) { e.preventDefault(); return } /* the middle button grabbed a shape: no pan, no autoscroll */ if (!imgZoomed || (annActive && !annSpaceHeld && e.button !== 1)) return; if (e.button === 1) e.preventDefault(); vp.classList.add('ann-grabbing'); imgPanning = true; imgStartX = e.clientX - imgPanX * uiZoom(); imgStartY = e.clientY - imgPanY * uiZoom(); $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
         window.addEventListener('mousemove', function (e) { if (!imgPanning) return; if (e.buttons === 0) { imgPanning = false; vp.classList.remove('ann-grabbing'); if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim'); return; } imgPanX = (e.clientX - imgStartX) / uiZoom(); imgPanY = (e.clientY - imgStartY) / uiZoom(); applyImgZoom(false) });
         window.addEventListener('mouseup', function () { if (imgPanning) { imgPanning = false; vp.classList.remove('ann-grabbing'); if (imgZoomed) vp.style.cursor = 'grab'; const wrap = $('ann-wrap'); if (wrap) wrap.classList.remove('no-anim') } });
         vp.addEventListener('touchstart', function (e) { if (!imgZoomed || annActive || e.touches.length !== 1) return; imgPanning = true; imgStartX = e.touches[0].clientX - imgPanX * uiZoom(); imgStartY = e.touches[0].clientY - imgPanY * uiZoom(); $('ann-wrap').classList.add('no-anim') }, { passive: true });
@@ -5083,7 +5083,8 @@
         cv.addEventListener('pointerdown', e => {
           if (!annActive) return;
           clearAnnAwait(); // a click on the image means: keep editing
-          if (e.button === 1 || annSpaceHeld) return;
+          if (annSpaceHeld) return;
+          if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
           if (e.button === 2) annDownGrab(e);
           else if (annTool === 'crop') annDownCrop(e);
           else if (annTool === 'select') annDownSelect(e);
@@ -5325,6 +5326,7 @@
           annDragOriginX = 0; annDragOriginY = 0;
           // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
           if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
+          if (annTool !== 'select') annSelectedIdx = -1; // grabbed with the right or middle button in another tool: no handles left that this tool cannot use
           annRenderAll();
         }
         // End of a drawing: the shape joins annHistory (a free stroke needs at least two points)
