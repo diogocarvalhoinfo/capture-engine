@@ -829,7 +829,7 @@ ativar arrasto:
 
 | Comportamento | Descrição e Invariantes |
 |---|---|
-| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica na cor de destaque/accent (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
+| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O botão do Texto fica aceso, como as outras ferramentas, quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (classe `.ann-txt-selected`). O T mostra o estilo em uso, o do texto selecionado ou o da ferramenta: `.ann-txt-b` (negrito, traço mais grosso) e `.ann-txt-i` (itálico, inclinado), pelo `annSyncTextIcon`. |
 | **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** e o **do meio** agarram e movem em qualquer ferramenta, sem desenhar e sem o menu de contexto nativo (ver «Botões direito e do meio»). |
 | **Seta** | Uma seta selecionada não tem caixa: tem uma alça redonda em cada ponta (`'p1'` no início, `'p2'` na ponta), e cada alça move só a sua ponta. O ✕ fica ao lado do meio da seta, a 28 px das alças (`annArrowDelPoint`). |
 | **Shift** | Ao desenhar e ao redimensionar: retângulo quadrado, elipse círculo, seta e traço livre em passos de 45° (`annShiftPoint`, D-0093). |
@@ -869,6 +869,9 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | `annSyncSizeVal()` | Escreve o tamanho atual depois do − e do + de cada bandeja: um ponto, ou o número do texto |
 | `annPress(id, on)` | Liga ou desliga `active` e `aria-pressed` de um botão de opção |
 | `annSyncHlBtns()` | Acerta «Translúcido» e «Sólido» do marca-texto, e a ponta cheia no ícone da ferramenta |
+| `annUpdateThicknessIcon()` | Desenha o − e o + da barra e os ícones do desenho livre e da seta com o traço do passo de cada um (`stroke-width` de 1 a 4) e chama `annSyncSizeVal` |
+| `annShowTextStyleBtns()` | Acerta «Negrito» e «Itálico» na bandeja e chama `annSyncTextIcon` |
+| `annSyncTextIcon()` | O botão do Texto: aceso com um texto selecionado (`.ann-txt-selected`), e o T no estilo desse texto, senão no da ferramenta (`.ann-txt-b`, `.ann-txt-i`). Chamada também pelo `annRenderAll` |
 | `annSyncFillBtns()` | Acerta «Contorno» e «Preenchido» do retângulo e do círculo, e o ícone cheio da ferramenta |
 | `annSyncSwatches()` | Marca na paleta a cor de `annCurrentColor` |
 | `annColorKey(t)` | `'hl'` para o marca-texto, `'line'` para as outras: a chave de `annColorBy` |

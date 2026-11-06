@@ -25,6 +25,8 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 
 ### Modificado
 
+- **Os ícones do desenho livre e da seta mostram a espessura.** O traço do ícone engrossa e afina com o − e o + de cada ferramenta, como o − e o + da barra.
+- **O T do Texto mostra o estilo.** Com «Negrito», o T do botão fica mais grosso; com «Itálico», inclinado; com os dois, os dois. Com um texto selecionado, o T mostra o estilo dele. Aceso, ele fica escuro como as outras ferramentas, e não mais branco.
 - **«Quem» e «O que» na identificação.** Os dois campos da barra lateral passam a mostrar «Quem» e «O que», no lugar de «User» e «Equipamento». Motivo: dizem o que escrever em cada campo. O Visual Builder continua a trocar os dois rótulos, e um arquivo exportado com rótulos próprios não muda. A opção «User» do botão de exportar continua com o mesmo nome.
 - **A seta tem uma alça em cada ponta (F-0067, F-0079).** Cada alça move só a sua ponta, e a seta nunca troca de direção. O ✕ fica ao lado do meio da seta, longe das alças.
 - **«Diminuir» e «Aumentar» (D-0094)** no lugar de «Espessura menor» e «Espessura maior», em todas as ferramentas.
