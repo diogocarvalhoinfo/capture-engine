@@ -723,7 +723,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
-**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`. O resultado é um nome como `CAPTURE-ENGINE-14h22m-11-jun-2026.html`, e não um nome derivado da sessão.
+**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`, seguido do perfil (`ADMIN` ou `USER`). O resultado é um nome como `CAPTURE-ENGINE-ADMIN-14h22m-11-jun-2026.html`, e não um nome derivado da sessão. O perfil no nome evita distribuir a cópia do administrador por engano (F-0069).
 
 ### Funções dos motores PDF e ZIP
 
