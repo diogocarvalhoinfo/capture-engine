@@ -3708,7 +3708,7 @@
           elD.classList.remove('vis');
         }
       }
-      async function triggerSave() { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }
+      async function triggerSave() { if (isDirty) { try { await saveSession() } catch (e) { SysLogger.warn('Save failed: ' + ((e && e.name) || e)); return } lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } } // a failed save stays dirty and tries again, without an uncaught error (F-0098)
 
       /* ═══ INDEXEDDB ═══ */
       function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: outra aba/instancia tem a base aberta; a continuar sem bloquear a interface (multi-aba permitido)') } }) }
@@ -3762,7 +3762,7 @@
         _ensurePromise = (async () => { if (!sessId) { await createSession(); renderSbSessions(); SysLogger.info('Sessão criada on-demand'); } })();
         try { await _ensurePromise } finally { _ensurePromise = null }
       }
-      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; await idbPut('sessions', s); sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
+      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
       async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = idUpper ? (s.user || '').toLocaleUpperCase('pt') : (s.user || ''); $('session-pc').value = idUpper ? (s.pc || '').toLocaleUpperCase('pt') : (s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
@@ -4282,11 +4282,15 @@
       function annOpenFlyout(btn) {
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
         if (annFlyoutOpen && annFlyoutOpen !== f) annCloseFlyout();
-        f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal();
-        f.style.left = ''; const _r = f.getBoundingClientRect(), _vw = document.documentElement.clientWidth; // a tray that would pass an edge of the window moves in (F-0085)
-        const _dx = _r.left < 8 ? 8 - _r.left : Math.min(0, _vw - 8 - _r.right); if (_dx) f.style.left = (parseFloat(getComputedStyle(f).left) + _dx / uiZoom()) + 'px';
+        f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal(); annPlaceFlyout(f);
         const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show'); // the name of the tool would cover its first option
       }
+      // A tray that would pass an edge of the window moves in (F-0085); again when the window changes size or the phone turns (F-0093)
+      function annPlaceFlyout(f) {
+        f.style.left = ''; const _r = f.getBoundingClientRect(), _vw = document.documentElement.clientWidth;
+        const _dx = _r.left < 8 ? 8 - _r.left : Math.min(0, _vw - 8 - _r.right); if (_dx) f.style.left = (parseFloat(getComputedStyle(f).left) + _dx / uiZoom()) + 'px';
+      }
+      window.addEventListener('resize', () => { if (annFlyoutOpen) annPlaceFlyout(annFlyoutOpen) });
       function annCloseFlyout(focusTool) {
         const f = annFlyoutOpen; if (!f) return;
         f.classList.remove('open'); annFlyoutOpen = null;
@@ -4311,8 +4315,9 @@
         annTool = t;
         if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
-        const _isText = t === 'text';
-        if (_isText) { annSelectedIdx = -1; annRenderAll(); }
+        const _isText = t === 'text', _s = annHistory[annSelectedIdx];
+        // Another tool lets go of the selection, so its − + and colours change the tool; a tool of the same kind keeps it, and its options change it (F-0091)
+        if (_s && t !== 'select' && (_isText || (_s.hl ? 'highlight' : _s.type) !== t)) { annSelectedIdx = -1; annRenderAll(); }
         const _cv = $('ann-canvas');
         if (_cv) _cv.style.cursor = _isText ? 'text' : (t === 'select' ? 'default' : 'crosshair');
         const o = images.find(x => x.id === modalItemId);
@@ -4946,10 +4951,11 @@
         // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
         function annSizeStep(dir) {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            const _s = annHistory[annSelectedIdx];
+            const _s = annHistory[annSelectedIdx], _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES;
+            const _v = _s.type === 'text' ? annTextStep(_s.fontSize || 24, dir) : _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_s.lw) + dir))];
+            if (_v === (_s.type === 'text' ? _s.fontSize || 24 : _s.lw)) return; // at the end of the scale: no empty undo step (F-0097)
             annPushUndo(); // M11/M12: snapshot BEFORE changing the thickness or the fontSize
-            if (_s.type === 'text') _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, dir); // the Texto tool takes the size too
-            else { const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES; _s.lw = _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_s.lw) + dir))] }
+            if (_s.type === 'text') _s.fontSize = annTextSize = _v; else _s.lw = _v; // the Texto tool takes the size too
             setAnnDirty(true); annRenderAll();
           } else if (annTool === 'text') {
             annTextSize = annTextStep(annTextSize, dir); annUpdateThicknessIcon(); annTextLiveResize();
@@ -4975,7 +4981,7 @@
           let _hold = 0, _held = false;
           const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
           b.onclick = e => {
-            if (_held || e.detail > 1) { _held = false; return } // the press of 1 s or the double click already opened it
+            const _skip = (_held && e.detail) || e.detail > 1; _held = false; if (_skip) return; // the press of 1 s or the double click already opened it; a key always counts (F-0096)
             if (annTool !== b.dataset.tool || !b.hasAttribute('aria-haspopup')) annSetTool(b.dataset.tool);
             else if (annFlyoutOpen && annFlyoutOpen.parentElement === b.parentElement) annCloseFlyout(); else annOpenFlyout(b);
           };
@@ -4993,7 +4999,8 @@
         }));
         window.addEventListener('keydown', e => { if (e.key === 'Escape' && annFlyoutOpen) { e.preventDefault(); e.stopImmediatePropagation(); annCloseFlyout(true) } }, true);
         document.addEventListener('pointerdown', e => { if (annFlyoutOpen && !e.target.closest('.ann-tool-wrap')) annCloseFlyout() }, true);
-        document.addEventListener('focusin', e => { if (annFlyoutOpen && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
+        // The focus that goes to the viewer is a mouse click in WebKit, which the pointerdown already handles (F-0094)
+        document.addEventListener('focusin', e => { if (annFlyoutOpen && e.target !== $('img-modal-overlay') && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
         const cv = $('ann-canvas');
         // Starts dragging the shape at index idx from the canvas point p (right button in any tool, or a click in Selecionar)
         function annStartShapeDrag(p, idx) {
@@ -5087,7 +5094,7 @@
         function annQuasiSelect(on) { if (annTool === 'select' || annTool === 'crop') return; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === (on ? 'select' : annTool))); }
         function annCtrlUp() { annCtrlHeld = false; if (!annDragging && !annResizing) annQuasiSelect(false); const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
         window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive && annTool !== 'crop' && !e.repeat) { annCtrlHeld = true; annQuasiSelect(true); const cv = $('ann-canvas'); if (cv && annTool !== 'select' && !annDragging && !annResizing) cv.style.cursor = annPtr ? annSelectCursorAt(annPtr) : 'default'; } }); // the key repeats while held: only the first press counts, so the cursor does not flicker
-        window.addEventListener('keyup', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlUp(); });
+        window.addEventListener('keyup', e => { if (e.key === 'Control' || e.key === 'Meta') { if (annActive) annCtrlUp(); else annCtrlHeld = false } }); // a Ctrl let go with the editor closed (F-0100)
         window.addEventListener('blur', () => { if (annCtrlHeld) annCtrlUp(); });
         function annDownSelect(e) {
           if (annCommitText) annCommitText();
@@ -5379,9 +5386,10 @@
               setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
-            // A click without a drag (F-0087): the arrow comes whole and short, 2 heads long, with its tip on the spot; no other shape
-            const _c = p.x === annStart.x && p.y === annStart.y, _L = (12 + annLineW() * 2) * 2;
-            if (_c && annTool === 'arrow') annStart = { x: p.x - _L < 0 ? p.x + _L : p.x - _L, y: p.y };
+            // A click without a drag (F-0087), up to 6 px of the screen: the arrow comes whole and short, 2 heads long and at least 30 px of the screen,
+            // with its tip on the spot and inside the image; no other shape
+            const _px = annPx(), _c = Math.hypot(p.x - annStart.x, p.y - annStart.y) < 6 * _px, _L = Math.max((12 + annLineW() * 2) * 2, 30 * _px), _w = $('ann-canvas').width;
+            if (_c && annTool === 'arrow') annStart = { x: Math.max(0, Math.min(_w, p.x - _L < 0 ? p.x + _L : p.x - _L)), y: p.y };
             if (_c && annTool !== 'arrow') { annRenderAll(); return }
             annPushUndo(); // M2: snapshot BEFORE adding rect/circle/arrow
             const _sh = { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }; if (annFill[annTool]) _sh.fill = true;
@@ -5693,7 +5701,7 @@
       }
 
       /* ═══ SIDEBAR ═══ */
-      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions')).sort((a, b) => b.createdAt - a.createdAt); list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" role="button" tabindex="0" aria-label="Excluir sessão" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" role="button" tabindex="0" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
+      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions').catch(() => [])).sort((a, b) => b.createdAt - a.createdAt); /* without IndexedDB the list is empty, without an uncaught error (F-0098) */ list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" role="button" tabindex="0" aria-label="Excluir sessão" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" role="button" tabindex="0" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
       window.openSession = async function (id) { if (isDirty) await triggerSave(); await loadSession(id); renderSbSessions(); if (window.closeMobileSidebar) window.closeMobileSidebar() };
       window.deleteSessionId = async function (id) {
         /* V17: Capture neighbor BEFORE deletion for auto-navigation */
@@ -6246,7 +6254,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
               } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.7.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
-function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initChips(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
+function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
 
         }) ();
