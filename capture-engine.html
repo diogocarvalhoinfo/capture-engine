@@ -2682,11 +2682,11 @@
       display: flex
     }
 
-    .ann-btn[aria-haspopup] {
+    .ann-btn[aria-controls] {
       position: relative
     }
 
-    .ann-btn[aria-haspopup]::after {
+    .ann-btn[aria-controls]::after {
       content: "";
       position: absolute;
       top: -11px;
@@ -2699,7 +2699,7 @@
     }
 
     /* Open: the dot, halfway between the tool and the tray, links the two in the primary color */
-    .ann-btn[aria-haspopup][aria-expanded="true"]::after {
+    .ann-btn[aria-controls][aria-expanded="true"]::after {
       top: -13px;
       width: 4px;
       height: 4px;
@@ -3214,7 +3214,7 @@
           <!-- TOOLS -->
           <div class="ann-row" style="display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--spacing) * 1.5);align-items:center">
           <div class="ann-tool-wrap">
-            <button class="ann-btn active" data-tool="free" title="Desenho livre" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
+            <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
             </svg></button>
@@ -3222,7 +3222,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="rect" title="Retângulo" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
+            <button class="ann-btn" data-tool="rect" title="Retângulo"><svg viewBox="0 0 24 24">
               <rect x="3" y="3" width="18" height="18" rx="2" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
@@ -3231,7 +3231,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="circle" title="Círculo" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
+            <button class="ann-btn" data-tool="circle" title="Círculo"><svg viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="9" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do círculo">
@@ -3240,7 +3240,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="arrow" title="Seta" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
+            <button class="ann-btn" data-tool="arrow" title="Seta"><svg viewBox="0 0 24 24">
               <line x1="5" y1="19" x2="19" y2="5" />
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
@@ -3248,7 +3248,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="highlight" title="Marca-texto" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
+            <button class="ann-btn" data-tool="highlight" title="Marca-texto"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m9 11-6 6v3h9l3-3" />
               <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
@@ -3259,7 +3259,7 @@
             </div>
           </div>
           <div class="ann-tool-wrap">
-            <button class="ann-btn" data-tool="text" title="Texto" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
+            <button class="ann-btn" data-tool="text" title="Texto"><svg viewBox="0 0 24 24">
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do texto">
@@ -4117,7 +4117,7 @@
       function annStrokeStyle(ctx, color, lw, hl) { ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineJoin = 'round'; ctx.lineCap = hl ? 'butt' : 'round'; ctx.globalAlpha = hl === 'soft' ? 0.4 : 1 }
       const annTyping = () => $('ann-text-overlay').style.display !== 'none'; // the text field is open
       const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
-      const annLightTool = t => document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === t)); // the lit tool
+      const annLightTool = t => document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { const on = b.dataset.tool === t; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on) }); // the lit tool, also for a screen reader (F-0090)
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
 
       function setAnnDirty(val) {
@@ -4284,7 +4284,7 @@
       function annCloseFlyout(focusTool) {
         const f = annFlyoutOpen; if (!f) return;
         f.classList.remove('open'); annFlyoutOpen = null;
-        const b = f.parentElement.querySelector('[aria-haspopup]'); if (b) { b.setAttribute('aria-expanded', 'false'); if (focusTool) b.focus() }
+        const b = f.parentElement.querySelector('[aria-controls]'); if (b) { b.setAttribute('aria-expanded', 'false'); if (focusTool) b.focus() }
       }
       // The two options of a tool, kept in this browser: [first, second, key]. annFill[t] is true with the second, and the tool icon is full
       const ANN_OPT2 = { rect: ['ann-rect-outline', 'ann-rect-fill', 'fill-rect'], circle: ['ann-circle-outline', 'ann-circle-fill', 'fill-circle'], highlight: ['ann-hl-soft', 'ann-hl-solid', 'hl-solid'] };
@@ -4362,7 +4362,7 @@
           return '';
         }
         // An arrow has one handle on each end, as in PowerPoint: 'p1' moves the start, 'p2' moves the tip
-        if (_e.type === 'arrow') { if (Math.hypot(cx - _e.x2, cy - _e.y2) <= H) return 'p2'; if (Math.hypot(cx - _e.x1, cy - _e.y1) <= H) return 'p1'; return ''; }
+        if (_e.type === 'arrow') { const _r = Math.min(H, Math.hypot(_e.x2 - _e.x1, _e.y2 - _e.y1) / 3); if (Math.hypot(cx - _e.x2, cy - _e.y2) <= _r) return 'p2'; if (Math.hypot(cx - _e.x1, cy - _e.y1) <= _r) return 'p1'; return ''; } // on a short arrow, a third of it each, so the middle moves it (F-0089)
         const _corners = [
           { x: _bx,        y: _by,        id: 'tl' },
           { x: _bx + _bw,  y: _by,        id: 'tr' },
@@ -4765,6 +4765,7 @@
         // Every tray ends with − and + and the current size (D-0102). Written here, before initTips reads the titles and after BOOT_HTML,
         // so the Quine copies the HTML without them
         document.querySelectorAll('.ann-flyout').forEach(f => {
+          const b = f.parentElement.querySelector('[data-tool]'); f.id = 'ann-fly-' + b.dataset.tool; b.setAttribute('aria-controls', f.id); b.setAttribute('aria-expanded', 'false'); // F-0090
           f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>');
         });
         initTips();
@@ -4963,10 +4964,10 @@
           const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
           b.onclick = e => {
             const _skip = (_held && e.detail) || e.detail > 1; _held = false; if (_skip) return; // the press of 1 s or the double click already opened it; a key always counts (F-0096)
-            if (annTool !== b.dataset.tool || !b.hasAttribute('aria-haspopup')) annSetTool(b.dataset.tool);
+            if (annTool !== b.dataset.tool || !b.hasAttribute('aria-controls')) annSetTool(b.dataset.tool);
             else if (annFlyoutOpen && annFlyoutOpen.dataset.tool === b.dataset.tool) annCloseFlyout(); else annOpenFlyout(b);
           };
-          if (!b.hasAttribute('aria-haspopup')) return;
+          if (!b.hasAttribute('aria-controls')) return;
           b.addEventListener('dblclick', open);
           b.addEventListener('pointerdown', e => { _held = false; if (e.button === 0) _hold = setTimeout(() => { _held = true; open() }, 1000) });
           ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
