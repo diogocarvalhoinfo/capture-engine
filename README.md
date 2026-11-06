@@ -221,9 +221,12 @@ No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arra
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), negrito e itálico, guardar e cancelar.
-  - O modo texto liga com a ferramenta Texto ou com o duplo clique num texto. Nele, a barra mostra só o ←, o T, o negrito e o itálico, as cores, o tamanho, desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior e deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
-  - O marca-texto pinta uma faixa larga, de pontas retas, na cor escolhida. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Ao escolher o marca-texto, a barra mostra só o ←, o marca-texto, «Translúcido» e «Sólido», as cores, «Diminuir» e «Aumentar», desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior. A escolha entre translúcido e sólido fica guardada no navegador.
+  - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), guardar e cancelar.
+  - **Opções de uma ferramenta.** O retângulo, o círculo, o marca-texto e o texto têm um ponto logo acima do botão. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela logo acima, lado a lado como os botões da barra, do mesmo tamanho e cada um com o seu nome ao passar o mouse. Pelo teclado, a seta para cima abre, as setas para os lados andam entre elas, e o Esc fecha. A barra não muda de forma.
+    - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
+    - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação.
+    - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I). Um duplo clique num texto o reabre para editar.
+    - Com uma anotação do mesmo tipo selecionada, a opção escolhida muda também essa anotação, e o Ctrl+Z desfaz. As escolhas ficam guardadas no navegador.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
@@ -673,7 +676,8 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 | Abas do Visual Builder | `role="tablist"` e `role="tab"` | Diz que são abas, e não botões soltos |
 | Chips do layout e das opções do Visual Builder | `role="radio"` e `aria-checked` | Cada chip é uma parada do Tab, e o estado escolhido é anunciado |
 | Setas do Histórico e dos «Removidos» | `aria-expanded` | Diz se a barra está aberta |
-| «Translúcido» e «Sólido» do marca-texto | `aria-pressed` | Diz qual dos dois está escolhido |
+| Ferramentas com opções (retângulo, círculo, marca-texto, texto) | `aria-haspopup` e `aria-expanded`; as opções num `role="group"` com nome | Diz que a ferramenta tem opções e se elas estão abertas |
+| Opções das ferramentas (Contorno, Preenchido, Translúcido, Sólido, Negrito, Itálico) | `aria-pressed` | Diz qual está escolhida |
 | ✕ do Visual Builder e da exportação | `aria-label="Fechar"` | O botão só contém o ícone |
 | Conteúdo fora do modal aberto e das barras recolhidas | `inert` | Tira esse conteúdo do Tab e dos leitores de tela, sem mudar o que se vê |
 
