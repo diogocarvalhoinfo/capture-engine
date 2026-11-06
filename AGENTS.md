@@ -894,6 +894,7 @@ Caminho 2: pasteItems(Array.from(items)), com for...of: primeiro as imagens, dep
       │   Gerar label único     → verificar contra images[] e removed[]
       │         ↓
       │   idbPut('images', o)   → salvar em IndexedDB
+      │         ↓                  falhou → keepInTab(): fica só na aba, faixa «Capturas só nesta aba» (uma vez)
       │         ↓
       │   renderThumb(o)        → inserir card na grelha
       │         ↓
