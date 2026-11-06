@@ -228,6 +228,7 @@ Motor de anotação:
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, o botão direito ou o botão do meio do mouse agarram e movem a anotação; fora do Selecionar, ela não fica selecionada ao soltar
+- Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
 - Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
