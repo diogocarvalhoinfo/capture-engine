@@ -2769,6 +2769,11 @@
       transform: skewX(-12deg)
     }
 
+    /* Translúcido: the frame of the checkerboard in grey, the colour of the icon at 55 %, readable on and off in both themes */
+    #ann-hl-soft rect {
+      stroke-opacity: 0.55
+    }
+
     /* Retângulo or Círculo in «Preenchido», Marca-texto in «Sólido»: the tool shows its shape, or its tip, filled */
     .ann-btn.ann-filled svg :is(rect, circle, path:first-child) {
       fill: currentcolor
@@ -3254,7 +3259,7 @@
               <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do marca-texto">
-              <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1" /><path d="M3 3h6v6H3zM15 3h6v6h-6zM9 9h6v6H9zM3 15h6v6H3zM15 15h6v6h-6z" fill="currentColor" fill-opacity="0.4" stroke="none" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
             </div>
           </div>
