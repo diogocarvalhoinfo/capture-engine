@@ -589,7 +589,7 @@ r.onupgradeneeded = e => {
 | `order` | number | ✅ | Posição na grade — define a ordem de exibição e export. **Único, mas não necessariamente contíguo.** Novos valores vêm de `nextOrder(arr)` = `max(order)+1`, nunca de `arr.length`: `delImg`/`delDoc` não renumeram os restantes, por isso o `length` colidiria com um `order` existente (ver D45). As lacunas são normais e desaparecem no primeiro reordenamento, que renumera densamente |
 | `addedAt` | number | ✅ | Timestamp Unix (ms) de quando foi capturada |
 | `origBlob` | Blob | ❌ | Imagem **original** antes da anotação. Criada por `ann-save` na primeira vez que se confirma uma anotação; usada por `annActivate` como fundo do canvas ao reeditar. Removida (e `blob` reposto ao original) se todas as anotações forem apagadas **e não houver redo pendente** (`annRedoStack` vazio). Presente apenas em imagens anotadas. |
-| `annHistory` | array | ❌ | Stack de formas anotadas (`{type, x1, y1, ...}`) persistida com a imagem para reedição posterior (anotação **não-destrutiva**). Presente apenas em imagens anotadas; removida quando fica vazia. |
+| `annHistory` | array | ❌ | Stack de formas anotadas (`{type, x1, y1, ...}`; um traço do marca-texto é `{type: 'free', hl: 'soft' \| 'solid', pts, ...}`) persistida com a imagem para reedição posterior (anotação **não-destrutiva**). Presente apenas em imagens anotadas; removida quando fica vazia. |
 | `annRedoStack` | array | ❌ | Pilha de **refazer** persistida: snapshots `{h, rot, crop, pcrop}` (até `ANN_HISTORY_MAX` = 50) para que o redo sobreviva a salvar+reabrir. Restaurada por `annActivate`, gravada por `ann-save`. Invalidada (gravada vazia) por qualquer nova mutação via `annCommitUndo`. Presente apenas em imagens anotadas com redo pendente. **Limitação:** redo que atravessa rotação/crop é aproximado — a semeadura do undo achata `rot`/`crop`. |
 | `rotation` | number | ❌ | Rotação acumulada em graus (`0`, `90`, `180`, `270`). Aplicada ao bitmap de exibição mas não ao `origBlob` — o original permanece intacto. Removida se igual a `0` e sem outras modificações. |
 | `cropBox` | object | ❌ | Área de recorte ativa: `{x, y, w, h}` em pixels relativos ao `origBlob`. Não-destrutivo — o `origBlob` nunca é cortado. Removido se o crop cobrir a imagem inteira. |
@@ -657,7 +657,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `saveSession()` | `async () → void` | Persiste sessão atual no IndexedDB | Pelo auto-save e `triggerSave()` |
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
 | `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
-| `renderSbSessions()` | `async () → void` | Re-renderiza a lista de sessões na sidebar | Após qualquer alteração de sessão |
+| `renderSbSessions()` | `async () → void` | Re-renderiza a lista de sessões na sidebar. A lista só é montada quando a barra abre: numa página recém-carregada, `#sb-sess-list` fica vazio no DOM mesmo com sessões no banco (um teste automático precisa abrir a barra antes de contar) | Após qualquer alteração de sessão |
 
 ### Funções do IndexedDB
 
@@ -675,6 +675,16 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registro com a chave primária dada. |
 | `idbDelBatch(store, ids)` | `(string, string[]) → Promise` | Apaga múltiplos registros da store `store` em **uma única transação** `readwrite`. Mais eficiente que N chamadas a `idbDel` em loop. Usa `tx.oncomplete` em vez de `r.onsuccess`. |
 | `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registros onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
+
+### Teclado e camadas
+
+| Função | O que faz |
+|---|---|
+| `initCollapsedBars()` | Com o Histórico ou os «Removidos» recolhidos, o conteúdo fica `inert`, e o Tab passa só pelas setas (F-0064) |
+| `initModalLayers()` | Pilha de modais: tudo fora do modal de cima fica `inert`, e o foco volta à origem ao fechar (F-0065) |
+| `initKeyClick()` | Enter e Espaço num `role="button"`, `"tab"` ou `"radio"` que não é botão nativo fazem o clique dele (F-0066) |
+| `initChips()` | Cada chip vira uma parada do Tab, com `role="radio"` e `aria-checked` |
+| `keepInTab(o, e)` | Uma captura que o navegador não grava fica na aba, com o aviso «Capturas só nesta aba» uma vez por página (F-0063) |
 
 ### Funções de captura
 
@@ -821,6 +831,10 @@ ativar arrasto:
 |---|---|
 | **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica na cor de destaque/accent (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
 | **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** permite agarrar e mover imediatamente, não importando qual a ferramenta ativa (nunca desenha e suprime o menu de contexto nativo). |
+| **Seta** | Uma seta selecionada não tem caixa: tem uma alça redonda em cada ponta (`'p1'` no início, `'p2'` na ponta), e cada alça move só a sua ponta. O ✕ fica ao lado do meio da seta, a 28 px das alças (`annArrowDelPoint`). |
+| **Shift** | Ao desenhar e ao redimensionar: retângulo quadrado, elipse círculo, seta e traço livre em passos de 45° (`annShiftPoint`, D-0093). |
+| **Marca-texto** | Um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e larguras de `ANN_HL_SIZES` (`annStrokeStyle`). A barra entra no modo `ann-hl-mode`, que divide com o texto a classe `ann-sub-mode` (D-0095). |
+| **Botões direito e do meio** | Agarram e movem uma anotação em qualquer ferramenta; fora do Selecionar, ela não fica selecionada ao soltar (D-0100). |
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto). A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
 | **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
@@ -1447,6 +1461,7 @@ Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não v
 | `M1`–`M6`, `M-1`, `B8`, `B-1`–`B-3` | Achados das auditorias externas da V26 | `CHANGELOG.md`, entrada `[V26]` |
 | `G1`–`G3` | Gerações sucessivas do Export Admin num teste do Export User | `CHANGELOG.md`, entrada `[V26]` |
 | `V7`–`V27` | Versões anteriores ao SemVer | `CHANGELOG.md` e tags `v1` a `v27` |
+| `A-01`–`A-03`, `O-01`–`O-02` | Achados (`A-`) e observações (`O-`) da auditoria de regressão de 2026-11-02, corrigidos na 28.6.5. Não contam para a numeração de `F-` | `CHANGELOG.md`, entrada `[28.6.5]`, e títulos de commit |
 
 Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a decisão seguinte foi a `D-0077`.
 
