@@ -1398,6 +1398,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 |---|---|---|
 | D1 | **Botão PDF desativado quando há imagens + documentos** | PDF é exclusivo de imagens. Quando há docs na sessão, o usuário deve usar o ZIP. |
 | D2 | **Modal do Visual Builder não fecha ao clicar fora** | O VB é de uso exclusivo Admin e requer fechamento explícito pelo botão ✕ para evitar perda de configurações acidentais. |
+| D-0097 | **O Esc também não fecha o Visual Builder; o ✕ é alcançado pelo teclado** | Completa a D2: o Visual Builder fecha só pelo ✕, com o mouse ou com Tab até ele e Enter. Os outros modais fecham com Esc. Origem: pedido do dono, 2026-11-05 (F-0077). |
 | D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os eventos `isDirty=true` dos controles contínuos do VB (seletores de cor, campos hex, sliders, radios, toggles, campos de texto). Esses eventos `input` não chamam `triggerSave()` na hora. Sem o interval, alterações no VB perdem-se se o navegador for fechado dentro da janela de 5s. |
 | D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
 | D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceito. O setInterval de 5s garante persistência antes de fechar o navegador em uso normal. |
