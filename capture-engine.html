@@ -2697,6 +2697,12 @@
       }
     }
 
+    /* The overlay takes the focus when it opens, only so that Tab starts inside it */
+    .modal-overlay:focus,
+    .sb-overlay:focus {
+      outline: none
+    }
+
     /* Image Modal Dark/Transparent Theme */
     #img-modal-overlay {
       background: var(--color-viewer-backdrop);
@@ -3417,7 +3423,7 @@
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
-      <button class="sb-close" onclick="closeSettingsModal()"><svg viewBox="0 0 24 24">
+      <button class="sb-close" onclick="closeSettingsModal()" aria-label="Fechar"><svg viewBox="0 0 24 24">
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg></button>
@@ -3597,7 +3603,7 @@
   <!-- EXPORT MODAL -->
   <div class="sb-overlay" id="export-overlay">
     <div class="sb-modal" style="max-width:420px">
-      <button class="sb-close" onclick="closeExportModal()"><svg viewBox="0 0 24 24">
+      <button class="sb-close" onclick="closeExportModal()" aria-label="Fechar"><svg viewBox="0 0 24 24">
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg></button>
@@ -3949,7 +3955,13 @@
           viewerKey(e);
         }
         if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeTextModal(); }
+        const _exOv = $('export-overlay'); if (_exOv && _exOv.classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeExportModal(); }
       });
+
+      /* Modal layers: Tab stays in the top layer, and closing it gives the focus back to where it was. Everything outside the
+         top layer is inert, except the storage banners, the notice and the tooltip. One observer covers every way a modal
+         opens or closes. The Visual Builder and the export modal do not exist in the Export User, hence the filter. */
+      function initModalLayers() { const stack = []; const keep = el => el.matches('script, .ce-banner, .ce-notice, .ce-tip'); const apply = () => { const top = stack.length ? stack[stack.length - 1].el : null; [...document.body.children].forEach(ch => { if (keep(ch)) return; if (top && ch !== top) { if (!ch.inert) { ch.inert = true; ch.dataset.layerInert = '1' } } else if (ch.dataset.layerInert) { ch.inert = false; delete ch.dataset.layerInert } }) }; const sync = el => { const open = el.classList.contains('open'), i = stack.findIndex(l => l.el === el); if (open && i < 0) { stack.push({ el, from: document.activeElement }); apply(); if (!el.contains(document.activeElement)) el.focus({ preventScroll: true }) } else if (!open && i >= 0) { const l = stack.splice(i, 1)[0]; apply(); if (l.from && l.from.isConnected && !l.from.closest('[inert]')) l.from.focus({ preventScroll: true }) } }; ['img-modal-overlay', 'text-modal-overlay', 'vb-overlay', 'export-overlay'].map(id => $(id)).filter(Boolean).forEach(el => { el.tabIndex = -1; new MutationObserver(() => sync(el)).observe(el, { attributes: true, attributeFilter: ['class'] }) }) }
 
       // --- ZOOM & PAN LOGIC ---
       const vp = $('ann-viewport');
@@ -6141,7 +6153,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
               } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.6.5 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) }
             }
-function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
+function boot() { setInterval(async () => { if (isDirty) { await saveSession(); lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } }, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => location.reload(); updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
 
         }) ();
