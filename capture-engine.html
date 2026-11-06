@@ -3209,7 +3209,7 @@
         <!-- ANNOTATION ACTIONS (SQUARE CTAS) -->
         <div id="img-modal-ann-actions"
           style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
-          <!-- TOOLS: RECT FIRST -->
+          <!-- TOOLS -->
           <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
           <div class="ann-tool-wrap">
             <button class="ann-btn active" data-tool="free" title="Desenho livre" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
@@ -3217,9 +3217,6 @@
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do desenho livre">
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3229,10 +3226,6 @@
             <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
               <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-rect-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
-              <span class="ann-sep" aria-hidden="true"></span>
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3242,10 +3235,6 @@
             <div class="ann-flyout" role="group" aria-label="Opções do círculo">
               <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-circle-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" /></svg></button>
-              <span class="ann-sep" aria-hidden="true"></span>
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3254,9 +3243,6 @@
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções da seta">
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3268,10 +3254,6 @@
             <div class="ann-flyout" role="group" aria-label="Opções do marca-texto">
               <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
-              <span class="ann-sep" aria-hidden="true"></span>
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3281,10 +3263,6 @@
             <div class="ann-flyout" role="group" aria-label="Opções do texto">
               <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)" aria-pressed="false">B</button>
               <button class="ann-btn ann-opt ann-opt-letter ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)" aria-pressed="false">I</button>
-              <span class="ann-sep" aria-hidden="true"></span>
-              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
-              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
@@ -4108,7 +4086,6 @@
       function annSyncSwatches() { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === annCurrentColor)) }
       let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
-      let annHoverIdx = -1; // kept for compatibility with annDeactivate; hover logic removed in phase 1c
       // Phase 2: annotation drag variables
       let annDragging = false;       // true while the user drags a selected shape
       let annDragStartX = 0, annDragStartY = 0; // canvas point where the drag started (reserved for future use)
@@ -4208,7 +4185,7 @@
       }
       function annDeactivate() {
         clearAnnAwait();
-        annActive = false; annDrawing = false; annSelectedIdx = -1; annHoverIdx = -1; // reset to be safe
+        annActive = false; annDrawing = false; annSelectedIdx = -1;
         // Restore the baked image as the background (for the viewer)
         const _restoreO = images.find(x => x.id === modalItemId);
         if (_restoreO) {
@@ -4281,10 +4258,10 @@
         }
         annRenderAll();
       }
-      // The bold and italic buttons only show with the Texto tool
-      function annShowTextStyleBtns() {
-        [['ann-bold-btn', annTextBold], ['ann-italic-btn', annTextItalic]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } });
-      }
+      // An option of a tray shows whether it is on: the active look and aria-pressed
+      function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
+      // B and I in the Texto tray show the style in use
+      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic) }
       // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a double click,
       // a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
       // the focus elsewhere, Esc or another tool. Each option keeps its place, so the hand learns where it is
@@ -4349,8 +4326,6 @@
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
       let annRotCenter = null, annRotStart = 0, annRotStartAng = 0;
       function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy); if (Math.abs(l.x) <= l.g.w / 2 + 4 && Math.abs(l.y) <= l.g.h / 2 + 4) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
-      // Detects whether (cx,cy) is on one of the 4 handles of the selected shape.
-      // Returns 'tl','tr','bl','br' or '' when there is no hit.
       // The resize cursor of a handle points the way it pulls: the corner direction, turned with a turned text
       function annHandleCursor(h) {
         if (h === 'rot') return 'grab'; if (h === 'p1' || h === 'p2') return 'crosshair';
@@ -4362,6 +4337,7 @@
       // The Selecionar cursor at a canvas point: the handle's own, move over a shape, or the arrow
       let annPtr = null; // the last pointer position on the canvas, in canvas px
       function annSelectCursorAt(p) { const _h = annHandleHitTest(p.x, p.y); return _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' }
+      // The handle of the selected shape under (cx,cy): 'tl','tr','bl','br', 'rot' on a text, 'p1','p2' on an arrow, or ''
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
@@ -4487,7 +4463,6 @@
         annRedraw();
         annDrawSelectionOverlay();
         annUpdateDelBtn();
-        annUpdateThicknessVis();
         const _tb = document.querySelector('.ann-btn[data-tool="text"]');
         if (_tb) {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annHistory[annSelectedIdx].type === 'text') {
@@ -4544,8 +4519,6 @@
         const sw = [1, 1.5, 2, 2.5, 3, 4]; // visual stroke-width of the SVG icon, parallel to ANN_SIZES (6 entries)
         const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
         const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
-        const td = $('ann-thickness-down'), tu = $('ann-thickness-up');
-        if (td) td.title = 'Diminuir'; if (tu) tu.title = 'Aumentar'; /* the same names for the line and the text size (D-0094) */
         annSyncSizeVal();
       }
       // The size shown after − and + in the trays: what they change. The selected annotation first, as the − and + do, else the tool.
@@ -4564,12 +4537,6 @@
           let d = v.firstElementChild; if (!d) { v.textContent = ''; d = document.createElement('span'); d.className = 'ann-size-dot'; v.appendChild(d) }
           d.style.width = d.style.height = DOT[idx] + 'px';
         });
-      }
-      // Shows or hides the thickness buttons according to the current selection.
-      // Called by annRenderAll() (which calls annUpdateDelBtn(), then this one).
-      // Rules: text selected -> hide; non-text shape selected -> show; no selection -> show.
-      function annUpdateThicknessVis() {
-        // The buttons are always visible: no hiding logic
       }
       // Phase 5: new Undo/Redo system of full-state snapshots
       // annCloneState: exact deep clone (shapes are POJOs, a JSON round trip is safe)
@@ -4791,6 +4758,9 @@
       }
       function initAnnotation() {
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
+        // Every tray ends with − and + without the box and the current size, after a separator when it has options (D-0102).
+        // Written here, before initTips reads the titles and after BOOT_HTML, so the Quine copies the HTML without them
+        document.querySelectorAll('.ann-flyout').forEach(f => f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>'));
         initTips();
         // Crop: the cursor shows what a drag will do (resize from a corner, or move the area)
         function annCropCursorAt(p, box, hr) {
@@ -4962,50 +4932,30 @@
           annAutosizeText();
           inp.focus();
         }
-        ['ann-thickness-down', 'ann-thickness-up'].forEach(_tid => { $(_tid).addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() }) });
-        document.querySelectorAll('.ann-size-btn').forEach(b => {
+        // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
+        function annSizeStep(dir) {
+          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
+            const _s = annHistory[annSelectedIdx];
+            annPushUndo(); // M11/M12: snapshot BEFORE changing the thickness or the fontSize
+            if (_s.type === 'text') _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, dir); // the Texto tool takes the size too
+            else { const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES; _s.lw = _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_s.lw) + dir))] }
+            setAnnDirty(true); annRenderAll();
+          } else if (annTool === 'text') {
+            annTextSize = annTextStep(annTextSize, dir); annUpdateThicknessIcon(); annTextLiveResize();
+          } else {
+            const _n = annSizeIdx + dir; if (_n >= 0 && _n < ANN_SIZES.length) { annSizeIdx = _n; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
+          }
+          annSyncSizeVal();
+        }
+        document.querySelectorAll('#ann-thickness-down, #ann-thickness-up, .ann-size-btn').forEach(b => {
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
-          b.onclick = () => $(b.dataset.step === '1' ? 'ann-thickness-up' : 'ann-thickness-down').onclick();
+          b.onclick = () => annSizeStep(b.id === 'ann-thickness-up' || b.dataset.step === '1' ? 1 : -1);
         });
-        $('ann-thickness-down').onclick = () => {
-          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            const _s = annHistory[annSelectedIdx];
-            annPushUndo(); // M11/M12: snapshot BEFORE reducing the thickness or the fontSize
-            if (_s.type === 'text') {
-              _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, -1); setAnnDirty(true); annRenderAll(); // the Texto tool takes the size too
-            } else {
-              const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
-              _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
-            }
-          } else if (annTool === 'text') {
-            annTextSize = annTextStep(annTextSize, -1); annUpdateThicknessIcon(); annTextLiveResize();
-          } else {
-            if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() }
-          }
-          annSyncSizeVal();
-        };
-        $('ann-thickness-up').onclick = () => {
-          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
-            const _s = annHistory[annSelectedIdx];
-            annPushUndo(); // M11/M12: snapshot BEFORE increasing the thickness or the fontSize
-            if (_s.type === 'text') {
-              _s.fontSize = annTextSize = annTextStep(_s.fontSize || 24, 1); setAnnDirty(true); annRenderAll(); // the Texto tool takes the size too
-            } else {
-              const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx < _L.length - 1 ? _idx + 1 : _L.length - 1;
-              _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
-            }
-          } else if (annTool === 'text') {
-            annTextSize = annTextStep(annTextSize, 1); annUpdateThicknessIcon(); annTextLiveResize();
-          } else {
-            if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
-          }
-          annSyncSizeVal();
-        };
-        function annSyncHlBtns() { [['ann-hl-soft', !annHlSolid], ['ann-hl-solid', annHlSolid]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }) }
+        function annSyncHlBtns() { annPress('ann-hl-soft', !annHlSolid); annPress('ann-hl-solid', annHlSolid) }
         [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
         annSyncHlBtns();
         // Contorno or Preenchido; a selected shape of the same kind changes too, with undo
-        function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { [['outline', !annFill[t]], ['fill', annFill[t]]].forEach(([k, on]) => { const b = $('ann-' + t + '-' + k); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
+        function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { annPress('ann-' + t + '-outline', !annFill[t]); annPress('ann-' + t + '-fill', annFill[t]); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
         ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
         annSyncFillBtns();
         // Tool buttons. A tool with options opens them with a double click, a press of 1 s or the up arrow
@@ -5212,9 +5162,8 @@
           annRafId = 0;
           if (!annDrawing || !annActive || !annLastEvt) return;
           let p = annCanvasXYClamped(annLastEvt); if (annShift && !annIsStroke()) p = annShiftPoint(annShiftKind(annTool), annStart, p);
-          const ctx = annGetCtx(); annRenderAll(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-          if (annTool === 'circle' || annTool === 'rect') annDrawShape(ctx, { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW(), fill: annFill[annTool] })
-          else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() }
+          const ctx = annGetCtx(); annRenderAll();
+          if (annTool === 'circle' || annTool === 'rect' || annTool === 'arrow') annDrawShape(ctx, { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW(), fill: annFill[annTool] })
           else if (annIsStroke()) { ctx.save(); annStrokeStyle(ctx, annCurrentColor, annLineW(), annTool === 'highlight' ? annHlMode() : null); annCR(ctx, annPath, false); ctx.restore(); }
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
@@ -5769,13 +5718,13 @@
       function initTheme() { try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.documentElement.classList.add('dark'); else if (_t === 'light') document.documentElement.classList.remove('dark'); else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark') } catch (e) { } const themeTip = () => { const b = $('theme-btn'), t = document.documentElement.classList.contains('dark') ? 'Modo claro' : 'Modo noturno'; b.removeAttribute('title'); b.dataset.tip = t; b.setAttribute('aria-label', t); b.dataset.tipLabel = '1'; const tip = $('ce-tip'); if (tip && tip.classList.contains('show') && b.matches(':hover')) tip.textContent = t }; themeTip(); $('theme-btn').onclick = function () { document.documentElement.classList.toggle('dark'); try { localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') } catch (e) { } themeTip() } }
 
       /* ═══ TRASH BAR ═══ */
-      /* A collapsed bar leaves the Tab order: only the arrow that opens it stays reachable (for the Removidos, its chevron). Before, Tab reached the hidden items,
-         and the browser scrolled the bar to show them, which moved the layout until a reload. One observer covers every way the bars open or close. */
       /* Enter and Space on a control that is not a native button (role button or tab) do what its click does.
          Native buttons and fields keep their own behavior. An SVG has no click(), hence the event. */
       function initKeyClick() { document.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const t = e.target; if (!(t instanceof Element) || !t.matches('[role="button"], [role="tab"], [role="radio"]') || t.matches('button, input, select, textarea, a[href]')) return; e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })) }) }
       /* Each chip is a Tab stop, as the owner asked: the label takes the focus, Enter or Space picks it, and aria-checked follows the radio */
       function initChips() { const label = r => document.querySelector(`label[for="${r.id}"]`); const sync = name => document.querySelectorAll(`.chip-input[name="${name}"]`).forEach(x => { const l = label(x); if (l) l.setAttribute('aria-checked', String(x.checked)) }); document.querySelectorAll('.chip-input').forEach(r => { const l = label(r); if (!l) return; r.tabIndex = -1; l.tabIndex = 0; l.setAttribute('role', 'radio'); r.addEventListener('change', () => sync(r.name)); l.addEventListener('click', () => setTimeout(() => sync(r.name), 0)) }); new Set([...document.querySelectorAll('.chip-input')].map(r => r.name)).forEach(sync) }
+      /* A collapsed bar leaves the Tab order: only the arrow that opens it stays reachable (for the Removidos, its chevron). Before, Tab reached the hidden items,
+         and the browser scrolled the bar to show them, which moved the layout until a reload. One observer covers every way the bars open or close. */
       function initCollapsedBars() { const sb = $('sidebar'), tb = $('trash-bar'), ch = $('trash-chevron'); const sync = () => { const sbOpen = sb.classList.contains('expanded') || sb.classList.contains('mobile-open'), tbOpen = tb.classList.contains('expanded'); $('sb-content').inert = !sbOpen; $('trash-grid').inert = !tbOpen; $('sb-btn-toggle').setAttribute('aria-expanded', String(sbOpen)); ch.setAttribute('aria-expanded', String(tbOpen)); ch.setAttribute('aria-label', tbOpen ? 'Ocultar removidos' : 'Mostrar removidos') }; ch.setAttribute('tabindex', '0'); ch.setAttribute('role', 'button'); [sb, tb].forEach(el => new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['class'] })); sync() }
       function initTrashBar() { $('trash-hdr').onclick = function () { const tb = $('trash-bar'); const isExp = tb.classList.toggle('expanded'); const ch = $('trash-chevron'); ch.dataset.tip = isExp ? 'Ocultar removidos' : 'Mostrar removidos'; if (isExp) { tb.style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' } else { tb.style.maxHeight = '' } } }
 
