@@ -3726,7 +3726,7 @@
       function keepInTab(o, e) { memOnly.add(o); SysLogger.warn('Item kept only in this tab: ' + ((e && e.name) || e)); if (e && e.name === 'QuotaExceededError') return; /* the quota banner already says it */ if (memOnlyNoticeShown) return; memOnlyNoticeShown = true; showMemOnlyBanner() }
       const idbGet = (s, id) => idbTx(s, 'readonly', st => st.get(id));
       const idbAll = s => idbTx(s, 'readonly', st => st.getAll());
-      const idbDel = (s, id) => idbTx(s, 'readwrite', st => st.delete(id));
+      const idbDel = (s, id) => _db ? idbTx(s, 'readwrite', st => st.delete(id)) : Promise.resolve(); // without a database there is nothing stored to delete (F-0103)
       function idbDelBatch(store, ids) { return new Promise((res, rej) => { if (!ids.length) { res(); return; } const tx = _db.transaction(store, 'readwrite'), st = tx.objectStore(store); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.oncomplete = () => res(); tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete error')) }; try { ids.forEach(id => st.delete(id)) } catch (e) { _chkQ(e); throw e } }) }
       let _uiUpdateTimer = null; function scheduleUIUpdate() { if (_uiUpdateTimer) return; _uiUpdateTimer = setTimeout(() => { _uiUpdateTimer = null; renderTrash(); updateCounters(); updateBtns(); if (isDirty) triggerSave(); }, 50) }
       function idbIdx(store, idx, val) { return new Promise((res, rej) => { const tx = _db.transaction(store, 'readonly'); tx.onabort = () => rej(tx.error || new Error('Transaction aborted')); tx.onerror = () => rej(tx.error || new Error('Transaction error')); const r = tx.objectStore(store).index(idx).getAll(val); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
@@ -4270,7 +4270,7 @@
       function annFlipStyle(bold) {
         if (bold) annTextBold = !annTextBold; else annTextItalic = !annTextItalic;
         annShowTextStyleBtns();
-        if (annTyping()) { const inp = $('ann-text-input'); inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() }
+        if (annTyping()) { const inp = $('ann-text-input'); inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; annAutosizeText(); inp.focus() }
       }
       // The Texto button: lit while a text is selected, and its T in the style of that text, else of the tool
       function annSyncTextIcon() {
@@ -4575,11 +4575,12 @@
       // Uses annCurrentRotation and annCropBox to find the right view.
       async function annLoadCleanBg() {
         const o = images.find(x => x.id === modalItemId);
-        if (!o || !o.origBlob) return;
+        if (!o) return;
         const img = $('img-modal-img'), _cv = $('ann-canvas');
         if (!img || !_cv) return;
-        let bgBlob = o.origBlob;
-        if (annCurrentRotation > 0) bgBlob = await getRotatedBlob(o.origBlob, annCurrentRotation);
+        const _src = o.origBlob || o.blob; // an image never saved in the editor: its blob is still the clean original (F-0105)
+        let bgBlob = _src;
+        if (annCurrentRotation > 0) bgBlob = await getRotatedBlob(_src, annCurrentRotation);
         // If NOT in crop mode but the image has a persisted cropBox,
         // crop the clean background to match the cropped region
         if (!annCropBox && o.cropBox) {
@@ -4899,6 +4900,7 @@
           annRenderAll();
         };
         const annKeepTyping = b => b.addEventListener('mousedown', e => { if (annTyping()) e.preventDefault() });
+        annKeepTyping(document.querySelector('.ann-btn[data-tool="text"]')); // the Texto tool opens its tray without closing the field (F-0104)
         $('ann-undo').onclick = () => annDoUndo().catch(()=>{});
         $('ann-redo').onclick = () => annDoRedo().catch(()=>{});
         // Colour swatches: mousedown.preventDefault stops the blur of the text input
@@ -4972,9 +4974,10 @@
           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = all[(k + (e.key === 'ArrowRight' ? 1 : -1) + all.length) % all.length]; if (n) n.focus() }
         }));
         window.addEventListener('keydown', e => { if (e.key === 'Escape' && annFlyoutOpen) { e.preventDefault(); e.stopImmediatePropagation(); annCloseFlyout(true) } }, true);
-        document.addEventListener('pointerdown', e => { if (annFlyoutOpen && !e.target.closest('.ann-tool-wrap')) annCloseFlyout() }, true);
+        // The Texto tray stays open while its field is open, so B, I, − and + act on what is typed
+        document.addEventListener('pointerdown', e => { if (annFlyoutOpen && !e.target.closest('.ann-tool-wrap') && !(annTool === 'text' && e.target.id === 'ann-canvas')) annCloseFlyout() }, true);
         // The focus that goes to the viewer is a mouse click in WebKit, which the pointerdown already handles (F-0094)
-        document.addEventListener('focusin', e => { if (annFlyoutOpen && e.target !== $('img-modal-overlay') && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
+        document.addEventListener('focusin', e => { if (annFlyoutOpen && e.target !== $('img-modal-overlay') && e.target.id !== 'ann-text-input' && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
         const cv = $('ann-canvas');
         // Starts dragging the shape at index idx from the canvas point p (right or middle button in any tool, the Ctrl, or a click in Selecionar)
         function annStartShapeDrag(p, idx) {
@@ -5349,7 +5352,7 @@
           } else if (annTool !== 'text') {
             // A click without a drag, up to 6 screen px (F-0087): a short arrow, 2 heads and at least 30 screen px, its tip on the spot; no other shape
             const _px = annPx(), _c = Math.hypot(p.x - annStart.x, p.y - annStart.y) < 6 * _px, _L = Math.max((12 + annLineW() * 2) * 2, 30 * _px), _w = $('ann-canvas').width;
-            if (_c && annTool === 'arrow') annStart = { x: Math.max(0, Math.min(_w, p.x - _L < 0 ? p.x + _L : p.x - _L)), y: p.y };
+            if (_c && annTool === 'arrow') annStart = { x: p.x - _L >= 0 || p.x > _w / 2 ? Math.max(0, p.x - _L) : Math.min(_w, p.x + _L), y: p.y }; // the side with more room (F-0106)
             if (_c && annTool !== 'arrow') { annRenderAll(); return }
             annPushUndo(); // M2: snapshot BEFORE adding rect/circle/arrow
             const _sh = { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }; if (annFill[annTool]) _sh.fill = true;
