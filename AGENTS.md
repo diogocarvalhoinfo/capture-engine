@@ -1514,7 +1514,9 @@ O que ficou para depois, com o ID e a origem.
 
 | ID | O quê | Origem |
 |---|---|---|
-| F-0073 | O Safari continua marcado como não testado em «Requisitos». Fecha com a lista de teste no iPhone, feita pelo dono na página publicada da 28.7.0. | Auditoria de 2026-11-04 |
+| F-0107 | No iPhone, o gesto de pinça no visualizador amplia a página inteira, com o fundo e os botões, e não só a imagem. Com a página ampliada, o ✕ some, e o visualizador só fecha com um toque fora da imagem. | Teste do Safari no iPhone, 2026-11-06 |
+| F-0108 | No iPhone, uma foto na vertical cobre o «Editar» e o ✕ do visualizador, e o editor não abre no telefone. | Teste do Safari no iPhone, 2026-11-06 |
+| F-0109 | No iPhone, o Safari recarrega uma aba deixada em segundo plano, e a ferramenta abre uma sessão nova; a anterior fica no Histórico. A decidir: reabrir a última sessão quando a página recarrega pouco depois da última gravação. | Teste do Safari no iPhone, 2026-11-06 |
 | F-0074 | Frases com mais de 30 palavras no `AGENTS.md`: cerca de 40 na contagem automática de 2026-11-06, das quais cerca de 30 vieram na 28.7.0 (as decisões D-0093 a D-0108, a §7 e a §11, Parte B). | Auditorias de 2026-11-04 e de 2026-11-06 |
 
 ### IDs
@@ -1553,7 +1555,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 | Outro navegador (Edge ↔ Chrome) | **NÃO** |
 | Mesma conta/perfil **em outra máquina** (sync ligado) | **NÃO** — IndexedDB não é sincronizado |
 
-> **Âmbito dos testes:** esta matriz foi confirmada no Windows 11, com o Edge 148 e o Chrome 148. O Firefox 151.0.4 foi testado à mão, com o mesmo resultado na recuperação; o Safari não foi testado. A matriz por navegador é a do README §13, que é o dono dela.
+> **Âmbito dos testes:** esta matriz foi confirmada no Windows 11, com o Edge 148 e o Chrome 148. O Firefox 151.0.4 foi testado à mão, com o mesmo resultado na recuperação. No Safari do iPhone (iOS 26.5), no site publicado, as sessões voltaram depois de fechar o Safari; o atalho na Tela de Início tem uma base própria. O Safari do Mac não foi testado. A matriz por navegador é a do README §13, que é o dono dela.
 
 **Pontos-chave:**
 - O que decide o acesso é o **perfil de navegador**, não o nome/pasta/versão do arquivo.
