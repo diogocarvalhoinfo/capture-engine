@@ -2653,10 +2653,7 @@
       border-color: var(--color-primary);
     }
 
-    #img-modal-overlay #ann-bold-btn.active,
-    #img-modal-overlay #ann-italic-btn.active,
-    #img-modal-overlay #ann-hl-soft.active,
-    #img-modal-overlay #ann-hl-solid.active {
+    #img-modal-overlay .ann-opt.active {
       color: var(--color-viewer-active-foreground);
       background: var(--color-white);
       border-color: var(--color-white);
@@ -2681,23 +2678,55 @@
       pointer-events: none
     }
 
-    /* Text and highlighter modes (ann-sub-mode): only the back button, the active tool and its own buttons stay among the tools */
-    #ann-text-back,
-    #ann-hl-soft,
-    #ann-hl-solid {
-      display: none;
+
+    /* Tool options (D-0102): a tool with variants has a dot just above it, outside the button; a double click, or a press of 1 s,
+       opens its options above it, side by side like the toolbar */
+    .ann-tool-wrap {
+      position: relative;
+      display: flex
     }
 
-    #img-modal-ann-actions.ann-sub-mode #ann-text-back,
-    #img-modal-ann-actions.ann-hl-mode #ann-hl-soft,
-    #img-modal-ann-actions.ann-hl-mode #ann-hl-solid {
-      display: flex;
+    .ann-btn[aria-haspopup] {
+      position: relative
     }
 
-    #img-modal-ann-actions.ann-sub-mode .ann-btn[data-tool]:not(.active),
-    #img-modal-ann-actions.ann-sub-mode #ann-rotate-btn,
-    #img-modal-ann-actions.ann-sub-mode .ann-row .ann-sep {
+    .ann-btn[aria-haspopup]::after {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      border-radius: var(--radius-circle);
+      background: var(--color-viewer-muted-foreground);
+      transform: translateX(-50%)
+    }
+
+    .ann-flyout {
+      position: absolute;
+      bottom: calc(100% + var(--spacing) * 1.5);
+      left: 50%;
+      transform: translateX(-50%);
       display: none;
+      gap: calc(var(--spacing) * 1.5);
+      z-index: var(--z-viewer-controls)
+    }
+
+    .ann-flyout.open {
+      display: flex
+    }
+
+    .ann-opt-letter {
+      font: 700 var(--text-sm) / 1 sans-serif
+    }
+
+    .ann-opt-italic {
+      font: italic 400 var(--text-sm) / 1 serif
+    }
+
+    /* Retângulo or Círculo in «Preenchido»: the tool shows its shape filled */
+    .ann-btn.ann-filled svg :is(rect, circle) {
+      fill: currentcolor
     }
 
     @keyframes ann-alert {
@@ -3139,49 +3168,52 @@
           style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS: RECT FIRST -->
           <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
-            <button class="ann-btn" id="ann-text-back" title="Voltar às ferramentas"><svg viewBox="0 0 24 24">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg></button>
             <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
             </svg></button>
-          <button class="ann-btn" data-tool="rect" title="Retângulo"><svg viewBox="0 0 24 24">
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="rect" title="Retângulo" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
               <rect x="3" y="3" width="18" height="18" rx="2" />
             </svg></button>
-          <button class="ann-btn" data-tool="circle" title="Círculo"><svg viewBox="0 0 24 24">
+            <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
+              <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-rect-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+            </div>
+          </div>
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="circle" title="Círculo" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="9" />
             </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Opções do círculo">
+              <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-circle-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" /></svg></button>
+            </div>
+          </div>
           <button class="ann-btn" data-tool="arrow" title="Seta"><svg viewBox="0 0 24 24">
               <line x1="5" y1="19" x2="19" y2="5" />
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
-          <button class="ann-btn" data-tool="highlight" title="Marca-texto"><svg viewBox="0 0 24 24" fill="none"
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="highlight" title="Marca-texto" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m9 11-6 6v3h9l3-3" />
               <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
             </svg></button>
-          <button class="ann-btn" data-tool="text" title="Texto"><svg viewBox="0 0 24 24">
+            <div class="ann-flyout" role="group" aria-label="Opções do marca-texto">
+              <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+            </div>
+          </div>
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="text" title="Texto" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
-          <button class="ann-btn" id="ann-bold-btn" title="Negrito (Ctrl+B)"
-            style="display:none;font-weight:700;font-size:var(--text-sm);font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
-          <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
-            style="display:none;font-style:italic;font-size:var(--text-sm);font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
-          <button class="ann-btn" id="ann-hl-soft" title="Translúcido" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <!-- text that stays readable under a light band -->
-              <line x1="4" y1="5" x2="16" y2="5" />
-              <rect x="2" y="8.5" width="20" height="8" rx="1.5" fill="currentColor" fill-opacity="0.3" stroke="none" />
-              <line x1="5" y1="12.5" x2="19" y2="12.5" />
-              <line x1="4" y1="20" x2="13" y2="20" />
-            </svg></button>
-          <button class="ann-btn" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <!-- the same text, with the middle line covered by a full band -->
-              <line x1="4" y1="5" x2="16" y2="5" />
-              <rect x="2" y="8.5" width="20" height="8" rx="1.5" fill="currentColor" stroke="none" />
-              <line x1="4" y1="20" x2="13" y2="20" />
-            </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Opções do texto">
+              <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)" aria-pressed="false">B</button>
+              <button class="ann-btn ann-opt ann-opt-letter ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)" aria-pressed="false">I</button>
+            </div>
+          </div>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
               <polyline points="5 9 2 12 5 15"/>
               <polyline points="9 5 12 2 15 5"/>
@@ -3992,7 +4024,6 @@
       let annAwaitTimer = null;
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
-      let annPrevTool = 'free'; // tool to go back to from the text mode
       let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
       let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 1; // default index 1 = lw 2px
@@ -4167,15 +4198,29 @@
         annRenderAll();
       }
       // The bold and italic buttons only show with the Texto tool
-      function annShowTextStyleBtns(isText) {
-        const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
-        if (_bb) { _bb.style.display = isText ? 'flex' : 'none'; _bb.classList.toggle('active', isText && annTextBold) }
-        if (_ib) { _ib.style.display = isText ? 'flex' : 'none'; _ib.classList.toggle('active', isText && annTextItalic) }
+      function annShowTextStyleBtns() {
+        [['ann-bold-btn', annTextBold], ['ann-italic-btn', annTextItalic]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } });
       }
+      // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a double click,
+      // a press of 1 s or the up arrow on the tool. One choice closes them (Negrito and Itálico stay: each turns on and off)
+      let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
+      function annOpenFlyout(btn) {
+        const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
+        if (annFlyoutOpen && annFlyoutOpen !== f) annCloseFlyout();
+        f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f;
+        const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show'); // the name of the tool would cover its first option
+      }
+      function annCloseFlyout(focusTool) {
+        const f = annFlyoutOpen; if (!f) return;
+        f.classList.remove('open'); annFlyoutOpen = null;
+        const b = f.parentElement.querySelector('[aria-haspopup]'); if (b) { b.setAttribute('aria-expanded', 'false'); if (focusTool) b.focus() }
+      }
+      // Retângulo and Círculo: «Contorno» or «Preenchido», kept for the next time
+      const annFill = { rect: false, circle: false };
+      try { annFill.rect = localStorage.getItem('fill-rect') === '1'; annFill.circle = localStorage.getItem('fill-circle') === '1' } catch (_) { }
       async function annSetTool(t) {
         annTool = t;
-        if (t !== 'text' && t !== 'highlight') annPrevTool = t;
-        const _bar = $('img-modal-ann-actions'); _bar.classList.toggle('ann-text-mode', t === 'text'); _bar.classList.toggle('ann-hl-mode', t === 'highlight'); _bar.classList.toggle('ann-sub-mode', t === 'text' || t === 'highlight');
+        if (annFlyoutOpen && annFlyoutOpen.dataset.tool !== t) annCloseFlyout(); // the options of another tool close
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
         const _isText = t === 'text';
         if (_isText) { annSelectedIdx = -1; annRenderAll(); }
@@ -4184,7 +4229,7 @@
         const o = images.find(x => x.id === modalItemId);
         if (t === 'crop') await annEnterCrop(o, _cv);
         else if (annCropBox) await annLeaveCrop(o, _cv);
-        annShowTextStyleBtns(_isText);
+        annShowTextStyleBtns();
         annUpdateThicknessIcon();
       }
       function annCR(ctx, pts, closed) { if (pts.length < 2) return; function seg(i) { const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)]; return { cp1x: p1.x + (p2.x - p0.x) / 6, cp1y: p1.y + (p2.y - p0.y) / 6, cp2x: p2.x - (p3.x - p1.x) / 6, cp2y: p2.y - (p3.y - p1.y) / 6 } } ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 0; i < pts.length - 1; i++) { const s = seg(i); ctx.bezierCurveTo(s.cp1x, s.cp1y, s.cp2x, s.cp2y, pts[i + 1].x, pts[i + 1].y) } if (closed) ctx.closePath(); ctx.stroke() }
@@ -4218,6 +4263,9 @@
         const a = ((Math.atan2(d[1], d[0]) * 180 / Math.PI + r) % 180 + 180) % 180;
         return ['ew-resize', 'nwse-resize', 'ns-resize', 'nesw-resize'][Math.round(a / 45) % 4];
       }
+      // The Selecionar cursor at a canvas point: the handle's own, move over a shape, or the arrow
+      let annPtr = null; // the last pointer position on the canvas, in canvas px
+      function annSelectCursorAt(p) { const _h = annHandleHitTest(p.x, p.y); return _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' }
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
@@ -4393,7 +4441,7 @@
           ctx.restore();
         }
       }
-      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
@@ -4550,9 +4598,7 @@
         inp.style.transformOrigin = '0 0'; inp.style.transform = rot ? 'rotate(' + rot + 'deg)' : '';
         inp.value = prefillText || '';
         annAutosizeText();
-        const bb = $('ann-bold-btn'), ib = $('ann-italic-btn');
-        if (bb) bb.classList.toggle('active', annTextBold);
-        if (ib) ib.classList.toggle('active', annTextItalic);
+        annShowTextStyleBtns();
         setTimeout(() => { inp.focus(); if (prefillText) { const _end = inp.value.length; inp.setSelectionRange(_end, _end); } }, 30);
         let committed = false;
         function commit() {
@@ -4581,8 +4627,8 @@
         }
         annCommitText = commit;
         inp.onkeydown = e => {
-          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); annTextBold = !annTextBold; inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; if (bb) bb.classList.toggle('active', annTextBold); return }
-          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); annTextItalic = !annTextItalic; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; if (ib) ib.classList.toggle('active', annTextItalic); return }
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); annTextBold = !annTextBold; inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; annShowTextStyleBtns(); return }
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); annTextItalic = !annTextItalic; inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; annShowTextStyleBtns(); return }
           if (e.key === 'Escape') { e.preventDefault(); committed = true; annCommitText = null; annEditingTextIdx = -1; annSelectedIdx = -1; annRenderAll(); const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none'; }
         };
         inp.oninput = annAutosizeText;
@@ -4607,7 +4653,7 @@
         };
         document.querySelectorAll('[title]').forEach(prep);
         const show = el => {
-          prep(el); const t = el.dataset.tip; if (!t || (el.textContent.match(/\p{L}/gu) || []).length > 1) { hide(); return }
+          prep(el); const t = el.dataset.tip; if (!t || (el.textContent.match(/\p{L}/gu) || []).length > 1 || el.getAttribute('aria-expanded') === 'true') { hide(); return } // a tool with its options open shows them, not its name
           cur = el; tip.textContent = t; tip.classList.toggle('on-dark', !!el.closest('#img-modal-overlay')); tip.classList.add('show');
           const z = uiZoom(), r = el.getBoundingClientRect(), w = tip.offsetWidth * z, h = tip.offsetHeight * z, gap = 6 * z;
           let top = r.top - h - gap; if (top < 4) top = r.bottom + gap;
@@ -4648,7 +4694,7 @@
           if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
-        $('ann-canvas').addEventListener('pointermove', e => { const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' });
+        $('ann-canvas').addEventListener('pointermove', e => { annPtr = annCanvasXY(e); const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; e.currentTarget.style.cursor = annSelectCursorAt(annPtr) });
         $('ann-cancel').onclick = annDeactivate;
         // The image as saved: the visible image with the annotations drawn on it, cut to the crop box when there is one
         function annRenderSaved(img, fW, fH, cX, cY) {
@@ -4784,13 +4830,13 @@
         const _boldBtn = $('ann-bold-btn'), _italicBtn = $('ann-italic-btn');
         if (_boldBtn) {
           _boldBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
-          _boldBtn.onclick = () => { annTextBold = !annTextBold; _boldBtn.classList.toggle('active', annTextBold); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.focus() } }
+          _boldBtn.onclick = () => { annTextBold = !annTextBold; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontWeight = annTextBold ? 'bold' : 'normal'; inp.focus() } }
         }
         if (_italicBtn) {
           _italicBtn.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
-          _italicBtn.onclick = () => { annTextItalic = !annTextItalic; _italicBtn.classList.toggle('active', annTextItalic); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
+          _italicBtn.onclick = () => { annTextItalic = !annTextItalic; annShowTextStyleBtns(); const inp = $('ann-text-input'); if (inp && $('ann-text-overlay').style.display !== 'none') { inp.style.fontStyle = annTextItalic ? 'italic' : 'normal'; inp.focus() } }
         }
-        // Thickness minus/plus: in text mode it sets the font size (live resize); outside text, the thickness.
+        // Thickness minus/plus: with the Texto tool it sets the font size (live resize); outside text, the thickness.
         // mousedown.preventDefault stops the blur/commit of the text editor (same pattern as the swatches and the B/I buttons).
         function annTextLiveResize() {
           const inp = $('ann-text-input');
@@ -4840,12 +4886,32 @@
           }
         };
         function annSyncHlBtns() { [['ann-hl-soft', !annHlSolid], ['ann-hl-solid', annHlSolid]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }) }
-        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
+        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); annCloseFlyout(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
         annSyncHlBtns();
-        // Tool buttons
-        document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.onclick = () => annSetTool(b.dataset.tool) });
-        // Back from the text mode: the text being written stays on the image (saved to the file only with the green button)
-        $('ann-text-back').onclick = () => { if (annCommitText) annCommitText(); annSetTool(annPrevTool) };
+        // Contorno or Preenchido; a selected shape of the same kind changes too, with undo
+        function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { [['outline', !annFill[t]], ['fill', annFill[t]]].forEach(([k, on]) => { const b = $('ann-' + t + '-' + k); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
+        ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); annCloseFlyout(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
+        annSyncFillBtns();
+        // Tool buttons. A tool with options opens them with a double click, a press of 1 s or the up arrow
+        document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
+          b.onclick = () => annSetTool(b.dataset.tool);
+          if (!b.hasAttribute('aria-haspopup')) return;
+          let _hold = 0;
+          const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
+          b.addEventListener('dblclick', open);
+          b.addEventListener('pointerdown', e => { if (e.button === 0) _hold = setTimeout(open, 1000) });
+          ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
+          b.addEventListener('contextmenu', e => e.preventDefault()); // a long touch opens the options, not the system menu
+          b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('.ann-opt'); if (o) o.focus() } });
+        });
+        // Inside the options: the left and right arrows move between them, Esc closes and goes back to the tool; a click elsewhere closes
+        document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('keydown', e => {
+          const all = [...f.querySelectorAll('.ann-opt')], k = all.indexOf(document.activeElement);
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = all[(k + (e.key === 'ArrowRight' ? 1 : -1) + all.length) % all.length]; if (n) n.focus() }
+        }));
+        window.addEventListener('keydown', e => { if (e.key === 'Escape' && annFlyoutOpen) { e.preventDefault(); e.stopImmediatePropagation(); annCloseFlyout(true) } }, true);
+        document.addEventListener('pointerdown', e => { if (annFlyoutOpen && !e.target.closest('.ann-tool-wrap')) annCloseFlyout() }, true);
+        document.addEventListener('focusin', e => { if (annFlyoutOpen && !annFlyoutOpen.parentElement.contains(e.target)) annCloseFlyout() });
         const cv = $('ann-canvas');
         // Starts dragging the shape at index idx from the canvas point p (right button in any tool, or a click in Selecionar)
         function annStartShapeDrag(p, idx) {
@@ -4931,9 +4997,9 @@
         const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
         // While Ctrl is held, or a shape is grabbed with the right or middle button, the Selecionar button lights up instead of the
         // current tool, which lights up again on release
-        function annQuasiSelect(on) { if (annTool === 'select' || annTool === 'crop' || $('img-modal-ann-actions').classList.contains('ann-sub-mode')) return; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === (on ? 'select' : annTool))); }
+        function annQuasiSelect(on) { if (annTool === 'select' || annTool === 'crop') return; document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === (on ? 'select' : annTool))); }
         function annCtrlUp() { annCtrlHeld = false; if (!annDragging && !annResizing) annQuasiSelect(false); const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
-        window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive && annTool !== 'crop') { annCtrlHeld = true; annQuasiSelect(true); const cv = $('ann-canvas'); if (cv && annTool !== 'select') cv.style.cursor = 'default'; } });
+        window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive && annTool !== 'crop' && !e.repeat) { annCtrlHeld = true; annQuasiSelect(true); const cv = $('ann-canvas'); if (cv && annTool !== 'select' && !annDragging && !annResizing) cv.style.cursor = annPtr ? annSelectCursorAt(annPtr) : 'default'; } }); // the key repeats while held: only the first press counts, so the cursor does not flicker
         window.addEventListener('keyup', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlUp(); });
         window.addEventListener('blur', () => { if (annCtrlHeld) annCtrlUp(); });
         function annDownSelect(e) {
@@ -4992,10 +5058,8 @@
           annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
           const _si = ANN_TEXT_SIZES.indexOf(_h.fontSize || 24); annTextSizeIdx = _si >= 0 ? _si : 2;
           document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === _h.color));
-          const _bb = $('ann-bold-btn'), _ib = $('ann-italic-btn');
-          if (_bb) _bb.classList.toggle('active', annTextBold);
-          if (_ib) _ib.classList.toggle('active', annTextItalic);
-          if (annTool !== 'text') annSetTool('text'); // editing a text shows the text bar (← T B I); the ← goes back to the tool in use
+          annShowTextStyleBtns();
+          if (annTool !== 'text') annSetTool('text'); // editing a text switches to the Texto tool; its options (B, I) show what the text uses
           annRenderAll(); // original text hidden; overlay update
           annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
         }
@@ -5027,8 +5091,7 @@
           if (!annDrawing || !annActive || !annLastEvt) return;
           let p = annCanvasXYClamped(annLastEvt); if (annShift && !annIsStroke()) p = annShiftPoint(annShiftKind(annTool), annStart, p);
           const ctx = annGetCtx(); annRenderAll(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-          if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() }
-          else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) }
+          if (annTool === 'circle' || annTool === 'rect') annDrawShape(ctx, { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW(), fill: annFill[annTool] })
           else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() }
           else if (annIsStroke()) { ctx.save(); annStrokeStyle(ctx, annCurrentColor, annLineW(), annTool === 'highlight' ? annHlMode() : null); annCR(ctx, annPath, false); ctx.restore(); }
         }
@@ -5230,7 +5293,8 @@
             }
           } else if (annTool !== 'text') {
             annPushUndo(); // M2: snapshot BEFORE adding rect/circle/arrow
-            annHistory.push({ type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() });
+            const _sh = { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW() }; if (annFill[annTool]) _sh.fill = true;
+            annHistory.push(_sh);
             setAnnDirty(true);
           }
           annRenderAll();

@@ -12,7 +12,9 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 
 ### Adicionado
 
-- **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação. As opções aparecem num modo da barra, como as do texto, com ícones que mostram a diferença: a linha de texto aparece através da faixa, ou fica coberta.
+- **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação.
+- **Opções das ferramentas (D-0102).** O retângulo, o círculo, o marca-texto e o texto têm um ponto logo acima do botão. Um duplo clique, ou o botão apertado por 1 s, abre as opções logo acima, lado a lado como a barra, em botões do mesmo tamanho, cada um com o seu nome; pelo teclado, a seta para cima. Substituem os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma.
+- **Retângulo e círculo preenchidos (D-0102).** «Contorno», o padrão, ou «Preenchido», uma forma cheia na cor, que cobre o que está embaixo.
 - **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
 - **Modo «Maiúsculas» da identificação (D-0096).** Token `TOKEN_ID_UPPERCASE`, com o interruptor no Visual Builder. Ligado, o valor dos campos vira maiúsculas ao digitar; desligado, fica como foi digitado. O placeholder mostra o rótulo como foi escrito.
 - **Botão do meio do mouse (D-0100).** Sobre uma anotação, agarra e move, como o botão direito.
