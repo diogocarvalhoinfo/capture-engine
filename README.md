@@ -34,7 +34,7 @@ Ferramenta para capturar, organizar e exportar imagens e documentos como evidên
 <!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/overview.png -->
 ![Primeira tela do Capture Engine, com a identificação, a exportação, as zonas de imagens e de documentos, o histórico e os removidos anotados](docs/images/overview.png)
 
-1. **Identificação**: os campos «User» e «Equipamento» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
+1. **Identificação**: os campos «Quem» e «O que» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
 2. **Exportar**: gera um PDF só com imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
 3. **Imagens**: cole com Ctrl+V, arraste ou clique para adicionar. <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
 4. **Documentos**: qualquer outro arquivo; os de texto abrem na própria ferramenta. <!-- anotação: alvo=#doc-zone; lado=cima; ponto=0.9,0 -->
@@ -148,7 +148,7 @@ A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guard
 ```
 1. Abrir → Interface limpa, sem dados (estado inicial)
            ↓
-2. Identificar (opcional) → Escrever nome do usuário e equipamento
+2. Identificar (opcional) → preencher «Quem» e «O que»
            ↓
 3. Capturar → Ctrl+V, arrastar arquivos, ou clicar "Adicionar imagem"/"Adicionar documento"
            ↓
@@ -335,9 +335,9 @@ Cada abertura do Capture Engine começa com uma sessão nova em branco. A interf
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.
 
 **Identificação de sessão:**
-- **Nome da sessão** — derivado automaticamente dos campos de Identificação (User e Equipamento, separados por hífen). Com «Maiúsculas» ligado, o padrão, o nome sai em maiúsculas; desligado, sai como foi digitado. Os rótulos dos dois campos são configuráveis no Visual Builder.
-- **Campo User** — nome do usuário que trabalha (configurável)
-- **Campo Equipamento** — nome do computador ou equipamento (configurável)
+- **Nome da sessão** — derivado automaticamente dos campos de Identificação (Quem e O que, separados por hífen). Com «Maiúsculas» ligado, o padrão, o nome sai em maiúsculas; desligado, sai como foi digitado. Os rótulos dos dois campos são configuráveis no Visual Builder.
+- **Campo Quem** — quem fez o registro, por exemplo o nome do usuário (rótulo configurável)
+- **Campo O que** — o que foi registrado, por exemplo o computador ou o equipamento (rótulo configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
 
 **Purge automático:**
@@ -377,8 +377,8 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 - «Texto do rodapé»: `{YEAR}` vira o ano atual. É a marca da organização, e não substitui o aviso de copyright do código e do `LICENSE`
 
 **Aba Histórico:**
-- «Primeiro campo»: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
-- «Segundo campo»: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
+- «Primeiro campo»: o rótulo (por padrão, «Quem») e o interruptor que mostra ou esconde o campo na barra lateral
+- «Segundo campo»: o rótulo (por padrão, «O que») e o interruptor que mostra ou esconde o campo na barra lateral
 - «Maiúsculas»: ligado, o padrão, converte para maiúsculas o que se digita nos dois campos; desligado, o texto fica como foi digitado
 
 **Aba Captura:**
@@ -429,10 +429,10 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_MAIN_COLOR` | Cor principal da interface |
 | `TOKEN_ACCENT_FG_OVERRIDE` | Cor do texto sobre a cor principal (vazio = automático) |
 | `TOKEN_FOOTER_TEXT` | Texto do rodapé |
-| `TOKEN_SHOW_SESSION_USER` | Mostra/oculta o primeiro campo (User) |
-| `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o segundo campo (Equipamento) |
-| `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa "User") |
-| `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "Equipamento") |
+| `TOKEN_SHOW_SESSION_USER` | Mostra/oculta o primeiro campo (Quem) |
+| `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o segundo campo (O que) |
+| `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa "Quem") |
+| `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "O que") |
 | `TOKEN_ID_UPPERCASE` | Converte para maiúsculas o que se digita nos dois campos (desligado = o texto fica como foi digitado) |
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
@@ -811,7 +811,7 @@ init()
 - `cropBox`: objeto `{x, y, w, h}` em pixels relativos, ou `null` quando sem crop ativo
 - `annRedoStack`: array de snapshots de refazer persistido (até 50) — faz o redo sobreviver a salvar+reabrir
 
-**Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos User/Equipamento/Nome guarda imediatamente.
+**Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos Quem/O que/Nome guarda imediatamente.
 
 ### Diagrama de componentes
 
