@@ -1449,7 +1449,10 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 
 O que ficou para depois, com o ID e a origem.
 
-Nenhum.
+| ID | O quê | Origem |
+|---|---|---|
+| F-0073 | O Safari continua marcado como não testado em «Requisitos». Fecha com a lista de teste no iPhone, feita pelo dono na página publicada da 28.7.0. | Auditoria de 2026-11-04 |
+| F-0074 | Frases com mais de 30 palavras no `AGENTS.md` (7 a 8, contagem automática). | Auditoria de 2026-11-04 |
 
 ### IDs
 

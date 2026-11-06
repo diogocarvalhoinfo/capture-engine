@@ -4,6 +4,56 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [28.7.0] - 2026-11-05
+
+Minor: o marca-texto, o Shift nas ferramentas, o modo da identificação e os cartões no topo do README, com as correções da auditoria de 2026-11-04. Quem já distribui a ferramenta não precisa refazer nada: o token novo começa no comportamento de antes.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem mantém o projeto, com o arquivo já na 28.7.0.
+
+### Adicionado
+
+- **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação. As opções aparecem num modo da barra, como as do texto, com ícones que mostram a diferença: a linha de texto aparece através da faixa, ou fica coberta.
+- **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
+- **Modo «Maiúsculas» da identificação (D-0096).** Token `TOKEN_ID_UPPERCASE`, com o interruptor no Visual Builder. Ligado, o valor dos campos vira maiúsculas ao digitar; desligado, fica como foi digitado. O placeholder mostra o rótulo como foi escrito.
+- **Botão do meio do mouse (D-0100).** Sobre uma anotação, agarra e move, como o botão direito.
+- **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona; ao soltar, a ferramenta de antes volta.
+- **Cartões «Download» e «Abrir o site»** no topo do README, gerados pelo `cartoes.py` do repositório do método.
+
+### Modificado
+
+- **A seta tem uma alça em cada ponta (F-0067, F-0079).** Cada alça move só a sua ponta, e a seta nunca troca de direção. O ✕ fica ao lado do meio da seta, longe das alças.
+- **«Diminuir» e «Aumentar» (D-0094)** no lugar de «Espessura menor» e «Espessura maior», em todas as ferramentas.
+- **Botões do visualizador (D-0098).** «Download» e «Restaurar» seguem a regra das ferramentas do editor, e «Editar», «Download» e «Restaurar» medem 120 × 36 px.
+- **GIF do editor (D-0099).** Uma cena neutra, sem datas, com a seta saindo de dentro da janela.
+- **Visual Builder:** fecha só pelo ✕, também com o teclado; o Esc não o fecha (D-0097).
+- **Menos movimento:** quando o sistema pede menos movimento, os botões do editor mudam de estado sem transição.
+
+### Removido
+
+- **O botão flutuante de colar, no telefone (F-0068, F-0075).** O sistema recusava a área de transferência ou pedia um segundo toque, e o botão cobria o «.zip». O telefone usa «Adicionar imagem» e «Adicionar documento».
+- **Código sem uso (F-0081):** 10 regras de CSS, 13 tokens, 2 funções e o campo `exported` das sessões. As telas principais deram 0 pixels diferentes antes e depois.
+
+### Corrigido
+
+- **Uma captura que o navegador não grava fica na aba (F-0063).** Antes, sumia sem aviso. Agora aparece, com a faixa «Capturas só nesta aba» e «Só nesta aba» na barra de estado.
+- **O Tab não desloca mais as barras recolhidas (F-0064)** e passa só pelas setas que as abrem.
+- **O Tab fica no modal aberto (F-0065),** e o foco volta à origem ao fechar. O Esc fecha a exportação da ferramenta (F-0078).
+- **O teclado alcança o fluxo principal (F-0066):** miniaturas, documentos, sessões, abas, cartões de exportação e cada chip. O ✕ e o restaurar aparecem também com o foco.
+- **Os exports dizem o perfil no nome (F-0069):** `CAPTURE-ENGINE-ADMIN-…` e `CAPTURE-ENGINE-USER-…`.
+- **Botão direito fora do Selecionar (F-0082):** a anotação agarrada não fica mais selecionada, com alças que essa ferramenta não usa.
+- **A regra do «Download» que nunca valia (F-0080).**
+- **Documentação:** a captura que não grava no README (F-0071); a resposta sobre servidores (F-0072); a seção «Acessibilidade», medida de novo no Edge 156, no Firefox 150 e no WebKit 26.4; a legenda dos IDs `A-` e `O-` (F-0070); a lista do Histórico, que só monta ao abrir a barra (F-0076).
+
+### Decisões e pendentes
+
+- **F-0077,** o Esc no Visual Builder: aceito por escolha, na D-0097.
+- **F-0073,** o Safari no iPhone, e **F-0074,** as frases longas do `AGENTS.md`: em «Pendentes».
+
+### Cobertura da auditoria de 2026-11-04
+
+- Auditoria completa do Prompt 3 sobre a 28.6.5, com 15 achados, validados um a um por um agente separado no Edge, no Firefox e no WebKit. A validação achou mais dois, a F-0078 e a F-0079.
+- Não foram examinados: o Safari real, no iPhone e no Mac; os leitores de tela; o purge de 48 horas; a edição em várias abas; a reordenação por arrastar; as sessões grandes e a cota cheia real.
+
 ## [28.6.5] - 2026-11-02
 
 Patch: os achados da auditoria de regressão da 28.6.4. O arquivo para baixar só muda no número da versão.
