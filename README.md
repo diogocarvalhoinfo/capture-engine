@@ -5,9 +5,8 @@
 Ferramenta para capturar, organizar e exportar imagens e documentos como evidência, em PDF ou ZIP, num único arquivo HTML que abre no navegador e funciona sem internet.
 
 <!-- cartoes: logotipo=docs/images/logo.svg; arquivo=capture-engine.html; site=diogocarvalhoinfo.github.io/capture-engine; cor=#e86b2e -->
-<a href="https://github.com/diogocarvalhoinfo/capture-engine/releases/latest/download/capture-engine.html"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/card-download-dark.svg"><img src="docs/images/card-download-light.svg" alt="Download do Capture Engine: capture-engine.html" width="300" height="64"></picture></a>
-
-<a href="https://diogocarvalhoinfo.github.io/capture-engine/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/card-site-dark.svg"><img src="docs/images/card-site-light.svg" alt="Abrir o site do Capture Engine: diogocarvalhoinfo.github.io" width="300" height="64"></picture></a>
+<a href="https://github.com/diogocarvalhoinfo/capture-engine/releases/latest/download/capture-engine.html"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/card-download-dark.svg"><img src="docs/images/card-download-light.svg" alt="Download do Capture Engine: capture-engine.html" width="300" height="78"></picture></a><br>
+<a href="https://diogocarvalhoinfo.github.io/capture-engine/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/card-site-dark.svg"><img src="docs/images/card-site-light.svg" alt="Abrir o site do Capture Engine: diogocarvalhoinfo.github.io" width="300" height="78"></picture></a>
 
 ## Índice
 
