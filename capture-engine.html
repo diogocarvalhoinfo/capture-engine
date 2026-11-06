@@ -4267,8 +4267,8 @@
       function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
       // B and I in the Texto tray show the style in use
       function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic) }
-      // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a double click,
-      // a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
+      // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a click on the tool
+      // once chosen, a double click, a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
       // the focus elsewhere, Esc or another tool. Each option keeps its place, so the hand learns where it is
       let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
       function annOpenFlyout(btn) {
@@ -4966,14 +4966,19 @@
         function annSyncFillBtns() { ['rect', 'circle'].forEach(t => { annPress('ann-' + t + '-outline', !annFill[t]); annPress('ann-' + t + '-fill', annFill[t]); const tb = document.querySelector(`.ann-btn[data-tool="${t}"]`); if (tb) tb.classList.toggle('ann-filled', annFill[t]) }) }
         ['rect', 'circle'].forEach(t => [['outline', false], ['fill', true]].forEach(([k, on]) => { $('ann-' + t + '-' + k).onclick = () => { annFill[t] = on; try { localStorage.setItem('fill-' + t, on ? '1' : '0') } catch (_) { } annSyncFillBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.type === t && !!_s.fill !== on) { annPushUndo(); if (on) _s.fill = true; else delete _s.fill; setAnnDirty(true) } annRenderAll() } }));
         annSyncFillBtns();
-        // Tool buttons. A tool with options opens them with a double click, a press of 1 s or the up arrow
+        // Tool buttons. A tool with options opens them with a click on it once chosen (a touch on a phone), a double click,
+        // a press of 1 s or the up arrow; a click on it with the tray open closes it
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
-          b.onclick = () => annSetTool(b.dataset.tool);
-          if (!b.hasAttribute('aria-haspopup')) return;
-          let _hold = 0;
+          let _hold = 0, _held = false;
           const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
+          b.onclick = e => {
+            if (_held || e.detail > 1) { _held = false; return } // the press of 1 s or the double click already opened it
+            if (annTool !== b.dataset.tool || !b.hasAttribute('aria-haspopup')) annSetTool(b.dataset.tool);
+            else if (annFlyoutOpen && annFlyoutOpen.parentElement === b.parentElement) annCloseFlyout(); else annOpenFlyout(b);
+          };
+          if (!b.hasAttribute('aria-haspopup')) return;
           b.addEventListener('dblclick', open);
-          b.addEventListener('pointerdown', e => { if (e.button === 0) _hold = setTimeout(open, 1000) });
+          b.addEventListener('pointerdown', e => { _held = false; if (e.button === 0) _hold = setTimeout(() => { _held = true; open() }, 1000) });
           ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
           b.addEventListener('contextmenu', e => e.preventDefault()); // a long touch opens the options, not the system menu
           b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
