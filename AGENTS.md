@@ -814,7 +814,7 @@ ativar arrasto:
 |---|---|---|
 | `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra a barra de ferramentas; oculta `#img-nav-prev` e `#img-nav-next` | Chamada pelo botão "Editar" (id `ann-toggle`) |
 | `annDeactivate()` | Desativa anotação: esconde canvas e barra de ferramentas, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
-| `annSetTool(t)` | Define ferramenta ativa; mostra/esconde botões B/I conforme `t==='text'` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. A entrada e a saída ficam em `annEnterCrop` e `annLeaveCrop`; o deslocamento de todas as anotações, também das pilhas de desfazer e refazer, em `annShiftAll`. |
+| `annSetTool(t)` | Define a ferramenta ativa: guarda e repõe o passo (`annSizeByTool`) e a cor (`annColorBy`) de cada ferramenta, fecha a bandeja de outra ferramenta e esquece o `annTempSelectFrom` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. A entrada e a saída ficam em `annEnterCrop` e `annLeaveCrop`; o deslocamento de todas as anotações, também das pilhas de desfazer e refazer, em `annShiftAll`. |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
 | `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap girado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
@@ -830,12 +830,12 @@ ativar arrasto:
 | Comportamento | Descrição e Invariantes |
 |---|---|
 | **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O ícone "T" fica na cor de destaque/accent (cor primária) quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (através da classe `.ann-txt-selected`). |
-| **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** permite agarrar e mover imediatamente, não importando qual a ferramenta ativa (nunca desenha e suprime o menu de contexto nativo). |
+| **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** e o **do meio** agarram e movem em qualquer ferramenta, sem desenhar e sem o menu de contexto nativo (ver «Botões direito e do meio»). |
 | **Seta** | Uma seta selecionada não tem caixa: tem uma alça redonda em cada ponta (`'p1'` no início, `'p2'` na ponta), e cada alça move só a sua ponta. O ✕ fica ao lado do meio da seta, a 28 px das alças (`annArrowDelPoint`). |
 | **Shift** | Ao desenhar e ao redimensionar: retângulo quadrado, elipse círculo, seta e traço livre em passos de 45° (`annShiftPoint`, D-0093). |
 | **Marca-texto** | Um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e larguras de `ANN_HL_SIZES` (`annStrokeStyle`). As opções «Translúcido» e «Sólido» ficam acima da ferramenta (D-0102). |
 | **Opções das ferramentas** | Cada ferramenta com opções fica num `.ann-tool-wrap`, com as opções num `.ann-flyout` acima dela. `annOpenFlyout` abre (duplo clique, 1 s apertado ou seta para cima), `annCloseFlyout` fecha (Esc, clique ou foco fora, troca de ferramenta; escolher uma opção não fecha). `annFill` guarda «Preenchido» do retângulo e do círculo, e a anotação ganha o campo `fill: true` (D-0102). Toda bandeja termina com `.ann-size-btn` (− e +, que chamam o `onclick` de `#ann-thickness-down` e `#ann-thickness-up`) e `.ann-size-val`, que `annSyncSizeVal` preenche: o tamanho da anotação selecionada ou o da ferramenta, um ponto por passo ou o número do texto. |
-| **Botões direito e do meio** | Agarram e movem uma anotação em qualquer ferramenta; fora do Selecionar, ela não fica selecionada ao soltar (D-0100). |
+| **Botões direito e do meio** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, selecionam-na, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar, e `annTempSelectFrom` guarda a ferramenta de antes; `annEndTempSelect` volta a ela num clique fora das anotações ou ao apagar a anotação (D-0103). No Recortar, só agarram e movem. |
 | **Ctrl** | Com o Ctrl (Cmd no Mac) apertado, qualquer ferramenta funciona como o Selecionar; `annCtrlHeld` guarda o estado, `annQuasiSelect` acende o botão Selecionar enquanto ele dura, e `annCtrlUp` tira a seleção ao soltar a tecla (D-0101). `annHandleCursor` dá a cada alça o cursor do lado que ela puxa, girado com o texto. |
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto); no texto, a ferramenta Texto fica com o tamanho novo. A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
@@ -858,6 +858,26 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 - **Salvar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações (`annRenderSaved`), persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy (`annSaveCrop`), chama `annDeactivate()`.
 - **`annCropBox`**: estado ativo do recorte em memória (`{x, y, w, h}`) durante a edição. Null fora do modo crop.
 - **Invariante:** `origBlob` nunca é cortado. Todo recorte é reversível.
+
+### Funções auxiliares do editor
+
+| Função | O que faz |
+|---|---|
+| `annEndTempSelect()` | Sai do Selecionar aberto pelo botão direito ou do meio: tira a seleção e volta a `annTempSelectFrom`. Devolve `true` quando voltou (D-0103) |
+| `annSizeStep(dir)` | Um passo do − (`-1`) ou do + (`1`), da barra ou de uma bandeja: a anotação selecionada primeiro, senão a ferramenta |
+| `annTextStep(v, dir)` | O passo de `ANN_TEXT_SIZES` acima ou abaixo do tamanho `v`, mesmo fora dos passos (D-0105) |
+| `annSyncSizeVal()` | Escreve o tamanho atual depois do − e do + de cada bandeja: um ponto, ou o número do texto |
+| `annPress(id, on)` | Liga ou desliga `active` e `aria-pressed` de um botão de opção |
+| `annSyncHlBtns()` | Acerta «Translúcido» e «Sólido» do marca-texto |
+| `annSyncFillBtns()` | Acerta «Contorno» e «Preenchido» do retângulo e do círculo, e o ícone cheio da ferramenta |
+| `annSyncSwatches()` | Marca na paleta a cor de `annCurrentColor` |
+| `annColorKey(t)` | `'hl'` para o marca-texto, `'line'` para as outras: a chave de `annColorBy` |
+| `annSelectCursorAt(p)` | O cursor do Selecionar no ponto `p`: o de uma alça, o de mover sobre uma anotação, ou o padrão. Usada com o Ctrl apertado |
+| `annToolCursor()` | O cursor da ferramenta atual: `text`, `default` (Selecionar) ou `crosshair` |
+| `annIsStroke()` | `true` no desenho livre e no marca-texto, os dois traços livres |
+| `annShiftKind(t)` | `'box'` no retângulo e no círculo, `'line'` nas outras: o modo do `annShiftPoint` |
+| `upperKeepCaret(f)` | Passa o valor do campo para maiúsculas sem mexer no cursor (D-0096) |
+| `showMemOnlyBanner()` | Mostra a faixa «Capturas só nesta aba» (`role="alert"`), uma vez por página, chamada pelo `keepInTab` |
 
 ### Funções do Admin Gate
 
@@ -1003,7 +1023,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `_vbLabelDirty` | object | `{user: bool, equip: bool}` — track se o admin editou rótulos no VB |
 | `sysColors` | object | Cores atuais `{main, fg, tStart, tAccent, tEnd}`. `main` e `fg` são a cor principal e a cor do texto sobre ela, usadas no contraste automático YIQ. O YIQ é um modelo de luminância que escolhe texto preto ou branco. `tStart`, `tAccent` e `tEnd` são as cores das 3 partes do título (vazio = herda). Inicializado a partir de `TOKEN_MAIN_COLOR`, `TOKEN_ACCENT_FG_OVERRIDE`, `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Lido por `applyTokens()`/`initVbSync()` e exportado pelo Quine. |
 | `annActive` | boolean | `true` = modo de anotação ativo |
-| `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `text` \| `crop` |
+| `annTool` | string | Ferramenta ativa: `select` \| `rect` \| `circle` \| `arrow` \| `free` \| `highlight` \| `text` \| `crop` |
 | `annHistory` | array | Fonte única da verdade das formas atuais no canvas; cada entrada: `{type, x1, y1, ...}` |
 | `annUndoStack` | array | Pilha de snapshots compostos `{h, rot, crop, pcrop}`: `h` = deep clone de `annHistory`, `rot` = `annCurrentRotation`, `crop` = deep clone de `annCropBox` ou `null`, `pcrop` = clone da `o.cropBox` persistida ou `null`. O formato composto permite restaurar rotação e recorte além das anotações. Máximo `ANN_HISTORY_MAX` (50) |
 | `annRedoStack` | array | Pilha de snapshots para refazer; limpa sempre que uma nova ação gera um undo |
@@ -1034,6 +1054,13 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `imgPanX` / `imgPanY` | number | Offsets de pan da imagem no modal |
 | `imgPanning` | boolean | Flag de estado de pan (arrastamento) ativo |
 | `imgStartX` / `imgStartY` | number | Coordenadas iniciais do pan |
+| `annCtrlHeld` | boolean | Ctrl (Cmd no Mac) apertado no editor: qualquer ferramenta funciona como o Selecionar (D-0101) |
+| `annShift` | boolean | Shift apertado no gesto atual, lido a cada evento de ponteiro e na própria tecla (D-0093) |
+| `annPtr` | object \| null | A última posição do ponteiro no canvas, em px do canvas; dá o cursor ao apertar o Ctrl |
+| `annHlSolid` | boolean | «Sólido» escolhido no marca-texto; chave `hl-solid` (D-0095) |
+| `memOnly` | WeakSet | Os itens que o navegador não gravou e ficam só nesta aba (F-0063) |
+| `memOnlyNoticeShown` | boolean | A faixa «Capturas só nesta aba» já apareceu nesta página |
+| `idUpper` | boolean | Modo «Maiúsculas» atual; começa em `TOKEN_ID_UPPERCASE` e segue o interruptor do Visual Builder (D-0096) |
 | `annSpaceHeld` | boolean | Barra de espaço pressionada no editor, com a imagem ampliada: arrastar move a imagem, em vez de desenhar |
 | `annFill` | object | `{ rect, circle }`: `true` é «Preenchido» (D-0102) |
 | `annFlyoutOpen` | Element \| null | As opções abertas de uma ferramenta (`.ann-flyout`), com `dataset.tool` |
@@ -1053,6 +1080,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `ANN_AWAIT_MS` | number (const) | `5000` — quanto tempo os outros botões da barra ficam apagados depois do aviso de anotações por salvar |
 | `annAwaitTimer` | TimeoutID \| null | Temporizador do estado `ann-await`; `null` quando inativo |
 | `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na barra de anotação (px) |
+| `ANN_HL_SIZES` | array (const) | `[8, 12, 18, 26, 36, 48]`: as larguras do marca-texto (px), nos mesmos seis passos do `ANN_SIZES` |
 | `ANN_TEXT_SIZES` | array (const) | `[12, 14, 16, … 320, 400]` — os passos do − e do + no texto (px); `annTextStep` acha o próximo. O arraste das alças vai de `ANN_TEXT_MIN` (8) a `ANN_TEXT_MAX` (400) |
 | `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois lugares (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê ao escrever (WYSIWYG) |
 
@@ -1317,7 +1345,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] O traço salvo é igual ao que se viu na tela — sem arredondar, sem alisar e sem fechar o contorno sozinho
 - [ ] Curvas mantêm as quinas suaves depois de soltar (não ficam pontudas)
 - [ ] Retângulo, círculo e seta desenham por arrasto
-- [ ] Texto: colocar (Enter confirma, Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
+- [ ] Texto: colocar (Enter insere uma linha nova; clicar fora ou Confirmar grava; Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Confirmar" funde a anotação na imagem; "Cancelar" descarta
 - [ ] Tentar fechar o modal com anotações por salvar → botões Confirmar/Cancelar pulsam, e o resto da barra fica meio transparente e sem clique por 5 s
@@ -1450,9 +1478,9 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0092 | **A complexidade conta a forma de código das palavras** | O check 10 contava `if`, `else`, `for` e as outras como palavras soltas, também nos comentários. Com os comentários em inglês, avisava `annDoUndo` e `annDoRedo`, que não tinham mudado (A-03). Agora conta só a forma que a palavra tem no código. Medido em 207 funções com código igual na 28.6.3 e na 28.6.4: 6 mudavam de número só pelos comentários, e nenhuma muda agora. Os comentários continuam sem ser removidos (D67, D72), e a armadilha dos apóstrofos continua valendo. Origem: auditoria de regressão de 2026-11-02. |
 | D-0093 | **Shift nas ferramentas do editor** | Ao desenhar e ao redimensionar, o Shift deixa o retângulo quadrado e a elipse círculo, e a seta e o desenho livre em passos de 45° a partir do ponto fixo. O estado do Shift é lido a cada evento de ponteiro e na própria tecla. Origem: pedido do dono, 2026-11-04. |
 | D-0094 | **«Diminuir» e «Aumentar» no lugar de «Espessura menor» e «Espessura maior»** | Os dois botões têm o mesmo nome em todas as ferramentas: mudam a espessura do traço ou, no texto, o tamanho da letra. Antes, o nome mudava entre «Espessura» e «Texto». Origem: pedido do dono, 2026-11-04. |
-| D-0095 | **Marca-texto translúcido ou sólido, e não as ferramentas tarja e desfocar** | Uma ferramenta só esconde ou destaca: «Translúcido» (40 % de opacidade) deixa ler o que está por baixo, e «Sólido» cobre. O traço é um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e uma escala de larguras própria (`ANN_HL_SIZES`); por isso herda a seleção, o mover, o redimensionar, o girar e o desfazer. As opções ficam acima da ferramenta (D-0102). Não usa `multiply`: o canvas das anotações fica por cima da imagem, e a gravação ficaria diferente da tela. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
+| D-0095 | **Marca-texto translúcido ou sólido, e não as ferramentas tarja e desfocar** (o modo da barra foi substituído pela D-0102) | Uma ferramenta só esconde ou destaca: «Translúcido» (40 % de opacidade) deixa ler o que está por baixo, e «Sólido» cobre. O traço é um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e uma escala de larguras própria (`ANN_HL_SIZES`); por isso herda a seleção, o mover, o redimensionar, o girar e o desfazer. As opções ficam acima da ferramenta (D-0102), e o − e o + da bandeja mudam a espessura, como nas outras ferramentas. Em 2026-11-06, o − e o + mudaram a opacidade do marca-texto no lugar das duas opções; o dono voltou atrás no mesmo dia, porque o − e o + mudavam de sentido só nesta bandeja e a espessura saía dela. Não usa `multiply`: o canvas das anotações fica por cima da imagem, e a gravação ficaria diferente da tela. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
 | D-0099 | **Cena do GIF do editor: neutra, sem datas, e a seta sai de dentro da janela** | A captura é uma área de trabalho com o programa fictício «Orbita», uma DLL selecionada e uma notificação de erro, só com palavras iguais no Brasil e em Portugal. O GIF começa no visualizador: clica em «Editar», escolhe a Seta, e a seta de 4 px sai do painel da esquerda e termina na DLL. Termina com as ferramentas abertas, sem salvar. Substitui a frase da D-0091 sobre a seta partir do canto de baixo à esquerda. Origem: pedido do dono, 2026-11-05. |
-| D-0100 | **O botão do meio também agarra uma anotação** | Em qualquer ferramenta, o botão do meio sobre uma anotação faz o mesmo que o botão direito: agarra e move. Num lugar sem anotação, continua a mover a imagem ampliada. Fora do Selecionar, a anotação agarrada não fica selecionada ao soltar, porque as alças só funcionam no Selecionar (F-0082). Origem: pedido do dono, 2026-11-05. Em parte substituída pela D-0103: a anotação fica selecionada, e a barra passa ao Selecionar. |
+| D-0100 | **O botão do meio também agarra uma anotação** (a parte em que a anotação não fica selecionada foi substituída pela D-0103) | Em qualquer ferramenta, o botão do meio sobre uma anotação faz o mesmo que o botão direito: agarra e move. Num lugar sem anotação, continua a mover a imagem ampliada. Fora do Selecionar, a anotação agarrada não fica selecionada ao soltar, porque as alças só funcionam no Selecionar (F-0082). Origem: pedido do dono, 2026-11-05. |
 | D-0105 | **Texto de 12 a 400, e o arraste muda o tamanho da ferramenta** | O − e o + do texto andam em 20 passos, de 12 a 400 (`ANN_TEXT_SIZES`), a partir do tamanho que estiver, mesmo fora dos passos. O arraste das alças de um texto vai de 8 a 400, e o tamanho novo vale para a ferramenta Texto: aparece na bandeja e no próximo texto, como a cor de uma anotação selecionada já valia para a ferramenta. Antes: de 14 a 48 nos passos e de 8 a 96 no arraste. Origem: pedido do dono, 2026-11-06. |
 | D-0104 | **Cada ferramenta guarda a sua espessura; o marca-texto, a sua cor** | O desenho livre, o retângulo, o círculo e a seta começam um passo acima, com 4 px; o marca-texto fica nos 12 px. Cada ferramenta guarda o seu passo (`annSizeByTool`), e a bandeja mostra o dela; antes, um passo só valia para todas. O marca-texto começa no amarelo e guarda a sua cor; as outras ferramentas dividem a delas (`annColorBy`). Origem: pedido do dono, 2026-11-06. |
 | D-0103 | **O botão direito e o do meio selecionam** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, o botão direito ou o do meio a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar e guarda a ferramenta de antes em `annTempSelectFrom`; um clique fora das anotações, ou apagar a anotação com o ✕ ou o Delete, volta a ela sem desenhar. Escolher outra ferramenta na barra esquece a de antes. Substitui a parte da D-0100 e do F-0082 em que a anotação não ficava selecionada ao soltar. Origem: pedido do dono, 2026-11-06. |
@@ -1484,7 +1512,7 @@ Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não v
 | `M1`–`M6`, `M-1`, `B8`, `B-1`–`B-3` | Achados das auditorias externas da V26 | `CHANGELOG.md`, entrada `[V26]` |
 | `G1`–`G3` | Gerações sucessivas do Export Admin num teste do Export User | `CHANGELOG.md`, entrada `[V26]` |
 | `V7`–`V27` | Versões anteriores ao SemVer | `CHANGELOG.md` e tags `v1` a `v27` |
-| `A-01`–`A-03`, `O-01`–`O-02` | Achados (`A-`) e observações (`O-`) da auditoria de regressão de 2026-11-02, corrigidos na 28.6.5. Não contam para a numeração de `F-` | `CHANGELOG.md`, entrada `[28.6.5]`, e títulos de commit |
+| `A-01`–`A-03`, `O-01`–`O-02` | Achados (`A-`) e observações (`O-`) da auditoria de regressão de 2026-11-02. Os `A-` e a `O-02` foram corrigidos na 28.6.5; a `O-01` ficou como está. Não contam para a numeração de `F-` | `CHANGELOG.md`, entrada `[28.6.5]`, e títulos de commit |
 
 Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a decisão seguinte foi a `D-0077`.
 

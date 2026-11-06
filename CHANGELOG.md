@@ -13,15 +13,14 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 ### Adicionado
 
 - **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação.
-- **Opções das ferramentas (D-0102).** Todas as ferramentas que desenham têm um ponto discreto acima do botão, que fica laranja e liga a ferramenta à bandeja quando as opções estão abertas. Um duplo clique, ou o botão apertado por 1 s, abre as opções numa bandeja logo acima, lado a lado como a barra, sempre na mesma ordem, com a primeira em cima da ferramenta, em botões do mesmo tamanho, cada um com o seu nome. Fica aberta enquanto se escolhe e fecha com um clique fora; pelo teclado, a seta para cima. Substituem os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma. Toda bandeja termina com o − e o + soltos e o tamanho atual depois deles; o desenho livre e a seta têm só o tamanho.
+- **Opções das ferramentas (D-0102).** Todas as ferramentas que desenham têm um ponto discreto acima do botão, que fica na cor principal e liga a ferramenta à bandeja quando as opções estão abertas. Um duplo clique, ou o botão apertado por 1 s, abre as opções numa bandeja logo acima, lado a lado como a barra, sempre na mesma ordem, com a primeira em cima da ferramenta, em botões do mesmo tamanho, cada um com o seu nome. Fica aberta enquanto se escolhe e fecha com um clique fora, com o Esc ou ao trocar de ferramenta. Pelo teclado, a seta para cima a abre. Substituem os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma. Toda bandeja termina com o − e o + soltos e o tamanho atual depois deles; o desenho livre e a seta têm só o tamanho.
 - **Retângulo e círculo preenchidos (D-0102).** «Contorno», o padrão, ou «Preenchido», uma forma cheia na cor, que cobre o que está embaixo.
 - **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
 - **Modo «Maiúsculas» da identificação (D-0096).** Token `TOKEN_ID_UPPERCASE`, com o interruptor no Visual Builder. Ligado, o valor dos campos vira maiúsculas ao digitar; desligado, fica como foi digitado. O placeholder mostra o rótulo como foi escrito.
-- **Botão do meio do mouse (D-0100).** Sobre uma anotação, agarra e move, como o botão direito.
-- **O botão direito e o do meio selecionam (D-0103).** Sobre uma anotação, em qualquer ferramenta, ela fica selecionada, com as alças e o ✕, e a barra passa ao Selecionar. Um clique fora, ou apagar a anotação, volta à ferramenta de antes.
+- **Botão direito e do meio do mouse (D-0100, D-0103).** Sobre uma anotação, em qualquer ferramenta menos o Recortar, os dois a selecionam, com as alças e o ✕, e já a arrastam; a barra passa ao Selecionar. Um clique fora, ou apagar a anotação, volta à ferramenta de antes. Num lugar sem anotação, o botão do meio continua a mover a imagem ampliada.
 - **Espessura e cor por ferramenta (D-0104).** Cada ferramenta guarda a sua espessura; o desenho livre, o retângulo, o círculo e a seta começam com 4 px. O marca-texto começa no amarelo e guarda a sua cor.
 - **Texto de 12 a 400 (D-0105).** O − e o + do texto vão de 12 a 400 em 20 passos, antes de 14 a 48; o arraste das alças, de 8 a 400. O tamanho de um texto arrastado aparece na bandeja do Texto e vale para o próximo.
-- **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona, e o botão Selecionar fica aceso no lugar dela; ao soltar, a ferramenta de antes volta. O mesmo botão acende enquanto o botão direito ou o do meio arrasta uma anotação. O cursor de cada alça aponta para o lado que ela puxa.
+- **Ctrl (Cmd no Mac) como o Selecionar (D-0101).** Enquanto está apertado, qualquer ferramenta seleciona, move e redimensiona, e o botão Selecionar fica aceso no lugar dela; ao soltar, a ferramenta de antes volta. O cursor de cada alça aponta para o lado que ela puxa.
 - **Cartões «Download» e «Abrir o site»** no topo do README, gerados pelo `cartoes.py` do repositório do método.
 
 ### Modificado
@@ -32,6 +31,8 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **GIF do editor (D-0099).** Uma cena neutra, sem datas. Começa no visualizador: clica em «Editar», escolhe a Seta e a desenha de dentro da janela até a DLL, e termina com as ferramentas abertas.
 - **Visual Builder:** fecha só pelo ✕, também com o teclado; o Esc não o fecha (D-0097).
 - **Menos movimento:** quando o sistema pede menos movimento, os botões do editor mudam de estado sem transição.
+- **`validate.sh`:** a faixa de tamanho do arquivo vai a 430 KB (cerca de 400 KB), e o z-index 1030 do botão de colar sai da lista esperada.
+- **Código:** 4,5 KB a menos, sem mudar comportamento: o −, o + e o tamanho das bandejas são montados ao abrir o app, e o − e o + passam por uma função só.
 
 ### Removido
 
@@ -45,7 +46,6 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 - **O Tab fica no modal aberto (F-0065),** e o foco volta à origem ao fechar. O Esc fecha a exportação da ferramenta (F-0078).
 - **O teclado alcança o fluxo principal (F-0066):** miniaturas, documentos, sessões, abas, cartões de exportação e cada chip. O ✕ e o restaurar aparecem também com o foco.
 - **Os exports dizem o perfil no nome (F-0069):** `CAPTURE-ENGINE-ADMIN-…` e `CAPTURE-ENGINE-USER-…`.
-- **Botão direito fora do Selecionar (F-0082):** a anotação agarrada não fica mais selecionada, com alças que essa ferramenta não usa.
 - **A regra do «Download» que nunca valia (F-0080).**
 - **No editor, as setas ← → não trocam mais de imagem (F-0083).** Dentro da bandeja de opções, elas fechavam o editor e iam para a imagem seguinte.
 - **O Esc no meio de um arraste (F-0084)** deixava o gesto preso, e o Ctrl+Z da imagem seguinte podia trazer uma anotação da anterior.
@@ -58,12 +58,21 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 ### Decisões e pendentes
 
 - **F-0077,** o Esc no Visual Builder: aceito por escolha, na D-0097.
+- **F-0082,** o botão direito fora do Selecionar: corrigido no meio da versão e depois substituído pela D-0103, em que a anotação fica selecionada.
+- **F-0089,** a seta curta que não se move pelo meio, e **F-0090,** os ARIA das ferramentas: em «Pendentes».
 - **F-0073,** o Safari no iPhone, e **F-0074,** as frases longas do `AGENTS.md`: em «Pendentes».
 
 ### Cobertura da auditoria de 2026-11-04
 
 - Auditoria completa do Prompt 3 sobre a 28.6.5, com 15 achados, validados um a um por um agente separado no Edge, no Firefox e no WebKit. A validação achou mais dois, a F-0078 e a F-0079.
 - Não foram examinados: o Safari real, no iPhone e no Mac; os leitores de tela; o purge de 48 horas; a edição em várias abas; a reordenação por arrastar; as sessões grandes e a cota cheia real.
+- A F-0080, a F-0081 e a F-0082 saíram do trabalho da versão, depois da auditoria.
+
+### Cobertura da auditoria de 2026-11-06
+
+- Quatro auditorias da versão inteira, antes dos commits: bugs no Edge, no Firefox e no WebKit, comparados com a 28.6.5; código sem uso e tamanho; coerência da documentação; e o ensaio da série de commits num clone.
+- Seis achados corrigidos (F-0083 a F-0088) e dois em «Pendentes» (F-0089 e F-0090). O código perdeu 4,5 KB que não faziam nada.
+- Não foram examinados: o Safari real, o toque real e os leitores de tela.
 
 ## [28.6.5] - 2026-11-02
 

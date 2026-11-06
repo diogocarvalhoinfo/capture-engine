@@ -81,7 +81,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 
 | Cor | Onde | Motivo |
 |---|---|---|
-| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, e `let annCurrentColor` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
+| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, `let annCurrentColor` e `annColorBy` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
 | `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
 | `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
 | `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script rodar. |
@@ -352,7 +352,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  │                               [ − ] 100% [ + ]    │  │  ← #zoom-ui
 │  └────────────────────────────────────────────────────┘  │    visível
 ├──────────────────────────────────────────────────────────┤    apenas zoom > 100%
-│  [Restaurar]  [Download]           1920 × 1080 · 245 KB  │
+│  [Restaurar]  [Editar]  [Download]   1920 × 1080 · 245 KB│
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -487,16 +487,21 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | Constante | Valor | Descrição |
 |---|---|---|
 | `ANN_SIZES` | `[1, 2, 4, 6, 8, 12]` | Espessuras de linha disponíveis (px, coordenadas canvas). Escala de 6 níveis (do mais fino ao mais grosso). |
-| `ANN_TEXT_SIZES` | `[14, 18, 24, 36, 48]` | Tamanhos de fonte disponíveis (px canvas); index 2 = 24px padrão |
+| `ANN_HL_SIZES` | `[8, 12, 18, 26, 36, 48]` | Larguras do marca-texto (px canvas), nos mesmos seis passos |
+| `ANN_TEXT_SIZES` | `[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 128, 160, 200, 256, 320, 400]` | Os 20 passos do − e do + no texto (px canvas) |
+| `ANN_TEXT_MIN` / `ANN_TEXT_MAX` | `8` / `400` | Limites do tamanho do texto ao arrastar as alças |
 | `ANN_TEXT_LINE_RATIO` | `1.3` | Line-height ratio do texto. Constante **única** usada no `line-height` do `<textarea>` editor **e** no render do canvas (`annDrawShape`) — garante que o texto multilinha achatado é igual ao que se vê a escrever (WYSIWYG) |
 
 ### Variáveis de estado da anotação
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `annTool` | `'rect'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `text` / `crop` |
-| `annSizeIdx` | `1` (2px) | Índice em `ANN_SIZES` — espessura de linha |
-| `annTextSizeIdx` | `2` (24px) | Índice em `ANN_TEXT_SIZES` — tamanho de fonte |
+| `annTool` | `'free'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `highlight` / `text` / `crop`. Ao abrir o editor: `select` com anotações, `free` sem elas |
+| `annSizeIdx` | `2` (4px) | Índice em `ANN_SIZES` (ou `ANN_HL_SIZES` no marca-texto) da ferramenta atual |
+| `annSizeByTool` | `{ free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 }` | O passo guardado de cada ferramenta (4 px nas linhas, 12 px no marca-texto) |
+| `annColorBy` | `{ hl: '#eab308', line: '#ef4444' }` | A cor do marca-texto e a das outras ferramentas |
+| `annHlSolid` | `false` | «Sólido» no marca-texto; guardado na chave `hl-solid` |
+| `annTextSize` | `24` | Tamanho do texto (px), reposto a 24 a cada abertura do editor |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
 | `annEditingTextIdx` | `-1` | Índice em `annHistory` do texto em reedição; `-1` = novo texto |
@@ -518,8 +523,8 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 
 | `type` | Campos obrigatórios | Notas |
 |---|---|---|
-| `rect` | `x1, y1, x2, y2` | Coordenadas dos dois cantos opostos |
-| `circle` | `x1, y1, x2, y2` | Bounding box da elipse |
+| `rect` | `x1, y1, x2, y2`; `fill: true` quando «Preenchido» | Coordenadas dos dois cantos opostos |
+| `circle` | `x1, y1, x2, y2`; `fill: true` quando «Preenchido» | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23) | Salvo com **os mesmos pontos da pré-visualização** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
-| `text` | `x1, y1, txt, bold, italic, fontSize` | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
+| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23); no marca-texto, `hl`: `'soft'` (Translúcido, 40 %) ou `'solid'` | Salvo com **os mesmos pontos da pré-visualização** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
+| `text` | `x1, y1, txt, bold, italic, fontSize`; `rot` (graus) quando girado | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
