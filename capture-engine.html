@@ -720,8 +720,7 @@
       font-size: var(--text-control);
       color: var(--color-foreground);
       outline: none;
-      transition: border-color var(--duration-moderate-01), box-shadow var(--duration-moderate-01);
-      text-transform: uppercase
+      transition: border-color var(--duration-moderate-01), box-shadow var(--duration-moderate-01)
     }
 
     .sess-input:focus {
@@ -3520,6 +3519,14 @@
                 class="toggle-slider"></span></label>
           </div>
         </div>
+        <div class="sb-row">
+          <div class="sb-info">
+            <div class="sb-row-title">Maiúsculas</div>
+            <div class="sb-row-desc">Converte para maiúsculas o que se digita nos dois campos</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="cfg-id-upper" checked aria-label="Converter os dois campos para maiúsculas"><span
+              class="toggle-slider"></span></label>
+        </div>
       </div>
 
       <!-- TAB 2: CAPTURA -->
@@ -3636,6 +3643,7 @@
       let trashUrls = [];
       const TOKEN_USER_LABEL = '';
       const TOKEN_EQUIP_LABEL = '';
+      const TOKEN_ID_UPPERCASE = true; // the two identification fields turn what is typed into capitals (D-0096)
       const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO';
       const TOKEN_JPEG_QUALITY = 0.92;
       const TOKEN_MAX_IMG_DIMENSION = 0;
@@ -3757,7 +3765,7 @@
       }
       async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now(), exported: false }; await idbPut('sessions', s); sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
-      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = s.user || ''; $('session-pc').value = s.pc || ''; const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
+      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = idUpper ? (s.user || '').toLocaleUpperCase('pt') : (s.user || ''); $('session-pc').value = idUpper ? (s.pc || '').toLocaleUpperCase('pt') : (s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
       function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
@@ -5905,6 +5913,11 @@
           $('session-pc').placeholder = e.target.value;
           isDirty = true;
         });
+        $('cfg-id-upper').addEventListener('change', (e) => {
+          idUpper = e.target.checked;
+          if (idUpper) ['session-user', 'session-pc'].forEach(id => { const f = $(id); f.value = f.value.toLocaleUpperCase('pt'); f.dispatchEvent(new Event('input')) });
+          isDirty = true;
+        });
 
         // Quality settings slider
         $('cfg-jpeg-quality').addEventListener('input', (e) => {
@@ -5947,6 +5960,7 @@
         $('cfg-user-label').placeholder = '';
         $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'Equipamento';
         $('cfg-equip-label').placeholder = '';
+        $('cfg-id-upper').checked = TOKEN_ID_UPPERCASE;
         $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
 
         $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
@@ -6040,7 +6054,11 @@
       }
 
       /* ═══ SESSION INPUT SYNC ═══ */
-      function initSessionSync() { async function up() { await ensureSession(); const u = $('session-user').value.trim().toUpperCase(), p = $('session-pc').value.trim().toUpperCase(); const parts = [u, p].filter(Boolean); const name = parts.join('-'); $('session-name').value = name; updateBtnTitles(); isDirty = true; triggerSave(); const ae = document.querySelector('.sb-sess-item.active .sb-sess-name'); if (ae) ae.textContent = name || ae.dataset.fallback || ae.textContent } $('session-user').oninput = up; $('session-pc').oninput = up }
+      /* Capitals mode (D-0096): the value itself turns into capitals as it is typed, the cursor stays where it was (ß becomes SS,
+         so the position is measured on the converted text), and nothing changes in the middle of a composition (accents, IME) */
+      let idUpper = TOKEN_ID_UPPERCASE;
+      function upperKeepCaret(f) { const v = f.value, up = v.toLocaleUpperCase('pt'); if (up === v) return; const a = v.slice(0, f.selectionStart).toLocaleUpperCase('pt').length, z = v.slice(0, f.selectionEnd).toLocaleUpperCase('pt').length; f.value = up; f.setSelectionRange(a, z) }
+      function initSessionSync() { async function up(e) { if (idUpper && e && e.target && !e.isComposing) upperKeepCaret(e.target); await ensureSession(); const fx = v => idUpper ? v.toLocaleUpperCase('pt') : v; const u = fx($('session-user').value.trim()), p = fx($('session-pc').value.trim()); const parts = [u, p].filter(Boolean); const name = parts.join('-'); $('session-name').value = name; updateBtnTitles(); isDirty = true; triggerSave(); const ae = document.querySelector('.sb-sess-item.active .sb-sess-name'); if (ae) ae.textContent = name || ae.dataset.fallback || ae.textContent } $('session-user').oninput = up; $('session-pc').oninput = up; $('session-user').addEventListener('compositionend', up); $('session-pc').addEventListener('compositionend', up) }
 
 
       /* ═══ PDF ENGINE (JPEG COMPRESSED) ═══ */
@@ -6132,7 +6150,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
         html = html.replace(/const TOKEN_TITLE_END\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END = '" + te + "'");
           html = html.replace(/const TOKEN_TITLE_START_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_START_COLOR = '" + sanitizeForQuine(sysColors.tStart || '') + "'");
           html = html.replace(/const TOKEN_TITLE_ACCENT_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_ACCENT_COLOR = '" + sanitizeForQuine(sysColors.tAccent || '') + "'");
-          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
+          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_ID_UPPERCASE\s*=\s*(?:true|false)/, 'const TOKEN_ID_UPPERCASE = ' + ($('cfg-id-upper') ? $('cfg-id-upper').checked : idUpper)); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
           html = html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html',(ts+' '+ta+(te?' '+te:''))));SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
             /* ADMIN_JS_END */
 
