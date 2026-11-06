@@ -2767,8 +2767,8 @@
       font: italic 400 var(--text-sm) / 1 serif
     }
 
-    /* Retângulo or Círculo in «Preenchido»: the tool shows its shape filled */
-    .ann-btn.ann-filled svg :is(rect, circle) {
+    /* Retângulo or Círculo in «Preenchido», Marca-texto in «Sólido»: the tool shows its shape, or its tip, filled */
+    .ann-btn.ann-filled svg :is(rect, circle, path:first-child) {
       fill: currentcolor
     }
 
@@ -4959,7 +4959,7 @@
           b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
           b.onclick = () => annSizeStep(b.id === 'ann-thickness-up' || b.dataset.step === '1' ? 1 : -1);
         });
-        function annSyncHlBtns() { annPress('ann-hl-soft', !annHlSolid); annPress('ann-hl-solid', annHlSolid) }
+        function annSyncHlBtns() { annPress('ann-hl-soft', !annHlSolid); annPress('ann-hl-solid', annHlSolid); document.querySelector('.ann-btn[data-tool="highlight"]').classList.toggle('ann-filled', annHlSolid) }
         [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
         annSyncHlBtns();
         // Contorno or Preenchido; a selected shape of the same kind changes too, with undo

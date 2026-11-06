@@ -12,7 +12,7 @@ Teste do Export User (`AGENTS.md` §11, Parte B): PENDENTE, a fazer por quem man
 
 ### Adicionado
 
-- **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação.
+- **Marca-texto (D-0095).** Uma faixa larga, de pontas retas, na cor escolhida. «Translúcido», o padrão, deixa ler o que está por baixo; «Sólido» cobre, para esconder uma informação, e o botão da ferramenta mostra então a ponta cheia.
 - **Opções das ferramentas (D-0102).** Todas as ferramentas que desenham têm um ponto discreto acima do botão, que fica na cor principal e liga a ferramenta à bandeja quando as opções estão abertas. Um duplo clique, ou o botão apertado por 1 s, abre as opções numa bandeja logo acima, lado a lado como a barra, sempre na mesma ordem, com a primeira em cima da ferramenta, em botões do mesmo tamanho, cada um com o seu nome. Fica aberta enquanto se escolhe e fecha com um clique fora, com o Esc ou ao trocar de ferramenta. Pelo teclado, a seta para cima a abre. Substituem os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma. Toda bandeja termina com o − e o + soltos e o tamanho atual depois deles; o desenho livre e a seta têm só o tamanho.
 - **Retângulo e círculo preenchidos (D-0102).** «Contorno», o padrão, ou «Preenchido», uma forma cheia na cor, que cobre o que está embaixo.
 - **Shift nas ferramentas (D-0093).** Ao desenhar e ao redimensionar, o retângulo fica quadrado, a elipse fica círculo, e a seta e o desenho livre andam em passos de 45°.
