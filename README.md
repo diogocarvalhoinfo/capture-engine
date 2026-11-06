@@ -2,7 +2,7 @@
 
 ![HTML: arquivo único](https://img.shields.io/badge/HTML-arquivo%20%C3%BAnico-E34F26?style=flat-square&logo=html5&logoColor=white) ![Dependências: zero](https://img.shields.io/badge/depend%C3%AAncias-zero-59636e?style=flat-square) ![Funciona: sem internet](https://img.shields.io/badge/funciona-sem%20internet-59636e?style=flat-square) ![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-59636e?style=flat-square)
 
-Ferramenta para capturar, organizar e exportar evidências (imagens e documentos) em PDF ou ZIP, num único arquivo HTML que abre no navegador e funciona sem internet.
+Ferramenta para capturar, organizar e exportar imagens e documentos como evidência, em PDF ou ZIP, num único arquivo HTML que abre no navegador e funciona sem internet.
 
 <!-- cartoes: logotipo=docs/images/logo.svg; arquivo=capture-engine.html; site=diogocarvalhoinfo.github.io/capture-engine; cor=#e86b2e -->
 <a href="https://github.com/diogocarvalhoinfo/capture-engine/releases/latest/download/capture-engine.html"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/card-download-dark.svg"><img src="docs/images/card-download-light.svg" alt="Download do Capture Engine: capture-engine.html" width="300" height="64"></picture></a>
