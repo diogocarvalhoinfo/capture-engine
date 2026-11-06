@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Cartões do topo do README:** sem borda, com o fundo na cor da página do GitHub (branco no claro, `#0d1117` no escuro), e o conteúdo no meio do cartão. Os dois ficam num parágrafo só, separados por `<br>`, e o espaço acima, entre e abaixo deles passa a ser o mesmo, cerca de 52 px. Gerados com o `cartoes.py` do método 6.0.0. **Motivo:** o cartão escolhe o tema pelo sistema, e não pelo GitHub. Com o GitHub claro e o sistema escuro, o cartão sem fundo ficava ilegível.
+
 ## [28.7.0] - 2026-11-06
 
 Minor: as opções de cada ferramenta numa bandeja, o marca-texto, as formas preenchidas, o Shift e o Ctrl nas ferramentas, «Quem» e «O que» com o modo «Maiúsculas», e os cartões no topo do README. Entram também as correções de uma auditoria completa da versão. Quem já distribui a ferramenta não precisa refazer nada: o token novo começa no comportamento de antes. Com os rótulos vazios, os campos passam a mostrar «Quem» e «O que»; para manter «User» e «Equipamento», escreva-os no Visual Builder, aba «Histórico».
