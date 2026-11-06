@@ -226,7 +226,8 @@ Motor de anotação:
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar; botão direito = agarrar e mover em qualquer ferramenta
-- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua
+- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
+- Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar

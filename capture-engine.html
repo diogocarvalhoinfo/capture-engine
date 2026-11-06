@@ -5102,10 +5102,21 @@
           annEditingTextIdx = -1;
           if (annTool !== 'select') annShowTextInput(p.x, p.y);
         });
+        // Shift, as in PowerPoint and Figma: a rectangle becomes a square and an ellipse a circle ('box'); an arrow and a free
+        // stroke go in steps of 45° ('line'). a is the fixed point. annShift is read on every pointer event and also on the
+        // Shift key itself, so pressing or releasing it in the middle of a gesture redraws at once.
+        let annShift = false;
+        function annShiftPoint(kind, a, p) {
+          const dx = p.x - a.x, dy = p.y - a.y;
+          if (kind === 'box') { const d = Math.max(Math.abs(dx), Math.abs(dy)); return { x: a.x + Math.sign(dx || 1) * d, y: a.y + Math.sign(dy || 1) * d }; }
+          const L = Math.hypot(dx, dy), ang = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
+          return { x: a.x + L * Math.cos(ang), y: a.y + L * Math.sin(ang) };
+        }
+        const annShiftKind = t => (t === 'rect' || t === 'circle') ? 'box' : 'line';
         function annPaintPreview() {
           annRafId = 0;
           if (!annDrawing || !annActive || !annLastEvt) return;
-          const p = annCanvasXYClamped(annLastEvt);
+          let p = annCanvasXYClamped(annLastEvt); if (annShift && annTool !== 'free') p = annShiftPoint(annShiftKind(annTool), annStart, p);
           const ctx = annGetCtx(); annRenderAll(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() }
           else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) }
@@ -5201,8 +5212,9 @@
         function annResizeStep(e) {
           annResizeRafId = 0;
           if (!annResizing || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-          const _p = annCanvasXY(e);
+          let _p = annCanvasXY(e); annShift = e.shiftKey;
           const _sh = annHistory[annSelectedIdx];
+          if (annShift && (annResizeHandle === 'p1' || annResizeHandle === 'p2' || ((_sh.type === 'rect' || _sh.type === 'circle') && annResizeHandle.length === 2))) _p = annShiftPoint(annShiftKind(_sh.type), { x: annResizeAnchorX, y: annResizeAnchorY }, _p);
           if (annResizeHandle === 'rot') annResizeTurn(_sh, _p, e);
           else if (_sh.type === 'text') annResizeText(_sh, _p);
           else if (annResizeHandle === 'p1') { _sh.x1 = _p.x; _sh.y1 = _p.y; }
@@ -5240,7 +5252,8 @@
         }
         // Drawing: the free stroke keeps smoothed points (EMA) at least 5 px apart; every tool repaints the preview
         function annMoveDraw(e) {
-          annLastEvt = e;
+          annLastEvt = e; annShift = e.shiftKey;
+          if (annTool === 'free' && annShift) { const sp = annShiftPoint('line', annPath[0], annCanvasXYClamped(e)); annPath = [annPath[0], sp]; annSmoothLast = sp; annScheduledPaint(); return; }
           if (annTool === 'free') {
             const p = annCanvasXYClamped(e); const alpha = 0.35;
             const sx = annSmoothLast ? alpha * p.x + (1 - alpha) * annSmoothLast.x : p.x;
@@ -5291,7 +5304,8 @@
           annDrawing = false;
           if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; }
           annLastEvt = null;
-          const p = annCanvasXYClamped(e);
+          annShift = e.shiftKey;
+          let p = annCanvasXYClamped(e); if (annShift && annTool !== 'free' && annTool !== 'text') p = annShiftPoint(annShiftKind(annTool), annStart, p);
           if (annTool === 'free') {
             annSmoothLast = null;
             if (annPath.length > 1) {
@@ -5308,6 +5322,7 @@
           }
           annRenderAll();
         }
+        ['keydown', 'keyup'].forEach(t => window.addEventListener(t, e => { if (e.key !== 'Shift' || !annActive || !annLastEvt) return; annShift = t === 'keydown'; if (annDrawing && annTool !== 'free') annScheduledPaint(); }));
         window.addEventListener('pointerup', e => {
           if (!annActive) return;
           if (annDraggingCrop) annUpCrop();
