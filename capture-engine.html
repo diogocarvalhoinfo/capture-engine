@@ -2714,6 +2714,7 @@
 
     .ann-flyout {
       position: absolute;
+      align-items: center;
       bottom: calc(100% + var(--spacing) * 5.5);
       left: -7px;
       display: none;
@@ -2732,6 +2733,34 @@
 
     .ann-opt-letter {
       font: 700 var(--text-sm) / 1 sans-serif
+    }
+
+    /* The size in the tray: − and + without the box, then the current size. The box stays on the options, which are a choice;
+       the bare signs only adjust a value. The bar keeps its own − and + */
+    #img-modal-overlay .ann-flyout .ann-size-btn {
+      width: 24px;
+      background: transparent;
+      border-color: transparent
+    }
+
+    #img-modal-overlay .ann-flyout .ann-size-btn:hover {
+      background: var(--color-viewer-control-hover);
+      border-color: transparent
+    }
+
+    .ann-size-val {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-viewer-control-foreground);
+      font: 600 var(--text-sm) / 1 sans-serif
+    }
+
+    .ann-size-dot {
+      border-radius: var(--radius-circle);
+      background: currentcolor
     }
 
     .ann-opt-italic {
@@ -3182,10 +3211,17 @@
           style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS: RECT FIRST -->
           <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1.5);align-items:center">
-            <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24" fill="none"
+          <div class="ann-tool-wrap">
+            <button class="ann-btn active" data-tool="free" title="Desenho livre" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
             </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Opções do desenho livre">
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
+            </div>
+          </div>
           <div class="ann-tool-wrap">
             <button class="ann-btn" data-tool="rect" title="Retângulo" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
               <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -3193,6 +3229,10 @@
             <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
               <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-rect-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+              <span class="ann-sep" aria-hidden="true"></span>
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3202,12 +3242,23 @@
             <div class="ann-flyout" role="group" aria-label="Opções do círculo">
               <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-circle-fill" title="Preenchido" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" /></svg></button>
+              <span class="ann-sep" aria-hidden="true"></span>
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
-          <button class="ann-btn" data-tool="arrow" title="Seta"><svg viewBox="0 0 24 24">
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="arrow" title="Seta" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24">
               <line x1="5" y1="19" x2="19" y2="5" />
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Opções da seta">
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
+            </div>
+          </div>
           <div class="ann-tool-wrap">
             <button class="ann-btn" data-tool="highlight" title="Marca-texto" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3217,6 +3268,10 @@
             <div class="ann-flyout" role="group" aria-label="Opções do marca-texto">
               <button class="ann-btn ann-opt" id="ann-hl-soft" title="Translúcido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" /></svg></button>
+              <span class="ann-sep" aria-hidden="true"></span>
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3226,6 +3281,10 @@
             <div class="ann-flyout" role="group" aria-label="Opções do texto">
               <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)" aria-pressed="false">B</button>
               <button class="ann-btn ann-opt ann-opt-letter ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)" aria-pressed="false">I</button>
+              <span class="ann-sep" aria-hidden="true"></span>
+              <button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+              <span class="ann-size-val" role="img"></span>
             </div>
           </div>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
@@ -4222,7 +4281,7 @@
       function annOpenFlyout(btn) {
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
         if (annFlyoutOpen && annFlyoutOpen !== f) annCloseFlyout();
-        f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f;
+        f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal();
         const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show'); // the name of the tool would cover its first option
       }
       function annCloseFlyout(focusTool) {
@@ -4465,6 +4524,24 @@
         const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
         const td = $('ann-thickness-down'), tu = $('ann-thickness-up');
         if (td) td.title = 'Diminuir'; if (tu) tu.title = 'Aumentar'; /* the same names for the line and the text size (D-0094) */
+        annSyncSizeVal();
+      }
+      // The size shown after − and + in the trays: what they change. The selected annotation first, as the − and + do, else the tool.
+      // A dot that grows by step for a line, the number for a text
+      function annSyncSizeVal() {
+        const s = annHistory[annSelectedIdx];
+        let txt = null, idx, px;
+        if (s && s.type === 'text') { txt = s.fontSize || 24 }
+        else if (s) { const L = s.hl ? ANN_HL_SIZES : ANN_SIZES; idx = Math.max(0, L.indexOf(s.lw)); px = s.lw }
+        else if (annTool === 'text') { txt = ANN_TEXT_SIZES[annTextSizeIdx] }
+        else { idx = annSizeIdx; px = annLineW() }
+        const DOT = [3, 4, 6, 8, 11, 14]; // diameter of the dot by step, parallel to ANN_SIZES and ANN_HL_SIZES
+        document.querySelectorAll('.ann-size-val').forEach(v => {
+          v.setAttribute('aria-label', 'Tamanho ' + (txt !== null ? txt : px + ' px'));
+          if (txt !== null) { v.textContent = txt; return }
+          let d = v.firstElementChild; if (!d) { v.textContent = ''; d = document.createElement('span'); d.className = 'ann-size-dot'; v.appendChild(d) }
+          d.style.width = d.style.height = DOT[idx] + 'px';
+        });
       }
       // Shows or hides the thickness buttons according to the current selection.
       // Called by annRenderAll() (which calls annUpdateDelBtn(), then this one).
@@ -4864,6 +4941,10 @@
           inp.focus();
         }
         ['ann-thickness-down', 'ann-thickness-up'].forEach(_tid => { $(_tid).addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() }) });
+        document.querySelectorAll('.ann-size-btn').forEach(b => {
+          b.addEventListener('mousedown', e => { if ($('ann-text-overlay').style.display !== 'none') e.preventDefault() });
+          b.onclick = () => $(b.dataset.step === '1' ? 'ann-thickness-up' : 'ann-thickness-down').onclick();
+        });
         $('ann-thickness-down').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx];
@@ -4881,6 +4962,7 @@
           } else {
             if (annSizeIdx > 0) { annSizeIdx--; annUpdateThicknessIcon() }
           }
+          annSyncSizeVal();
         };
         $('ann-thickness-up').onclick = () => {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
@@ -4899,6 +4981,7 @@
           } else {
             if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
           }
+          annSyncSizeVal();
         };
         function annSyncHlBtns() { [['ann-hl-soft', !annHlSolid], ['ann-hl-solid', annHlSolid]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }) }
         [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
@@ -4917,11 +5000,11 @@
           b.addEventListener('pointerdown', e => { if (e.button === 0) _hold = setTimeout(open, 1000) });
           ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
           b.addEventListener('contextmenu', e => e.preventDefault()); // a long touch opens the options, not the system menu
-          b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('.ann-opt'); if (o) o.focus() } });
+          b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
         });
-        // Inside the options: the left and right arrows move between them, Esc closes and goes back to the tool; a click elsewhere closes
+        // Inside the tray: the left and right arrows move between its buttons, Esc closes and goes back to the tool; a click elsewhere closes
         document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('keydown', e => {
-          const all = [...f.querySelectorAll('.ann-opt')], k = all.indexOf(document.activeElement);
+          const all = [...f.querySelectorAll('button')], k = all.indexOf(document.activeElement);
           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = all[(k + (e.key === 'ArrowRight' ? 1 : -1) + all.length) % all.length]; if (n) n.focus() }
         }));
         window.addEventListener('keydown', e => { if (e.key === 'Escape' && annFlyoutOpen) { e.preventDefault(); e.stopImmediatePropagation(); annCloseFlyout(true) } }, true);
