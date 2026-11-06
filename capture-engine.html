@@ -2649,7 +2649,8 @@
       width: calc(var(--spacing) * 30);
     }
 
-    #img-modal-overlay .ann-btn.active {
+    #img-modal-overlay .ann-btn.active,
+    #img-modal-overlay .ann-btn.ann-txt-selected {
       color: var(--color-primary-foreground);
       background: var(--color-primary);
       border-color: var(--color-primary);
@@ -2659,13 +2660,6 @@
       color: var(--color-viewer-active-foreground);
       background: var(--color-white);
       border-color: var(--color-white);
-    }
-
-    #img-modal-overlay .ann-btn.active[data-tool="text"],
-    #img-modal-overlay .ann-btn.ann-txt-selected {
-      background: var(--color-primary);
-      color: var(--color-white);
-      border-color: var(--color-primary);
     }
 
     #img-modal-overlay .ann-sep {
@@ -2765,6 +2759,15 @@
 
     .ann-opt-italic {
       font: italic 400 var(--text-sm) / 1 serif
+    }
+
+    /* Texto: the T shows the style in use, thicker in «Negrito» and slanted in «Itálico» */
+    #img-modal-overlay .ann-btn.ann-txt-b svg {
+      stroke-width: 3
+    }
+
+    #img-modal-overlay .ann-btn.ann-txt-i svg {
+      transform: skewX(-12deg)
     }
 
     /* Retângulo or Círculo in «Preenchido», Marca-texto in «Sólido»: the tool shows its shape, or its tip, filled */
@@ -4180,7 +4183,7 @@
         $('img-modal-default-actions').style.display = 'none';
         $('img-modal-ann-actions').style.display = 'flex';
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annTextBold = true; annTextItalic = false; annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
+        annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annUpdateThicknessIcon(); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
         annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
@@ -4266,7 +4269,12 @@
       // An option of a tray shows whether it is on: the active look and aria-pressed
       function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
       // B and I in the Texto tray show the style in use
-      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic) }
+      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annSyncTextIcon() }
+      // The Texto button: lit while a text is selected, and its T in the style of that text, else of the tool
+      function annSyncTextIcon() {
+        const _t = document.querySelector('.ann-btn[data-tool="text"]'), s = annHistory[annSelectedIdx], st = !!s && s.type === 'text';
+        _t.classList.toggle('ann-txt-selected', st); _t.classList.toggle('ann-txt-b', st ? s.bold !== false : annTextBold); _t.classList.toggle('ann-txt-i', st ? !!s.italic : annTextItalic);
+      }
       // Tool options (D-0102): the options of a tool are standard buttons in a row above it, opened by a click on the tool
       // once chosen, a double click, a press of 1 s or the up arrow on the tool. They stay open while the options are clicked, and close with a click or
       // the focus elsewhere, Esc or another tool. Each option keeps its place, so the hand learns where it is
@@ -4471,14 +4479,7 @@
         annRedraw();
         annDrawSelectionOverlay();
         annUpdateDelBtn();
-        const _tb = document.querySelector('.ann-btn[data-tool="text"]');
-        if (_tb) {
-          if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length && annHistory[annSelectedIdx].type === 'text') {
-            _tb.classList.add('ann-txt-selected');
-          } else {
-            _tb.classList.remove('ann-txt-selected');
-          }
-        }
+        annSyncTextIcon();
         if (annTool === 'crop') {
           const cv = $('ann-canvas'), ctx = annGetCtx();
           ctx.save();
@@ -4527,6 +4528,8 @@
         const sw = [1, 1.5, 2, 2.5, 3, 4]; // visual stroke-width of the SVG icon, parallel to ANN_SIZES (6 entries)
         const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
         const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
+        // The Desenho livre and Seta buttons draw their icon with the thickness of each tool
+        ['free', 'arrow'].forEach(t => { const s = document.querySelector(`.ann-btn[data-tool="${t}"] svg`); if (s) s.style.strokeWidth = sw[t === annTool ? annSizeIdx : annSizeByTool[t]] });
         annSyncSizeVal();
       }
       // The size shown after − and + in the trays: what they change. The selected annotation first, as the − and + do, else the tool.
