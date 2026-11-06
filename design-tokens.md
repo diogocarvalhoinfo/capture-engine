@@ -63,6 +63,8 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-control-border` | `#3f3f3f` | — | Borda desses botões |
 | `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Abas e bordas finas do visualizador |
 | `--color-viewer-muted-foreground` | `rgb(255 255 255 / 60%)` | — | Dimensões da imagem, sobre o visualizador |
+| `--color-viewer-mark` | `rgb(255 255 255 / 30%)` | — | Ponto acima de uma ferramenta que tem opções (D-0102) |
+| `--color-viewer-tray` | `#1b1b1b` | — | Bandeja das opções de uma ferramenta (D-0102) |
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
 | `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom e setas, flutuando sobre a imagem |
 | `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
