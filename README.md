@@ -650,7 +650,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 ### Acessibilidade
 
-**Estado medido em novembro de 2026,** no Edge 156, só com o teclado. O Firefox e o Safari não foram medidos para o teclado:
+**Estado medido em novembro de 2026,** só com o teclado, no Edge 156, no Firefox 150 e no WebKit 26.4 (o motor do Safari), os três no Windows. O resultado foi o mesmo nos três:
 - **Teclado:** o Tab alcança todos os controles, e Enter ou Espaço os ativam. Isso inclui as miniaturas, os documentos, os itens dos «Removidos», as sessões do Histórico, cada chip do layout do PDF, as abas do Visual Builder e os cartões de exportação.
 - **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
 - **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
@@ -659,6 +659,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
 - **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md §1`).
 - **Leitores de tela:** não testados.
+- **Safari no Mac:** por padrão, o Tab do Safari só passa pelos campos de texto. Para alcançar também os botões, ligue «Pressionar Tab para destacar cada item» nos ajustes avançados do Safari, ou use Option+Tab.
 
 **ARIA e foco — o que existe:**
 
