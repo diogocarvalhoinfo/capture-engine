@@ -213,10 +213,10 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 ### 6.3 Anotação de imagens
 
-<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#ann-canvas, #img-modal-ann-actions; passos=arrastar #ann-canvas 18%,59% 31%,44% | clicar #ann-save -->
-![Editor de anotação: uma seta vermelha é desenhada até o arquivo selecionado numa captura, e o Confirmar salva a anotação na imagem](docs/images/annotation-arrow.gif)
+<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
+![Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado numa captura](docs/images/annotation-arrow.gif)
 
-Com a ferramenta Seta, um arraste desenha a seta, e o Confirmar a salva na imagem.
+No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arraste desenha a seta; o Confirmar a salva na imagem.
 
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
@@ -228,7 +228,7 @@ Motor de anotação:
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
 - Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, o botão direito ou o botão do meio do mouse agarram e movem a anotação; fora do Selecionar, ela não fica selecionada ao soltar
-- Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
+- Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
 - Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
