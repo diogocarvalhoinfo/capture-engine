@@ -4624,7 +4624,7 @@
           if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
-        $('ann-canvas').addEventListener('pointermove', e => { if (annTool !== 'select' || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h === 'rot' ? 'grab' : (_h === 'p1' || _h === 'p2') ? 'crosshair' : 'default' });
+        $('ann-canvas').addEventListener('pointermove', e => { const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; const cv = e.currentTarget, p = annCanvasXY(e); const _h = annHandleHitTest(p.x, p.y); cv.style.cursor = _h === 'rot' ? 'grab' : (_h === 'p1' || _h === 'p2') ? 'crosshair' : _h ? 'nwse-resize' : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' });
         $('ann-cancel').onclick = annDeactivate;
         // The image as saved: the visible image with the annotations drawn on it, cut to the crop box when there is one
         function annRenderSaved(img, fW, fH, cX, cY) {
@@ -4901,6 +4901,14 @@
           if (!_h) annCropBox = { x: p.x, y: p.y, w: 0, h: 0 };
         }
         // Selecionar: the handles of the selected shape come first, then a shape under the point, then empty space
+        // Ctrl (Cmd on a Mac) held: any tool works as Selecionar. The selection stays while the key is held and goes when it is
+        // released, so no handles are left that the current tool cannot use (D-0101)
+        let annCtrlHeld = false;
+        const annToolCursor = () => annTool === 'text' ? 'text' : annTool === 'select' ? 'default' : 'crosshair';
+        function annCtrlUp() { annCtrlHeld = false; const cv = $('ann-canvas'); if (cv) cv.style.cursor = annToolCursor(); if (annTool !== 'select' && !annDragging && !annResizing && annSelectedIdx >= 0) { annSelectedIdx = -1; annRenderAll(); } }
+        window.addEventListener('keydown', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlHeld = true; });
+        window.addEventListener('keyup', e => { if ((e.key === 'Control' || e.key === 'Meta') && annActive) annCtrlUp(); });
+        window.addEventListener('blur', () => { if (annCtrlHeld) annCtrlUp(); });
         function annDownSelect(e) {
           if (annCommitText) annCommitText();
           const p = annCanvasXY(e);
@@ -4930,6 +4938,7 @@
           if (annSpaceHeld) return;
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
           if (e.button === 2) annDownGrab(e);
+          else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
           else if (annTool === 'crop') annDownCrop(e);
           else if (annTool === 'select') annDownSelect(e);
           else if (annTool === 'text') annDownText(e);
@@ -5170,7 +5179,7 @@
           annDragOriginX = 0; annDragOriginY = 0;
           // M8: commit the pre-drag snapshot ONLY if the gesture really moved the shape
           if (annDragDirty) { annCommitUndo(annDragSnap); setAnnDirty(true); SysLogger.info('Ann drag end: undo disponivel'); }
-          if (annTool !== 'select') annSelectedIdx = -1; // grabbed with the right or middle button in another tool: no handles left that this tool cannot use
+          if (annTool !== 'select' && !annCtrlHeld) annSelectedIdx = -1; // grabbed with the right or middle button in another tool: no handles left that this tool cannot use
           annRenderAll();
         }
         // End of a drawing: the shape joins annHistory (a free stroke needs at least two points)
