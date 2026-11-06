@@ -55,7 +55,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-thumb-overlay` | `rgb(0 0 0 / 40%)` | — | Véu sobre a miniatura no hover |
 | `--color-modal-backdrop` | `rgb(0 0 0 / 72%)` | — | Fundo atrás dos modais |
 | `--color-settings-backdrop` | `rgb(0 0 0 / 85%)` | — | Fundo atrás do Visual Builder e do painel de exportação |
-| `--color-offcanvas-backdrop` | `rgb(0 0 0 / 50%)` | — | Fundo atrás da barra lateral no mobile |
+| `--color-offcanvas-backdrop` | `rgb(0 0 0 / 50%)` | — | Fundo atrás da barra lateral no telefone |
 | `--color-viewer-backdrop` | `rgb(10 10 10 / 88%)` | — | Fundo do visualizador de imagem |
 | `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botão de fechar sobre o visualizador |
 | `--color-viewer-close-hover` | `rgb(255 255 255 / 20%)` | — | Hover do botão de fechar do visualizador |
@@ -73,9 +73,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 > **Tema escuro e anti-FOUC.**
 > O tema escuro liga-se só pela classe `dark` no `<html>`. Sem escolha guardada, o `initTheme` segue o sistema (`prefers-color-scheme`). Um script logo no início do `<body>` põe a classe antes da primeira pintura, para não haver um flash branco.
 
-## 2. Cores literais
-
-### 2.1 Cores literais fora dos tokens
+## 2. Cores literais, fora dos tokens
 
 Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.html`, porque um token não pode ser usado ali. Esta tabela lista todas, para uma auditoria não as tratar como descuido.
 
@@ -96,7 +94,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 >
 > ```bash
 > CODIGO=$(grep -hvE '^[[:space:]]*--[a-z0-9-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
-> DOC=$(sed -n '/^### 2.1/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+> DOC=$(sed -n '/^## 2\. Cores literais/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
 > echo "no codigo e nao declaradas:"; comm -23 <(echo "$CODIGO") <(echo "$DOC")
 > echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
 > ```
@@ -126,10 +124,10 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra «Removidos» (11px) |
 | `--text-xs` | `0.75rem` | Títulos das seções e dos blocos, chips, botões «Adicionar», nomes no histórico e tooltip (12px) |
 | `--text-code` | `calc(12.5rem / 16)` | Visualizador de texto, em fonte monoespaçada (12.5px) |
-| `--text-control` | `0.8125rem` | Botões principais e campos; chips no mobile (13px) |
+| `--text-control` | `0.8125rem` | Botões principais e campos; chips no telefone (13px) |
 | `--text-sm` | `0.875rem` | Texto geral (14px) |
 | `--text-subtitle` | `0.9375rem` | Título do aviso de documento binário (15px) |
-| `--text-base` | `1rem` | Títulos de modal e campos no mobile (16px) |
+| `--text-base` | `1rem` | Títulos de modal e campos no telefone (16px) |
 | `--text-lg` | `1.125rem` | Nome da ferramenta em telas baixas (18px) |
 | `--text-xl` | `1.25rem` | Nome da ferramenta e títulos do Visual Builder (20px) |
 
@@ -161,7 +159,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
 | `--shadow-input-focus` | `0 0 0 1px var(--color-primary)` | Campos com foco |
 | `--shadow-dragging` | `0 12px 30px rgb(0 0 0 / 35%)` | Item em arrasto |
-| `--shadow-sidebar` | `0 12px 48px rgb(0 0 0 / 30%)` | Barra lateral no mobile |
+| `--shadow-sidebar` | `0 12px 48px rgb(0 0 0 / 30%)` | Barra lateral no telefone |
 | `--shadow-settings` | `0 10px 25px rgb(0 0 0 / 20%)` | Visual Builder e painel de exportação |
 | `--shadow-modal` | `0 24px 64px rgb(0 0 0 / 45%)` | Modais |
 | `--shadow-viewer-zoom` | `0 4px 12px rgb(0 0 0 / 15%)` | Barra de zoom do visualizador |
@@ -191,8 +189,8 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-viewer-controls` | `3` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
 | `--z-viewer-text` | `4` | `#ann-text-overlay` sobre o canvas | dentro do modal |
 | `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
-| `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | mobile |
-| `--z-offcanvas` | `1045` | `#sidebar` no mobile, acima do seu fundo | mobile |
+| `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | telefone |
+| `--z-offcanvas` | `1045` | `#sidebar` no telefone, acima do seu fundo | telefone |
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
@@ -269,7 +267,7 @@ yiq < 128  →  texto branco (#ffffff)
 O limiar 128 divide a escala 0–255 ao meio. Em cores claras, o texto automático é escuro, e o contraste pode ficar abaixo do WCAG AA (4.5:1 para texto normal). Exemplos: amarelo `#eab308` (yiq ≈ 176), ciano `#06b6d4` (yiq ≈ 133), laranja `#f97316` (yiq ≈ 145). Nestes casos, preencher `TOKEN_ACCENT_FG_OVERRIDE` com a cor desejada. Preencher apenas se o cálculo automático não produzir o contraste desejado.
 
 **`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL` (vazio = padrão visual):**
-Um valor vazio significa "usar o padrão visual" (`Quem` / `O que`). O Visual Builder mostra estes termos como placeholder, mas o token fica em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
+Um valor vazio significa "usar o padrão visual" (`Quem` / `O que`). O Visual Builder mostra estes termos no próprio campo. Se o administrador não os edita (`_vbLabelDirty`), o export mantém o token em `''`. Exportar sem editar estes campos preserva a flexibilidade — o motor usa o padrão correto conforme o contexto. A flag `_vbLabelDirty` controla se o admin editou ativamente estes campos.
 
 **`TOKEN_JPEG_QUALITY` (0.70 a 0.95):**
 Afeta apenas a geração do PDF — os originais ficam na sessão no formato em que foram capturados. Valores abaixo de 0.70 produzem artefatos JPEG visíveis em capturas de tela com texto. Valores acima de 0.95 aumentam o tamanho do PDF sem benefício visual perceptível.
@@ -408,19 +406,20 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Título de modal `.modal-title` | `var(--text-base)` (16px) | `600` | Centrado horizontalmente |
 | Campo de documento `.d-input` | `var(--text-control)` (13px) | `400` | **Sem negrito** — não é um título, é um nome de arquivo |
 | Legenda de imagem `.t-label` | `var(--text-caption)` (11px) | `400` | **Sem negrito** — discreta, não distrai da imagem |
-| Links de ação `.pick-link` | `var(--text-control)` (13px) | `400` | Nas zonas vazias |
 
 ---
 
 ## 9. Botões nos modais
 
-| Ação | Estilo | Cor | Quando aparece |
-|---|---|---|---|
-| **Restaurar** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas se o item está nos «Removidos» |
-| **Copiar texto** | Preenchido, cor principal | `var(--color-primary)` + branco | Apenas em documentos de texto (não binários) |
-| **Download** | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | Sempre, ativos e nos «Removidos» |
-| **Confirmar** (anotação) | Fill verde | `var(--color-green-500)` | No modo de anotação |
-| **Cancelar** (anotação) | Outline | `var(--color-card)` + `var(--color-foreground)` + `var(--color-border)` | No modo de anotação |
+| Onde | Ação | Estilo | Cor | Quando aparece |
+|---|---|---|---|---|
+| Visualizador de imagem | **Editar** | `.btn-send`, cheio | `var(--color-primary)` + `var(--color-primary-foreground)` | Imagem ativa |
+| Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos «Removidos» |
+| Editor | **Confirmar** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
+| Editor | **Cancelar** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
+| Modal de texto | **Restaurar**, **Copiar texto** e **Download** | Contorno | `var(--color-card)` + `var(--color-foreground)`, borda `var(--color-border-strong)` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
+
+O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
 
 ---
 
@@ -450,7 +449,7 @@ Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os 
 |---|---|---|
 | `--app-zoom` | `1` | Escala da interface: sobe 1/64 a cada 40px, de 1640px a 2240px, até `1.25`. As medidas em `vw` e `vh` das janelas dividem-se por ela, para caberem na tela |
 
-**Body Scroll Lock:** Quando o modal de histórico abre em mobile, `document.body.style.overflow = 'hidden'` previne que o conteúdo de fundo role. Ao fechar, o scroll é restaurado.
+**Body Scroll Lock:** Quando o modal de histórico abre no telefone, `document.body.style.overflow = 'hidden'` previne que o conteúdo de fundo role. Ao fechar, o scroll é restaurado.
 
 ---
 
@@ -496,11 +495,11 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `annTool` | `'free'` | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `highlight` / `text` / `crop`. Ao abrir o editor: `select` com anotações, `free` sem elas |
+| `annTool` | `'rect'` (declarado) | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `highlight` / `text` / `crop`. Ao abrir o editor: `select` com anotações, `free` sem elas |
 | `annSizeIdx` | `2` (4px) | Índice em `ANN_SIZES` (ou `ANN_HL_SIZES` no marca-texto) da ferramenta atual |
 | `annSizeByTool` | `{ free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 }` | O passo guardado de cada ferramenta (4 px nas linhas, 12 px no marca-texto) |
 | `annColorBy` | `{ hl: '#eab308', line: '#ef4444' }` | A cor do marca-texto e a das outras ferramentas |
-| `annHlSolid` | `false` | «Sólido» no marca-texto; guardado na chave `hl-solid` |
+| `annFill` | `{ rect: false, circle: false, highlight: false }` | A segunda opção de cada ferramenta, «Preenchido» ou «Sólido»; chaves `fill-rect`, `fill-circle` e `hl-solid` (`ANN_OPT2`) |
 | `annTextSize` | `24` | Tamanho do texto (px), reposto a 24 a cada abertura do editor |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
