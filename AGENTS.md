@@ -868,7 +868,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | `annTextStep(v, dir)` | O passo de `ANN_TEXT_SIZES` acima ou abaixo do tamanho `v`, mesmo fora dos passos (D-0105) |
 | `annSyncSizeVal()` | Escreve o tamanho atual depois do − e do + de cada bandeja: um ponto, ou o número do texto |
 | `annPress(id, on)` | Liga ou desliga `active` e `aria-pressed` de um botão de opção |
-| `annSyncHlBtns()` | Acerta «Translúcido» e «Sólido» do marca-texto |
+| `annSyncHlBtns()` | Acerta «Translúcido» e «Sólido» do marca-texto, e a ponta cheia no ícone da ferramenta |
 | `annSyncFillBtns()` | Acerta «Contorno» e «Preenchido» do retângulo e do círculo, e o ícone cheio da ferramenta |
 | `annSyncSwatches()` | Marca na paleta a cor de `annCurrentColor` |
 | `annColorKey(t)` | `'hl'` para o marca-texto, `'line'` para as outras: a chave de `annColorBy` |
