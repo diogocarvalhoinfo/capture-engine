@@ -549,7 +549,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ### O Ctrl+V não cola nada
 - Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
-- Em mobile, use o botão flutuante de colar FAB (Floating Action Button) no canto inferior direito
+- No telefone, use «Adicionar imagem» e «Adicionar documento». O Ctrl+V funciona com um teclado ligado ao telefone
 - Verifique se o navegador tem permissão para acessar a área de transferência (aparece uma notificação)
 - Ctrl+V suporta múltiplos arquivos copiados do Explorer em simultâneo (Ctrl+C nos arquivos → Ctrl+V na aplicação).
 

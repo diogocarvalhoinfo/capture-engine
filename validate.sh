@@ -376,7 +376,7 @@ fi
 #     token values must be exactly the documented one (design-tokens.md
 #     section 4 / AGENTS.md section 2.2). Fails on a new value, a missing one,
 #     or a literal z-index anywhere in the file.
-ZEXPECTED="1 2 3 4 5 1030 1040 1045 1055 1090"
+ZEXPECTED="1 2 3 4 5 1040 1045 1055 1090"
 ZLIT=$(grep -oE "z-index: *[0-9]+" "$FILE" | wc -l | tr -d ' ')
 ZFOUND=$(grep -oE -- "--z-[a-z-]+: *[0-9]+" "$FILE" | grep -oE "[0-9]+$" | sort -n | uniq | tr '
 ' ' ' | sed 's/ *$//')
