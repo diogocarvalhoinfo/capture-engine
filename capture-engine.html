@@ -2169,6 +2169,15 @@
       flex-shrink: 0
     }
 
+    /* With less motion asked by the system, the editor buttons change state at once: no fading hover (WCAG 2.3.3).
+       It also makes the GIF of the README repeatable, since the drawn cursor crosses the bar */
+    @media (prefers-reduced-motion: reduce) {
+      .ann-btn,
+      .ann-swatch {
+        transition: none
+      }
+    }
+
     .ann-swatch {
       width: 20px;
       height: 20px;
