@@ -425,6 +425,7 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o segundo campo (Equipamento) |
 | `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa "User") |
 | `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "Equipamento") |
+| `TOKEN_ID_UPPERCASE` | Converte para maiúsculas o que se digita nos dois campos (desligado = o texto fica como foi digitado) |
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
 | `TOKEN_AUTO_PURGE_HOURS` | Horas sem uso até a limpeza automática: 8, 24, 48 ou 0 («Nunca»), como no Visual Builder. Ver a nota abaixo da tabela. |
