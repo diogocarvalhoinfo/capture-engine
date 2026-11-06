@@ -216,23 +216,23 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 <!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
 ![Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado numa captura](docs/images/annotation-arrow.gif)
 
-No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arraste desenha a seta; o Confirmar a salva na imagem.
+No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arraste desenha a seta, e as ferramentas continuam abertas. Um clique sem arraste também desenha uma seta, com a ponta no lugar do clique; o Confirmar, que o GIF não mostra, a salva na imagem.
 
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), guardar e cancelar.
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400.
-  - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica laranja e liga a ferramenta à bandeja. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Na imagem, esse clique já começa o desenho. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. A barra não muda de forma.
+  - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica na cor principal e liga a ferramenta à bandeja. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Na imagem, esse clique já começa o desenho. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas, sem trocar de imagem. A barra não muda de forma.
     - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles: um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
     - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação.
     - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I). Um duplo clique num texto o reabre para editar.
-    - Com uma anotação do mesmo tipo selecionada, a opção escolhida muda também essa anotação, e o Ctrl+Z desfaz. As escolhas ficam guardadas no navegador.
+    - Com uma anotação do mesmo tipo selecionada, a opção escolhida muda também essa anotação, e o Ctrl+Z desfaz. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador; o negrito e o itálico voltam ao padrão a cada abertura do editor.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
-- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, o botão direito ou o botão do meio do mouse sobre uma anotação a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar; um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
+- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o botão do meio do mouse sobre uma anotação a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar; um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
 - Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
 - Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
 - Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
@@ -335,7 +335,7 @@ Cada abertura do Capture Engine começa com uma sessão nova em branco. A interf
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.
 
 **Identificação de sessão:**
-- **Nome da sessão** — derivado automaticamente dos campos de Identificação (USER e EQUIPAMENTO, em maiúsculas, separados por hífen). Os rótulos dos dois campos são configuráveis no Visual Builder.
+- **Nome da sessão** — derivado automaticamente dos campos de Identificação (User e Equipamento, separados por hífen). Com «Maiúsculas» ligado, o padrão, o nome sai em maiúsculas; desligado, sai como foi digitado. Os rótulos dos dois campos são configuráveis no Visual Builder.
 - **Campo User** — nome do usuário que trabalha (configurável)
 - **Campo Equipamento** — nome do computador ou equipamento (configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
@@ -379,6 +379,7 @@ O Visual Builder é o painel de configuração. Tem quatro abas: Interface, Hist
 **Aba Histórico:**
 - «Primeiro campo»: o rótulo (por padrão, «User») e o interruptor que mostra ou esconde o campo na barra lateral
 - «Segundo campo»: o rótulo (por padrão, «Equipamento») e o interruptor que mostra ou esconde o campo na barra lateral
+- «Maiúsculas»: ligado, o padrão, converte para maiúsculas o que se digita nos dois campos; desligado, o texto fica como foi digitado
 
 **Aba Captura:**
 - «Qualidade do PDF»: de 70 a 95 %, só para o PDF; os originais não mudam
@@ -656,14 +657,14 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 ### Acessibilidade
 
-**Estado medido em novembro de 2026,** só com o teclado, no Edge 156, no Firefox 150 e no WebKit 26.4 (o motor do Safari), os três no Windows. O resultado foi o mesmo nos três:
+**Estado medido em novembro de 2026,** só com o teclado, com o Playwright no Windows: Edge 156, Firefox 150 e WebKit 26.4 (o motor do Safari). São versões diferentes das testadas à mão em «Requisitos». O resultado foi o mesmo nos três:
 - **Teclado:** o Tab alcança todos os controles, e Enter ou Espaço os ativam. Isso inclui as miniaturas, os documentos, os itens dos «Removidos», as sessões do Histórico, cada chip do layout do PDF, as abas do Visual Builder e os cartões de exportação.
 - **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
 - **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
 - **Modais:** com um modal aberto, o Tab fica dentro dele, e o resto da página não recebe o foco. Ao fechar, o foco volta ao elemento de onde o modal foi aberto.
 - **Esc:** fecha o visualizador, o editor sem anotações por salvar, o modal de texto e a exportação da ferramenta. Com anotações por salvar, o editor mostra o aviso, como num clique fora. As setas ← → trocam de imagem no visualizador; no editor, andam só na barra. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
 - **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
-- **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md §1`).
+- **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md` §6, a nota sobre o `TOKEN_ACCENT_FG_OVERRIDE`).
 - **Leitores de tela:** não testados.
 - **Safari no Mac:** por padrão, o Tab do Safari só passa pelos campos de texto. Para alcançar também os botões, ligue «Pressionar Tab para destacar cada item» nos ajustes avançados do Safari, ou use Option+Tab.
 
@@ -776,6 +777,10 @@ init()
         ├── initPickers()
         ├── initTheme()
         ├── initTrashBar()
+        ├── initCollapsedBars()
+        ├── initModalLayers()
+        ├── initKeyClick()
+        ├── initChips()
         ├── initPdfModal()
         ├── initVbSync()
         ├── initAdminGate()
@@ -795,7 +800,7 @@ init()
 
 | Tabela | Chave primária | Campos principais | Índices |
 |---|---|---|---|
-| `sessions` | `id` | `name`, `user`, `pc`, `createdAt`, `updatedAt`, `exported` | `createdAt` |
+| `sessions` | `id` | `name`, `user`, `pc`, `createdAt`, `updatedAt` | `createdAt` |
 | `images` | `id` | `sessionId`, `blob`, `label`, `order`, `addedAt` (+ `origBlob`, `annHistory`, `annRedoStack` em imagens anotadas) | `sessionId`, `order` |
 | `documents` | `id` | `sessionId`, `blob`, `name`, `type`, `size`, `order`, `addedAt` | `sessionId`, `order` |
 | `removed_images` | `id` | `sessionId`, `blob`, `label`, `removedAt` | `sessionId` |
