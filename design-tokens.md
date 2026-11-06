@@ -211,13 +211,10 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-viewer-controls` | `3` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
 | `--z-viewer-text` | `4` | `#ann-text-overlay` sobre o canvas | dentro do modal |
 | `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
-| `--z-fixed` | `1030` | Botão de colar do mobile (`#mobile-paste-fab`) | global |
 | `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | mobile |
 | `--z-offcanvas` | `1045` | `#sidebar` no mobile, acima do seu fundo | mobile |
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
-
-O botão de colar fica abaixo da barra lateral e dos modais. Até a versão 27 ficava acima deles.
 
 **Regra:** um valor novo entra nesta tabela e no `validate.sh` (check 23), que falha com um valor não documentado ou com um `z-index` literal.
 
@@ -458,7 +455,6 @@ O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone pass
 - Layout muda de horizontal para vertical (painéis empilhados)
 - A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
 - O botão de histórico fica na barra de topo
-- FAB mobile (`#mobile-paste-fab`) fica visível — botão flutuante para colar da área de transferência
 - `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
 
 ### `width <= 30rem` (480px) — telefones na vertical
@@ -500,16 +496,6 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | **Não escolhido** | Sem borda nem fundo; texto `--color-muted-foreground`, e `--color-foreground` no hover |
 
 «Horizontal» e «Vertical» são ícones de página, com o nome no tooltip; «Auto» é escrito.
-
-### Botão de colar no mobile (`#mobile-paste-fab`)
-
-| Estado | Visual |
-|---|---|
-| **Repouso** | Ícone `var(--color-muted-foreground)`, borda `var(--color-border-strong)` — neutro, discreto |
-| **Hover** | Ícone `var(--color-foreground)`, borda `var(--color-muted-foreground)` — reforço sutil |
-| **`:active` (toque)** | Ícone e borda em `var(--color-primary)` — feedback preciso no momento do toque |
-
-*A cor principal aparece só no `:active` (não no `:hover`) porque em mobile não há estado hover real — o dedo ou toca ou não toca.*
 
 
 ---
