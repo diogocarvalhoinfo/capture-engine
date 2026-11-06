@@ -3160,11 +3160,18 @@
             style="display:none;font-weight:700;font-size:var(--text-sm);font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
           <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
             style="display:none;font-style:italic;font-size:var(--text-sm);font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
-          <button class="ann-btn" id="ann-hl-soft" title="Translúcido" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="4" y="7" width="16" height="10" rx="2" fill="currentColor" fill-opacity="0.35" />
+          <button class="ann-btn" id="ann-hl-soft" title="Translúcido" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <!-- text that stays readable under a light band -->
+              <line x1="4" y1="5" x2="16" y2="5" />
+              <rect x="2" y="8.5" width="20" height="8" rx="1.5" fill="currentColor" fill-opacity="0.3" stroke="none" />
+              <line x1="5" y1="12.5" x2="19" y2="12.5" />
+              <line x1="4" y1="20" x2="13" y2="20" />
             </svg></button>
-          <button class="ann-btn" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="4" y="7" width="16" height="10" rx="2" fill="currentColor" />
+          <button class="ann-btn" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <!-- the same text, with the middle line covered by a full band -->
+              <line x1="4" y1="5" x2="16" y2="5" />
+              <rect x="2" y="8.5" width="20" height="8" rx="1.5" fill="currentColor" stroke="none" />
+              <line x1="4" y1="20" x2="13" y2="20" />
             </svg></button>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
               <polyline points="5 9 2 12 5 15"/>
