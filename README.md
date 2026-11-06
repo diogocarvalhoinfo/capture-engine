@@ -223,7 +223,7 @@ Motor de anotação:
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), guardar e cancelar.
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400.
-  - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica laranja e liga a ferramenta à bandeja. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. A barra não muda de forma.
+  - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica laranja e liga a ferramenta à bandeja. Um duplo clique, ou o botão apertado por 1 s, abre as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Na imagem, esse clique já começa o desenho. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. A barra não muda de forma.
     - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles: um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
     - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação.
@@ -565,8 +565,9 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
 - Use o export ZIP para sessões com imagens e documentos juntos.
 
-### O modal de anotação não fecha com Escape
-- Se uma ferramenta de anotação estiver ativa, Escape cancela a ferramenta — não fecha o modal. Pressione Escape novamente para fechar.
+### O editor não fecha com Escape
+- Com as opções de uma ferramenta abertas, o Escape fecha só as opções. Pressione de novo para fechar o editor.
+- Com anotações por salvar, o Escape não fecha: o Cancelar e o Confirmar crescem, como num clique fora. Escolha um dos dois.
 
 ### Sessões com mais de 48 horas desapareceram
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
@@ -660,7 +661,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
 - **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
 - **Modais:** com um modal aberto, o Tab fica dentro dele, e o resto da página não recebe o foco. Ao fechar, o foco volta ao elemento de onde o modal foi aberto.
-- **Esc:** fecha o visualizador, o editor (como Cancelar), o modal de texto e a exportação da ferramenta. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
+- **Esc:** fecha o visualizador, o editor sem anotações por salvar, o modal de texto e a exportação da ferramenta. Com anotações por salvar, o editor mostra o aviso, como num clique fora. As setas ← → trocam de imagem no visualizador; no editor, andam só na barra. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
 - **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
 - **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md §1`).
 - **Leitores de tela:** não testados.

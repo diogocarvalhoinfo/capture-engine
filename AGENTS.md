@@ -1327,6 +1327,9 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Botão direito ou do meio numa anotação, numa ferramenta de desenho: fica selecionada, com o ✕, e o Selecionar aceso; um clique fora, o ✕ ou o Delete voltam à ferramenta de antes sem desenhar
 - [ ] Espessura por ferramenta: o desenho livre, o retângulo, o círculo e a seta começam em 4 px, o marca-texto em 12 px e no amarelo; trocar de ferramenta e voltar mantém o passo e a cor de cada uma
 - [ ] Texto: o + vai até 400 e o − até 12; arrastar a alça de um texto muda o número da bandeja do Texto
+- [ ] Com duas imagens ou mais, as setas ← → no editor, dentro e fora de uma bandeja, não trocam de imagem nem fecham o editor (F-0083)
+- [ ] Esc com anotações por salvar: o aviso aparece, e nada se perde (F-0088); Esc no meio de um arraste, depois outra imagem e Ctrl+Z: nada da imagem anterior volta (F-0084)
+- [ ] Em 360 e 375 px de largura, a barra do editor e as bandejas cabem na tela (F-0085)
 - [ ] Opções das ferramentas: o duplo clique e o botão apertado por 1 s abrem as opções, lado a lado, acima de cada ferramenta que desenha; o − e o + da bandeja mudam o tamanho mostrado depois deles e o da barra; um clique simples só escolhe a ferramenta; a seta para cima abre pelo teclado e o Esc fecha sem fechar o editor
 - [ ] Retângulo e círculo «Preenchido»: a forma sai cheia na cor; escolher a opção com uma forma selecionada a muda, e o Ctrl+Z desfaz
 - [ ] Zoom no editor (roda e botões + e −): um traço feito a 200 % cai debaixo do cursor
@@ -1467,6 +1470,8 @@ O que ficou para depois, com o ID e a origem.
 |---|---|---|
 | F-0073 | O Safari continua marcado como não testado em «Requisitos». Fecha com a lista de teste no iPhone, feita pelo dono na página publicada da 28.7.0. | Auditoria de 2026-11-04 |
 | F-0074 | Frases com mais de 30 palavras no `AGENTS.md` (7 a 8, contagem automática). | Auditoria de 2026-11-04 |
+| F-0089 | Uma seta curta, de cerca de 30 px, não se move pelo meio no Selecionar: as alças das pontas cobrem a seta inteira, e o arraste pega a da ponta. Correção pensada: a alça mais próxima, com o raio limitado a um terço do comprimento. | Auditoria de 2026-11-06 |
+| F-0090 | As ferramentas com opções dizem `aria-haspopup="true"` (um menu), mas a bandeja é um grupo; e nenhuma ferramenta tem `aria-pressed`, então o leitor de tela não ouve qual está ativa. | Auditoria de 2026-11-06 |
 
 ### IDs
 
