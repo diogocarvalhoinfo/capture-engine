@@ -53,8 +53,8 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-brand-icon-light` | `#1a1a1a` | — | Ícone da marca no tema claro |
 | `--color-annotation-black` | `#1a1a1a` | — | Amostra preta da paleta de anotação |
 | `--color-annotation-white` | `#f0f0f0` | — | Amostra branca da paleta de anotação |
-| `--color-viewer-control` | `#2a2a2a` | — | Botões da barra de anotação |
-| `--color-viewer-control-hover` | `#363636` | — | Hover dos botões da barra de anotação |
+| `--color-viewer-control` | `#2a2a2a` | — | Botões da barra de anotação e botões secundários do visualizador (Download, Restaurar) |
+| `--color-viewer-control-hover` | `#363636` | — | Hover desses botões |
 | `--color-viewer-control-border-hover` | `#555` | — | Borda desses botões no hover |
 | `--color-viewer-control-foreground` | `#e0e0e0` | — | Texto e ícones desses botões |
 | `--color-viewer-active-foreground` | `#121212` | — | Texto do negrito e do itálico ativos |
@@ -67,15 +67,14 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-settings-backdrop` | `rgb(0 0 0 / 85%)` | — | Fundo atrás do Visual Builder e do painel de exportação |
 | `--color-offcanvas-backdrop` | `rgb(0 0 0 / 50%)` | — | Fundo atrás da barra lateral no mobile |
 | `--color-viewer-backdrop` | `rgb(10 10 10 / 88%)` | — | Fundo do visualizador de imagem |
-| `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botões claros sobre o visualizador (fechar, download) |
+| `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botão de fechar sobre o visualizador |
 | `--color-viewer-close-hover` | `rgb(255 255 255 / 20%)` | — | Hover do botão de fechar do visualizador |
 | `--color-viewer-toolbar` | `rgb(255 255 255 / 6%)` | — | Barra de ferramentas da anotação |
 | `--color-viewer-border` | `rgb(255 255 255 / 10%)` | — | Borda da barra de ferramentas e da barra de zoom |
-| `--color-viewer-control-border` | `#3f3f3f` | — | Borda dos botões da barra de anotação |
+| `--color-viewer-control-border` | `#3f3f3f` | — | Borda desses botões |
 | `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Abas e bordas finas do visualizador |
 | `--color-viewer-muted-foreground` | `rgb(255 255 255 / 60%)` | — | Dimensões da imagem, sobre o visualizador |
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
-| `--color-viewer-border-hover` | `rgb(255 255 255 / 30%)` | — | Borda do botão de download no hover |
 | `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom e setas, flutuando sobre a imagem |
 | `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
 
