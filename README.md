@@ -562,7 +562,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
 
 ### As minhas capturas desapareceram depois de fechar o navegador
-- O mais provável é esgotamento da quota de armazenamento do navegador. Quando o IndexedDB fica sem espaço, a gravação falha, e um aviso vermelho aparece no topo da aplicação. O item aparece na grade durante a sessão, por um Object URL em memória, mas não chega a ser gravado. Ao fechar o navegador, a memória é liberada e o item desaparece.
+- O mais provável é que o navegador não tenha deixado gravar: a quota de armazenamento esgotou, ou a aba era de navegação privada. Nos dois casos, um aviso vermelho aparece no topo da aplicação.
+- A captura que não grava continua na grade enquanto a aba estiver aberta, e a barra de estado diz «Só nesta aba». Ao fechar a aba, a captura desaparece. Por isso, exporte em PDF ou ZIP antes de fechar.
 - **Como confirmar:** abra as DevTools (F12) → aba Console → procure erros com a palavra `quota` ou `storage`.
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP) e apague no histórico as sessões que já não precisa. **Não existe forma de reduzir o espaço que cada captura ocupa** — as imagens são sempre gravadas no formato original. O `TOKEN_MAX_IMG_DIMENSION` do Visual Builder reduz as imagens apenas na geração do PDF, não no armazenamento, e por isso não previne este problema.
 - **Editar uma imagem duplica, mais ou menos, o espaço que ela ocupa.** Ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs: o original (`origBlob`, para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
