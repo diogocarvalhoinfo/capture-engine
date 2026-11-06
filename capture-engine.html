@@ -2787,7 +2787,9 @@
     }
 
     #img-modal-overlay #ann-bold-btn.active,
-    #img-modal-overlay #ann-italic-btn.active {
+    #img-modal-overlay #ann-italic-btn.active,
+    #img-modal-overlay #ann-hl-soft.active,
+    #img-modal-overlay #ann-hl-solid.active {
       color: var(--color-viewer-active-foreground);
       background: var(--color-white);
       border-color: var(--color-white);
@@ -2812,18 +2814,22 @@
       pointer-events: none
     }
 
-    /* Text mode: only the back button and the text buttons stay among the tools */
-    #ann-text-back {
+    /* Text and highlighter modes (ann-sub-mode): only the back button, the active tool and its own buttons stay among the tools */
+    #ann-text-back,
+    #ann-hl-soft,
+    #ann-hl-solid {
       display: none;
     }
 
-    #img-modal-ann-actions.ann-text-mode #ann-text-back {
+    #img-modal-ann-actions.ann-sub-mode #ann-text-back,
+    #img-modal-ann-actions.ann-hl-mode #ann-hl-soft,
+    #img-modal-ann-actions.ann-hl-mode #ann-hl-solid {
       display: flex;
     }
 
-    #img-modal-ann-actions.ann-text-mode .ann-btn[data-tool]:not([data-tool="text"]),
-    #img-modal-ann-actions.ann-text-mode #ann-rotate-btn,
-    #img-modal-ann-actions.ann-text-mode .ann-row .ann-sep {
+    #img-modal-ann-actions.ann-sub-mode .ann-btn[data-tool]:not(.active),
+    #img-modal-ann-actions.ann-sub-mode #ann-rotate-btn,
+    #img-modal-ann-actions.ann-sub-mode .ann-row .ann-sep {
       display: none;
     }
 
@@ -3296,6 +3302,11 @@
               <line x1="5" y1="19" x2="19" y2="5" />
               <polyline points="12 5 19 5 19 12" />
             </svg></button>
+          <button class="ann-btn" data-tool="highlight" title="Marca-texto"><svg viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 11-6 6v3h9l3-3" />
+              <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
+            </svg></button>
           <button class="ann-btn" data-tool="text" title="Texto"><svg viewBox="0 0 24 24">
               <path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5" />
             </svg></button>
@@ -3303,6 +3314,12 @@
             style="display:none;font-weight:700;font-size:var(--text-sm);font-family:sans-serif;letter-spacing:-0.5px;align-items:center;justify-content:center">B</button>
           <button class="ann-btn" id="ann-italic-btn" title="Itálico (Ctrl+I)"
             style="display:none;font-style:italic;font-size:var(--text-sm);font-family:serif;letter-spacing:-0.5px;align-items:center;justify-content:center">I</button>
+          <button class="ann-btn" id="ann-hl-soft" title="Translúcido" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="7" width="16" height="10" rx="2" fill="currentColor" fill-opacity="0.35" />
+            </svg></button>
+          <button class="ann-btn" id="ann-hl-solid" title="Sólido" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="7" width="16" height="10" rx="2" fill="currentColor" />
+            </svg></button>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
               <polyline points="5 9 2 12 5 15"/>
               <polyline points="9 5 12 2 15 5"/>
@@ -4138,7 +4155,15 @@
       let annRafId = 0; let annLastEvt = null; // requestAnimationFrame coalescing for the live preview (avoids flicker)
       const ANN_TEXT_SIZES = [14, 18, 24, 36, 48]; let annTextSizeIdx = 2; // default 24px (index 2)
       const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio, used in the textarea AND in the canvas (multi-line WYSIWYG)
-      function annLineW() { return ANN_SIZES[annSizeIdx] }
+      /* The highlighter has its own, wider scale on the same six steps of Diminuir and Aumentar */
+      const ANN_HL_SIZES = [8, 12, 18, 26, 36, 48];
+      function annLineW() { return (annTool === 'highlight' ? ANN_HL_SIZES : ANN_SIZES)[annSizeIdx] }
+      const annIsStroke = () => annTool === 'free' || annTool === 'highlight';
+      /* Translucent (default) or solid: kept in this browser, as the theme */
+      let annHlSolid = (() => { try { return localStorage.getItem('hl-solid') === '1' } catch (_) { return false } })();
+      const annHlMode = () => annHlSolid ? 'solid' : 'soft';
+      /* A highlighter stroke is a free stroke with hl ('soft' or 'solid'): flat cut ends, and 40 % opacity when soft. One path, so a second pass over the same place does not darken it */
+      function annStrokeStyle(ctx, color, lw, hl) { ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineJoin = 'round'; ctx.lineCap = hl ? 'butt' : 'round'; ctx.globalAlpha = hl === 'soft' ? 0.4 : 1 }
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
 
       function setAnnDirty(val) {
@@ -4285,8 +4310,8 @@
       }
       async function annSetTool(t) {
         annTool = t;
-        if (t !== 'text') annPrevTool = t;
-        $('img-modal-ann-actions').classList.toggle('ann-text-mode', t === 'text');
+        if (t !== 'text' && t !== 'highlight') annPrevTool = t;
+        const _bar = $('img-modal-ann-actions'); _bar.classList.toggle('ann-text-mode', t === 'text'); _bar.classList.toggle('ann-hl-mode', t === 'highlight'); _bar.classList.toggle('ann-sub-mode', t === 'text' || t === 'highlight');
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.classList.toggle('active', b.dataset.tool === t) });
         const _isText = t === 'text';
         if (_isText) { annSelectedIdx = -1; annRenderAll(); }
@@ -4496,7 +4521,7 @@
           ctx.restore();
         }
       }
-      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; annCR(ctx, h.pts, !!h.closed) } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() } else if (h.type === 'rect') { ctx.strokeRect(Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
@@ -4919,8 +4944,8 @@
               const _ni = _idx > 0 ? _idx - 1 : 0;
               _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             } else {
-              const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
-              _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+              const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx > 0 ? _idx - 1 : 0;
+              _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
             }
           } else if (annTool === 'text') {
             if (annTextSizeIdx > 0) { annTextSizeIdx--; annUpdateThicknessIcon(); annTextLiveResize() }
@@ -4937,15 +4962,18 @@
               const _ni = _idx < ANN_TEXT_SIZES.length - 1 ? _idx + 1 : ANN_TEXT_SIZES.length - 1;
               _s.fontSize = ANN_TEXT_SIZES[_ni]; setAnnDirty(true); annRenderAll();
             } else {
-              const _idx = ANN_SIZES.indexOf(_s.lw); const _ni = _idx < ANN_SIZES.length - 1 ? _idx + 1 : ANN_SIZES.length - 1;
-              _s.lw = ANN_SIZES[_ni]; setAnnDirty(true); annRenderAll();
+              const _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES, _idx = _L.indexOf(_s.lw); const _ni = _idx < _L.length - 1 ? _idx + 1 : _L.length - 1;
+              _s.lw = _L[_ni]; setAnnDirty(true); annRenderAll();
             }
           } else if (annTool === 'text') {
             if (annTextSizeIdx < ANN_TEXT_SIZES.length - 1) { annTextSizeIdx++; annUpdateThicknessIcon(); annTextLiveResize() }
           } else {
-            if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() }
+            if (annSizeIdx < ANN_SIZES.length - 1) { annSizeIdx++; annUpdateThicknessIcon() } /* ANN_HL_SIZES has the same six steps */
           }
         };
+        function annSyncHlBtns() { [['ann-hl-soft', !annHlSolid], ['ann-hl-solid', annHlSolid]].forEach(([id, on]) => { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }) }
+        [['ann-hl-soft', false], ['ann-hl-solid', true]].forEach(([id, solid]) => { $(id).onclick = () => { annHlSolid = solid; try { localStorage.setItem('hl-solid', solid ? '1' : '0') } catch (_) { } annSyncHlBtns(); const _s = annHistory[annSelectedIdx]; if (_s && _s.hl && _s.hl !== annHlMode()) { annPushUndo(); _s.hl = annHlMode(); setAnnDirty(true) } annRenderAll() } });
+        annSyncHlBtns();
         // Tool buttons
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => { b.onclick = () => annSetTool(b.dataset.tool) });
         // Back from the text mode: the text being written stays on the image (saved to the file only with the green button)
@@ -5116,12 +5144,12 @@
         function annPaintPreview() {
           annRafId = 0;
           if (!annDrawing || !annActive || !annLastEvt) return;
-          let p = annCanvasXYClamped(annLastEvt); if (annShift && annTool !== 'free') p = annShiftPoint(annShiftKind(annTool), annStart, p);
+          let p = annCanvasXYClamped(annLastEvt); if (annShift && !annIsStroke()) p = annShiftPoint(annShiftKind(annTool), annStart, p);
           const ctx = annGetCtx(); annRenderAll(); ctx.strokeStyle = annCurrentColor; ctx.lineWidth = annLineW(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           if (annTool === 'circle') { const rx = Math.abs(p.x - annStart.x) / 2, ry = Math.abs(p.y - annStart.y) / 2, cx = Math.min(annStart.x, p.x) + rx, cy = Math.min(annStart.y, p.y) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); ctx.stroke() }
           else if (annTool === 'rect') { ctx.strokeRect(Math.min(annStart.x, p.x), Math.min(annStart.y, p.y), Math.abs(p.x - annStart.x), Math.abs(p.y - annStart.y)) }
           else if (annTool === 'arrow') { ctx.beginPath(); ctx.moveTo(annStart.x, annStart.y); ctx.lineTo(p.x, p.y); ctx.stroke(); const a = Math.atan2(p.y - annStart.y, p.x - annStart.x), hl = 12 + annLineW() * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a - 0.4), p.y - hl * Math.sin(a - 0.4)); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - hl * Math.cos(a + 0.4), p.y - hl * Math.sin(a + 0.4)); ctx.stroke() }
-          else if (annTool === 'free') { annCR(ctx, annPath, false); }
+          else if (annIsStroke()) { ctx.save(); annStrokeStyle(ctx, annCurrentColor, annLineW(), annTool === 'highlight' ? annHlMode() : null); annCR(ctx, annPath, false); ctx.restore(); }
         }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
         // Recortar: how each handle moves the box, as multipliers of dx and dy for [x, y, w, h]
@@ -5253,8 +5281,8 @@
         // Drawing: the free stroke keeps smoothed points (EMA) at least 5 px apart; every tool repaints the preview
         function annMoveDraw(e) {
           annLastEvt = e; annShift = e.shiftKey;
-          if (annTool === 'free' && annShift) { const sp = annShiftPoint('line', annPath[0], annCanvasXYClamped(e)); annPath = [annPath[0], sp]; annSmoothLast = sp; annScheduledPaint(); return; }
-          if (annTool === 'free') {
+          if (annIsStroke() && annShift) { const sp = annShiftPoint('line', annPath[0], annCanvasXYClamped(e)); annPath = [annPath[0], sp]; annSmoothLast = sp; annScheduledPaint(); return; }
+          if (annIsStroke()) {
             const p = annCanvasXYClamped(e); const alpha = 0.35;
             const sx = annSmoothLast ? alpha * p.x + (1 - alpha) * annSmoothLast.x : p.x;
             const sy = annSmoothLast ? alpha * p.y + (1 - alpha) * annSmoothLast.y : p.y;
@@ -5305,14 +5333,15 @@
           if (annRafId) { cancelAnimationFrame(annRafId); annRafId = 0; }
           annLastEvt = null;
           annShift = e.shiftKey;
-          let p = annCanvasXYClamped(e); if (annShift && annTool !== 'free' && annTool !== 'text') p = annShiftPoint(annShiftKind(annTool), annStart, p);
-          if (annTool === 'free') {
+          let p = annCanvasXYClamped(e); if (annShift && !annIsStroke() && annTool !== 'text') p = annShiftPoint(annShiftKind(annTool), annStart, p);
+          if (annIsStroke()) {
             annSmoothLast = null;
             if (annPath.length > 1) {
               const closed = false;
               const simplified = annPath.slice();
               annPushUndo(); // M1: snapshot BEFORE adding a free stroke
-              annHistory.push({ type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed });
+              const _st = { type: 'free', pts: simplified, color: annCurrentColor, lw: annLineW(), closed }; if (annTool === 'highlight') _st.hl = annHlMode();
+              annHistory.push(_st);
               setAnnDirty(true);
             }
           } else if (annTool !== 'text') {
@@ -5322,7 +5351,7 @@
           }
           annRenderAll();
         }
-        ['keydown', 'keyup'].forEach(t => window.addEventListener(t, e => { if (e.key !== 'Shift' || !annActive || !annLastEvt) return; annShift = t === 'keydown'; if (annDrawing && annTool !== 'free') annScheduledPaint(); }));
+        ['keydown', 'keyup'].forEach(t => window.addEventListener(t, e => { if (e.key !== 'Shift' || !annActive || !annLastEvt) return; annShift = t === 'keydown'; if (annDrawing && !annIsStroke()) annScheduledPaint(); }));
         window.addEventListener('pointerup', e => {
           if (!annActive) return;
           if (annDraggingCrop) annUpCrop();

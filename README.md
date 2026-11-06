@@ -212,16 +212,17 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 
 ### 6.3 Anotação de imagens
 
-<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#ann-canvas, #img-modal-ann-actions; passos=arrastar #ann-canvas 6%,94% 61%,73% | clicar #ann-save -->
-![Editor de anotação: uma seta vermelha é desenhada até o botão azul de uma captura, e o Confirmar salva a anotação na imagem](docs/images/annotation-arrow.gif)
+<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#ann-canvas, #img-modal-ann-actions; passos=arrastar #ann-canvas 18%,59% 31%,44% | clicar #ann-save -->
+![Editor de anotação: uma seta vermelha é desenhada até o arquivo selecionado numa captura, e o Confirmar salva a anotação na imagem](docs/images/annotation-arrow.gif)
 
 Com a ferramenta Seta, um arraste desenha a seta, e o Confirmar a salva na imagem.
 
 Motor de anotação:
-- O editor tem 7 ferramentas (desenho livre, retângulo, círculo, seta, texto, selecionar e recortar) e o botão Girar 90°.
+- O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), negrito e itálico, guardar e cancelar.
   - O modo texto liga com a ferramenta Texto ou com o duplo clique num texto. Nele, a barra mostra só o ←, o T, o negrito e o itálico, as cores, o tamanho, desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior e deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
+  - O marca-texto pinta uma faixa larga, de pontas retas, na cor escolhida. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Ao escolher o marca-texto, a barra mostra só o ←, o marca-texto, «Translúcido» e «Sólido», as cores, «Diminuir» e «Aumentar», desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior. A escolha entre translúcido e sólido fica guardada no navegador.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
