@@ -36,10 +36,10 @@ Ferramenta para capturar, organizar e exportar imagens e documentos como evidên
 
 1. **Identificação**: os campos «Quem» e «O que» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
 2. **Exportar**: gera um PDF só com imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
-3. **Imagens**: cole com Ctrl+V, arraste ou clique para adicionar. <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
+3. **Imagens**: cole com Ctrl+V, arraste, ou use «Adicionar imagem». <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
 4. **Documentos**: qualquer outro arquivo; os de texto abrem na própria ferramenta. <!-- anotação: alvo=#doc-zone; lado=cima; ponto=0.9,0 -->
 5. **Histórico**: as sessões anteriores, apagadas depois de 48 horas sem uso. <!-- anotação: alvo=#sb-rail; lado=direita; ponto=1,0.3 -->
-6. **Removidos**: os itens removidos, que se restauram daqui. <!-- anotação: alvo=#trash-bar; lado=baixo; ponto=0.5,1 -->
+6. **Removidos**: os itens removidos, que se restauram daqui. <!-- anotação: alvo=#trash-bar; lado=baixo; ponto=0.85,1 -->
 
 O Capture Engine é **um único arquivo HTML** que contém a aplicação inteira de captura e exportação de evidências digitais. Não precisa de instalação, não requer internet, e não envia nenhum dado para servidores externos.
 
@@ -137,11 +137,11 @@ Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospita
 ### Abrir a aplicação
 
 **Método simples (qualquer sistema operacional):**
-1. Baixe o `capture-engine.html` pelo botão «Download», no topo deste README
+1. Baixe o `capture-engine.html` pelo cartão «Download», no topo deste README
 2. Faça duplo clique no arquivo
 3. O arquivo abre no navegador padrão
 
-A versão publicada no GitHub Pages, no endereço do topo, funciona igual. Guarda as sessões numa base separada da do arquivo baixado (ver «A base é por origem», na §11).
+A versão publicada no GitHub Pages (cartão «Abrir o site», no topo) funciona igual. Guarda as sessões numa base separada da do arquivo baixado (ver «A base é por origem», na §11).
 
 ### Fluxo básico de trabalho
 
@@ -216,26 +216,26 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação.
 <!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
 ![Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado numa captura](docs/images/annotation-arrow.gif)
 
-No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arraste desenha a seta, e as ferramentas continuam abertas. Um clique sem arraste também desenha uma seta, com a ponta no lugar do clique; o Confirmar, que o GIF não mostra, a salva na imagem.
+No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arrasto desenha a seta, e as ferramentas continuam abertas. Um clique sem arrasto também desenha uma seta, com a ponta no lugar do clique. O GIF termina antes do Confirmar, que salva as anotações na imagem.
 
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), guardar e cancelar.
+  - A barra tem também as 8 cores, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), «Desfazer», «Refazer», «Cancelar» e «Confirmar».
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400. O ícone do desenho livre e o da seta engrossam e afinam com a espessura de cada um.
-  - **Opções de uma ferramenta.** Todas as ferramentas que desenham têm um ponto discreto acima do botão; com as opções abertas, ele fica na cor principal e liga a ferramenta à bandeja. Um clique na ferramenta já escolhida (no celular, um toque), um duplo clique ou o botão apertado por 1 s abrem as opções dela numa bandeja logo acima, lado a lado como na barra, sempre na mesma ordem: a primeira fica em cima da ferramenta, e a escolhida fica marcada, do mesmo tamanho e cada um com o seu nome ao passar o mouse. A bandeja fica aberta enquanto se escolhem as opções e fecha com um clique fora dela, com o Esc ou ao trocar de ferramenta. Na imagem, esse clique já começa o desenho. Pelo teclado, a seta para cima abre e as setas para os lados andam entre elas, sem trocar de imagem. A barra não muda de forma.
-    - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles: um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
+  - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. Um clique na ferramenta já escolhida (no telefone, um toque) abre as opções numa bandeja logo acima. O duplo clique e o botão apertado por 1 s também abrem. As opções ficam lado a lado, sempre na mesma ordem, e a escolhida fica marcada. Cada uma mostra o nome ao passar o mouse. Com a bandeja aberta, o ponto fica na cor principal. Um clique fora, o Esc, outra ferramenta ou um novo clique na ferramenta fecham a bandeja; um clique na imagem já começa o desenho. Com o Texto, a bandeja fica aberta enquanto se digita, e o B, o I, o − e o + valem para o texto aberto. Pelo teclado, a seta para cima abre, e as setas para os lados andam entre as opções. A barra não muda de forma, e a bandeja acompanha a tela quando ela muda de tamanho.
+    - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles. O tamanho é um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
-    - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Com «Sólido», o botão da ferramenta mostra a ponta cheia.
+    - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão, com o ícone de xadrez) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Com «Sólido», o botão da ferramenta mostra a ponta cheia.
     - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I). O T da ferramenta mostra o estilo, o do texto selecionado ou o que vai ser usado: mais grosso com «Negrito», inclinado com «Itálico». Um duplo clique num texto o reabre para editar.
-    - Com uma anotação do mesmo tipo selecionada, a opção escolhida muda também essa anotação, e o Ctrl+Z desfaz. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador; o negrito e o itálico voltam ao padrão a cada abertura do editor.
+    - Com um retângulo, um círculo ou um marca-texto selecionado, a opção da mesma ferramenta muda também essa anotação, e o Ctrl+Z desfaz. Escolher outra ferramenta, ou o Texto, tira a seleção, e as opções voltam a valer para a ferramenta. Para mudar o negrito ou o itálico de um texto, faça um duplo clique nele e use as opções. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador. A cada abertura do editor, o texto volta a 24, com o negrito ligado e o itálico desligado.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
-  - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
+  - Com anotações por salvar, fechar o editor (pelo ✕, pelo Esc ou por um clique fora) faz o Cancelar e o Confirmar crescerem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
-- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o botão do meio do mouse sobre uma anotação a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar; um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
+- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o do meio sobre uma anotação a selecionam, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar. Um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
 - Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
-- Redimensionar: alças nos 4 cantos de qualquer anotação; texto por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção
-- Shift: o retângulo vira quadrado, a elipse vira círculo, e a seta e o desenho livre andam em passos de 45°, ao desenhar e ao redimensionar. Vale também quando o Shift é apertado no meio do gesto
+- Redimensionar: alças nos 4 cantos de cada anotação, menos a seta. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção. Numa seta curta, o meio continua a mover a seta. O texto muda de tamanho por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto
+- Shift: o Retângulo desenha um quadrado, o Círculo um círculo perfeito (sem o Shift, ele desenha uma elipse), e a Seta e o Desenho livre andam em passos de 45°. Vale ao desenhar e ao redimensionar, também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
@@ -243,11 +243,11 @@ Motor de anotação:
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
   - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
 
-Mobile:
-- Desenho por toque funciona (Pointer Events nativos)
-- Scroll de fundo bloqueado quando qualquer modal está aberto
-- Botões de apagar e restaurar sempre visíveis em dispositivos touch
-- Barra de ferramentas em 3 linhas: ferramentas / cores+espessura / ações
+No telefone:
+- O desenho por toque funciona (Pointer Events).
+- A página por trás não rola enquanto um modal está aberto.
+- Os botões de apagar e de restaurar ficam sempre visíveis.
+- A barra quebra em linhas conforme a largura: as ferramentas, as cores com o − e o +, e as ações. Até cerca de 420 px, as ferramentas ocupam duas linhas.
 
 ### 6.4 Reordenação
 
@@ -335,9 +335,9 @@ Cada abertura do Capture Engine começa com uma sessão nova em branco. A interf
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.
 
 **Identificação de sessão:**
-- **Nome da sessão** — derivado automaticamente dos campos de Identificação (Quem e O que, separados por hífen). Com «Maiúsculas» ligado, o padrão, o nome sai em maiúsculas; desligado, sai como foi digitado. Os rótulos dos dois campos são configuráveis no Visual Builder.
-- **Campo Quem** — quem fez o registro, por exemplo o nome do usuário (rótulo configurável)
-- **Campo O que** — o que foi registrado, por exemplo o computador ou o equipamento (rótulo configurável)
+- **Nome da sessão** — derivado automaticamente dos campos de Identificação («Quem» e «O que», separados por hífen). Com «Maiúsculas» ligado, o padrão, o nome sai em maiúsculas; desligado, sai como foi digitado. Os rótulos dos dois campos são configuráveis no Visual Builder.
+- **Campo «Quem»:** quem fez o registro, por exemplo o nome do usuário (rótulo configurável)
+- **Campo «O que»:** o que foi registrado, por exemplo o computador ou o equipamento (rótulo configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
 
 **Purge automático:**
@@ -357,13 +357,13 @@ O painel de administração não é visível por padrão. Para ativá-lo:
 1. Clique 6 vezes seguidas no logo, no canto superior esquerdo, em menos de 3 segundos. Os cliques com mais de 3 s não contam.
 2. Use os dois botões que aparecem na barra de topo: a engrenagem abre o Visual Builder, e o disquete exporta uma cópia.
 
-Para desativar, clique 3 vezes no logo em menos de 1 segundo. O modo administrador não continua ativo depois de fechar a aplicação: ative-o de novo em cada abertura.
+Para desativar, clique 3 vezes no logo em menos de 1 segundo. Fechar o Visual Builder pelo ✕ também desativa o modo administrador: para exportar, use o disquete antes de abrir o Visual Builder, ou ative o modo de novo. O modo administrador não continua ativo depois de fechar a aplicação: ative-o de novo em cada abertura.
 
 <!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/admin-mode.png; preparo=capture-engine-admin-mode; recorte=#vb-overlay .sb-modal -->
 ![Visual Builder aberto na aba Histórico, com as abas, o interruptor e o rótulo do segundo campo anotados](docs/images/admin-mode.png)
 
 1. **Abas**: Interface, Histórico, Captura e Manutenção. <!-- anotação: alvo=.sb-tabs; lado=direita; ponto=1,0.5 -->
-2. **Interruptor**: mostra ou esconde o campo na barra lateral. <!-- anotação: alvo=label:has(#cfg-show-pc); lado=direita; ponto=1,0.5 -->
+2. **Interruptor**: o de cada campo o mostra ou esconde na barra lateral. <!-- anotação: alvo=label:has(#cfg-show-pc); lado=direita; ponto=1,0.5 -->
 3. **Rótulo**: o nome do campo na barra lateral, como «Caso» ou «Processo». <!-- anotação: alvo=#cfg-equip-label; lado=baixo; ponto=0.5,1 -->
 
 ### 7.2 O Visual Builder
@@ -431,8 +431,8 @@ Os tokens são as variáveis internas que controlam o comportamento da ferrament
 | `TOKEN_FOOTER_TEXT` | Texto do rodapé |
 | `TOKEN_SHOW_SESSION_USER` | Mostra/oculta o primeiro campo (Quem) |
 | `TOKEN_SHOW_SESSION_PC` | Mostra/oculta o segundo campo (O que) |
-| `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa "Quem") |
-| `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa "O que") |
+| `TOKEN_USER_LABEL` | Rótulo do primeiro campo (vazio = usa «Quem») |
+| `TOKEN_EQUIP_LABEL` | Rótulo do segundo campo (vazio = usa «O que») |
 | `TOKEN_ID_UPPERCASE` | Converte para maiúsculas o que se digita nos dois campos (desligado = o texto fica como foi digitado) |
 | `TOKEN_JPEG_QUALITY` | Qualidade de compressão JPEG no export PDF |
 | `TOKEN_MAX_IMG_DIMENSION` | Dimensão máxima das imagens **na geração do PDF** (0 = sem limite). Não afeta o armazenamento: as imagens são sempre guardadas no formato original |
@@ -662,7 +662,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
 - **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
 - **Modais:** com um modal aberto, o Tab fica dentro dele, e o resto da página não recebe o foco. Ao fechar, o foco volta ao elemento de onde o modal foi aberto.
-- **Esc:** fecha o visualizador, o editor sem anotações por salvar, o modal de texto e a exportação da ferramenta. Com anotações por salvar, o editor mostra o aviso, como num clique fora. As setas ← → trocam de imagem no visualizador; no editor, andam só na barra. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
+- **Esc:** no editor, fecha primeiro a bandeja de opções; sem bandeja e sem anotações por salvar, volta ao visualizador. Com anotações por salvar, mostra o aviso, como num clique fora. Fecha também o visualizador, o modal de texto e a exportação da ferramenta. As setas ← → trocam de imagem no visualizador; no editor, andam só na barra. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
 - **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
 - **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md` §6, a nota sobre o `TOKEN_ACCENT_FG_OVERRIDE`).
 - **Leitores de tela:** não testados.
@@ -680,7 +680,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 | Abas do Visual Builder | `role="tablist"` e `role="tab"` | Diz que são abas, e não botões soltos |
 | Chips do layout e das opções do Visual Builder | `role="radio"` e `aria-checked` | Cada chip é uma parada do Tab, e o estado escolhido é anunciado |
 | Setas do Histórico e dos «Removidos» | `aria-expanded` | Diz se a barra está aberta |
-| Ferramentas com opções (desenho livre, retângulo, círculo, seta, marca-texto, texto) | `aria-haspopup` e `aria-expanded`; as opções num `role="group"` com nome | Diz que a ferramenta tem opções e se elas estão abertas |
+| Ferramentas do editor | `aria-pressed` em todas; nas que têm opções (desenho livre, retângulo, círculo, seta, marca-texto, texto), `aria-controls` e `aria-expanded`, e as opções num `role="group"` com nome | Diz qual ferramenta está ativa, qual bandeja ela abre e se a bandeja está aberta |
 | Opções das ferramentas (Contorno, Preenchido, Translúcido, Sólido, Negrito, Itálico) | `aria-pressed` | Diz qual está escolhida |
 | ✕ do Visual Builder e da exportação | `aria-label="Fechar"` | O botão só contém o ícone |
 | Conteúdo fora do modal aberto e das barras recolhidas | `inert` | Tira esse conteúdo do Tab e dos leitores de tela, sem mudar o que se vê |
@@ -703,7 +703,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← as imagens anotadas e o GIF deste README
+├── docs/images/          ← as imagens anotadas, o GIF, os cartões do topo e o logotipo deste README
 └── LICENSE               ← licença MIT
 ```
 
@@ -780,13 +780,13 @@ init()
         ├── initCollapsedBars()
         ├── initModalLayers()
         ├── initKeyClick()
-        ├── initChips()
         ├── initPdfModal()
         ├── initVbSync()
         ├── initAdminGate()
         ├── initSessionSync()
         ├── initAnnotation()
         ├── applyTokens()
+        ├── initChips()
         ├── updateCounters()
         ├── updateBtns()
         ├── updateBtnTitles()
@@ -811,7 +811,7 @@ init()
 - `cropBox`: objeto `{x, y, w, h}` em pixels relativos, ou `null` quando sem crop ativo
 - `annRedoStack`: array de snapshots de refazer persistido (até 50) — faz o redo sobreviver a salvar+reabrir
 
-**Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitação nos campos Quem/O que/Nome guarda imediatamente.
+**Auto-save:** A cada 5 segundos, se `isDirty === true`. Digitar nos campos «Quem» e «O que» grava na hora.
 
 ### Diagrama de componentes
 

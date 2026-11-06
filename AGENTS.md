@@ -231,12 +231,13 @@ Cada zona tem a sua regra.
 | Use | Não use |
 |---|---|
 | arquivo, usuário, seção, registrar, registro, compartilhar, tela, equipe, fato, contato, lugar, por isso | ficheiro, utilizador, secção, registar, registo, partilhar, ecrã, equipa, facto, contacto, sítio, pelo que |
-| navegador, captura de tela, sem internet, entrada, saída, rótulo | browser, screenshot, offline, input, output, label |
+| navegador, captura de tela, sem internet, entrada, saída, rótulo, telefone | browser, screenshot, offline, input, output, label, celular, telemóvel |
 | «precisa», «deve» | «tem de», «tem que» |
+| arrasto (o gesto) | arraste |
 | presente simples («usa») | «está a usar», «está usando» |
 
 **Palavras de propósito na interface:**
-- **«Quem»** e **«O que»**, rótulos padrão dos dois campos da identificação desde a 28.7.0, no lugar de «User» e «Equipamento». **Motivo:** dizem o que escrever em cada campo, sem termo técnico e com as mesmas palavras no Brasil e em Portugal. O administrador troca os dois no Visual Builder (`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL`). Origem: pedido do dono, 2026-11-06.
+- **«Quem»** e **«O que»**, rótulos padrão dos dois campos da identificação desde a 28.7.0 (D-0107), no lugar de «User» e «Equipamento». **Motivo:** dizem o que escrever em cada campo, sem termo técnico e com as mesmas palavras no Brasil e em Portugal. O administrador troca os dois no Visual Builder (`TOKEN_USER_LABEL` e `TOKEN_EQUIP_LABEL`). Origem: pedido do dono, 2026-11-06.
 - **«User»** fica só como nome do perfil «Export User» e da opção «User» do botão de exportar.
 - **«Histórico»**, e não «Sessões». **Motivo:** é mais claro para quem não é técnico.
 - No Visual Builder, os dois campos da identificação chamam-se «Primeiro campo» e «Segundo campo». **Motivo:** o nome segue a ordem da barra lateral e vale para qualquer rótulo; o exemplo por baixo diz para que serve. Foram descartados «Campo 1», «Identificação 1», «Título» e «Identificação primária». Os números liam-se mal, «Título» sugere um título, e «primária» uma hierarquia que não existe.
@@ -431,7 +432,7 @@ init() → interface em branco (Pristine State)
 |---|---|
 | **Abrir a aplicação** | `init()` → interface em branco (Pristine State). Nunca reutilizar sessão existente. |
 | **Primeira interação** | `ensureSession()` confirma e registra a sessão; `renderSbSessions()` faz-a aparecer no histórico. |
-| **Digitar em Quem/O que/Nome** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
+| **Digitar em «Quem» ou «O que»** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
 | **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
 | **Apagar sessão ATIVA com vizinha** | Capturar `neighbor` *antes* da deleção: `allBefore[idx+1] \|\| allBefore[idx-1]`. Após deleção: `loadSession(neighbor.id)` + `renderSbSessions()`. |
 | **Apagar sessão ATIVA sem vizinha** | Reset completo: `sessId=null`, `sessObj=null`, arrays zerados, DOM limpo, campos zerados. **Não criar nova sessão.** |
@@ -658,6 +659,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
 | `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
 | `renderSbSessions()` | `async () → void` | Re-renderiza a lista de sessões na sidebar. A lista só é montada quando a barra abre: numa página recém-carregada, `#sb-sess-list` fica vazio no DOM mesmo com sessões no banco (um teste automático precisa abrir a barra antes de contar) | Após qualquer alteração de sessão |
+| `idCase(v)` | `string → string` | `v` em maiúsculas com «Maiúsculas» ligado, senão como foi digitado (D-0096) | Ao carregar uma sessão e ao montar o nome dela |
+| `upperKeepCaret(f)` | `HTMLInputElement → void` | Passa o valor do campo para maiúsculas sem mexer no cursor (D-0096) | No `input` dos campos «Quem» e «O que», com «Maiúsculas» ligado |
 
 ### Funções do IndexedDB
 
@@ -672,7 +675,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `idbPut(store, data)` | `(string, object) → Promise` | Insere ou substitui um registro (upsert). `data` deve conter a chave primária. |
 | `idbGet(store, id)` | `(string, any) → Promise<object>` | Lê um registro pela chave primária. Retorna `undefined` se não existir. |
 | `idbAll(store)` | `(string) → Promise<array>` | Retorna todos os registros da store como array. |
-| `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registro com a chave primária dada. |
+| `idbDel(store, id)` | `(string, any) → Promise` | Apaga o registro com a chave primária dada. Sem base aberta, não faz nada: não há o que apagar (F-0103). |
 | `idbDelBatch(store, ids)` | `(string, string[]) → Promise` | Apaga múltiplos registros da store `store` em **uma única transação** `readwrite`. Mais eficiente que N chamadas a `idbDel` em loop. Usa `tx.oncomplete` em vez de `r.onsuccess`. |
 | `idbIdx(store, idx, val)` | `(string, string, any) → Promise<array>` | Retorna todos os registros onde o índice `idx` é igual a `val`. Ex: `idbIdx('images', 'sessionId', sessId)`. |
 
@@ -683,8 +686,13 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `initCollapsedBars()` | Com o Histórico ou os «Removidos» recolhidos, o conteúdo fica `inert`, e o Tab passa só pelas setas (F-0064) |
 | `initModalLayers()` | Pilha de modais: tudo fora do modal de cima fica `inert`, e o foco volta à origem ao fechar (F-0065) |
 | `initKeyClick()` | Enter e Espaço num `role="button"`, `"tab"` ou `"radio"` que não é botão nativo fazem o clique dele (F-0066) |
-| `initChips()` | Cada chip vira uma parada do Tab, com `role="radio"` e `aria-checked` |
-| `keepInTab(o, e)` | Uma captura que o navegador não grava fica na aba, com o aviso «Capturas só nesta aba» uma vez por página (F-0063) |
+| `initChips()` | Cada chip vira uma parada do Tab, com `role="radio"` e `aria-checked`. Roda depois do `applyTokens`, para marcar o chip do token (F-0099) |
+| `viewerKey(e)` | No visualizador, as setas trocam de imagem e o Esc fecha. No editor, o Esc fecha primeiro a bandeja; as setas não trocam de imagem (F-0083); com anotações por salvar, o Esc mostra o aviso (F-0088) |
+| `annEditorKey(e)` | Ctrl+Z, Ctrl+Y e Delete no editor, fora de um campo de texto |
+| `keepInTab(o, e)` | Uma captura que o navegador não grava fica na aba, com o aviso «Capturas só nesta aba» uma vez por página (F-0063). Vale também para a sessão que não grava, chamada pelo `createSession` (F-0098). Com a quota cheia, o aviso é o de armazenamento cheio |
+| `showMemOnlyBanner()` | Mostra a faixa «Capturas só nesta aba» (`role="alert"`), uma vez por página, chamada pelo `keepInTab` |
+| `showStorageBanner()` | Mostra a faixa «Armazenamento indisponível» quando o IndexedDB não abre |
+| `showBanner(id, title, text)` | Faixa vermelha no topo (`role="alert"`), uma por `id`; usada pelas duas faixas de armazenamento |
 
 ### Funções de captura
 
@@ -710,7 +718,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `scheduleUIUpdate()` | `() → void` | Debounce de 50ms que consolida `renderTrash()`, `updateCounters()`, `updateBtns()` e `triggerSave()` numa única execução. Chamada por `delImg`/`delDoc` em vez de chamar cada função diretamente — evita N rebuilds do DOM em deleções múltiplas rápidas. |
 | `updateBtns()` | `() → void` | Atualiza estado dos botões PDF/ZIP. **Lógica:** `btn-pdf.disabled = (!hi \| hd)` — PDF desativado quando não há imagens **OU** quando há documentos (intencional: PDF é exclusivo de imagens). `btn-zip.disabled = !(hi \| hd)`. |
 | `updateBtnTitles()` | `() → void` | Atualiza o `aria-description` dos botões PDF e ZIP com o nome de arquivo que será gerado (ex.: `Exportar: 13h29m-16-ago-2026.pdf`). Os dois botões não têm `title` desde a 28.5.0. Chama `buildFilename()` internamente. Chamar após qualquer alteração ao nome da sessão ou ao modo PDF/ZIP. Retorna imediatamente sem fazer nada se `zipModeActive` for `true`. |
-| `updateStatusBar()` | `() → void` | Atualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`). Chamada pelo auto-save de 5 segundos e diretamente em `boot()` para estado inicial. |
+| `updateStatusBar()` | `() → void` | Atualiza a barra de estado com o timestamp do último auto-save (`lastSaveAt`), ou «Só nesta aba», se algum item não foi gravado (F-0063). Chamada pelo auto-save de 5 segundos e diretamente em `boot()` para estado inicial. |
 | `applyTokens()` | `() → void` | Lê todos os `TOKEN_*` declarados no JS, aplica-os ao DOM e às variáveis CSS (`--color-primary`, `--title-*-color`, etc.) e inicializa `sysColors`. Também substitui `{YEAR}` no rodapé. Chamada uma vez em `boot()` e novamente pelo `initVbSync` a cada alteração no Visual Builder. **Não chamar antes de `boot()`** — o DOM não está pronto. Os campos do Visual Builder são preenchidos por `vbFillColorsAndTitle` e `vbFillSessionFields`, só quando existem: o Export User não os tem. |
 | `initVbSync()` | `() → void` | Registra todos os listeners de `input` do Visual Builder e sincroniza as alterações em tempo real na interface (cor, título, rodapé, rótulos, toggles). Chamada uma vez em `boot()`. Cada listener chama `applyTokens()` ou a função de atualização correspondente. **Não duplicar listeners** — chamar apenas uma vez. |
 | `buildFilename(ext)` | `(string) → string` | Gera o nome de arquivo para PDF ou ZIP com base no nome da sessão atual e no timestamp do momento. Sanitiza o nome (remove acentos, caracteres especiais, converte para maiúsculas com hífens). Formato: `NOME-HHhMMm-DD-mon-YYYY.ext`. **Sem nome de sessão, o prefixo é omitido junto com o seu hífen** — o nome fica só com o timestamp (`13h29m-16-ago-2026.zip`), nunca com um hífen inicial órfão. O mesmo acontece se a sanitização esvaziar o nome (ex.: título só com pontuação). Usada por `updateBtnTitles()`. |
@@ -744,6 +752,7 @@ Ambos geram os arquivos **em JavaScript puro, sem bibliotecas** (contrato zero-d
 | Função | O que faz | Notas |
 |---|---|---|
 | `generatePDF(returnBlob=false)` | Constrói um PDF 1.4 com **uma imagem por página**. Por imagem: converte para JPEG (`imgToJPEG`) e cria um XObject `/Image` com `/Filter /DCTDecode`, com os bytes JPEG sem reprocessamento. Cria também uma `/Page` e um content stream que escala a imagem para caber na página, centrada e com a proporção mantida. Monta Catalog (obj 1), Pages (obj 2), a tabela `xref`, o `trailer` e `%%EOF`. A escrita do arquivo fica em `buildPdfBlob`, e o lugar da imagem na página em `pdfPagePlacement`. | Página A4 = `595.28 × 841.89` pt. Formato lido de `pdfFmt`: `auto` (paisagem se largura ≥ altura, senão retrato), `a4v` (retrato), `a4h` (paisagem). `returnBlob=true` devolve o `Blob` (usado pela opção ZIP "Imagens em PDF"); senão faz download. Desativado quando há documentos na sessão (ver `updateBtns`).<br><br>**Nota sobre texto e fontes:** O motor PDF empacota exclusivamente as imagens geradas. Não existem instruções de texto (como `/Font` ou `/BT`) no PDF e nenhuma fonte é incorporada. Anotações e todo o conteúdo visual estão rasterizados nas imagens JPEG — não há camada de texto separada nem conteúdo pesquisável no arquivo PDF. |
+| `lerLayoutPDF()` | Lê o chip «Layout PDF» e devolve `'a4v'`, `'a4h'` ou `'auto'` | Chamada no começo do `generatePDF`; o resultado não fica numa variável global |
 | `imgToJPEG(blob, quality)` | Carrega a imagem, redimensiona se exceder `TOKEN_MAX_IMG_DIMENSION` (mantém proporção), desenha num canvas e devolve `canvas.toBlob('image/jpeg', quality)`. | `quality` = `TOKEN_JPEG_QUALITY`. Os originais ficam na sessão no formato capturado; a conversão para JPEG é só para o PDF. |
 | `getJPEGDims(u8)` | Lê o marcador SOF do JPEG para extrair largura/altura reais (usadas no `MediaBox`/escala). | Fallback `800 × 600` se não encontrar o marcador. |
 
@@ -814,7 +823,7 @@ ativar arrasto:
 |---|---|---|
 | `annActivate()` | Ativa o modo de anotação: carrega `origBlob`, inicializa canvas, mostra a barra de ferramentas; oculta `#img-nav-prev` e `#img-nav-next` | Chamada pelo botão "Editar" (id `ann-toggle`) |
 | `annDeactivate()` | Desativa anotação: esconde canvas e barra de ferramentas, cancela timers pendentes, restaura `o.blob`; restaura visibilidade das setas de navegação se o modal ainda está aberto | Cancela `annTextClickTimer` e `annCommitText` |
-| `annSetTool(t)` | Define a ferramenta ativa: guarda e repõe o passo (`annSizeByTool`) e a cor (`annColorBy`) de cada ferramenta, fecha a bandeja de outra ferramenta e esquece o `annTempSelectFrom` | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. A entrada e a saída ficam em `annEnterCrop` e `annLeaveCrop`; o deslocamento de todas as anotações, também das pilhas de desfazer e refazer, em `annShiftAll`. |
+| `annSetTool(t)` | Define a ferramenta ativa: guarda e repõe o passo (`annSizeByTool`) e a cor (`annColorBy`) de cada ferramenta, fecha a bandeja de outra ferramenta, esquece o `annTempSelectFrom` e tira a seleção de outro tipo, ou de qualquer tipo ao escolher o Texto (F-0091) | Atualiza `.active` nos botões. Para `t='crop'`: expande canvas para dimensões do `origBlob`, carrega `origBlob` com rotação aplicada via `getRotatedBlob` (usando `annCurrentRotation` viva), desloca coordenadas de todas as anotações +cx/+cy. Para saída do crop (`t!='crop'` com `annCropBox` ativo): reverte deslocamento -cx/-cy, restaura `o.blob`, encolhe canvas. A entrada e a saída ficam em `annEnterCrop` e `annLeaveCrop`; o deslocamento de todas as anotações, também das pilhas de desfazer e refazer, em `annShiftAll`. |
 | `annRedraw()` | Limpa canvas e redesenha `annHistory` completo; salta `annEditingTextIdx` | Chamar após qualquer mutação de `annHistory` |
 | `annDrawShape(ctx, h)` | Desenha uma forma do histórico no contexto fornecido. Para texto (`h.type==='text'`) desenha **linha a linha** (`String(h.txt).split('\n')`) com `lineH = fontSize × ANN_TEXT_LINE_RATIO` e `halfLeading = (lineH - fontSize)/2`; usa `ctx.textBaseline='top'` e repõe `'alphabetic'` no fim | Usado por `annRedraw` e pelo `ann-save` |
 | `getRotatedBlob(blob, degrees)` | Gera um novo Blob com o bitmap girado `degrees` graus no sentido horário via `<canvas>`. Usado por `annActivate` (ao abrir imagem rodada), pela ferramenta Crop (para mostrar `origBlob` com rotação aplicada) e pelo restore de rotação em `annDoUndo`/`annDoRedo`. | |
@@ -829,12 +838,12 @@ ativar arrasto:
 
 | Comportamento | Descrição e Invariantes |
 |---|---|
-| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar ou trocar para texto. O botão do Texto fica aceso, como as outras ferramentas, quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (classe `.ann-txt-selected`). O T mostra o estilo em uso, o do texto selecionado ou o da ferramenta: `.ann-txt-b` (negrito, traço mais grosso) e `.ann-txt-i` (itálico, inclinado), pelo `annSyncTextIcon`. |
+| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar, ao escolher o Texto ou uma ferramenta de outro tipo; o Selecionar e uma ferramenta do mesmo tipo a mantêm (F-0091). O botão do Texto fica aceso, como as outras ferramentas, quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (classe `.ann-txt-selected`). O T mostra o estilo em uso, o do texto selecionado ou o da ferramenta: `.ann-txt-b` (negrito, traço mais grosso) e `.ann-txt-i` (itálico, inclinado), pelo `annSyncTextIcon`. |
 | **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** e o **do meio** agarram e movem em qualquer ferramenta, sem desenhar e sem o menu de contexto nativo (ver «Botões direito e do meio»). |
 | **Seta** | Uma seta selecionada não tem caixa: tem uma alça redonda em cada ponta (`'p1'` no início, `'p2'` na ponta), e cada alça move só a sua ponta. O ✕ fica ao lado do meio da seta, a 28 px das alças (`annArrowDelPoint`). |
-| **Shift** | Ao desenhar e ao redimensionar: retângulo quadrado, elipse círculo, seta e traço livre em passos de 45° (`annShiftPoint`, D-0093). |
+| **Shift** | Ao desenhar e ao redimensionar, o Retângulo desenha um quadrado, o Círculo um círculo perfeito, e a Seta e o Desenho livre andam em passos de 45° (`annShiftPoint`, D-0093). |
 | **Marca-texto** | Um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e larguras de `ANN_HL_SIZES` (`annStrokeStyle`). As opções «Translúcido» e «Sólido» ficam acima da ferramenta (D-0102). |
-| **Opções das ferramentas** | Cada ferramenta com opções fica num `.ann-tool-wrap`, com as opções num `.ann-flyout` acima dela. `annOpenFlyout` abre (clique na ferramenta já escolhida, duplo clique, 1 s apertado ou seta para cima), `annCloseFlyout` fecha (Esc, clique ou foco fora, novo clique na ferramenta, troca de ferramenta; escolher uma opção não fecha). `annFill` guarda «Preenchido» do retângulo e do círculo, e a anotação ganha o campo `fill: true` (D-0102). Toda bandeja termina com `.ann-size-btn` (− e +, que chamam o `onclick` de `#ann-thickness-down` e `#ann-thickness-up`) e `.ann-size-val`, que `annSyncSizeVal` preenche: o tamanho da anotação selecionada ou o da ferramenta, um ponto por passo ou o número do texto. |
+| **Opções das ferramentas** | Cada ferramenta com opções fica num `.ann-tool-wrap`, com as opções num `.ann-flyout` acima dela. `annOpenFlyout` abre (clique na ferramenta já escolhida, duplo clique, 1 s apertado ou seta para cima), `annCloseFlyout` fecha (Esc, clique ou foco fora, novo clique na ferramenta, troca de ferramenta; escolher uma opção não fecha). `annFill` guarda a segunda opção de cada ferramenta, pela tabela `ANN_OPT2`: «Preenchido» no retângulo e no círculo (a anotação ganha `fill: true`) e «Sólido» no marca-texto (`hl: 'solid'`). O `annPlaceFlyout` põe a bandeja dentro da tela ao abrir e a cada `resize` (F-0085, F-0093). O `aria-controls` e o `aria-expanded` das ferramentas são escritos no boot (F-0090). Toda bandeja termina com `.ann-size-btn` (− e +, que chamam o `onclick` de `#ann-thickness-down` e `#ann-thickness-up`) e `.ann-size-val`, que `annSyncSizeVal` preenche: o tamanho da anotação selecionada ou o da ferramenta, um ponto por passo ou o número do texto. |
 | **Botões direito e do meio** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, selecionam-na, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar, e `annTempSelectFrom` guarda a ferramenta de antes; `annEndTempSelect` volta a ela num clique fora das anotações ou ao apagar a anotação (D-0103). No Recortar, só agarram e movem. |
 | **Ctrl** | Com o Ctrl (Cmd no Mac) apertado, qualquer ferramenta funciona como o Selecionar; `annCtrlHeld` guarda o estado, `annQuasiSelect` acende o botão Selecionar enquanto ele dura, e `annCtrlUp` tira a seleção ao soltar a tecla (D-0101). `annHandleCursor` dá a cada alça o cursor do lado que ela puxa, girado com o texto. |
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
@@ -864,23 +873,26 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | Função | O que faz |
 |---|---|
 | `annEndTempSelect()` | Sai do Selecionar aberto pelo botão direito ou do meio: tira a seleção e volta a `annTempSelectFrom`. Devolve `true` quando voltou (D-0103) |
+| `annDeleteSelected()` | Apaga a anotação selecionada, com desfazer, e volta à ferramenta de antes. Chamada pelo Delete (`annDeleteKey`) e pelo ✕ da anotação. Devolve `true` quando havia uma |
+| `annPlaceFlyout(f)` | Põe a bandeja `f` dentro da tela, com 8 px de margem; chamada ao abrir e a cada `resize` (F-0085, F-0093) |
+| `annLightTool(t)` | Acende o botão da ferramenta `t` (classe `active` e `aria-pressed`, F-0090); usada pelo `annSetTool` e pelo `annQuasiSelect` |
+| `annTyping()` | `true` com o campo de texto aberto |
+| `annKeepTyping(b)` | O `mousedown` do botão `b` não tira o foco do campo de texto aberto (as cores, o B, o I, o − e o +) |
 | `annSizeStep(dir)` | Um passo do − (`-1`) ou do + (`1`), da barra ou de uma bandeja: a anotação selecionada primeiro, senão a ferramenta |
 | `annTextStep(v, dir)` | O passo de `ANN_TEXT_SIZES` acima ou abaixo do tamanho `v`, mesmo fora dos passos (D-0105) |
 | `annSyncSizeVal()` | Escreve o tamanho atual depois do − e do + de cada bandeja: um ponto, ou o número do texto |
 | `annPress(id, on)` | Liga ou desliga `active` e `aria-pressed` de um botão de opção |
-| `annSyncHlBtns()` | Acerta «Translúcido» e «Sólido» do marca-texto, e a ponta cheia no ícone da ferramenta |
 | `annUpdateThicknessIcon()` | Desenha o − e o + da barra e os ícones do desenho livre e da seta com o traço do passo de cada um (`stroke-width` de 1 a 4) e chama `annSyncSizeVal` |
 | `annShowTextStyleBtns()` | Acerta «Negrito» e «Itálico» na bandeja e chama `annSyncTextIcon` |
 | `annSyncTextIcon()` | O botão do Texto: aceso com um texto selecionado (`.ann-txt-selected`), e o T no estilo desse texto, senão no da ferramenta (`.ann-txt-b`, `.ann-txt-i`). Chamada também pelo `annRenderAll` |
-| `annSyncFillBtns()` | Acerta «Contorno» e «Preenchido» do retângulo e do círculo, e o ícone cheio da ferramenta |
-| `annSyncSwatches()` | Marca na paleta a cor de `annCurrentColor` |
+| `annSyncFillBtns()` | Acerta as duas opções do retângulo, do círculo e do marca-texto (`ANN_OPT2`) e o ícone cheio da ferramenta |
+| `annSyncSwatches(c)` | Marca na paleta a cor `c`, por padrão a de `annCurrentColor` |
+| `annFlipStyle(bold)` | Liga ou desliga o negrito (`true`) ou o itálico (`false`): os botões B e I, o T da ferramenta e o campo aberto, que acompanha a largura (F-0102). Chamada pelo B, pelo I, pelo Ctrl+B e pelo Ctrl+I |
 | `annColorKey(t)` | `'hl'` para o marca-texto, `'line'` para as outras: a chave de `annColorBy` |
 | `annSelectCursorAt(p)` | O cursor do Selecionar no ponto `p`: o de uma alça, o de mover sobre uma anotação, ou o padrão. Usada com o Ctrl apertado |
 | `annToolCursor()` | O cursor da ferramenta atual: `text`, `default` (Selecionar) ou `crosshair` |
 | `annIsStroke()` | `true` no desenho livre e no marca-texto, os dois traços livres |
 | `annShiftKind(t)` | `'box'` no retângulo e no círculo, `'line'` nas outras: o modo do `annShiftPoint` |
-| `upperKeepCaret(f)` | Passa o valor do campo para maiúsculas sem mexer no cursor (D-0096) |
-| `showMemOnlyBanner()` | Mostra a faixa «Capturas só nesta aba» (`role="alert"`), uma vez por página, chamada pelo `keepInTab` |
 
 ### Funções do Admin Gate
 
@@ -893,8 +905,8 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | Função | O que faz | Notas |
 |---|---|---|
 | `setAnnDirty(val)` | Define `annIsDirty` e controla visibilidade do botão fechar modal | Esconde `img-modal-close` quando `annActive && annIsDirty` |
-| `hasUnsavedAnnotations()` | Retorna `true` se há anotações não guardadas (`annActive && annIsDirty`) | Usada por `closeImgModal`, `imgModalNav` e backdrop click |
-| `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário. Liga também a classe `ann-await` na barra: os outros botões ficam com `--opacity-dimmed` e sem clique durante `ANN_AWAIT_MS` | Chamada por `closeImgModal`, `imgModalNav` e o clique no fundo, quando há anotações pendentes. Um novo aviso reinicia o tempo |
+| `hasUnsavedAnnotations()` | Retorna `true` se há anotações não guardadas (`annActive && annIsDirty`) | Usada por `closeImgModal`, `imgModalNav`, o clique no fundo e o Esc (`viewerKey`, F-0088) |
+| `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário. Liga também a classe `ann-await` na barra: os outros botões ficam com `--opacity-dimmed` e sem clique durante `ANN_AWAIT_MS` | Chamada por `closeImgModal`, `imgModalNav`, o clique no fundo e o Esc (`viewerKey`, F-0088), quando há anotações pendentes. Um novo aviso reinicia o tempo |
 | `clearAnnAwait()` | Tira a classe `ann-await` e cancela o temporizador | Chamada pelo temporizador, pelo `pointerdown` no canvas (continuar editando) e por `annDeactivate`, que cobre o Cancelar e o Confirmar |
 
 ### Funções de segurança
@@ -1039,16 +1051,14 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `annTempSelectFrom` | string \| null | A ferramenta que o botão direito ou o do meio deixou pelo Selecionar; volta com um clique fora ou ao apagar (D-0103) |
 | `annTextBold` | boolean | Negrito ativo na ferramenta texto (padrão: `true`) |
 | `annTextItalic` | boolean | Itálico ativo na ferramenta texto |
-| `annTextSize` | number | Tamanho da letra da ferramenta Texto (px), 24 ao abrir o editor; segue o − e o +, e o arraste das alças de um texto (D-0105) |
+| `annTextSize` | number | Tamanho da letra da ferramenta Texto (px), 24 ao abrir o editor; segue o − e o +, e o arrasto das alças de um texto (D-0105) |
 | `annEditingTextIdx` | number | Índice em `annHistory` do texto em edição via dblclick; `-1` = novo texto |
 | `annTextClickTimer` | TimeoutID \| null | Timer de 220ms para distinguir single-click (novo texto) de dblclick (editar); escopo de módulo |
 | `annSmoothLast` | object \| null | Último ponto suavizado pelo EMA no desenho livre; resetado em activate/deactivate/mouseup |
 | `annCurrentRotation` | number | Rotação acumulada em graus (`0`, `90`, `180`, `270`) da imagem no editor; sincronizada com `o.rotation` ao salvar |
 | `annCropBox` | object \| null | Área de recorte ativa `{x, y, w, h}` durante edição; `null` fora do modo crop |
 | `longPressTimer` | number \| null | ID do `setTimeout` do long-press de reordenação; `null` quando inativo. Por container (`thumb-grid` e `doc-list`) dentro de `initReorder` |
-| `annInitialState` | string \| null | JSON.stringify do `annHistory` ao ativar anotação — usado para detetar se houve alterações reais |
 | `lastSaveAt` | number | Timestamp do último save automático para a status bar |
-| `pdfFmt` | string | Modo de layout da página PDF ('vertical', 'horizontal', 'auto') |
 | `zipModeActive` | boolean | Define se o modo ZIP está ativado |
 | `modalIsTrash` | boolean | Indica se o modal de visualização provém dos «Removidos» |
 | `modalItemId` | string | ID da imagem visualizada no modal |
@@ -1060,12 +1070,11 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `annCtrlHeld` | boolean | Ctrl (Cmd no Mac) apertado no editor: qualquer ferramenta funciona como o Selecionar (D-0101) |
 | `annShift` | boolean | Shift apertado no gesto atual, lido a cada evento de ponteiro e na própria tecla (D-0093) |
 | `annPtr` | object \| null | A última posição do ponteiro no canvas, em px do canvas; dá o cursor ao apertar o Ctrl |
-| `annHlSolid` | boolean | «Sólido» escolhido no marca-texto; chave `hl-solid` (D-0095) |
 | `memOnly` | WeakSet | Os itens que o navegador não gravou e ficam só nesta aba (F-0063) |
 | `memOnlyNoticeShown` | boolean | A faixa «Capturas só nesta aba» já apareceu nesta página |
 | `idUpper` | boolean | Modo «Maiúsculas» atual; começa em `TOKEN_ID_UPPERCASE` e segue o interruptor do Visual Builder (D-0096) |
 | `annSpaceHeld` | boolean | Barra de espaço pressionada no editor, com a imagem ampliada: arrastar move a imagem, em vez de desenhar |
-| `annFill` | object | `{ rect, circle }`: `true` é «Preenchido» (D-0102) |
+| `annFill` | object | `{ rect, circle, highlight }`: `true` é a segunda opção, «Preenchido» ou «Sólido» (D-0102, D-0095); chaves `fill-rect`, `fill-circle` e `hl-solid` |
 | `annFlyoutOpen` | Element \| null | As opções abertas de uma ferramenta (`.ann-flyout`), com `dataset.tool` |
 | `annRotCenter` / `annRotStart` / `annRotStartAng` | object / number / number | Centro do texto, ângulo dele e ângulo do mouse no início do arrasto da alça de girar |
 | `annTextPlace` | function \| null | Coloca de novo o campo de texto sobre o seu ponto da imagem, depois de um zoom ou de um pan |
@@ -1084,6 +1093,7 @@ Estas variáveis existem no escopo do IIFE e representam o estado em memória da
 | `annAwaitTimer` | TimeoutID \| null | Temporizador do estado `ann-await`; `null` quando inativo |
 | `ANN_SIZES` | array (const) | `[1, 2, 4, 6, 8, 12]` — espessuras de linha disponíveis na barra de anotação (px) |
 | `ANN_HL_SIZES` | array (const) | `[8, 12, 18, 26, 36, 48]`: as larguras do marca-texto (px), nos mesmos seis passos do `ANN_SIZES` |
+| `ANN_OPT2` | object (const) | As duas opções de cada ferramenta: `[id da primeira, id da segunda, chave do localStorage]`, para o retângulo, o círculo e o marca-texto |
 | `ANN_TEXT_SIZES` | array (const) | `[12, 14, 16, … 320, 400]` — os passos do − e do + no texto (px); `annTextStep` acha o próximo. O arraste das alças vai de `ANN_TEXT_MIN` (8) a `ANN_TEXT_MAX` (400) |
 | `ANN_TEXT_LINE_RATIO` | number (const) | `1.3` — line-height ratio da ferramenta texto. Constante **única** usada nos dois lugares (line-height do `<textarea>` e do canvas em `annDrawShape`) para que o texto achatado seja igual ao que se vê ao escrever (WYSIWYG) |
 
@@ -1097,9 +1107,8 @@ Existem três sistemas de flags com escopos e ciclos de vida diferentes — **n�
 |---|---|---|---|---|
 | `isDirty` | Sessão inteira | Qualquer alteração de dados | `setInterval` auto-save 5s + `updateStatusBar()` | `true` quando dados mudam; `false` após `idbPut` |
 | `annDragDirty` / `annResizeDirty` | Gesto de anotação | `pointermove` durante drag/resize | `pointerup` — decide se empurra snapshot para `annUndoStack` | Transitório: `false` no início, `true` se houve mutação, descartado após o snapshot |
-| `annInitialState` | Sessão de anotação ativa | Atribuído na ativação | Comparado ao confirmar para detetar alterações reais | Criado ao ativar, comparado ao confirmar, destruído ao desativar |
 
-> **Regra:** use `isDirty = true` para mudanças de dados da sessão; `annDragDirty`/`annResizeDirty` apenas para undo de gestos de anotação; não substitua `annInitialState` por um boolean simples.
+> **Regra:** use `isDirty = true` para mudanças de dados da sessão; `annDragDirty`/`annResizeDirty` apenas para undo de gestos de anotação.
 
 ## 10. Fluxo de trabalho de desenvolvimento para agentes
 
@@ -1243,10 +1252,10 @@ bash validate.sh  # deve retornar 0 FAIL / exit code 0
 
 **Passo 1 — Adicionar botão na barra de ferramentas (HTML)** (fora dos blocos `ADMIN_*`):
 ```html
-<button id="ann-tool-line" class="ann-tool-btn" title="Linha">—</button>
+<div class="ann-tool-wrap"><button class="ann-btn" data-tool="line" title="Linha"><svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5" /></svg></button><div class="ann-flyout" role="group" aria-label="Opções da linha"></div></div>
 ```
 
-**Passo 2 — Registrar o tool name** em `initAnnotation()` seguindo o padrão de `rect`, `circle`, `arrow`, `free`, `text`.
+**Passo 2 — Registrar a ferramenta** seguindo o padrão de `rect`, `circle`, `arrow`, `free`, `highlight` e `text`: o passo inicial em `annSizeByTool`, a cor em `annColorKey`, o modo do Shift em `annShiftKind` e o desenho em `annDrawShape`. O boot escreve o `aria-controls`, o `aria-expanded` e o − e o + da bandeja.
 
 **Passo 3 — Implementar Pointer Events** em `initAnnotation()`:
 - `pointerdown` — registrar ponto inicial
@@ -1330,7 +1339,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 
 **Ciclo de vida da sessão:**
 - [ ] Abrir o arquivo → interface limpa, campos vazios, histórico vazio
-- [ ] Digitar no campo Quem → estado "Gravado" aparece **sem aguardar 5 segundos**
+- [ ] Digitar no campo «Quem» → estado "Gravado" aparece **sem aguardar 5 segundos**
 - [ ] Capturar uma imagem (Ctrl+V) → sessão aparece no histórico
 - [ ] Apagar sessão ativa **com** histórico existente → navegação automática para a sessão adjacente
 - [ ] Apagar a **última** sessão ativa → interface volta ao estado limpo inicial (sem sessão nova no histórico)
@@ -1359,7 +1368,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Espessura por ferramenta: o desenho livre, o retângulo, o círculo e a seta começam em 4 px, o marca-texto em 12 px e no amarelo; trocar de ferramenta e voltar mantém o passo e a cor de cada uma
 - [ ] Texto: o + vai até 400 e o − até 12; arrastar a alça de um texto muda o número da bandeja do Texto
 - [ ] Com duas imagens ou mais, as setas ← → no editor, dentro e fora de uma bandeja, não trocam de imagem nem fecham o editor (F-0083)
-- [ ] Esc com anotações por salvar: o aviso aparece, e nada se perde (F-0088); Esc no meio de um arraste, depois outra imagem e Ctrl+Z: nada da imagem anterior volta (F-0084)
+- [ ] Esc com anotações por salvar: o aviso aparece, e nada se perde (F-0088); Esc no meio de um arrasto, depois outra imagem e Ctrl+Z: nada da imagem anterior volta (F-0084)
 - [ ] Em 360 e 375 px de largura, a barra do editor e as bandejas cabem na tela (F-0085)
 - [ ] Opções das ferramentas: um clique (ou toque) na ferramenta já escolhida, o duplo clique e o botão apertado por 1 s abrem as opções, lado a lado, acima de cada ferramenta que desenha; o − e o + da bandeja mudam o tamanho mostrado depois deles e o da barra; um clique numa ferramenta não escolhida só a escolhe, e um novo clique na escolhida fecha a bandeja; a seta para cima abre pelo teclado e o Esc fecha sem fechar o editor
 - [ ] Retângulo e círculo «Preenchido»: a forma sai cheia na cor; escolher a opção com uma forma selecionada a muda, e o Ctrl+Z desfaz
@@ -1396,7 +1405,7 @@ Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca
    - O Export User não tem o bloco `ADMIN_JS`, por isso não chama o `capturePristine()` nem faz o `fetch(location.href)`. Aberto por `file://` ou servido por `http(s)`, o console fica sem erro nenhum.
    - O par `Access to fetch at 'file:///…' … CORS` e `[CE] Quine fallback: BOOT_HTML` é normal só no `capture-engine.html` principal e no Export Admin abertos por `file://` (§1.2). **Num Export User, esse par reprova o passo:** quer dizer que o bloco `ADMIN_JS` não foi removido.
 4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
-5. [ ] **A sessão persiste:** escrever no campo Quem, recarregar a página, e confirmar que a sessão está no histórico
+5. [ ] **A sessão persiste:** escrever no campo «Quem», recarregar a página, e confirmar que a sessão está no histórico
 6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
 7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
 
@@ -1431,13 +1440,16 @@ As tags `v1` a `v27` ficam como estão. As tags novas são leves e chamam-se `vX
 Nenhum título de documento leva a versão. **Motivo:** cada cópia a mais é um lugar onde a versão envelhece sem aviso.
 
 **Fechar uma versão:**
+
+Numa versão longa, as entradas podem ir direto para `## [X.Y.Z]`, com a data provisória e a versão já no README e no HTML, como na 28.7.0. Nesse caso, o commit da versão troca a data pelo dia do commit e acrescenta o resultado do Teste do Export User; os outros passos ficam iguais.
+
 1. Troque `## [Unreleased]` por `## [X.Y.Z] - AAAA-MM-DD`.
 2. Mude a linha «Versão» do README e as 3 referências do HTML. A imagem `docs/images/admin-mode.png` mostra o número da versão no Visual Builder: gere-a de novo com o `gerar.py` do repositório dos prompts, e confira as duas com `--verificar`.
 3. Rode `bash validate.sh`, que deve dar 0 FAIL.
 4. Antes do commit, quem mantém o projeto faz o «Teste do Export User» da §11, Parte B, com o arquivo já com a versão nova.
 5. Faça um commit só com estas mudanças e a linha do teste do Export User no changelog: `docs(changelog): versão X.Y.Z`. Um commit só para o teste não é preciso.
 6. Crie a tag leve nesse commit: `git tag vX.Y.Z`. O push da tag pede a palavra CONFIRMO de quem mantém o projeto.
-7. Publique a release da tag com o `capture-engine.html` anexado: `gh release create vX.Y.Z capture-engine.html --title "X.Y.Z" --notes-file <entrada do changelog>`. O botão «Download» do README baixa o arquivo da release mais recente. Publicar pede o mesmo CONFIRMO. Depois, confira que o arquivo do botão é igual ao do commit da tag.
+7. Publique a release da tag com o `capture-engine.html` anexado: `gh release create vX.Y.Z capture-engine.html --title "X.Y.Z" --notes-file <entrada do changelog>`. O cartão «Download» do README baixa o arquivo da release mais recente. Publicar pede o mesmo CONFIRMO. Depois, confira que o arquivo do cartão é igual ao do commit da tag.
 
 **Motivo da tag no protocolo:** a V26 saiu sem tag, e seis auditorias não o detectaram. Este protocolo não falava de tags, e uma auditoria só encontra o que o protocolo manda procurar.
 
@@ -1457,13 +1469,12 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 |---|---|---|
 | D1 | **Botão PDF desativado quando há imagens + documentos** | PDF é exclusivo de imagens. Quando há docs na sessão, o usuário deve usar o ZIP. |
 | D2 | **Modal do Visual Builder não fecha ao clicar fora** | O VB é de uso exclusivo Admin e requer fechamento explícito pelo botão ✕ para evitar perda de configurações acidentais. |
-| D-0097 | **O Esc também não fecha o Visual Builder; o ✕ é alcançado pelo teclado** | Completa a D2: o Visual Builder fecha só pelo ✕, com o mouse ou com Tab até ele e Enter. Os outros modais fecham com Esc. Origem: pedido do dono, 2026-11-05 (F-0077). |
 | D3 | **setInterval de 5 segundos mantido no auto-save** | Cobre os eventos `isDirty=true` dos controles contínuos do VB (seletores de cor, campos hex, sliders, radios, toggles, campos de texto). Esses eventos `input` não chamam `triggerSave()` na hora. Sem o interval, alterações no VB perdem-se se o navegador for fechado dentro da janela de 5s. |
 | D4 | **Placeholder "Imagem N" não atualiza após drag-and-drop** | O placeholder é decorativo (hint visual). Não representa numeração oficial — a legenda editável é o campo `label`. |
 | D5 | **triggerSave() sem await em closeSettingsModal** | Risco de perda de dados aceito. O setInterval de 5s garante persistência antes de fechar o navegador em uso normal. |
 | D6 | **TOKEN_TITLE_END com 3 spans independentes no brand-name + amostras de cor individuais** | Permite construir títulos como `C P C` (letras a cores alternadas) com espaços controlados manualmente. Cada span tem cor independente configurável via `TOKEN_TITLE_START_COLOR`, `TOKEN_TITLE_ACCENT_COLOR`, `TOKEN_TITLE_END_COLOR`. Vazio = herda cor do contexto. Duplo clique no swatch para repor automático. |
 | D7 | **Apagar sessão é imediato e permanente, sem diálogo de confirmação** | Não há uma única chamada a `confirm()` em todo o produto — é coerência deliberada, não esquecimento no botão da sidebar. A barra «Removidos» cobre itens individuais (imagens e documentos), que é onde a recuperação tem valor prático; sessões inteiras são apagadas por decisão explícita do usuário no ✕ da sidebar. **Não reintroduzir confirmação sem aprovação do proprietário** — foi levantado em auditoria e mantido conscientemente. |
-| D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fechamento (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
+| D8 | **Escape descarta anotações não salvas sem alertar, ao contrário do ✕ e do clique fora** (substituída em 2026-11-06 pela correção da F-0088: o Esc mostra o aviso, como o ✕ e o clique fora) | Escape é o atalho de teclado equivalente ao botão **Cancelar**, e cancelar descarta por definição. Os outros dois caminhos de fechamento (✕ e backdrop) passam por `hasUnsavedAnnotations()` e disparam `triggerUnsavedAlert()` porque aí a intenção é fechar o modal, não cancelar a edição. A divergência é intencional e reflete intenções diferentes. **Não uniformizar os três caminhos sem aprovação do proprietário.** |
 | D-0077 | **`Desfazer` e `Refazer` mantêm sempre o mesmo aspecto, mesmo quando não há nada para desfazer** | Ao reabrir uma imagem, o `annUndoStack` recomeça vazio, porque as anotações já foram confirmadas ao guardar. O `annRedoStack` volta do IndexedDB. Os dois botões não refletem esse estado: apresentam-se sempre com o mesmo estilo e o clique não produz efeito nem aviso. **Medido:** `visivel=true`, `disabled=false`, `opacidade=1` e `cursor=pointer`, e dois cliques não alteram o canvas nem o IndexedDB. Não foi corrigido por decisão do proprietário. A barra de anotação tem três estados (normal, `:hover`, `.active`) e **nenhum estilo `disabled`**. Desativar os botões deixava-os iguais à vista, e trocava uma falha silenciosa por outra. Corrigir a sério exigiria desenhar um quarto estado visual, o que é decisão de design e não correção. A capacidade de remover anotações não se perde: seleciona-se a anotação e apaga-se. Origem: D75 (sétima auditoria). Antes registrada como D9, ID que já era do commit `a5656f5`. |
 | D-0078 | **Versões em SemVer a partir de 28.0.0** | O critério de major, minor e patch está na §12. As tags `v1` a `v27` e as entradas `[V7]` a `[V27]` ficam. Origem: auditoria de 2026-10-31, decisão 1. |
 | D-0079 | **Purge às 48 horas e sem backup automático** | Por privacidade: para guardar, o usuário exporta PDF ou ZIP. Origem: `CHANGELOG.md`, «Decisões mantidas» da V23. |
@@ -1478,20 +1489,24 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0088 | **«Teste do Export User», e não «prova de vida»** | O nome antigo não dizia o que se testa e enchia a lista de commits. O changelog até a 28.5.2 usa «prova de vida»: é o mesmo teste. A partir da 28.5.3, o teste entra no commit da versão, sem commit próprio. Origem: pedido do dono, 2026-11-01. |
 | D-0089 | **A dica das zonas vazias diminui até 800 px de altura** | Ícone de 40 px e texto de 13 px nas telas de notebook (28.5.3). Não é um modo compacto: não muda a barra lateral, e foi pedida para a dica chamar menos atenção, e não para caber. Origem: pedido do dono, 2026-11-01; confirmado no plano da auditoria do mesmo dia. |
 | D-0090 | **As frases longas das entradas publicadas do changelog ficam** | Estende a D-0083 a toda entrada com versão, também as 28.x. **Motivo:** o changelog é registro datado; reescrever uma entrada publicada muda o que se disse naquela data. As palavras ainda seguem a tabela. Origem: plano da auditoria de 2026-11-01. |
+| D-0091 | **O GIF do editor é refeito com o editor** (as frases sobre onde a seta parte e sobre o visualizador depois de salvar foram substituídas pela D-0099) | O GIF de destaque do README §6.3 (`docs/images/annotation-arrow.gif`) mostra o editor, a barra de ferramentas e o visualizador depois de salvar. Uma mudança numa dessas partes grava o GIF de novo no mesmo commit, com o `gif.py` do repositório dos prompts (preparo `capture-engine-editor-arrow`), e confere com `--verificar`. A seta parte do canto de baixo à esquerda. Assim, o cursor atravessa a barra pelo vão entre Selecionar e Girar 90°. Por cima de um botão, o efeito de passar o mouse mudaria de uma gravação para outra. Fecha a P-0001. Origem: plano dos pendentes, 2026-11-02. |
 | D-0092 | **A complexidade conta a forma de código das palavras** | O check 10 contava `if`, `else`, `for` e as outras como palavras soltas, também nos comentários. Com os comentários em inglês, avisava `annDoUndo` e `annDoRedo`, que não tinham mudado (A-03). Agora conta só a forma que a palavra tem no código. Medido em 207 funções com código igual na 28.6.3 e na 28.6.4: 6 mudavam de número só pelos comentários, e nenhuma muda agora. Os comentários continuam sem ser removidos (D67, D72), e a armadilha dos apóstrofos continua valendo. Origem: auditoria de regressão de 2026-11-02. |
 | D-0093 | **Shift nas ferramentas do editor** | Ao desenhar e ao redimensionar, o Shift deixa o retângulo quadrado e a elipse círculo, e a seta e o desenho livre em passos de 45° a partir do ponto fixo. O estado do Shift é lido a cada evento de ponteiro e na própria tecla. Origem: pedido do dono, 2026-11-04. |
 | D-0094 | **«Diminuir» e «Aumentar» no lugar de «Espessura menor» e «Espessura maior»** | Os dois botões têm o mesmo nome em todas as ferramentas: mudam a espessura do traço ou, no texto, o tamanho da letra. Antes, o nome mudava entre «Espessura» e «Texto». Origem: pedido do dono, 2026-11-04. |
-| D-0095 | **Marca-texto translúcido ou sólido, e não as ferramentas tarja e desfocar** (o modo da barra foi substituído pela D-0102) | Uma ferramenta só esconde ou destaca: «Translúcido» (40 % de opacidade) deixa ler o que está por baixo, e «Sólido» cobre. O traço é um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e uma escala de larguras própria (`ANN_HL_SIZES`); por isso herda a seleção, o mover, o redimensionar, o girar e o desfazer. As opções ficam acima da ferramenta (D-0102), e o − e o + da bandeja mudam a espessura, como nas outras ferramentas. Em 2026-11-06, o − e o + mudaram a opacidade do marca-texto no lugar das duas opções; o dono voltou atrás no mesmo dia, porque o − e o + mudavam de sentido só nesta bandeja e a espessura saía dela. Não usa `multiply`: o canvas das anotações fica por cima da imagem, e a gravação ficaria diferente da tela. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
+| D-0095 | **Marca-texto translúcido ou sólido, e não as ferramentas tarja e desfocar** (o modo da barra foi substituído pela D-0102) | Uma ferramenta só esconde ou destaca: «Translúcido» (40 % de opacidade) deixa ler o que está por baixo, e «Sólido» cobre. O traço é um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e uma escala de larguras própria (`ANN_HL_SIZES`); por isso herda a seleção, o mover, o redimensionar, o girar e o desfazer. As opções ficam acima da ferramenta (D-0102), e o − e o + da bandeja mudam a espessura, como nas outras ferramentas. Em 2026-11-06, o − e o + mudaram a opacidade do marca-texto no lugar das duas opções; o dono voltou atrás no mesmo dia (D-0106, descartada), porque o − e o + mudavam de sentido só nesta bandeja e a espessura saía dela. Não usa `multiply`: o canvas das anotações fica por cima da imagem, e a gravação ficaria diferente da tela. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
+| D-0096 | **Identificação: «Maiúsculas» ou texto livre** | `TOKEN_ID_UPPERCASE` (padrão `true`, interruptor «Maiúsculas» no Visual Builder, aba Histórico). Ligado, o próprio valor dos dois campos vira maiúsculas ao digitar, com `toLocaleUpperCase('pt')`, sem mexer no cursor e fora de uma composição; uma sessão antiga aberta tem o valor convertido. Desligado, o texto e o nome da sessão ficam como foram digitados. O placeholder mostra o rótulo como foi escrito: o CSS deixou de usar `text-transform`. Antes, o valor só parecia maiúsculo. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
+| D-0097 | **O Esc também não fecha o Visual Builder; o ✕ é alcançado pelo teclado** | Completa a D2: o Visual Builder fecha só pelo ✕, com o mouse ou com Tab até ele e Enter. Os outros modais fecham com Esc. Origem: pedido do dono, 2026-11-05 (F-0077). |
+| D-0098 | **Os botões secundários do visualizador seguem a regra das ferramentas do editor** | «Download» e «Restaurar» têm a classe `.btn-viewer`, que entra nas mesmas duas regras de `#img-modal-overlay .ann-btn` (normal e `:hover`), com os tokens `--color-viewer-control*`. Uma mudança nessas cores muda os dois. «Editar» segue só o `.btn-send`, como «.pdf» e «.zip». Os três medem 120 × 36 px. Antes, uma regra própria do «Download» nunca valia, por causa do `style` inline (F-0080). Origem: pedido do dono, 2026-11-05. |
 | D-0099 | **Cena do GIF do editor: neutra, sem datas, e a seta sai de dentro da janela** | A captura é uma área de trabalho com o programa fictício «Orbita», uma DLL selecionada e uma notificação de erro, só com palavras iguais no Brasil e em Portugal. O GIF começa no visualizador: clica em «Editar», escolhe a Seta, e a seta de 4 px sai do painel da esquerda e termina na DLL. Termina com as ferramentas abertas, sem salvar. Substitui a frase da D-0091 sobre a seta partir do canto de baixo à esquerda. Origem: pedido do dono, 2026-11-05. |
 | D-0100 | **O botão do meio também agarra uma anotação** (a parte em que a anotação não fica selecionada foi substituída pela D-0103) | Em qualquer ferramenta, o botão do meio sobre uma anotação faz o mesmo que o botão direito: agarra e move. Num lugar sem anotação, continua a mover a imagem ampliada. Fora do Selecionar, a anotação agarrada não fica selecionada ao soltar, porque as alças só funcionam no Selecionar (F-0082). Origem: pedido do dono, 2026-11-05. |
-| D-0105 | **Texto de 12 a 400, e o arraste muda o tamanho da ferramenta** | O − e o + do texto andam em 20 passos, de 12 a 400 (`ANN_TEXT_SIZES`), a partir do tamanho que estiver, mesmo fora dos passos. O arraste das alças de um texto vai de 8 a 400, e o tamanho novo vale para a ferramenta Texto: aparece na bandeja e no próximo texto, como a cor de uma anotação selecionada já valia para a ferramenta. Antes: de 14 a 48 nos passos e de 8 a 96 no arraste. Origem: pedido do dono, 2026-11-06. |
-| D-0104 | **Cada ferramenta guarda a sua espessura; o marca-texto, a sua cor** | O desenho livre, o retângulo, o círculo e a seta começam um passo acima, com 4 px; o marca-texto fica nos 12 px. Cada ferramenta guarda o seu passo (`annSizeByTool`), e a bandeja mostra o dela; antes, um passo só valia para todas. O marca-texto começa no amarelo e guarda a sua cor; as outras ferramentas dividem a delas (`annColorBy`). Origem: pedido do dono, 2026-11-06. |
-| D-0103 | **O botão direito e o do meio selecionam** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, o botão direito ou o do meio a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar e guarda a ferramenta de antes em `annTempSelectFrom`; um clique fora das anotações, ou apagar a anotação com o ✕ ou o Delete, volta a ela sem desenhar. Escolher outra ferramenta na barra esquece a de antes. Substitui a parte da D-0100 e do F-0082 em que a anotação não ficava selecionada ao soltar. Origem: pedido do dono, 2026-11-06. |
-| D-0102 | **As opções de uma ferramenta sobem acima dela** | Todas as ferramentas que desenham têm um ponto logo acima do botão, do lado de fora. Com as opções abertas, o ponto fica na cor primária, no meio do vão, e faz a ligação entre a ferramenta e a bandeja, sem bico. Um clique na ferramenta já escolhida, um duplo clique ou o botão apertado por 1 s abrem as opções numa bandeja escura logo acima, lado a lado como a barra, sempre na mesma ordem, com a primeira em cima da ferramenta: uma opção nunca muda de lugar, em botões padrão do editor, do mesmo tamanho, cada um com um tooltip curto; pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. Os ícones reaproveitam os da barra: o quadrado e o círculo vazios e cheios, o quadrado meio cheio para «Translúcido», e o B e o I. Substitui os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma. O retângulo e o círculo ganham «Contorno» e «Preenchido». Toda bandeja termina com o tamanho: − e + soltos, sem caixa, e o tamanho atual depois deles (um ponto que cresce por passo, ou o número do texto); a caixa fica só nas opções, que são uma escolha, e os sinais soltos só ajustam um valor. O desenho livre e a seta têm uma bandeja só com o tamanho. O − e o + da barra ficam. Origem: pedido do dono, 2026-11-05. O clique na ferramenta já escolhida entrou em 2026-11-06, porque no celular o duplo toque e o toque longo não abriam a bandeja. |
 | D-0101 | **Ctrl (Cmd no Mac): o Selecionar por um momento** | Com o Ctrl apertado, o clique esquerdo em qualquer ferramenta, menos o Recortar, vai para o Selecionar: seleciona, move e redimensiona pelas alças. A seleção fica enquanto a tecla está apertada e some ao soltar, para não deixar alças que a ferramenta atual não usa. Enquanto isso, o botão Selecionar fica aceso no lugar da ferramenta, como ao agarrar com o botão direito ou o do meio. Origem: pedido do dono, 2026-11-05. |
-| D-0098 | **Os botões secundários do visualizador seguem a regra das ferramentas do editor** | «Download» e «Restaurar» têm a classe `.btn-viewer`, que entra nas mesmas duas regras de `#img-modal-overlay .ann-btn` (normal e `:hover`), com os tokens `--color-viewer-control*`. Uma mudança nessas cores muda os dois. «Editar» segue só o `.btn-send`, como «.pdf» e «.zip». Os três medem 120 × 36 px. Antes, uma regra própria do «Download» nunca valia, por causa do `style` inline (F-0080). Origem: pedido do dono, 2026-11-05. |
-| D-0096 | **Identificação: «Maiúsculas» ou texto livre** | `TOKEN_ID_UPPERCASE` (padrão `true`, interruptor «Maiúsculas» no Visual Builder, aba Histórico). Ligado, o próprio valor dos dois campos vira maiúsculas ao digitar, com `toLocaleUpperCase('pt')`, sem mexer no cursor e fora de uma composição; uma sessão antiga aberta tem o valor convertido. Desligado, o texto e o nome da sessão ficam como foram digitados. O placeholder mostra o rótulo como foi escrito: o CSS deixou de usar `text-transform`. Antes, o valor só parecia maiúsculo. Origem: pedido do dono, 2026-11-04 e 2026-11-05. |
-| D-0091 | **O GIF do editor é refeito com o editor** (as frases sobre onde a seta parte e sobre o visualizador depois de salvar foram substituídas pela D-0099) | O GIF de destaque do README §6.3 (`docs/images/annotation-arrow.gif`) mostra o editor, a barra de ferramentas e o visualizador depois de salvar. Uma mudança numa dessas partes grava o GIF de novo no mesmo commit, com o `gif.py` do repositório dos prompts (preparo `capture-engine-editor-arrow`), e confere com `--verificar`. A seta parte do canto de baixo à esquerda. Assim, o cursor atravessa a barra pelo vão entre Selecionar e Girar 90°. Por cima de um botão, o efeito de passar o mouse mudaria de uma gravação para outra. Fecha a P-0001. Origem: plano dos pendentes, 2026-11-02. |
+| D-0102 | **As opções de uma ferramenta sobem acima dela** | Todas as ferramentas que desenham têm um ponto logo acima do botão, do lado de fora. Com as opções abertas, o ponto fica na cor principal, no meio do vão, e faz a ligação entre a ferramenta e a bandeja, sem bico. Um clique na ferramenta já escolhida, um duplo clique ou o botão apertado por 1 s abrem as opções numa bandeja escura logo acima, lado a lado como a barra, sempre na mesma ordem, com a primeira em cima da ferramenta: uma opção nunca muda de lugar, em botões padrão do editor, do mesmo tamanho, cada um com um tooltip curto; pelo teclado, a seta para cima abre e as setas para os lados andam entre elas. Os ícones reaproveitam os da barra: o quadrado e o círculo vazios e cheios, o xadrez para «Translúcido» (D-0108), e o B e o I. Substitui os modos da barra do texto e do marca-texto, com o botão ←: a barra não muda mais de forma. O retângulo e o círculo ganham «Contorno» e «Preenchido». Toda bandeja termina com o tamanho: − e + soltos, sem caixa, e o tamanho atual depois deles (um ponto que cresce por passo, ou o número do texto); a caixa fica só nas opções, que são uma escolha, e os sinais soltos só ajustam um valor. O desenho livre e a seta têm uma bandeja só com o tamanho. O − e o + da barra ficam. Origem: pedido do dono, 2026-11-05. Com o Texto, a bandeja fica aberta enquanto o campo de texto está aberto (F-0101). O clique na ferramenta já escolhida entrou em 2026-11-06, porque no telefone o duplo toque e o toque longo não abriam a bandeja. |
+| D-0103 | **O botão direito e o do meio selecionam** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, o botão direito ou o do meio a selecionam, com as alças e o ✕, e já podem arrastá-la. A barra passa ao Selecionar e guarda a ferramenta de antes em `annTempSelectFrom`; um clique fora das anotações, ou apagar a anotação com o ✕ ou o Delete, volta a ela sem desenhar. Escolher outra ferramenta na barra esquece a de antes e tira a seleção; uma ferramenta do mesmo tipo a mantém, e as opções dela mudam a anotação (F-0091). Substitui a parte da D-0100 e do F-0082 em que a anotação não ficava selecionada ao soltar. Origem: pedido do dono, 2026-11-06. |
+| D-0104 | **Cada ferramenta guarda a sua espessura; o marca-texto, a sua cor** | O desenho livre, o retângulo, o círculo e a seta começam um passo acima, com 4 px; o marca-texto fica nos 12 px. Cada ferramenta guarda o seu passo (`annSizeByTool`), e a bandeja mostra o dela; antes, um passo só valia para todas. O marca-texto começa no amarelo e guarda a sua cor; as outras ferramentas dividem a delas (`annColorBy`). Origem: pedido do dono, 2026-11-06. |
+| D-0105 | **Texto de 12 a 400, e o arrasto muda o tamanho da ferramenta** | O − e o + do texto andam em 20 passos, de 12 a 400 (`ANN_TEXT_SIZES`), a partir do tamanho que estiver, mesmo fora dos passos. O arraste das alças de um texto vai de 8 a 400, e o tamanho novo vale para a ferramenta Texto: aparece na bandeja e no próximo texto, como a cor de uma anotação selecionada já valia para a ferramenta. Antes: de 14 a 48 nos passos e de 8 a 96 no arrasto. Origem: pedido do dono, 2026-11-06. |
+| D-0106 | **(Descartada) O − e o + do marca-texto mudam a opacidade** | Proposta e desfeita em 2026-11-06: o − e o + mudavam de sentido só nessa bandeja, e a espessura saía dela. O marca-texto ficou com «Translúcido» e «Sólido» (D-0095). O ID fica reservado, para não ser usado de novo. |
+| D-0107 | **«Quem» e «O que» na identificação** | Os rótulos padrão dos dois campos, no lugar de «User» e «Equipamento», porque dizem o que escrever em cada campo, com as mesmas palavras no Brasil e em Portugal. O administrador troca os dois no Visual Builder. «User» fica como nome do perfil «Export User». Origem: pedido do dono, 2026-11-06. |
+| D-0108 | **O ícone da ferramenta mostra a escolha** | O retângulo e o círculo mostram a forma cheia com «Preenchido»; o marca-texto, a ponta cheia com «Sólido»; o T do Texto fica mais grosso com «Negrito» e inclinado com «Itálico», também o de um texto selecionado; o desenho livre e a seta mostram a espessura. «Translúcido» tem o ícone de xadrez, o desenho comum da transparência. Aceso, o T fica escuro como as outras ferramentas. Origem: pedido do dono, 2026-11-06. |
 
 ### Pendentes
 
@@ -1500,9 +1515,7 @@ O que ficou para depois, com o ID e a origem.
 | ID | O quê | Origem |
 |---|---|---|
 | F-0073 | O Safari continua marcado como não testado em «Requisitos». Fecha com a lista de teste no iPhone, feita pelo dono na página publicada da 28.7.0. | Auditoria de 2026-11-04 |
-| F-0074 | Frases com mais de 30 palavras no `AGENTS.md` (7 a 8, contagem automática). | Auditoria de 2026-11-04 |
-| F-0089 | Uma seta curta, de cerca de 30 px, não se move pelo meio no Selecionar: as alças das pontas cobrem a seta inteira, e o arraste pega a da ponta. Correção pensada: a alça mais próxima, com o raio limitado a um terço do comprimento. | Auditoria de 2026-11-06 |
-| F-0090 | As ferramentas com opções dizem `aria-haspopup="true"` (um menu), mas a bandeja é um grupo; e nenhuma ferramenta tem `aria-pressed`, então o leitor de tela não ouve qual está ativa. | Auditoria de 2026-11-06 |
+| F-0074 | Frases com mais de 30 palavras no `AGENTS.md`: cerca de 40 na contagem automática de 2026-11-06, das quais cerca de 30 vieram na 28.7.0 (as decisões D-0093 a D-0108, a §7 e a §11, Parte B). | Auditorias de 2026-11-04 e de 2026-11-06 |
 
 ### IDs
 
