@@ -610,7 +610,7 @@ Sim. Pode abrir várias abas no mesmo navegador, e todas leem a mesma base local
 Nada: a ferramenta protege automaticamente os marcadores internos com um caractere invisível (zero-width space), impedindo que valores de tokens interfiram com o Quine Engine.
 
 **Posso usar o Capture Engine como aplicação web (num servidor)?**
-É tecnicamente possível, mas não é o caso de uso pretendido. A ferramenta foi desenhada para uso local (protocolo `file://`). Em servidores, podem surgir restrições de CORS no Quine Engine (fetch do próprio arquivo).
+Sim. A versão publicada no GitHub Pages funciona igual ao arquivo aberto no computador: as capturas ficam no navegador, numa base separada por endereço. Medido em novembro de 2026: servida por http, a cópia do Export Admin sai igual ao arquivo original, byte a byte. Um servidor que altera o HTML antes de entregá-lo (que o comprime ou injeta scripts) pode quebrar o Quine; nesse caso, use o arquivo baixado.
 
 **Posso personalizar a ferramenta sem saber programar?**
 Sim — o Visual Builder (6 cliques no logo) permite personalizar cores, nome, campos e rodapé sem tocar no código.
@@ -649,22 +649,31 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 ### Acessibilidade
 
-**Estado avaliado em junho de 2026** (não reavaliado desde então)**:**
-- Navegação por teclado: parcialmente suportada nos controles principais
-- Razões de contraste WCAG: verificadas para a cor de destaque principal (ver `design-tokens.md §1`)
-- Leitores de tela: não testados formalmente
-- ARIA e ordem de foco: **não auditados**, com duas exceções pontuais (ver abaixo)
+**Estado medido em novembro de 2026,** no Edge 156, só com o teclado. O Firefox e o Safari não foram medidos para o teclado:
+- **Teclado:** o Tab alcança todos os controles, e Enter ou Espaço os ativam. Isso inclui as miniaturas, os documentos, os itens dos «Removidos», as sessões do Histórico, cada chip do layout do PDF, as abas do Visual Builder e os cartões de exportação.
+- **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
+- **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
+- **Modais:** com um modal aberto, o Tab fica dentro dele, e o resto da página não recebe o foco. Ao fechar, o foco volta ao elemento de onde o modal foi aberto.
+- **Esc:** fecha o visualizador, o editor (como Cancelar), o modal de texto e a exportação da ferramenta. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
+- **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
+- **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md §1`).
+- **Leitores de tela:** não testados.
 
-**ARIA — o que existe, exatamente (medido em novembro de 2026):**
+**ARIA e foco — o que existe:**
 
 | Onde | Atributo | Motivo |
 |---|---|---|
-| Banners de armazenamento cheio e indisponível | `role="alert"` | São as únicas mensagens que aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não as anuncia — o usuário não sabe que as capturas deixaram de ser gravadas |
-| Botão ✕ desses dois banners | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
+| Avisos de armazenamento cheio, indisponível e «Capturas só nesta aba» | `role="alert"` | Aparecem **sem ação do usuário** e sinalizam risco de perda de dados. Sem isto, um leitor de tela não os anuncia |
+| Botão ✕ desses avisos | `aria-label="Fechar aviso"` | O botão só contém o glifo `✕`, que não tem nome acessível útil |
 | Aviso de formato que o navegador não abre | `role="status"` | Diz para onde foi o arquivo, sem tirar o foco de onde a pessoa está |
 | Elementos com tooltip, em toda a aplicação | `role="tooltip"` no balão; `aria-label` com o texto do tooltip nos que só têm ícone, e `aria-description` nos que têm texto | Muitos botões só têm um ícone. O texto que aparece por cima deles é também o nome que o leitor de tela lê |
-
-Nenhum outro elemento da interface tem marcação ARIA. Isto não é um esforço de acessibilidade — é a cobertura mínima do único ponto onde a ausência dela custa dados ao usuário.
+| Miniaturas, documentos, itens dos «Removidos», sessões, cartões de exportação | `role="button"` e `tabindex="0"` | São áreas clicáveis que não são botões; assim recebem o foco e respondem a Enter |
+| Abas do Visual Builder | `role="tablist"` e `role="tab"` | Diz que são abas, e não botões soltos |
+| Chips do layout e das opções do Visual Builder | `role="radio"` e `aria-checked` | Cada chip é uma parada do Tab, e o estado escolhido é anunciado |
+| Setas do Histórico e dos «Removidos» | `aria-expanded` | Diz se a barra está aberta |
+| «Translúcido» e «Sólido» do marca-texto | `aria-pressed` | Diz qual dos dois está escolhido |
+| ✕ do Visual Builder e da exportação | `aria-label="Fechar"` | O botão só contém o ícone |
+| Conteúdo fora do modal aberto e das barras recolhidas | `inert` | Tira esse conteúdo do Tab e dos leitores de tela, sem mudar o que se vê |
 
 **Conformidade declarada:** nenhuma conformidade formal com WCAG 2.1 ou EN 301 549 foi auditada nesta versão.
 
