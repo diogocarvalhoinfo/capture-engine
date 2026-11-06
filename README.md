@@ -220,7 +220,7 @@ Com a ferramenta Seta, um arraste desenha a seta, e o Confirmar a salva na image
 Motor de anotação:
 - O editor tem 7 ferramentas (desenho livre, retângulo, círculo, seta, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também desfazer e refazer, a espessura do traço, negrito e itálico, guardar e cancelar.
+  - A barra tem também desfazer e refazer, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), negrito e itálico, guardar e cancelar.
   - O modo texto liga com a ferramenta Texto ou com o duplo clique num texto. Nele, a barra mostra só o ←, o T, o negrito e o itálico, as cores, o tamanho, desfazer, refazer, salvar e cancelar. O ← volta à ferramenta anterior e deixa o texto escrito na imagem; a imagem só muda com o botão verde de salvar.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Ao fechar o editor, trocar de imagem ou clicar fora com anotações por salvar, o Cancelar e o Confirmar crescem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.

@@ -3334,11 +3334,11 @@
             <button class="ann-swatch" data-color="#f0f0f0"
               style="background:var(--color-annotation-white);border-color:var(--color-annotation-swatch-border)" title="Branco"></button>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
-            <button class="ann-btn" id="ann-thickness-down" title="Espessura menor"
+            <button class="ann-btn" id="ann-thickness-down" title="Diminuir"
               style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
               </svg></button>
-            <button class="ann-btn" id="ann-thickness-up" title="Espessura maior" style="width:28px;height:28px"><svg
+            <button class="ann-btn" id="ann-thickness-up" title="Aumentar" style="width:28px;height:28px"><svg
                 viewBox="0 0 24 24">
                 <line x1="12" y1="5" x2="12" y2="19" stroke-width="2.5" />
                 <line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5" />
@@ -4504,7 +4504,7 @@
         const p = $('ann-thickness-up'); if (p) { const ls = p.querySelectorAll('line'); ls.forEach(l => l.setAttribute('stroke-width', sw[annSizeIdx])) }
         const d = $('ann-thickness-down'); if (d) { const l = d.querySelector('line'); if (l) l.setAttribute('stroke-width', sw[annSizeIdx]) }
         const td = $('ann-thickness-down'), tu = $('ann-thickness-up');
-        if (annTool === 'text') { if (td) td.title = 'Texto menor'; if (tu) tu.title = 'Texto maior' } else { if (td) td.title = 'Espessura menor'; if (tu) tu.title = 'Espessura maior' }
+        if (td) td.title = 'Diminuir'; if (tu) tu.title = 'Aumentar'; /* the same names for the line and the text size (D-0094) */
       }
       // Shows or hides the thickness buttons according to the current selection.
       // Called by annRenderAll() (which calls annUpdateDelBtn(), then this one).
