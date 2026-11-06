@@ -28,18 +28,8 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-muted-foreground` | `#6b6a66` | `#9a9a9a` | Texto secundário: datas, legendas, metadados |
 | `--color-primary` | `#e86b2e` | — | Cor principal, escolhida no Visual Builder: botões e elementos ativos |
 | `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal; calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
-| `--color-primary-hover` | `#d4450f` | — | Cor principal no hover |
 | `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
 | `--color-ring` | `var(--color-primary)` | — | Contorno do foco do teclado |
-| `--color-success-subtle` | `#eaf3de` | `rgb(34 197 94 / 8%)` | Fundo de sucesso |
-| `--color-success-border` | `#639922` | `#4d7a18` | Borda de sucesso |
-| `--color-success-foreground` | `#27500a` | `#86d84f` | Texto de sucesso |
-| `--color-destructive-subtle` | `#fcebeb` | `rgb(239 68 68 / 8%)` | Fundo de erro |
-| `--color-destructive-border` | `#a32d2d` | `#8a2424` | Borda de erro |
-| `--color-destructive-foreground` | `#501313` | `#ff8c8c` | Texto de erro |
-| `--color-warning-subtle` | `#faeeda` | `rgb(234 179 8 / 8%)` | Fundo de aviso |
-| `--color-warning-border` | `#ba7517` | `#9c6214` | Borda de aviso |
-| `--color-warning-foreground` | `#412402` | `#ecc680` | Texto de aviso |
 | `--color-green-500` | `#22c55e` | — | Sucesso, estado «Gravado», confirmar a anotação |
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
@@ -69,7 +59,6 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-backdrop` | `rgb(10 10 10 / 88%)` | — | Fundo do visualizador de imagem |
 | `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botão de fechar sobre o visualizador |
 | `--color-viewer-close-hover` | `rgb(255 255 255 / 20%)` | — | Hover do botão de fechar do visualizador |
-| `--color-viewer-toolbar` | `rgb(255 255 255 / 6%)` | — | Barra de ferramentas da anotação |
 | `--color-viewer-border` | `rgb(255 255 255 / 10%)` | — | Borda da barra de ferramentas e da barra de zoom |
 | `--color-viewer-control-border` | `#3f3f3f` | — | Borda desses botões |
 | `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Abas e bordas finas do visualizador |
@@ -82,17 +71,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 > **Tema escuro e anti-FOUC.**
 > O tema escuro liga-se só pela classe `dark` no `<html>`. Sem escolha guardada, o `initTheme` segue o sistema (`prefers-color-scheme`). Um script logo no início do `<body>` põe a classe antes da primeira pintura, para não haver um flash branco.
 
-## 2. Cores semânticas
-
-Cada estado tem fundo, borda e texto, para um aviso nunca precisar de três cores escritas à mão.
-
-| Estado | Fundo | Borda | Texto |
-|---|---|---|---|
-| Sucesso | `--color-success-subtle` | `--color-success-border` | `--color-success-foreground` |
-| Erro | `--color-destructive-subtle` | `--color-destructive-border` | `--color-destructive-foreground` |
-| Aviso | `--color-warning-subtle` | `--color-warning-border` | `--color-warning-foreground` |
-
-No tema escuro, os fundos são a cor do estado com 8% de opacidade, sobre o fundo escuro.
+## 2. Cores literais
 
 ### 2.1 Cores literais fora dos tokens
 
@@ -162,7 +141,6 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--radius-badge` | `0.1875rem` | Badges e etiquetas de tamanho (3px) |
 | `--radius-sm` | `0.25rem` | Campos, chips e o botão de remover (4px) |
 | `--radius-md` | `0.375rem` | Botões, cartões de documento e a moldura da miniatura (6px) |
 | `--radius-lg` | `0.5rem` | Painéis internos e caixas (8px) |
@@ -235,7 +213,6 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 | `--duration-ann-alert` | `400ms` |
 | `--duration-admin-pulse` | `1.2s` |
 | `--duration-status-pulse` | `3s` |
-| `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` |
 | `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` |
 | `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` |
 

@@ -31,23 +31,12 @@
       --color-muted-foreground: #6b6a66;
       --color-primary: #e86b2e;
       --color-primary-foreground: #fff;
-      --color-primary-hover: #d4450f;
       --color-brand: var(--color-primary);
       --color-ring: var(--color-primary);
       --focus-width: 3px;
       --focus-offset: 2px;
       --opacity-dimmed: 0.3;
-      --color-success-subtle: #eaf3de;
-      --color-success-border: #639922;
-      --color-success-foreground: #27500a;
-      --color-destructive-subtle: #fcebeb;
-      --color-destructive-border: #a32d2d;
-      --color-destructive-foreground: #501313;
-      --color-warning-subtle: #faeeda;
-      --color-warning-border: #ba7517;
-      --color-warning-foreground: #412402;
       --font-sans: 'Segoe UI', arial, sans-serif;
-      --radius-badge: 0.1875rem;
       --radius-sm: 0.25rem;
       --radius-md: 0.375rem;
       --radius-lg: 0.5rem;
@@ -113,7 +102,6 @@
       --duration-ann-alert: 400ms;
       --duration-admin-pulse: 1.2s;
       --duration-status-pulse: 3s;
-      --ease-in: cubic-bezier(0.4, 0, 1, 1);
       --ease-out: cubic-bezier(0, 0, 0.2, 1);
       --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
       --color-annotation-selection: rgb(232 107 46 / 32%);
@@ -127,7 +115,6 @@
       --color-viewer-backdrop: rgb(10 10 10 / 88%);
       --color-viewer-surface: rgb(255 255 255 / 8%);
       --color-viewer-close-hover: rgb(255 255 255 / 20%);
-      --color-viewer-toolbar: rgb(255 255 255 / 6%);
       --color-viewer-border: rgb(255 255 255 / 10%);
       --color-viewer-control-border: #3f3f3f;
       --color-viewer-line: rgb(255 255 255 / 15%);
@@ -149,15 +136,6 @@
       --color-border-strong: #555;
       --color-foreground: #e4e4e4;
       --color-muted-foreground: #9a9a9a;
-      --color-success-subtle: rgb(34 197 94 / 8%);
-      --color-success-border: #4d7a18;
-      --color-success-foreground: #86d84f;
-      --color-destructive-subtle: rgb(239 68 68 / 8%);
-      --color-destructive-border: #8a2424;
-      --color-destructive-foreground: #ff8c8c;
-      --color-warning-subtle: rgb(234 179 8 / 8%);
-      --color-warning-border: #9c6214;
-      --color-warning-foreground: #ecc680;
     }
 
     /* Large screens: the whole interface grows (text, icons, buttons and side panel together), instead of staying at notebook size.
@@ -1349,13 +1327,6 @@
       flex-shrink: 0
     }
 
-    .sb-divider {
-      height: 1px;
-      background: var(--color-border);
-      margin: calc(var(--spacing) * 1.5);
-      flex-shrink: 0
-    }
-
     #sb-sess-list {
       overflow-y: auto;
       flex: 1;
@@ -1888,27 +1859,6 @@
       transform: translateX(20px)
     }
 
-    .num-input {
-      width: 60px;
-      height: 32px;
-      border: 1px solid transparent;
-      border-radius: var(--radius-md);
-      text-align: center;
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--color-foreground);
-      background: var(--color-background);
-      outline: none;
-      transition: border-color var(--duration-moderate-01), background var(--duration-moderate-01)
-    }
-
-    .num-input:focus {
-      border-color: var(--color-primary) !important;
-      background: var(--color-card) !important;
-      outline: none !important;
-      box-shadow: var(--shadow-input-focus) !important
-    }
-
     /* ═══ EXPORT CARDS ═══ */
     .export-card {
       display: flex;
@@ -2238,49 +2188,6 @@
       border-color: var(--color-white);
       transform: scale(1.15);
       box-shadow: var(--shadow-swatch-active)
-    }
-
-    .ann-picker-wrap {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-lg);
-      background: var(--color-card);
-      border: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0
-    }
-
-    #ann-color {
-      width: 20px;
-      height: 20px;
-      border: none;
-      border-radius: var(--radius-circle);
-      cursor: pointer;
-      padding: 0;
-      background: none;
-      appearance: none
-    }
-
-    #ann-color::-webkit-color-swatch-wrapper {
-      padding: 0
-    }
-
-    #ann-color::-webkit-color-swatch {
-      border: none;
-      border-radius: var(--radius-circle)
-    }
-
-    #ann-size {
-      width: 60px;
-      height: 4px;
-      cursor: pointer;
-      accent-color: var(--color-primary)
-    }
-
-    .ann-spacer {
-      flex: 1
     }
 
     #sb-mobile-close svg {
@@ -2707,15 +2614,6 @@
     #ann-viewport.ann-grabbing,
     #ann-viewport.ann-grabbing * {
       cursor: grabbing !important;
-    }
-
-    #img-modal-overlay #ann-toolbar {
-      background: var(--color-viewer-toolbar);
-      border: 1px solid var(--color-viewer-border);
-      border-radius: var(--radius-lg);
-      margin: 0 0 calc(var(--spacing) * 3);
-      color: var(--color-white);
-      backdrop-filter: blur(10px);
     }
 
     /* The editor tools and the secondary buttons of the viewer (Download, Restaurar) share these two rules (D-0098):
@@ -3667,7 +3565,6 @@
       const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       function buildFilename(ext, baseName) { const n = new Date(), hh = String(n.getHours()).padStart(2, '0'), mn = String(n.getMinutes()).padStart(2, '0'), dd = String(n.getDate()).padStart(2, '0'), mmm = MONTHS[n.getMonth()], yyyy = n.getFullYear(), raw = (baseName != null ? baseName : $('session-name').value).trim(); let s = ''; if (raw) s = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9\s\-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').toUpperCase(); const prefix = s ? s + '-' : ''; return `${prefix}${hh}h${mn}m-${dd}-${mmm}-${yyyy}.${ext}` }
       const ENC = new TextEncoder();
-      function concatU8(a) { const t = a.reduce((s, x) => s + x.length, 0), o = new Uint8Array(t); let p = 0; for (const x of a) { o.set(x, p); p += x.length } return o }
       function dlBlob(b, f) { const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = f; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u) }, 1000) }
 
       /* ═══ STATE ═══ */
@@ -3763,7 +3660,7 @@
         _ensurePromise = (async () => { if (!sessId) { await createSession(); renderSbSessions(); SysLogger.info('Sessão criada on-demand'); } })();
         try { await _ensurePromise } finally { _ensurePromise = null }
       }
-      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now(), exported: false }; await idbPut('sessions', s); sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
+      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; await idbPut('sessions', s); sessId = s.id; sessObj = s; SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
       async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; $('session-name').value = s.name || ''; $('session-user').value = idUpper ? (s.user || '').toLocaleUpperCase('pt') : (s.user || ''); $('session-pc').value = idUpper ? (s.pc || '').toLocaleUpperCase('pt') : (s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
@@ -4589,10 +4486,6 @@
           await annLoadCleanBg();
         }
         setAnnDirty(true); annRenderAll();
-      }
-      function annHideTextInput() {
-        if (annCommitText) { annCommitText(); annCommitText = null; }
-        const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
       }
       // Grows the textarea in height (scrollHeight) and width (longest line measured in the scaled font).
       // wrap="off" => lines break only with Enter; the textarea must show everything without cutting or scrolling.

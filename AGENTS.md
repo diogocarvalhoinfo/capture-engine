@@ -574,7 +574,6 @@ r.onupgradeneeded = e => {
 | `pc` | string | ❌ | Valor do segundo campo (ex: "PC-001") |
 | `createdAt` | number | ✅ | Timestamp Unix (ms) da criação — imutável após criação |
 | `updatedAt` | number | ✅ | Timestamp Unix (ms) da última atividade — atualizado a cada save |
-| `exported` | boolean | ✅ | Definido como `false` em `createSession()` e **nunca alterado** — é a única ocorrência do campo em todo o código. Persistido mas inerte; reservado para futura marcação visual de sessões exportadas, sem versão-alvo definida. **Quem implementar essa marcação precisa escrever o lado da gravação também** — ele não existe. (Até a V26 esta célula afirmava que o campo «passa a `true` quando `exportFile()` é chamado»; nunca foi verdade.) |
 
 ### Tabela: `images`
 
