@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **Cartões do topo do README:** sem borda, com o fundo na cor da página do GitHub (branco no claro, `#0d1117` no escuro), e o conteúdo no meio do cartão. Os dois ficam num parágrafo só, separados por `<br>`, e o espaço acima, entre e abaixo deles passa a ser o mesmo, cerca de 52 px. Gerados com o `cartoes.py` do método 6.0.0. **Motivo:** o cartão escolhe o tema pelo sistema, e não pelo GitHub. Com o GitHub claro e o sistema escuro, o cartão sem fundo ficava ilegível.
+- **Editor no telefone (D-0109):** as 7 ferramentas, o 90° e o Recortar ficam numa linha só, e a foto ganha a altura de uma linha. Em telas de até 480 px, as margens dos lados e os vãos diminuem; abaixo de 393 px, os botões encolhem até 30 px. Medido no WebKit em 393, 375 e 360 px; no Edge, no Firefox e no WebKit do computador, o editor não muda.
 - **Safari no iPhone** em «Requisitos»: testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado da 28.7.0. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. A cópia do Export Admin saiu igual ao arquivo publicado, byte a byte. O visualizador e o editor falham no toque (F-0107 e F-0108). A matriz de compatibilidade, o Disaster Recovery e as limitações dizem o resultado. Fecha a **F-0073**. O Safari do Mac continua sem teste.
 
 ### Corrigido

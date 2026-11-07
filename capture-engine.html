@@ -2618,6 +2618,46 @@
       }
     }
 
+    #img-modal-footer {
+      padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4);
+    }
+
+    #ann-row-tools {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: calc(var(--spacing) * 1.5);
+      align-items: center;
+    }
+
+    /* On a phone the 7 tools, 90° and Recortar share the first row of the editor. The side margins go from 36 to 12 px
+       and the gaps from 6 to 4 px: 9 buttons of 36 px fit in 393 px. On a narrower screen the buttons shrink down to
+       30 px, instead of sending 90° and Recortar to a row of their own. */
+    @media (width <= 30rem) {
+      #img-modal-overlay {
+        padding: calc(var(--spacing) * 2);
+      }
+
+      #img-modal-footer {
+        padding-inline: var(--spacing);
+      }
+
+      #ann-row-tools {
+        flex-wrap: nowrap;
+        gap: var(--spacing);
+      }
+
+      #ann-row-tools > .ann-btn,
+      #ann-row-tools > .ann-tool-wrap {
+        flex: 0 1 36px;
+        min-width: 30px;
+      }
+
+      #ann-row-tools > .ann-tool-wrap > .ann-btn {
+        width: 100%;
+      }
+    }
+
     #img-modal-overlay .modal-hdr {
       border-bottom: none;
       padding: calc(var(--spacing) * 3.5) 0;
@@ -3210,8 +3250,8 @@
         <button id="img-nav-next" onclick="window.imgModalNav(1)" title="Próxima imagem" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:var(--color-viewer-floating);border:1px solid var(--color-viewer-line);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <!-- FOOTER ACTIONS -->
-      <div
-        style="padding:0 calc(var(--spacing) * 4) calc(var(--spacing) * 4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
+      <div id="img-modal-footer"
+        style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
 
         <!-- DEFAULT ACTIONS -->
         <div id="img-modal-default-actions" style="display:flex;gap:calc(var(--spacing) * 2);justify-content:center">
@@ -3241,7 +3281,7 @@
         <div id="img-modal-ann-actions"
           style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS -->
-          <div class="ann-row" style="display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--spacing) * 1.5);align-items:center">
+          <div class="ann-row" id="ann-row-tools">
           <div class="ann-tool-wrap">
             <button class="ann-btn active" data-tool="free" title="Desenho livre"><svg viewBox="0 0 24 24">
               <path d="M3 14 Q 7 4 12 13 T 21 8" />
