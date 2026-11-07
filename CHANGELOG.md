@@ -8,7 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
-- **O ✕ do visualizador com desenho por salvar (D-0110):** com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, sem fechar a foto. Numa tela de toque, ele continua a sumir, porque um dedo fecha sem querer.
+- **O ✕ do visualizador sempre à vista (D-0112):** antes, o ✕ sumia enquanto havia desenho por salvar. Agora fica à vista em qualquer tela, também no telefone. Com desenho por salvar, o clique ou o toque nele faz o Cancelar e o Salvar pulsarem, sem fechar a foto, como o Esc e o clique fora dela.
 
 ### Corrigido
 

@@ -4205,20 +4205,9 @@
       function annGetCtx() { return $('ann-canvas').getContext('2d') }
 
       function setAnnDirty(val) {
+        // The ✕ of the viewer stays on every screen. With the drawing not saved, closeImgModal() does not close: Salvar
+        // and Cancelar pulse, as with Esc and a click outside the photo (D-0112)
         annIsDirty = val;
-        const btn = $('img-modal-close');
-        // Only on a touch screen the ✕ hides while the drawing is not saved: a finger closes by mistake. With a mouse it
-        // stays, and a click on it makes Salvar and Cancelar pulse, as Esc and a click outside do (D-0110)
-        const touchOnly = !!window.matchMedia && window.matchMedia('(hover: none)').matches;
-        if (btn) {
-          if (annActive && annIsDirty && touchOnly) {
-            btn.style.opacity = '0';
-            btn.style.pointerEvents = 'none';
-          } else {
-            btn.style.opacity = '';
-            btn.style.pointerEvents = '';
-          }
-        }
       }
       function hasUnsavedAnnotations() {
         return annActive && annIsDirty;
