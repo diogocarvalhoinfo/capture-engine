@@ -4,19 +4,23 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.7.1] - 2026-11-07
+
+Patch: o visualizador e o editor no toque do iPhone, as ferramentas do editor numa linha no telefone, os cartões do README com o fundo da página e o resultado do teste do Safari no iPhone.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): o arquivo exportado por quem mantém o projeto, já na 28.7.1, aberto por `file://` no Edge. Sem erros no console, sem os botões de administrador, a imagem entra na grade, a sessão volta no Histórico depois de recarregar, e uma segunda aba funciona.
 
 ### Modificado
 
 - **Cartões do topo do README:** sem borda, com o fundo na cor da página do GitHub (branco no claro, `#0d1117` no escuro), e o conteúdo no meio do cartão. Os dois ficam num parágrafo só, separados por `<br>`, e o espaço acima, entre e abaixo deles passa a ser o mesmo, cerca de 52 px. Gerados com o `cartoes.py` do método 6.0.0. **Motivo:** o cartão escolhe o tema pelo sistema, e não pelo GitHub. Com o GitHub claro e o sistema escuro, o cartão sem fundo ficava ilegível.
 - **Editor no telefone (D-0109):** as 7 ferramentas, o 90° e o Recortar ficam numa linha só, e a foto ganha a altura de uma linha. Em telas de até 480 px, as margens dos lados e os vãos diminuem; abaixo de 393 px, os botões encolhem até 30 px. Medido no WebKit em 393, 375 e 360 px; no Edge, no Firefox e no WebKit do computador, o editor não muda.
-- **Safari no iPhone** em «Requisitos»: testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado da 28.7.0. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. A cópia do Export Admin saiu igual ao arquivo publicado, byte a byte. O visualizador e o editor falham no toque (F-0107 e F-0108). A matriz de compatibilidade, o Disaster Recovery e as limitações dizem o resultado. Fecha a **F-0073**. O Safari do Mac continua sem teste.
+- **Safari no iPhone** em «Requisitos»: testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado da 28.7.0. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. A cópia do Export Admin saiu igual ao arquivo publicado, byte a byte. O visualizador e o editor falhavam no toque (F-0107 e F-0108, corrigidos nesta versão). A matriz de compatibilidade, o Disaster Recovery e as limitações dizem o resultado. Fecha a **F-0073**. O Safari do Mac continua sem teste.
 
 ### Corrigido
 
 - **F-0107: a pinça no visualizador do iPhone.** Dois dedos ampliam e reduzem a imagem, de 20 % a 1000 %, a partir do ponto entre eles, e a página fica parada. Antes, o Safari do iPhone, que ignora o `user-scalable=no`, ampliava a página inteira, e o ✕ saía da tela. No editor, os dois dedos só impedem a página de ampliar.
 - **F-0108: o ✕ e o «Editar» fora da tela do iPhone.** O visualizador, o modal de texto e o Visual Builder passam a medir a altura em `dvh`, a área visível. No Safari do iPhone, o `vh` conta a tela sem as barras do navegador: o visualizador ficava 140 px mais alto que a área visível, com o ✕ acima dela e o «Editar» abaixo. Medido no WebKit com a tela do iPhone 14 Pro; no Edge, no Firefox e no WebKit do computador, os tamanhos não mudam.
-- Os dois, a conferir no iPhone de verdade, no site publicado.
+- Os dois conferidos pelo dono no iPhone 14 Pro, no site publicado, em 2026-11-07: a pinça amplia só a foto, o ✕ e o «Editar» ficam à vista, e o desenho com o dedo funciona. Com eles, a coluna «Captura e Export» do Safari passa a ✅.
 
 ### Pendentes
 
