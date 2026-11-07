@@ -904,7 +904,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 
 | Função | O que faz | Notas |
 |---|---|---|
-| `setAnnDirty(val)` | Define `annIsDirty` e controla visibilidade do botão fechar modal | Esconde `img-modal-close` quando `annActive && annIsDirty` |
+| `setAnnDirty(val)` | Define `annIsDirty` e controla visibilidade do botão fechar modal | Esconde `img-modal-close` quando `annActive && annIsDirty`, só numa tela de toque (`hover: none`). Com o mouse, o ✕ fica, e o clique nele faz Salvar e Cancelar pulsarem (D-0110) |
 | `hasUnsavedAnnotations()` | Retorna `true` se há anotações não guardadas (`annActive && annIsDirty`) | Usada por `closeImgModal`, `imgModalNav`, o clique no fundo e o Esc (`viewerKey`, F-0088) |
 | `triggerUnsavedAlert()` | Anima botões Confirmar/Cancelar com pulse para alertar o usuário. Liga também a classe `ann-await` na barra: os outros botões ficam com `--opacity-dimmed` e sem clique durante `ANN_AWAIT_MS` | Chamada por `closeImgModal`, `imgModalNav`, o clique no fundo e o Esc (`viewerKey`, F-0088), quando há anotações pendentes. Um novo aviso reinicia o tempo |
 | `clearAnnAwait()` | Tira a classe `ann-await` e cancela o temporizador | Chamada pelo temporizador, pelo `pointerdown` no canvas (continuar editando) e por `annDeactivate`, que cobre o Cancelar e o Confirmar |
@@ -1508,6 +1508,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0107 | **«Quem» e «O que» na identificação** | Os rótulos padrão dos dois campos, no lugar de «User» e «Equipamento», porque dizem o que escrever em cada campo, com as mesmas palavras no Brasil e em Portugal. O administrador troca os dois no Visual Builder. «User» fica como nome do perfil «Export User». Origem: pedido do dono, 2026-11-06. |
 | D-0108 | **O ícone da ferramenta mostra a escolha** | O retângulo e o círculo mostram a forma cheia com «Preenchido»; o marca-texto, a ponta cheia com «Sólido»; o T do Texto fica mais grosso com «Negrito» e inclinado com «Itálico», também o de um texto selecionado; o desenho livre e a seta mostram a espessura. «Translúcido» tem o ícone de xadrez, o desenho comum da transparência. Aceso, o T fica escuro como as outras ferramentas. Origem: pedido do dono, 2026-11-06. |
 | D-0109 | **No telefone, as ferramentas, o 90° e o Recortar numa linha só** | Em telas de até 480 px, a primeira linha do editor não quebra: as margens dos lados passam de 36 a 12 px e o vão de 6 a 4 px, e os 9 botões de 36 px cabem em 393 px. Numa tela mais estreita, os botões encolhem até 30 px, em vez de mandar o 90° e o Recortar para uma linha própria. No computador, nada muda. Origem: pedido do dono, 2026-11-07, depois do teste no iPhone. |
+| D-0110 | **O ✕ do visualizador com desenho por salvar: some no toque, fica com o mouse** | Numa tela de toque, o ✕ some enquanto o desenho não foi salvo, porque um dedo fecha sem querer. Com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, como o Esc e o clique fora da foto, sem fechar. Origem: pedido do dono, 2026-11-07. |
 
 ### Pendentes
 
