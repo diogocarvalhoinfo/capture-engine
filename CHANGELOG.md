@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **O ✕ do visualizador com desenho por salvar (D-0110):** com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, sem fechar a foto. Numa tela de toque, ele continua a sumir, porque um dedo fecha sem querer.
+
 ## [28.7.1] - 2026-11-07
 
 Patch: o visualizador e o editor no toque do iPhone, as ferramentas do editor numa linha no telefone, os cartões do README com o fundo da página e o resultado do teste do Safari no iPhone.
