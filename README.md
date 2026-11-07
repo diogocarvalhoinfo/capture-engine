@@ -161,7 +161,7 @@ A versão publicada no GitHub Pages (cartão «Abrir o site», no topo) funciona
 - **Ctrl+V** cola qualquer coisa da área de transferência: imagem, arquivo ou texto
 - **Arrastar e soltar** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
-- O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico
+- O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico. No telefone e no tablet, ele se chama «Nova sessão» e tem o ícone de um documento com +
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
 - A aplicação grava a cada 5 segundos. Fechar o navegador antes disso perde as últimas alterações
 
@@ -330,7 +330,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 **Comportamento ao abrir:**
 Cada abertura do Capture Engine começa com uma sessão nova em branco. A interface abre limpa — sem dados de sessões anteriores. Sessões anteriores ficam guardadas no histórico.
 
-No telefone e no tablet, recarregar a mesma aba reabre a sessão que estava aberta nela. É o que acontece quando o Safari do iPhone recarrega uma aba deixada em segundo plano. Uma aba nova e o botão «Atualizar» começam uma sessão nova.
+No telefone e no tablet é diferente: a ferramenta volta à última sessão, como os apps de um telefone. Vale depois de trocar de app, de fechar o Safari ou numa aba nova. Para começar outra, toque em «Nova sessão», no topo; a anterior fica no histórico.
 
 **Quando a sessão aparece no histórico:**
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.
@@ -537,7 +537,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Navegação privada** | Em alguns navegadores, a navegação privada não deixa gravar as capturas. Elas ficam na aba aberta, a barra de estado diz «Só nesta aba», e um aviso vermelho aparece no topo. Exporte em PDF ou ZIP antes de fechar a aba. |
-| **Aba privada recarregada no iPhone** | O Safari do iPhone recarrega uma aba que ficou um tempo em segundo plano. Numa aba normal, a ferramenta reabre a sessão dessa aba, com tudo. Numa aba privada, as capturas não foram gravadas e se perdem: exporte antes de sair do Safari. |
+| **Aba privada no iPhone** | Numa aba privada, as capturas não são gravadas. Se o Safari recarregar ou fechar a aba, elas se perdem: exporte antes de sair do Safari. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
 | **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |

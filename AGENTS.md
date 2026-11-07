@@ -408,7 +408,7 @@ Pense nas sessões como documentos num processador de texto:
 - **Histórico** = outros documentos salvos
 - **Pristine** = estado de "documento novo" — em branco
 
-Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova. A exceção é a mesma aba recarregada numa tela de toque, que reabre a sessão dela (D-0111).
+Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova. A exceção é a tela de toque, onde a ferramenta volta à última sessão, como os apps de um telefone, e «Nova sessão» começa outra (D-0113).
 
 ### Fluxo de estados
 
@@ -430,7 +430,7 @@ init() → interface em branco (Pristine State)
 
 | Evento | Comportamento obrigatório |
 |---|---|
-| **Abrir a aplicação** | `init()` → interface em branco (Pristine State). Nunca reutilizar sessão existente, com uma exceção: numa tela de toque, a mesma aba recarregada reabre a sessão dela, por `reopenTabSession()` (D-0111). |
+| **Abrir a aplicação** | `init()` → interface em branco (Pristine State). Nunca reutilizar sessão existente, com uma exceção: numa tela de toque, o `reopenLastSession()` volta à última sessão, se ela ainda existe (D-0113). |
 | **Primeira interação** | `ensureSession()` confirma e registra a sessão; `renderSbSessions()` faz-a aparecer no histórico. |
 | **Digitar em «Quem» ou «O que»** | `isDirty=true` → `triggerSave()` **imediato** (não aguarda os 5 segundos). |
 | **Apagar sessão NÃO ativa** | Apenas `renderSbSessions()`. A sessão ativa e o DOM ficam intactos. |
@@ -626,9 +626,7 @@ O sistema utiliza localStorage para preferências que devem sobreviver a diferen
 - `hl-solid`: a escolha do marca-texto. `'1'` é «Sólido»; `'0'` ou `null` é «Translúcido», o padrão (D-0095).
 - `fill-rect` e `fill-circle`: a escolha do retângulo e do círculo. `'1'` é «Preenchido»; `'0'` ou `null` é «Contorno», o padrão (D-0102).
 - *Histórico:* A chave `ec_pending_session` foi utilizada em versões antigas e removida na V17.
-
-No `sessionStorage`, que pertence à aba e sobrevive a um recarregamento, fica uma chave só:
-- `ce-tab-session`: o id da sessão desta aba. Numa tela de toque, a aba recarregada reabre essa sessão; o botão «Atualizar» apaga a chave antes de recarregar (D-0111).
+- `ce-last-session`: o id da última sessão aberta. Numa tela de toque, a ferramenta volta a ela ao abrir; «Nova sessão» apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
 Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB apaga os dados reais das sessões.
 
 ### Auto-save e purge
@@ -658,8 +656,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `createSession()` | `async () → void` | Cria sessão nova em branco e atualiza `sessId`/`sessObj` | Apenas em `ensureSession()` |
 | `ensureSession()` | `async () → void` | Confirma sessão se não existe; usa mutex `_ensurePromise` | Antes de qualquer captura (chamada por `captureImg`/`captureDoc`) |
 | `loadSession(id)` | `async (string) → void` | Carrega sessão do IndexedDB para memória e renderiza | Ao navegar para sessão existente |
-| `tabSessionKeep(id)` | `string\|null → void` | Guarda no `sessionStorage` (`ce-tab-session`) a sessão desta aba; `null` a esquece (D-0111) | Em `createSession()` e `loadSession()`; com `null`, no botão «Atualizar» |
-| `reopenTabSession()` | `async () → void` | Numa tela de toque (`hover: none`), reabre a sessão guardada pela aba, se ela ainda existe (D-0111) | No `init()`, depois do `boot()` |
+| `lastSessionKeep(id)` | `string\|null → void` | Guarda no `localStorage` (`ce-last-session`) a última sessão aberta; `null` a esquece (D-0113) | Em `createSession()` e `loadSession()`; com `null`, no botão «Atualizar», que no toque se chama «Nova sessão» |
+| `reopenLastSession()` | `async () → void` | Numa tela de toque (`hover: none`), dá ao botão o nome «Nova sessão» e reabre a última sessão, se ela ainda existe (D-0113) | No `init()`, depois do `boot()` |
 | `saveSession()` | `async () → void` | Persiste sessão atual no IndexedDB | Pelo auto-save e `triggerSave()` |
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
 | `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
@@ -1514,8 +1512,9 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0108 | **O ícone da ferramenta mostra a escolha** | O retângulo e o círculo mostram a forma cheia com «Preenchido»; o marca-texto, a ponta cheia com «Sólido»; o T do Texto fica mais grosso com «Negrito» e inclinado com «Itálico», também o de um texto selecionado; o desenho livre e a seta mostram a espessura. «Translúcido» tem o ícone de xadrez, o desenho comum da transparência. Aceso, o T fica escuro como as outras ferramentas. Origem: pedido do dono, 2026-11-06. |
 | D-0109 | **No telefone, as ferramentas, o 90° e o Recortar numa linha só** | Em telas de até 480 px, a primeira linha do editor não quebra: as margens dos lados passam de 36 a 12 px e o vão de 6 a 4 px, e os 9 botões de 36 px cabem em 393 px. Numa tela mais estreita, os botões encolhem até 30 px, em vez de mandar o 90° e o Recortar para uma linha própria. No computador, nada muda. Origem: pedido do dono, 2026-11-07, depois do teste no iPhone. |
 | D-0110 | **(Substituída pela D-0112) O ✕ do visualizador com desenho por salvar: some no toque, fica com o mouse** | Numa tela de toque, o ✕ some enquanto o desenho não foi salvo, porque um dedo fecha sem querer. Com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, como o Esc e o clique fora da foto, sem fechar. Origem: pedido do dono, 2026-11-07. |
-| D-0111 | **No toque, a aba recarregada reabre a sessão dela** | O Safari do iPhone recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia (F-0109). O id da sessão da aba fica no `sessionStorage`, que pertence à aba e sobrevive ao recarregamento. Numa tela de toque, o `init()` reabre essa sessão. Uma aba nova e o botão «Atualizar» continuam a começar uma sessão nova, e no computador o recarregamento também. Origem: pedido do dono, 2026-11-07. |
+| D-0111 | **(Substituída pela D-0113) No toque, a aba recarregada reabre a sessão dela** | O Safari do iPhone recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia (F-0109). O id da sessão da aba fica no `sessionStorage`, que pertence à aba e sobrevive ao recarregamento. Numa tela de toque, o `init()` reabre essa sessão. Uma aba nova e o botão «Atualizar» continuam a começar uma sessão nova, e no computador o recarregamento também. Origem: pedido do dono, 2026-11-07. |
 | D-0112 | **O ✕ do visualizador sempre à vista** | Em qualquer tela, o ✕ fica à vista enquanto se edita. Com desenho por salvar, o clique ou o toque nele não fecha: o Cancelar e o Salvar pulsam, como com o Esc e com o clique fora da foto. Substitui a D-0110, em que o ✕ sumia numa tela de toque. **Motivo:** no telefone, o ✕ que sumia parecia um defeito. Origem: pedido do dono, 2026-11-07. |
+| D-0113 | **No toque, a ferramenta volta à última sessão** | Numa tela de toque, abrir o site volta à última sessão aberta, a qualquer hora, também depois de fechar o Safari ou numa aba nova, como os apps de um telefone. O id fica no `localStorage` (`ce-last-session`). O botão «Atualizar» passa a chamar-se «Nova sessão», com o ícone de um documento com +, e começa outra sessão. No computador, cada abertura continua a começar uma sessão nova, porque cada abertura é um caso novo, às vezes num computador partilhado. Substitui a D-0111, que usava o `sessionStorage`: o iOS apaga-o ao fechar o Safari, e a sessão não voltava (visto pelo dono no iPhone). Origem: pedido do dono, 2026-11-07, que escolheu o comportamento dos apps do Google, da Microsoft e da Apple em vez de um tempo-limite. |
 
 ### Pendentes
 
