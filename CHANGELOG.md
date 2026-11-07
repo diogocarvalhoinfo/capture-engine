@@ -11,9 +11,15 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Cartões do topo do README:** sem borda, com o fundo na cor da página do GitHub (branco no claro, `#0d1117` no escuro), e o conteúdo no meio do cartão. Os dois ficam num parágrafo só, separados por `<br>`, e o espaço acima, entre e abaixo deles passa a ser o mesmo, cerca de 52 px. Gerados com o `cartoes.py` do método 6.0.0. **Motivo:** o cartão escolhe o tema pelo sistema, e não pelo GitHub. Com o GitHub claro e o sistema escuro, o cartão sem fundo ficava ilegível.
 - **Safari no iPhone** em «Requisitos»: testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado da 28.7.0. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. A cópia do Export Admin saiu igual ao arquivo publicado, byte a byte. O visualizador e o editor falham no toque (F-0107 e F-0108). A matriz de compatibilidade, o Disaster Recovery e as limitações dizem o resultado. Fecha a **F-0073**. O Safari do Mac continua sem teste.
 
+### Corrigido
+
+- **F-0107: a pinça no visualizador do iPhone.** Dois dedos ampliam e reduzem a imagem, de 20 % a 1000 %, a partir do ponto entre eles, e a página fica parada. Antes, o Safari do iPhone, que ignora o `user-scalable=no`, ampliava a página inteira, e o ✕ saía da tela. No editor, os dois dedos só impedem a página de ampliar.
+- **F-0108: o ✕ e o «Editar» fora da tela do iPhone.** O visualizador, o modal de texto e o Visual Builder passam a medir a altura em `dvh`, a área visível. No Safari do iPhone, o `vh` conta a tela sem as barras do navegador: o visualizador ficava 140 px mais alto que a área visível, com o ✕ acima dela e o «Editar» abaixo. Medido no WebKit com a tela do iPhone 14 Pro; no Edge, no Firefox e no WebKit do computador, os tamanhos não mudam.
+- Os dois, a conferir no iPhone de verdade, no site publicado.
+
 ### Pendentes
 
-- **F-0107** e **F-0108,** o visualizador e o editor no toque do iPhone, e **F-0109,** a sessão nova quando o iPhone recarrega a aba: em «Pendentes», no `AGENTS.md`.
+- **F-0109,** a sessão nova quando o iPhone recarrega a aba: em «Pendentes», no `AGENTS.md`.
 
 ## [28.7.0] - 2026-11-06
 
