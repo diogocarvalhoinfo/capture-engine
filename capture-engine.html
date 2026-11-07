@@ -2914,21 +2914,8 @@
       }
     }
 
-    #btn-refresh .ic-new {
-      display: none;
-    }
-
     /* Mobile overrides for touch devices */
     @media (hover: none) {
-      /* «Nova sessão» on a touch screen, where the last session comes back on its own (D-0113) */
-      #btn-refresh .ic-reload {
-        display: none;
-      }
-
-      #btn-refresh .ic-new {
-        display: block;
-      }
-
       #img-modal-ann-actions .ann-row {
         width: 100%;
         justify-content: center;
@@ -2991,15 +2978,9 @@
       </button>
       <!-- ADMIN_BUTTONS_END -->
       <button class="action-btn" id="btn-refresh" title="Atualizar">
-        <svg class="ic-reload" viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24">
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-        </svg>
-        <svg class="ic-new" viewBox="0 0 24 24">
-          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-          <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-          <path d="M9 15h6" />
-          <path d="M12 18v-6" />
         </svg>
       </button>
       <button class="action-btn" id="btn-history" title="Histórico">
@@ -3848,12 +3829,12 @@
       }
       /* On a touch screen the tool goes back to the last session, as the apps of a phone do: the iPhone closes Safari
          or reloads a tab left in the background, and the reopening started an empty session (F-0109). The id of the last
-         session lives in localStorage; «Nova sessão» forgets it and starts another. On a computer each opening still
+         session lives in localStorage; the «Atualizar» button forgets it and starts another. On a computer each opening still
          starts a new session, because each opening is a new case, sometimes on a shared computer (D-0113). */
       const LAST_SESSION_KEY = 'ce-last-session';
       const touchScreen = () => !!window.matchMedia && window.matchMedia('(hover: none)').matches;
       function lastSessionKeep(id) { try { if (id) localStorage.setItem(LAST_SESSION_KEY, id); else localStorage.removeItem(LAST_SESSION_KEY) } catch (e) { } }
-      async function reopenLastSession() { if (!touchScreen()) return; const b = $('btn-refresh'); if (b) { b.title = 'Nova sessão'; b.setAttribute('aria-label', 'Nova sessão') } let id = null; try { id = localStorage.getItem(LAST_SESSION_KEY) } catch (e) { } if (!id) return; let s = null; try { s = await idbGet('sessions', id) } catch (e) { } if (!s) return; await loadSession(id); renderSbSessions(); SysLogger.info('Última sessão reaberta: ' + id) }
+      async function reopenLastSession() { if (!touchScreen()) return; let id = null; try { id = localStorage.getItem(LAST_SESSION_KEY) } catch (e) { } if (!id) return; let s = null; try { s = await idbGet('sessions', id) } catch (e) { } if (!s) return; await loadSession(id); renderSbSessions(); SysLogger.info('Última sessão reaberta: ' + id) }
       async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; lastSessionKeep(sessId); SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
       async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }

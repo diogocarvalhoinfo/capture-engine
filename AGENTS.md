@@ -408,7 +408,7 @@ Pense nas sessões como documentos num processador de texto:
 - **Histórico** = outros documentos salvos
 - **Pristine** = estado de "documento novo" — em branco
 
-Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova. A exceção é a tela de toque, onde a ferramenta volta à última sessão, como os apps de um telefone, e «Nova sessão» começa outra (D-0113).
+Ao abrir a aplicação, começa sempre com um documento novo. O histórico fica acessível mas a sessão ativa é sempre nova. A exceção é a tela de toque, onde a ferramenta volta à última sessão, como os apps de um telefone, e o botão «Atualizar» começa outra (D-0113).
 
 ### Fluxo de estados
 
@@ -626,7 +626,7 @@ O sistema utiliza localStorage para preferências que devem sobreviver a diferen
 - `hl-solid`: a escolha do marca-texto. `'1'` é «Sólido»; `'0'` ou `null` é «Translúcido», o padrão (D-0095).
 - `fill-rect` e `fill-circle`: a escolha do retângulo e do círculo. `'1'` é «Preenchido»; `'0'` ou `null` é «Contorno», o padrão (D-0102).
 - *Histórico:* A chave `ec_pending_session` foi utilizada em versões antigas e removida na V17.
-- `ce-last-session`: o id da última sessão aberta. Numa tela de toque, a ferramenta volta a ela ao abrir; «Nova sessão» apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
+- `ce-last-session`: o id da última sessão aberta. Numa tela de toque, a ferramenta volta a ela ao abrir; o botão «Atualizar» apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
 Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB apaga os dados reais das sessões.
 
 ### Auto-save e purge
@@ -656,8 +656,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `createSession()` | `async () → void` | Cria sessão nova em branco e atualiza `sessId`/`sessObj` | Apenas em `ensureSession()` |
 | `ensureSession()` | `async () → void` | Confirma sessão se não existe; usa mutex `_ensurePromise` | Antes de qualquer captura (chamada por `captureImg`/`captureDoc`) |
 | `loadSession(id)` | `async (string) → void` | Carrega sessão do IndexedDB para memória e renderiza | Ao navegar para sessão existente |
-| `lastSessionKeep(id)` | `string\|null → void` | Guarda no `localStorage` (`ce-last-session`) a última sessão aberta; `null` a esquece (D-0113) | Em `createSession()` e `loadSession()`; com `null`, no botão «Atualizar», que no toque se chama «Nova sessão» |
-| `reopenLastSession()` | `async () → void` | Numa tela de toque (`hover: none`), dá ao botão o nome «Nova sessão» e reabre a última sessão, se ela ainda existe (D-0113) | No `init()`, depois do `boot()` |
+| `lastSessionKeep(id)` | `string\|null → void` | Guarda no `localStorage` (`ce-last-session`) a última sessão aberta; `null` a esquece (D-0113) | Em `createSession()` e `loadSession()`; com `null`, no botão «Atualizar» |
+| `reopenLastSession()` | `async () → void` | Numa tela de toque (`hover: none`), reabre a última sessão, se ela ainda existe (D-0113) | No `init()`, depois do `boot()` |
 | `saveSession()` | `async () → void` | Persiste sessão atual no IndexedDB | Pelo auto-save e `triggerSave()` |
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
 | `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
@@ -1514,7 +1514,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0110 | **(Substituída pela D-0112) O ✕ do visualizador com desenho por salvar: some no toque, fica com o mouse** | Numa tela de toque, o ✕ some enquanto o desenho não foi salvo, porque um dedo fecha sem querer. Com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, como o Esc e o clique fora da foto, sem fechar. Origem: pedido do dono, 2026-11-07. |
 | D-0111 | **(Substituída pela D-0113) No toque, a aba recarregada reabre a sessão dela** | O Safari do iPhone recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia (F-0109). O id da sessão da aba fica no `sessionStorage`, que pertence à aba e sobrevive ao recarregamento. Numa tela de toque, o `init()` reabre essa sessão. Uma aba nova e o botão «Atualizar» continuam a começar uma sessão nova, e no computador o recarregamento também. Origem: pedido do dono, 2026-11-07. |
 | D-0112 | **O ✕ do visualizador sempre à vista** | Em qualquer tela, o ✕ fica à vista enquanto se edita. Com desenho por salvar, o clique ou o toque nele não fecha: o Cancelar e o Salvar pulsam, como com o Esc e com o clique fora da foto. Substitui a D-0110, em que o ✕ sumia numa tela de toque. **Motivo:** no telefone, o ✕ que sumia parecia um defeito. Origem: pedido do dono, 2026-11-07. |
-| D-0113 | **No toque, a ferramenta volta à última sessão** | Numa tela de toque, abrir o site volta à última sessão aberta, a qualquer hora, também depois de fechar o Safari ou numa aba nova, como os apps de um telefone. O id fica no `localStorage` (`ce-last-session`). O botão «Atualizar» passa a chamar-se «Nova sessão», com o ícone de um documento com +, e começa outra sessão. No computador, cada abertura continua a começar uma sessão nova, porque cada abertura é um caso novo, às vezes num computador partilhado. Substitui a D-0111, que usava o `sessionStorage`: o iOS apaga-o ao fechar o Safari, e a sessão não voltava (visto pelo dono no iPhone). Origem: pedido do dono, 2026-11-07, que escolheu o comportamento dos apps do Google, da Microsoft e da Apple em vez de um tempo-limite. |
+| D-0113 | **No toque, a ferramenta volta à última sessão** | Numa tela de toque, abrir o site volta à última sessão aberta, a qualquer hora, também depois de fechar o Safari ou numa aba nova, como os apps de um telefone. O id fica no `localStorage` (`ce-last-session`). O botão «Atualizar», com a mesma seta circular do computador, começa outra sessão. Um ícone de documento com + foi testado e recusado pelo dono: a seta é a que quem usa no computador já conhece. No computador, cada abertura continua a começar uma sessão nova, porque cada abertura é um caso novo, às vezes num computador partilhado. Substitui a D-0111, que usava o `sessionStorage`: o iOS apaga-o ao fechar o Safari, e a sessão não voltava (visto pelo dono no iPhone). Origem: pedido do dono, 2026-11-07, que escolheu o comportamento dos apps do Google, da Microsoft e da Apple em vez de um tempo-limite. |
 
 ### Pendentes
 
