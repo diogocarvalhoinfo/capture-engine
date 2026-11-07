@@ -161,7 +161,7 @@ A versão publicada no GitHub Pages (cartão «Abrir o site», no topo) funciona
 - **Ctrl+V** cola qualquer coisa da área de transferência: imagem, arquivo ou texto
 - **Arrastar e soltar** funciona: arraste diretamente da Área de Trabalho ou do explorador de arquivos
 - O histórico de sessões anteriores está no ícone de relógio (barra lateral direita)
-- O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico. No telefone e no tablet, ele se chama «Nova sessão» e tem o ícone de um documento com +
+- O botão «Atualizar», no topo, recarrega a página e começa uma sessão nova; a anterior fica no histórico. Também no telefone e no tablet, onde abrir o site volta à última sessão
 - Um item removido vai para a barra «Removidos», no fundo da tela, e pode ser restaurado
 - A aplicação grava a cada 5 segundos. Fechar o navegador antes disso perde as últimas alterações
 
@@ -330,7 +330,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 **Comportamento ao abrir:**
 Cada abertura do Capture Engine começa com uma sessão nova em branco. A interface abre limpa — sem dados de sessões anteriores. Sessões anteriores ficam guardadas no histórico.
 
-No telefone e no tablet é diferente: a ferramenta volta à última sessão, como os apps de um telefone. Vale depois de trocar de app, de fechar o Safari ou numa aba nova. Para começar outra, toque em «Nova sessão», no topo; a anterior fica no histórico.
+No telefone e no tablet é diferente: a ferramenta volta à última sessão, como os apps de um telefone. Vale depois de trocar de app, de fechar o Safari ou numa aba nova. Para começar outra, toque em «Atualizar» (a seta circular), no topo; a anterior fica no histórico.
 
 **Quando a sessão aparece no histórico:**
 A sessão nova só aparece no histórico após a primeira interação real (colar uma imagem, escrever o nome do usuário, arrastar um documento). Sessões sem interação não são guardadas.

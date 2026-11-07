@@ -12,7 +12,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
-- **F-0109: no telefone, a ferramenta volta à última sessão (D-0113).** O iPhone fecha o Safari ou recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia; a anterior ficava no Histórico. Agora, numa tela de toque, abrir o site volta à última sessão, a qualquer hora, como os apps de um telefone. O botão «Atualizar» passa a chamar-se «Nova sessão», com o ícone de um documento com +, e começa outra. No computador, cada abertura continua a começar uma sessão nova. Testado no Edge com a tela de um telefone e no computador; falta conferir no iPhone.
+- **F-0109: no telefone, a ferramenta volta à última sessão (D-0113).** O iPhone fecha o Safari ou recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia; a anterior ficava no Histórico. Agora, numa tela de toque, abrir o site volta à última sessão, a qualquer hora, como os apps de um telefone, e o botão «Atualizar» começa outra. No computador, cada abertura continua a começar uma sessão nova. Conferido pelo dono no iPhone, em 2026-11-07: a sessão volta depois de fechar o Safari, e o ✕ fica à vista no editor.
 
 ## [28.7.1] - 2026-11-07
 
