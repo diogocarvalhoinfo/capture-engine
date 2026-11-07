@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.7.2] - 2026-11-07
+
+Patch: no telefone, a ferramenta volta à última sessão, e o ✕ do visualizador fica sempre à vista, com o aviso quando há desenho por salvar.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): o arquivo exportado por quem mantém o projeto, já na 28.7.2, aberto por `file://` no Edge. Sem erros no console, sem os botões de administrador, a imagem entra na grade, a sessão volta no Histórico depois de recarregar, e uma segunda aba funciona.
 
 ### Modificado
 
