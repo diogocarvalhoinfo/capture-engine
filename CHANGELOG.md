@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O ✕ do visualizador com desenho por salvar (D-0110):** com o mouse, o ✕ fica à vista, e o clique nele faz Salvar e Cancelar pulsarem, sem fechar a foto. Numa tela de toque, ele continua a sumir, porque um dedo fecha sem querer.
 
+### Corrigido
+
+- **F-0109: a aba recarregada no telefone abre a sessão dela (D-0111).** O Safari do iPhone recarrega uma aba deixada em segundo plano, e a ferramenta abria uma sessão nova, vazia. Agora, numa tela de toque, a mesma aba reabre a sessão que estava aberta nela. Uma aba nova e o botão «Atualizar» continuam a começar uma sessão nova; no computador, nada muda. Testado no Edge com a tela de um telefone; falta conferir no iPhone.
+
 ## [28.7.1] - 2026-11-07
 
 Patch: o visualizador e o editor no toque do iPhone, as ferramentas do editor numa linha no telefone, os cartões do README com o fundo da página e o resultado do teste do Safari no iPhone.
