@@ -635,7 +635,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
   - O IndexedDB do Firefox fica no perfil dele: os dados criados no Firefox não aparecem no Chrome, nem o contrário
-- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. No toque, o visualizador e o editor ainda falham: o gesto de pinça amplia a página inteira, e o «Editar» e o ✕ ficam escondidos
+- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. Na 28.7.0, o visualizador e o editor falhavam no toque: o gesto de pinça ampliava a página inteira, e o «Editar» e o ✕ ficavam escondidos. A correção está no site publicado, a conferir no iPhone
   - No iPhone, use o site: o arquivo baixado abre no app Arquivos só como pré-visualização, sem funcionar
 - **Safari no Mac** — não testado. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine
 - Sem internet, sem servidor, sem instalação
@@ -650,7 +650,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 | **Chrome** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Edge** | 148, Windows 11 | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
 | **Firefox** | 151.0.4, Windows | ✅ Verificado | ✅ Verificado | ✅ Verificado | ✅ Verificado |
-| **Safari** | iOS 26.5, iPhone 14 Pro | ⚠️ Parcial: o visualizador e o editor falham no toque | ⚠️ Não se aplica no iPhone; no Mac, não testado | ✅ Verificado no site; no Mac, pode falhar (CORS) | ✅ Verificado |
+| **Safari** | iOS 26.5, iPhone 14 Pro | ⚠️ Parcial: na 28.7.0, o visualizador e o editor falham no toque | ⚠️ Não se aplica no iPhone; no Mac, não testado | ✅ Verificado no site; no Mac, pode falhar (CORS) | ✅ Verificado |
 
 **Legenda:** ✅ verificado por teste manual · ⚠️ declarado ou com ressalvas
 
