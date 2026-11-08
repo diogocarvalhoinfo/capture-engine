@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O PDF abre no visualizador (D-0130):** antes, um PDF em Documentos mostrava só «Faça download para visualizar». Agora «Abrir», o clique e o Enter mostram o PDF dentro da moldura do visualizador, com o leitor do próprio navegador: as páginas, o zoom e o texto selecionável. O menu do clique direito ganhou «Abrir» no PDF. Testado no Chrome em 1536 × 777, nos temas claro e escuro, e em 375 × 812: sem erros no console, e o endereço do PDF é liberado ao fechar. No iPhone, o Safari pode mostrar só a primeira página; isso não foi testado, e está no README, em «Limitações conhecidas».
 
+### Corrigido
+
+- **O número de páginas do PDF vem da árvore de páginas:** um leitor de PDF em JavaScript, sem o pdf.js, lê a tabela de objetos do arquivo, também a comprimida, e conta as páginas. Antes, o número vinha do primeiro `/Count` visível no texto do arquivo. Esse jeito dava 0 quando a árvore de páginas estava comprimida, 15 num PDF de 5 páginas com o `/Count` escrito como referência («15 0 R»), e o número antigo depois de uma atualização incremental. Testado no Chrome com oito PDFs: os do Chrome, do ReportLab, do Microsoft Print to PDF e da Adobe PDF Library, um com objetos comprimidos, um com atualização incremental e um com o `startxref` errado. Todos deram o número certo.
+
 ## [29.0.0] - 2026-11-08
 
 Major: o banco do navegador passa à versão 3 (D-0127), e uma cópia anterior à 29 não abre mais as sessões no mesmo navegador. Inclui a lixeira, «Eliminar sessão», a informação no título, a vírgula nos tamanhos, o Texto «Com fundo», o − e o + depois das ferramentas, um visualizador para tudo, o editor de texto, a lista dos arquivos compactados, marcar item a item, o tipo em cor e o menu do clique direito.
