@@ -963,6 +963,34 @@
       border-radius: var(--radius-md)
     }
 
+    .t-pdf {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--spacing) * 2);
+      background: var(--color-background);
+      pointer-events: none
+    }
+
+    .t-pdf-icon {
+      width: 40px;
+      height: 40px;
+      fill: none;
+      stroke: var(--color-file-pdf);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .t-pdf-info {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-muted-foreground)
+    }
+
     .t-overlay {
       position: absolute;
       inset: 0;
@@ -3489,7 +3517,7 @@
               <circle cx="8.5" cy="8.5" r="1.5" />
               <polyline points="21 15 16 10 5 21" />
             </svg>
-            <span class="blk-hdr-title">Imagens</span>
+            <span class="blk-hdr-title" id="img-title">Imagens</span>
             <span class="count-badge zero" id="img-badge">0</span>
           </div>
           <div class="drop-zone" id="img-zone">
@@ -4136,7 +4164,7 @@
       /* Sizes with a decimal comma, as in Portuguese, and a space that does not break between the number and the unit (D-0120) */
       function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
-      const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
+      const IMG_EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
       const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
       /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
@@ -4160,7 +4188,7 @@
         const elT = $('status-time');
         const elD = $('status-details');
         if (!elT || !elD) return;
-        const ni = images.length, nd = docs.length;
+        const np = images.filter(i => i.kind === 'pdf').length, ni = images.length - np, nd = docs.length;
         let totalBytes = 0;
         images.forEach(i => totalBytes += i.blob.size);
         docs.forEach(d => totalBytes += d.size || d.blob?.size || 0);
@@ -4173,10 +4201,11 @@
         if (images.some(i => memOnly.has(i)) || docs.some(d => memOnly.has(d))) timeStr = 'S\u00f3 nesta aba';
         elT.textContent = timeStr;
         elD.innerHTML = '';
-        if (ni || nd) {
+        if (ni || np || nd) {
           function mkPart(val, label) { const s = document.createElement('span'); s.textContent = val; const f = document.createTextNode('\u00a0' + label); const wrap = document.createElement('span'); wrap.appendChild(s); wrap.appendChild(f); return wrap }
           const parts = [];
           if (ni) parts.push(mkPart(ni, 'img' + (ni > 1 ? 's' : '')));
+          if (np) parts.push(mkPart(np, 'PDF' + (np > 1 ? 's' : '')));
           if (nd) parts.push(mkPart(nd, 'doc' + (nd > 1 ? 's' : '')));
           parts.push(mkPart(fmtSize(totalBytes), ''));
           parts.forEach((p, i) => { elD.appendChild(p); if (i < parts.length - 1) { const dot = document.createTextNode(' \u00b7 '); elD.appendChild(dot) } });
@@ -4252,19 +4281,21 @@
       async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
-      function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
+      function updateCounters() { $('img-title').textContent = images.some(x => x.kind === 'pdf') ? 'Imagens e PDF' : 'Imagens'; const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
       let zipModeActive = false;
       function updateBtns() { if (zipModeActive && images.length === 0) resetZipMode(); if (zipModeActive) return; const hi = images.length > 0, hd = docs.length > 0; $('btn-pdf').disabled = (!hi || hd); $('btn-zip').disabled = !(hi || hd) }
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); if (o.kind === 'pdf') { URL.revokeObjectURL(url); pdfFace(el, o) } else { const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url) } const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
+      /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label and «PDF · N páginas» */
+      function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
       /* ═══ RENDER DOC ═══ */
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
-      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
+      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; if (r.kind === 'pdf') pdfFace(el, r); grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
 
 
       /* ═══ IMAGE CAPTURE ═══ */
@@ -4279,7 +4310,7 @@
       /* The extension from the first bytes, when the browser gives no type (HEIC on Windows) */
       async function sniffExt(blob) { const h = new Uint8Array(await blob.slice(0, 12).arrayBuffer()); const t = String.fromCharCode(...h); if (t.slice(4, 8) === 'ftyp') { const brand = t.slice(8, 12); return /^(heic|heix|hevc|mif1|msf1)$/.test(brand) ? 'heic' : brand === 'avif' ? 'avif' : 'bin' } if (t.startsWith('II*\x00') || t.startsWith('MM\x00*')) return 'tif'; return 'bin' }
       /* A session saved before this check can hold such an image: before the PDF, it moves to Documents */
-      async function moveUndrawableToDocs() { const bad = []; for (const o of images) if (!(await canDrawImage(o.blob))) bad.push(o); for (const o of bad) { images.splice(images.indexOf(o), 1); await idbDel('images', o.id); const el = document.querySelector(`.t-item[data-id="${o.id}"]`); if (el) el.remove(); const ext = (o.blob.type.split('/')[1] || await sniffExt(o.blob)).replace(/[^a-z0-9]/gi, ''); await captureDoc(o.blob, `${o.label}.${ext}`, o.blob.type) } if (!images.length) $('img-empty').style.display = ''; if (bad.length) { scheduleUIUpdate(); isDirty = true; showNotice(`${bad.length === 1 ? 'Uma imagem' : bad.length + ' imagens'} num formato que o navegador não abre ${bad.length === 1 ? 'passou' : 'passaram'} para Documentos, sem alterações. O PDF só leva as imagens que o navegador abre; o ZIP leva o arquivo original.`) } return bad.length }
+      async function moveUndrawableToDocs() { const bad = []; for (const o of images) if (o.kind !== 'pdf' && !(await canDrawImage(o.blob))) bad.push(o); for (const o of bad) { images.splice(images.indexOf(o), 1); await idbDel('images', o.id); const el = document.querySelector(`.t-item[data-id="${o.id}"]`); if (el) el.remove(); const ext = (o.blob.type.split('/')[1] || await sniffExt(o.blob)).replace(/[^a-z0-9]/gi, ''); await captureDoc(o.blob, `${o.label}.${ext}`, o.blob.type) } if (!images.length) $('img-empty').style.display = ''; if (bad.length) { scheduleUIUpdate(); isDirty = true; showNotice(`${bad.length === 1 ? 'Uma imagem' : bad.length + ' imagens'} num formato que o navegador não abre ${bad.length === 1 ? 'passou' : 'passaram'} para Documentos, sem alterações. O PDF só leva as imagens que o navegador abre; o ZIP leva o arquivo original.`) } return bad.length }
       /* After an export, the button stays green until the next interaction on the page: a click, a key, paste or drop.
          Switching to another window and back is not an interaction, so the person still sees what was done last. */
       function holdSuccess(reset) { const evs = ['pointerdown', 'keydown', 'paste', 'drop']; const mods = ['Alt', 'Control', 'Shift', 'Meta', 'Tab', 'OS']; const done = e => { if (e.type === 'keydown' && mods.includes(e.key)) return; evs.forEach(t => document.removeEventListener(t, done, true)); reset() }; setTimeout(() => evs.forEach(t => document.addEventListener(t, done, true)), 0) }
@@ -4304,6 +4335,7 @@
       window.openImgModal = function (id, trash) {
         const arr = trash ? removed : images, o = arr.find(x => x.id === id);
         if (!o) return;
+        if (o.kind === 'pdf') { window.openTextModal(id, trash); return } // a PDF in Imagens opens in the document viewer (B6.6)
         modalIsTrash = trash;
         modalItemId = id;
         annDeactivate();
@@ -4327,7 +4359,7 @@
         $('img-modal-overlay').classList.add('open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
-        const _navShow = (trash ? removed : images).length > 1;
+        const _navShow = (trash ? removed : images).filter(x => x.kind !== 'pdf').length > 1;
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navShow ? 'flex' : 'none'; });
       };
 
@@ -4346,7 +4378,7 @@
       window.imgModalNav = function (dir) {
         if (typeof hasUnsavedAnnotations === 'function' && hasUnsavedAnnotations()) { triggerUnsavedAlert(); return; }
         if (!modalItemId) return;
-        const arr = modalIsTrash ? removed : images;
+        const arr = (modalIsTrash ? removed : images).filter(x => x.kind !== 'pdf');
         if (arr.length <= 1) return;
         const idx = arr.findIndex(x => x.id === modalItemId);
         if (idx < 0) return;
@@ -4586,6 +4618,13 @@
       /* Duplicar: the copy right below the original, named by the rule of the app (contrato.pdf gives contrato-1.pdf) */
       async function placeAfter(arr, copy, orig, store, sel) { arr.splice(arr.indexOf(copy), 1); arr.splice(arr.indexOf(orig) + 1, 0, copy); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const a = document.querySelector(`${sel}[data-id="${orig.id}"]`), b = document.querySelector(`${sel}[data-id="${copy.id}"]`); if (a && b) a.after(b) }
       async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; let n = o.label, k; do { const m = n.match(/-(\d+)$/); n = m ? n.slice(0, -m[0].length) + '-' + (+m[1] + 1) : n + '-1'; k = n.toLowerCase() } while (images.some(x => x !== c && x.label.toLowerCase() === k) || removed.some(x => x.label.toLowerCase() === k)); c.label = n; const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
+      /* A PDF in Imagens (B6.6): a record of the images store with kind: 'pdf', the name without «.pdf» as the caption, the bytes as they are */
+      async function addPdfImage(blob, label, at) { await ensureSession(); let lb = label || 'documento'; const taken = x => x.label.toLowerCase() === lb.toLowerCase(); while (images.some(taken) || removed.some(taken)) { const m = lb.match(/-(\d+)$/); lb = m ? lb.slice(0, -m[0].length) + '-' + (+m[1] + 1) : lb + '-1' } const o = { id: genId('img'), sessionId: sessId, blob: blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' }), label: lb, order: nextOrder(images), addedAt: Date.now(), kind: 'pdf' }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); if (at !== undefined) await placeAt(images, o, at, 'images', '.t-item'); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); return o }
+      async function dupPdfImg(o) { const c = await addPdfImage(o.blob, o.label); await placeAfter(images, c, o, 'images', '.t-item') }
+      /* Puts a record at a place of its list, on the screen and in IndexedDB */
+      async function placeAt(arr, o, at, store, sel) { arr.splice(arr.indexOf(o), 1); arr.splice(Math.min(at, arr.length), 0, o); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const el = document.querySelector(`${sel}[data-id="${o.id}"]`), nx = arr[arr.indexOf(o) + 1], ne = nx && document.querySelector(`${sel}[data-id="${nx.id}"]`); if (el && ne) ne.before(el) }
+      /* Dragging a PDF from Documentos to Imagens moves it there, and back (B6.6); the bytes do not change, only the store */
+      async function movePdfAcross(id, fromImg, at) { marked.delete(id); markSync(); if (fromImg) { const o = images.find(x => x.id === id); if (!o) return; images.splice(images.indexOf(o), 1); await idbDel('images', id); if (!images.length) $('img-empty').style.display = ''; await captureDoc(o.blob, imgName(o), 'application/pdf'); await placeAt(docs, docs[docs.length - 1], at, 'documents', '.d-item') } else { const d = docs.find(x => x.id === id); if (!d) return; docs.splice(docs.indexOf(d), 1); await idbDel('documents', id); if (!docs.length) $('doc-empty').style.display = ''; await addPdfImage(d.blob, d.name.replace(/\.pdf$/i, ''), at) } updateCounters(); updateBtns(); isDirty = true; triggerSave() }
       async function dupDoc(o) { await captureDoc(o.blob, o.name, o.type); await placeAfter(docs, docs[docs.length - 1], o, 'documents', '.d-item') }
       async function copyImg(o) { try { let b = o.blob; if (b.type !== 'image/png') b = await new Promise((res, rej) => { const i = new Image(), u = URL.createObjectURL(o.blob); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); URL.revokeObjectURL(u); c.toBlob(x => x ? res(x) : rej(new Error('toBlob')), 'image/png') }; i.onerror = () => rej(new Error('load')); i.src = u }); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); showNotice('Imagem copiada.') } catch (e) { SysLogger.error('Copy image: ' + e.message); showNotice('Não foi possível copiar a imagem.') } }
       function renameItem(el) { const f = el && el.querySelector('.t-label, .d-input'); if (f) { f.focus(); f.select() } }
@@ -4606,7 +4645,7 @@
       function ctxSubOpen(b, sub, focus) { if (!ctxSub || ctxSub.from !== b) { ctxSubClose(); const m = document.createElement('div'); m.className = 'ctx-menu ctx-sub'; m.setAttribute('role', 'menu'); m.from = b; sub().forEach(row => m.append(ctxSubRow(row))); document.body.append(m); ctxSub = m; b.setAttribute('aria-expanded', 'true'); ctxSubPlace(m, b) } if (focus) { const f = ctxSub.querySelector('.ctx-item'); if (f) f.focus({ preventScroll: true }) } }
       /* The keys of an open menu: up and down move, right opens the submenu, left and Esc go back from it, Tab and Esc close */
       function ctxKey(e) { const a = document.activeElement, inSub = !!ctxSub && ctxSub.contains(a), it = [...(inSub ? ctxSub : ctxMenu).querySelectorAll('.ctx-item:not(:disabled)')], i = it.indexOf(a), k = e.key; if (k === 'Tab' || (k === 'Escape' && !inSub)) { e.preventDefault(); ctxClose(); return } if (inSub && (k === 'Escape' || k === 'ArrowLeft')) { e.preventDefault(); const p = ctxSub.from; ctxSubClose(); p.focus(); return } if (k === 'ArrowRight' && a && a.sub) { e.preventDefault(); ctxSubOpen(a, a.sub, true); return } if ((k === 'ArrowDown' || k === 'ArrowUp') && it.length) { e.preventDefault(); it[(i + (k === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } }
-      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); if (o.kind === 'pdf') return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['dup', 'Duplicar', '', () => dupPdfImg(o)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]; return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
       function initMenus() {
         ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
         document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target))) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
@@ -4618,7 +4657,7 @@
           if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }
           else if (e.key === 'Delete' && (marked.size || el)) { e.preventDefault(); if (marked.size) removeMarked(); else if (el.matches('.t-item')) window.delImg(el.dataset.id); else window.delDoc(el.dataset.id) }
           else if (e.key === 'F2' && el) { e.preventDefault(); renameItem(el) }
-          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o) { e.preventDefault(); copyImg(o) } }
+          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o && o.kind !== 'pdf') { e.preventDefault(); copyImg(o) } }
           else if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && el) { e.preventDefault(); const r = el.getBoundingClientRect(); ctxOpen(r.left + 12, r.top + 12, ctxGroups(el)) }
         });
       }
@@ -4627,8 +4666,10 @@
       /* A PDF opens in the reader of the browser itself, in an iframe with a blob: address; the CSP allows it by default-src (D-0130) */
       let pdfViewUrl = null;
       const pdfViewDrop = () => { if (pdfViewUrl) { URL.revokeObjectURL(pdfViewUrl); pdfViewUrl = null } };
+      /* The record the document viewer shows: a document, or a PDF of Imagens seen as a document (B6.6) */
+      function textRec(id, trash) { const d = (trash ? removedDocs : docs).find(x => x.id === id); if (d) return d; const p = (trash ? removed : images).find(x => x.id === id && x.kind === 'pdf'); return p ? { id: p.id, name: imgName(p), type: 'application/pdf', size: p.blob.size, blob: p.blob, inImages: true } : null }
       window.openTextModal = async function (id, trash) {
-        const arr = trash ? removedDocs : docs, o = arr.find(x => x.id === id);
+        const o = textRec(id, trash);
         if (!o) return;
         textModalItemId = id;
         textModalIsTrash = trash;
@@ -4688,7 +4729,7 @@
       $('text-modal-overlay').onclick = function (e) { if (e.target === this && _textOverlayMdOnBackdrop) closeTextModal(); _textOverlayMdOnBackdrop = false };
       $('text-modal-restore').onclick = async function () {
         if (textModalItemId && textModalIsTrash) {
-          await window.restoreDoc(textModalItemId);
+          const r = textRec(textModalItemId, true); if (r && r.inImages) await window.restoreImg(textModalItemId); else await window.restoreDoc(textModalItemId);
           closeTextModal();
         }
       };
@@ -4700,7 +4741,7 @@
       };
       $('text-modal-dl').onclick = function () {
         if (!textModalItemId) return;
-        const o = (textModalIsTrash ? removedDocs : docs).find(x => x.id === textModalItemId);
+        const o = textRec(textModalItemId, textModalIsTrash);
         if (!o) return;
         const url = URL.createObjectURL(o.blob), a = document.createElement('a');
         a.href = url;
@@ -4869,7 +4910,7 @@
         const _annDbEl = $('ann-shape-del-btn'); if (_annDbEl) _annDbEl.style.display = 'none';
         if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
         if ($('img-modal-default-actions')) $('img-modal-default-actions').style.display = 'flex';
-        if ($('img-modal-overlay').classList.contains('open')) { var _navArr = modalIsTrash ? removed : images; ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
+        if ($('img-modal-overlay').classList.contains('open')) { var _navArr = (modalIsTrash ? removed : images).filter(function (x) { return x.kind !== 'pdf' }); ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.remove('active'));
         const o = images.find(x => x.id === modalItemId);
         if (o) {
@@ -6156,6 +6197,13 @@
             return null;
           }
 
+          // A PDF crosses to the other list (B6.6): over the other zone, a second placeholder (phx) shows the place there, with the height of an item of that list
+          const other = container === tg ? dl : tg, otherZone = $(container === tg ? 'doc-zone' : 'img-zone'), otherSel = container === tg ? '.d-item' : '.t-item', otherEmpty = $(container === tg ? 'doc-empty' : 'img-empty');
+          let phx = null;
+          function canCross() { const id = dragEl && dragEl.dataset.id; return container === tg ? images.some(x => x.id === id && x.kind === 'pdf') : docs.some(x => x.id === id && fileExt(x.name) === 'pdf') }
+          function crossBefore(cx, cy) { const cRect = other.getBoundingClientRect(), px = (cx - cRect.left) / uiZoom() + other.scrollLeft, py = (cy - cRect.top) / uiZoom() + other.scrollTop; for (const el of other.querySelectorAll(otherSel)) { const oy = el.offsetTop, oh = el.offsetHeight; if (other === dl ? py < oy + oh / 2 : (py < oy || (py <= oy + oh && px < el.offsetLeft + el.offsetWidth / 2))) return el } return null }
+          function crossOver(cx, cy) { const r = otherZone.getBoundingClientRect(), inside = canCross() && cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom; if (!inside) { if (phx) { phx.remove(); phx = null; ph.style.display = ''; if (!other.querySelector(otherSel)) otherEmpty.style.display = '' } return false } if (!phx) { const first = other.querySelector(otherSel); phx = document.createElement('div'); phx.className = 'reorder-placeholder'; phx.style.height = (first ? first.offsetHeight : other === dl ? 46 : 176) + 'px'; ph.style.display = 'none'; otherEmpty.style.display = 'none' } const before = crossBefore(cx, cy); if (before) other.insertBefore(phx, before); else other.appendChild(phx); return true }
+
           function positionFloat(cx, cy) {
             // top-left corner of the item = cursor - grab offset (in viewport coords)
             dragEl.style.left = (cx - grabDX) / uiZoom() + 'px';
@@ -6183,6 +6231,7 @@
             }
             e.preventDefault();
             positionFloat(cx, cy);
+            if (crossOver(cx, cy)) return;
             // moves the placeholder to the target position (the siblings slide via FLIP)
             const before = targetBefore(cx, cy);
             // Skips when the target already matches the current place of the placeholder (no useless FLIP).
@@ -6259,6 +6308,7 @@
             if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
             if (movedEl) movedEl.style.touchAction = '';
             if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
+            if (phx) { const at = [...other.children].filter(c => c === phx || c.matches(otherSel)).indexOf(phx); phx.remove(); phx = null; if (placeholder) placeholder.remove(); movedEl.remove(); await movePdfAcross(movedEl.dataset.id, container === tg, at); return }
 
             dropInPlace(movedEl, placeholder);
             await saveOrder();
@@ -6818,7 +6868,7 @@
         try {
           await new Promise(r => setTimeout(r, 50));
           const quality = TOKEN_JPEG_QUALITY; const jpegBlobs = [];
-          for (const img of list) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
+          for (const img of list.filter(x => x.kind !== 'pdf')) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
           const blob = await buildPdfBlob(jpegBlobs, pdfFmt);
           if (returnBlob) return blob;
           dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
