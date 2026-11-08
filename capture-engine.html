@@ -4904,7 +4904,7 @@
         /* − and + right after the tools on a computer, before 90° and Recortar (D-0122). Up to 480 px the tool row is full (D-0109),
            so there they stay after the colours, as before */
         { const dn = $('ann-thickness-down'), up = $('ann-thickness-up'), home = dn.parentElement, sel = document.querySelector('#ann-row-tools > .ann-btn[data-tool="select"]'), mq = window.matchMedia('(width <= 30rem)');
-          const place = () => { if (mq.matches) { home.append(dn, up); dn.style.marginLeft = 'calc(var(--spacing) * 1)' } else { sel.after(dn, up); dn.style.marginLeft = '' } };
+          const sep = document.createElement('div'); sep.className = 'ann-sep'; /* the line between the tools and − + */ const place = () => { if (mq.matches) { sep.remove(); home.append(dn, up); dn.style.marginLeft = 'calc(var(--spacing) * 1)' } else { sel.after(sep, dn, up); dn.style.marginLeft = '' } };
           place(); mq.addEventListener('change', place) }
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
         // Every tray ends with − and + and the current size (D-0102). Written here, before initTips reads the titles and after BOOT_HTML,
