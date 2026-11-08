@@ -279,7 +279,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 ### 6.6 Export PDF
 
-Gera um PDF com uma imagem por página.
+Gera um PDF com tudo o que está em Imagens: uma foto por página e, no lugar do cartão de um PDF, as páginas dele, na ordem da grade.
 
 Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a próxima ação na página: um clique, uma tecla, colar ou arrastar. Ir a outra janela anexar o arquivo e voltar não tira o verde, por isso a última ação continua à vista.
 
@@ -293,10 +293,10 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 
 **Processo de geração:**
 1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
-2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada
+2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada. As páginas de um PDF que está em Imagens entram como estão, com o tamanho e o texto delas
 3. O arquivo é transferido automaticamente
 
-**Quando o botão PDF fica desativado:** Quando há documentos (não-imagens) na sessão. O motor PDF processa apenas imagens. Para sessões mistas, use o ZIP.
+**Quando o botão PDF fica desativado:** Quando há documentos na sessão. O .pdf leva só o que está em Imagens. Para sessões com documentos, use o ZIP, ou arraste o PDF para Imagens.
 
 **Os arquivos originais não são alterados.** A conversão JPEG acontece apenas na memória, durante a geração do PDF. Os originais ficam na sessão no formato em que foram capturados.
 
@@ -537,7 +537,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem sincronização** | Os dados só existem no navegador do computador onde foram criados. Não há sincronização entre dispositivos. |
 | **Dependente do navegador** | Limpar dados do navegador apaga todos os dados. |
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
-| **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
+| **PDF sem documentos** | O export PDF leva só o que está em Imagens: as fotos e os PDFs arrastados para lá. Os documentos (DOCX, XLSX, etc.) requerem o export ZIP. Um PDF protegido por senha, em Imagens, para o export PDF. |
 | **Sem pré-visualização de binários** | Os documentos do Word, do Excel e do PowerPoint não têm pré-visualização, só o Download. O PDF abre no leitor do próprio navegador. |
 | **PDF no iPhone** | O PDF abre no leitor do próprio navegador. No iPhone, o Safari pode mostrar só a primeira página; isso ainda não foi testado num iPhone. |
 | **Cópias anteriores à 29** | Depois de abrir a versão 29 num navegador, uma cópia mais antiga, no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Nada se perde; a 29 mostra tudo. Use sempre a versão mais nova. |
