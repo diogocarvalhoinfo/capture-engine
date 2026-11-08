@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **O «Erro» do .pdf e do .zip fica aceso (D-0114):** antes, o botão ficava vermelho com «Erro» e voltava sozinho em 2,5 s. Quem olhava para outro lado não via a falha. Agora o vermelho fica aceso, como o verde «Concluído», até o próximo clique, tecla, colar ou soltar na página. O «Erro» ganha um círculo com ✕, como o círculo com ✓ do «Concluído». A mensagem completa continua no console.
+
 ## [28.7.2] - 2026-11-07
 
 Patch: no telefone, a ferramenta volta à última sessão, e o ✕ do visualizador fica sempre à vista, com o aviso quando há desenho por salvar.
