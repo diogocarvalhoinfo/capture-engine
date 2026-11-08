@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Major: o banco do navegador passa à versão 3 (D-0127), e uma cópia anterior à 29 não abre mais as sessões no mesmo navegador. Inclui a lixeira, «Eliminar sessão», a informação no título, a vírgula nos tamanhos, o Texto «Com fundo», o − e o + depois das ferramentas, um visualizador para tudo, o editor de texto, a lista dos arquivos compactados, marcar item a item, o tipo em cor e o menu do clique direito.
 
+Teste do Export User (`AGENTS.md` §11, Parte B): os arquivos exportados por quem mantém o projeto às 18h03, já na 29.0.0, abertos por `file://` no Edge 157 com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor, o título e o rodapé aplicados, a imagem colada (um evento de colar com a imagem, como o do Ctrl+V) entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.0.0, e ela exporta uma nova cópia User.
+
 ### Modificado
 
 - **A lixeira no lugar do ✕ ao remover (D-0117):** o ✕ removia um item e também fechava e cancelava. Agora remover tem a lixeira dos «Removidos», que diz para onde o item vai: cinza nas linhas de documento, vermelha ao apontar; e, sobre uma foto, num quadrado escuro que fica vermelho ao apontar. A anotação selecionada no editor ganha a mesma lixeira. Os botões passaram a 24 px (F-0122), e o restaurar da miniatura usa a seta circular do botão «Restaurar» (F-0121).
