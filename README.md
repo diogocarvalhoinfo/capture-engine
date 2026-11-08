@@ -151,7 +151,7 @@ A versão publicada no GitHub Pages (cartão «Abrir o site», no topo) funciona
            ↓
 3. Capturar → Ctrl+V, arrastar arquivos, ou clicar "Adicionar imagem"/"Adicionar documento"
            ↓
-4. Organizar → Arrastar itens para reordenar, clicar para ver ou anotar
+4. Organizar → Arrastar itens para reordenar, clicar para ver ou anotar. Um PDF arrastado de Documentos para Imagens fica junto das fotos, e volta do mesmo jeito
            ↓
 5. Exportar → PDF (imagens) ou ZIP (imagens + documentos)
 ```
