@@ -93,6 +93,7 @@
       --z-offcanvas-backdrop: 1040;
       --z-offcanvas: 1045;
       --z-modal: 1055;
+      --z-popover: 1070;
       --z-toast: 1090;
       --duration-fast-02: 110ms;
       --duration-moderate-01: 150ms;
@@ -128,6 +129,15 @@
       --color-drop-placeholder: color-mix(in srgb, var(--color-foreground) 5%, transparent);
       --color-drop-placeholder-border: color-mix(in srgb, var(--color-foreground) 8%, transparent);
       --top-bar-h: 64px;
+      --color-selected: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      --color-file-pdf: #b30b00;
+      --color-file-docx: #2b579a;
+      --color-file-xlsx: #217346;
+      --color-file-pptx: #b7472a;
+      --color-file-zip: #fbbf24;
+      --color-file-zip-foreground: #1a1917;
+      --color-file-text: #64748b;
+      --color-archive-folder: var(--color-yellow-500);
       --thumb-size: 140px;
     }
 
@@ -975,22 +985,49 @@
       position: absolute;
       top: -5px;
       right: -5px;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--color-white);
-      background: var(--color-red-500);
+      background: var(--color-viewer-floating);
       border: none;
       cursor: pointer;
       z-index: var(--z-raised);
       opacity: 0;
-      transition: opacity var(--duration-moderate-01);
-      font-size: var(--text-micro);
-      font-weight: bold;
+      transition: opacity var(--duration-moderate-01), background var(--duration-fast-02);
       box-shadow: var(--shadow-control)
+    }
+
+    /* Remover over a photo: a dark square with the trash, red on hover, so it shows on a photo of any colour (D-0117) */
+    .t-del:hover {
+      background: var(--color-red-500)
+    }
+
+    /* The trash: the icon of the Removidos header, and of every Remover */
+    .trash-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0
+    }
+
+    .t-del svg,
+    .d-del svg,
+    .sb-sess-del svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round
     }
 
     .t-del::after {
@@ -1008,8 +1045,8 @@
       position: absolute;
       top: -5px;
       right: -5px;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
@@ -1140,9 +1177,12 @@
 
     .d-del {
       color: var(--color-muted-foreground);
-      padding: calc(var(--spacing) * 1);
+      width: 24px;
+      height: 24px;
       border-radius: var(--radius-sm);
       display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
       cursor: pointer;
       background: none;
@@ -1153,15 +1193,6 @@
     .d-del:hover {
       color: var(--color-red-500);
       background: var(--color-background)
-    }
-
-    .d-del svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
-      stroke: currentcolor;
-      stroke-width: 2.5;
-      stroke-linecap: round
     }
 
     /* ═══ SIDEBARS ═══ */
@@ -1359,12 +1390,19 @@
       flex-shrink: 0
     }
 
+    /* Eliminar sessão: the ✕, grey and red on hover; the session does not go to Removidos, so it keeps the ✕ and not the trash (D-0118) */
     .sb-sess-del {
       color: var(--color-muted-foreground);
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
       opacity: 0;
-      transition: opacity var(--duration-moderate-01);
+      transition: opacity var(--duration-moderate-01), color var(--duration-fast-02);
       cursor: pointer;
-      padding: calc(var(--spacing) * 0.5);
       user-select: none
     }
 
@@ -1598,6 +1636,29 @@
       white-space: nowrap;
       max-width: 420px;
       text-align: center
+    }
+
+    /* The information of the item on the line of the title, after the name: smaller and grey. The name gives way first,
+       with an ellipsis, and the information never breaks (D-0119) */
+    .modal-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: calc(var(--spacing) * 2);
+      min-width: 0;
+      max-width: 420px
+    }
+
+    .modal-title-row .modal-title {
+      min-width: 0;
+      max-width: none
+    }
+
+    .modal-info {
+      flex-shrink: 0;
+      font-size: var(--text-caption);
+      color: var(--color-muted-foreground);
+      white-space: nowrap
     }
 
     .modal-close {
@@ -2218,6 +2279,153 @@
       backdrop-filter: blur(10px)
     }
 
+    /* ═══ MARKING (D-0128) ═══
+       A box per item; on images in the top left corner. It shows on hover, with something marked, and always on touch */
+    .item-check {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+      opacity: 0;
+      transition: opacity var(--duration-moderate-01)
+    }
+
+    .t-item .item-check {
+      position: absolute;
+      top: calc(var(--spacing) * 1.5);
+      left: calc(var(--spacing) * 1.5);
+      z-index: var(--z-raised)
+    }
+
+    .item-check:checked,
+    .item-check:focus-visible,
+    .has-marked .item-check,
+    .t-item:hover .item-check,
+    .d-item:hover .item-check {
+      opacity: 1
+    }
+
+    .t-item.marked,
+    .d-item.marked {
+      border-color: var(--color-primary);
+      background: var(--color-selected)
+    }
+
+    /* The type of a document in its colour (D-0128) */
+    .d-type {
+      min-width: 40px;
+      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-micro);
+      font-weight: 700;
+      text-align: center;
+      color: var(--color-white);
+      flex-shrink: 0;
+      cursor: pointer
+    }
+
+    .d-type-pdf {
+      background: var(--color-file-pdf)
+    }
+
+    .d-type-docx {
+      background: var(--color-file-docx)
+    }
+
+    .d-type-xlsx {
+      background: var(--color-file-xlsx)
+    }
+
+    .d-type-pptx {
+      background: var(--color-file-pptx)
+    }
+
+    .d-type-zip {
+      background: var(--color-file-zip);
+      color: var(--color-file-zip-foreground)
+    }
+
+    .d-type-text {
+      background: var(--color-file-text)
+    }
+
+    .d-pages {
+      font-size: var(--text-caption);
+      color: var(--color-muted-foreground);
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+
+    /* ═══ MENU OF THE RIGHT CLICK (D-0129) ═══
+       One form; the colour follows the screen, as the panels */
+    .ctx-menu {
+      position: fixed;
+      z-index: var(--z-popover);
+      min-width: 220px;
+      padding: calc(var(--spacing) * 1);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-settings)
+    }
+
+    .ctx-item {
+      display: flex;
+      align-items: center;
+      gap: calc(var(--spacing) * 2.5);
+      width: 100%;
+      padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.5);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-control);
+      color: var(--color-foreground);
+      text-align: left
+    }
+
+    .ctx-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0
+    }
+
+    .ctx-key {
+      margin-left: auto;
+      padding-left: calc(var(--spacing) * 6);
+      font-size: var(--text-xs);
+      color: var(--color-muted-foreground)
+    }
+
+    .ctx-item:hover,
+    .ctx-item:focus-visible {
+      background: var(--color-background)
+    }
+
+    .ctx-danger:hover,
+    .ctx-danger:focus-visible,
+    .ctx-danger:hover :is(.ctx-icon, .ctx-key),
+    .ctx-danger:focus-visible :is(.ctx-icon, .ctx-key) {
+      color: var(--color-red-500);
+      stroke: var(--color-red-500)
+    }
+
+    .ctx-sep {
+      height: 1px;
+      margin: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
+      background: var(--color-border)
+    }
+
+    @media (hover: none) {
+      .item-check {
+        opacity: 1
+      }
+    }
+
     /* ═══ RESPONSIVE ═══ */
     @media (width <= 56.25rem) {
       /* Allow page to scroll vertically on mobile */
@@ -2408,8 +2616,8 @@
       }
 
       #sidebar .sb-sess-del {
-        font-size: var(--text-base);
-        padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2)
+        width: 32px;
+        height: 32px
       }
 
       #sb-mobile-close {
@@ -2584,10 +2792,6 @@
       max-height: none;
     }
 
-    #text-modal-overlay .modal-box {
-      height: calc(80vh / var(--app-zoom));
-    }
-
     /* The Safari of the iPhone counts 1vh on the screen without its bars, taller than what is visible with them. The
        viewer passed the screen, with the ✕ above it and «Editar» below it (F-0108). The dvh follows the visible area. */
     @supports (height: 1dvh) {
@@ -2604,7 +2808,7 @@
       }
 
       #text-modal-overlay .modal-box {
-        height: calc(80dvh / var(--app-zoom));
+        height: calc(94dvh / var(--app-zoom));
       }
     }
 
@@ -2648,22 +2852,199 @@
       }
     }
 
-    #img-modal-overlay .modal-hdr {
+    /* One viewer for everything: the text viewer has the frame of the image viewer, and only the middle changes with the type (D-0123) */
+    #text-modal-overlay {
+      background: var(--color-viewer-backdrop);
+    }
+
+    #text-modal-overlay .modal-box {
+      background: transparent;
+      box-shadow: none;
+      width: calc(96vw / var(--app-zoom));
+      height: calc(94vh / var(--app-zoom));
+      max-width: none;
+      max-height: none;
+    }
+
+    #text-modal-actions .btn-send {
+      width: calc(var(--spacing) * 30);
+    }
+
+    /* The page in the middle: the text, the formatted Markdown, the CSV table or the HTML page */
+    .doc-page {
+      flex: 1;
+      min-height: 0;
+      width: min(100%, 60rem);
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: auto;
+      padding: calc(var(--spacing) * 4);
+      background: var(--color-card);
+      color: var(--color-foreground);
+      border-radius: var(--radius-lg);
+    }
+
+    #text-modal-view {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    #text-modal-view[hidden] {
+      display: none;
+    }
+
+    #text-modal-view :is(h1, h2, h3, h4) {
+      margin: calc(var(--spacing) * 4) 0 calc(var(--spacing) * 2);
+      line-height: 1.3;
+    }
+
+    #text-modal-view h1 {
+      font-size: var(--text-xl);
+    }
+
+    #text-modal-view h2 {
+      font-size: var(--text-lg);
+    }
+
+    #text-modal-view :is(h3, h4) {
+      font-size: var(--text-base);
+    }
+
+    #text-modal-view :is(p, ul, ol, pre, table) {
+      margin: 0 0 calc(var(--spacing) * 3);
+    }
+
+    #text-modal-view :is(ul, ol) {
+      padding-left: calc(var(--spacing) * 6);
+    }
+
+    #text-modal-view :is(code, pre) {
+      font-family: monospace;
+      font-size: var(--text-code);
+      background: var(--color-background);
+      border-radius: var(--radius-sm);
+    }
+
+    #text-modal-view code {
+      padding: 0 calc(var(--spacing) * 1);
+    }
+
+    #text-modal-view pre {
+      padding: calc(var(--spacing) * 3);
+      overflow: auto;
+    }
+
+    #text-modal-view table {
+      border-collapse: collapse;
+      font-size: var(--text-control);
+    }
+
+    #text-modal-view :is(th, td) {
+      border: 1px solid var(--color-border-strong);
+      padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    #text-modal-view th {
+      background: var(--color-background);
+    }
+
+    /* The list of an archive (D-0126): no grid, thin lines between the rows, the folders in bold */
+    #text-modal-view .arch-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-control);
+    }
+
+    #text-modal-view .arch-table :is(th, td) {
+      border: 0;
+      border-bottom: 1px solid var(--color-border);
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+      background: transparent;
+    }
+
+    #text-modal-view .arch-table th {
+      font-size: var(--text-caption);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--color-muted-foreground);
+    }
+
+    #text-modal-view .arch-table td:first-child {
+      padding-left: calc(var(--spacing) * (3 + var(--depth) * 6));
+    }
+
+    #text-modal-view .arch-table .num {
+      width: 1%;
+      text-align: right;
+      color: var(--color-muted-foreground);
+      font-size: var(--text-xs);
+    }
+
+    #text-modal-view .arch-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: -3px;
+      margin-right: calc(var(--spacing) * 2);
+    }
+
+    #text-modal-view .arch-dir td:first-child {
+      font-weight: 600;
+    }
+
+    #text-modal-view .arch-dir .arch-icon {
+      stroke: var(--color-archive-folder);
+    }
+
+    #text-modal-view .arch-dir .num:last-child {
+      font-weight: 600;
+    }
+
+    #text-modal-view.view-html {
+      overflow: hidden;
+    }
+
+    #text-modal-view iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--color-white);
+      border-radius: var(--radius-sm);
+    }
+
+
+    #img-modal-overlay .modal-hdr,
+    #text-modal-overlay .modal-hdr {
       border-bottom: none;
       padding: calc(var(--spacing) * 3.5) 0;
     }
 
-    #img-modal-overlay .modal-title {
+    #img-modal-overlay .modal-title,
+    #text-modal-overlay .modal-title {
       color: var(--color-white);
     }
 
-    #img-modal-overlay .modal-close {
+    #img-modal-overlay .modal-close,
+    #text-modal-overlay .modal-close {
       background: var(--color-viewer-surface);
       color: var(--color-white);
       right: 0;
     }
 
-    #img-modal-overlay .modal-close:hover {
+    #img-modal-overlay .modal-close:hover,
+    #text-modal-overlay .modal-close:hover {
       background: var(--color-viewer-close-hover);
     }
 
@@ -2684,14 +3065,16 @@
     /* The editor tools and the secondary buttons of the viewer (Download, Restaurar) share these two rules (D-0098):
        a change in the viewer controls reaches both */
     #img-modal-overlay .ann-btn,
-    #img-modal-overlay .btn-viewer {
+    #img-modal-overlay .btn-viewer,
+    #text-modal-overlay .btn-viewer {
       color: var(--color-viewer-control-foreground);
       background: var(--color-viewer-control);
       border: 1px solid var(--color-viewer-control-border);
     }
 
     #img-modal-overlay .ann-btn:hover,
-    #img-modal-overlay .btn-viewer:hover {
+    #img-modal-overlay .btn-viewer:hover,
+    #text-modal-overlay .btn-viewer:hover {
       color: var(--color-white);
       background: var(--color-viewer-control-hover);
       border-color: var(--color-viewer-control-border-hover);
@@ -2819,6 +3202,12 @@
       stroke-width: 3
     }
 
+    /* «Com fundo»: the T of the tool on a soft square (D-0108, D-0121) */
+    #img-modal-overlay .ann-btn.ann-txt-bg svg {
+      background: color-mix(in srgb, currentcolor 30%, transparent);
+      border-radius: var(--radius-sm)
+    }
+
     #img-modal-overlay .ann-btn.ann-txt-i svg {
       transform: skewX(-12deg)
     }
@@ -2848,7 +3237,8 @@
       animation: ann-alert var(--duration-ann-alert) var(--ease-in-out) 2 !important;
     }
 
-    #img-modal-overlay #img-modal-dims {
+    #img-modal-overlay .modal-info,
+    #text-modal-overlay .modal-info {
       color: var(--color-viewer-muted-foreground);
     }
 
@@ -3165,8 +3555,7 @@
       <!-- ═══ TRASH BAR ═══ -->
       <div id="trash-bar">
         <div id="trash-hdr">
-          <svg viewBox="0 0 24 24"
-            style="width:16px;height:16px;fill:none;stroke:var(--color-muted-foreground);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0">
+          <svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
             <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -3194,7 +3583,7 @@
   <div class="modal-overlay" id="img-modal-overlay">
     <div class="modal-box">
       <div class="modal-hdr">
-        <span class="modal-title" id="img-modal-title">Visualizar imagem</span>
+        <div class="modal-title-row"><span class="modal-title" id="img-modal-title">Visualizar imagem</span><span class="modal-info" id="img-modal-dims"></span></div>
         <button class="modal-close" id="img-modal-close" aria-label="Fechar"><svg viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -3208,9 +3597,6 @@
             style="max-width:100%;max-height:100%;display:block;border-radius:0;user-select:none">
           <canvas id="ann-canvas"
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
-        </div>
-        <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:var(--z-raised)">
-          <span id="img-modal-dims" style="font-size:var(--text-caption);color:var(--color-viewer-muted-foreground)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
@@ -3322,6 +3708,7 @@
             <div class="ann-flyout" role="group" aria-label="Opções do texto">
               <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)">B</button>
               <button class="ann-btn ann-opt ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)">I</button>
+              <button class="ann-btn ann-opt" id="ann-text-bg" title="Com fundo"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor" fill-opacity="0.35" stroke="none" /><path d="M8 9h8M12 9v7" /></svg></button>
             </div>
           </div>
           <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
@@ -3397,18 +3784,18 @@
 
   <!-- ═══ MODAL: DOCUMENT/TEXT VIEWER ═══ -->
   <div class="modal-overlay" id="text-modal-overlay">
-    <div class="modal-box" style="max-width:calc(85vw / var(--app-zoom)); width:650px">
+    <div class="modal-box">
       <div class="modal-hdr">
-        <span class="modal-title" id="text-modal-title">Visualizar documento</span>
+        <div class="modal-title-row"><span class="modal-title" id="text-modal-title">Visualizar documento</span><span class="modal-info" id="text-modal-info"></span></div>
         <button class="modal-close" id="text-modal-close" aria-label="Fechar"><svg viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg></button>
       </div>
-      <div
-        style="flex:1; overflow:auto; padding:calc(var(--spacing) * 4); background:var(--color-background); display:flex; flex-direction:column; min-height:0; position:relative">
+      <div class="doc-page">
         <textarea id="text-modal-content" readonly
-          style="width:100%; flex:1; resize:none; border:none; background:var(--color-background); color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
+          style="width:100%; flex:1; resize:none; border:none; background:transparent; color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
+        <div id="text-modal-view" hidden></div>
         <div id="text-modal-binary-msg"
           style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:var(--text-control); padding:calc(var(--spacing) * 6); line-height:1.6; gap:calc(var(--spacing) * 3)">
         </div>
@@ -3416,24 +3803,28 @@
       <!-- FOOTER -->
       <div
         style="padding:calc(var(--spacing) * 4); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--spacing) * 2); flex-shrink:0">
-        <div style="display:flex; gap:calc(var(--spacing) * 2); justify-content:center">
-          <button class="btn-send" id="text-modal-restore"
-            style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+        <div id="text-modal-actions" style="display:flex; gap:calc(var(--spacing) * 2); justify-content:center">
+          <button class="btn-send btn-viewer" id="text-modal-restore" style="display:none">
             <svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
             </svg> Restaurar
           </button>
-          <button class="btn-send" id="text-modal-copy"
-            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+          <button class="btn-send" id="text-modal-edit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+              <path d="m15 5 4 4" />
+            </svg> Editar
+          </button>
+          <button class="btn-send btn-viewer" id="text-modal-copy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:14px; height:14px">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg> Copiar texto
           </button>
-          <button class="btn-send" id="text-modal-dl"
-            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+          <button class="btn-send btn-viewer" id="text-modal-dl">
             <svg viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -3441,14 +3832,25 @@
             </svg> Download
           </button>
         </div>
-        <span id="text-modal-info"
-          style="font-size:var(--text-caption); color:var(--color-muted-foreground); text-align:center; margin:0 auto"></span>
+        <div id="text-modal-edit-actions" style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center">
+          <button class="ann-btn" id="text-edit-cancel" title="Cancelar"
+            style="background:var(--color-red-500);color:var(--color-white);border-color:var(--color-red-500)"><svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg></button>
+          <button class="ann-btn" id="text-edit-save" title="Confirmar"
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg></button>
+        </div>
       </div>
     </div>
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (28.7.3) -->
+  <!-- VISUAL BUILDER MODAL (29.0.0) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3466,7 +3868,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">28.7.3</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.0.0</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -3719,10 +4121,14 @@
          order, and the sort in loadSession then returns different orders between
          reloads). max+1 never collides. See D45. */
       function nextOrder(arr) { return arr.length ? Math.max(...arr.map(x => x.order)) + 1 : 0 }
-      function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(1) + ' MB' }
+      /* Sizes with a decimal comma, as in Portuguese, and a space that does not break between the number and the unit (D-0120) */
+      function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
       const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
+      const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
+      /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
+      const TRASH_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
       const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       function buildFilename(ext, baseName) { const n = new Date(), hh = String(n.getHours()).padStart(2, '0'), mn = String(n.getMinutes()).padStart(2, '0'), dd = String(n.getDate()).padStart(2, '0'), mmm = MONTHS[n.getMonth()], yyyy = n.getFullYear(), raw = (baseName != null ? baseName : $('session-name').value).trim(); let s = ''; if (raw) s = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9\s\-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').toUpperCase(); const prefix = s ? s + '-' : ''; return `${prefix}${hh}h${mn}m-${dd}-${mmm}-${yyyy}.${ext}` }
       const ENC = new TextEncoder();
@@ -3770,7 +4176,8 @@
       async function triggerSave() { if (isDirty) { try { await saveSession() } catch (e) { SysLogger.warn('Save failed: ' + ((e && e.name) || e)); return } lastSaveAt = Date.now(); isDirty = false; updateStatusBar() } } // a failed save stays dirty and tries again, without an uncaught error (F-0098)
 
       /* ═══ INDEXEDDB ═══ */
-      function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', 2); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; res() }; r.onerror = () => rej(r.error); r.onblocked = () => { SysLogger.info('IDB: another tab or copy has the database open; going on without blocking the interface (several tabs are allowed)') } }) }
+      const DB_VERSION = 3; // the schema of CaptureEngineDB; a copy with a lower number cannot open it (D-0127)
+      function openDB() { return new Promise((res, rej) => { const r = indexedDB.open('CaptureEngineDB', DB_VERSION); r.onupgradeneeded = e => { const db = e.target.result; /* Version 3 (29.0.0, D-0127): an image record may hold a PDF (kind) and pasted images (annBlobs). Nothing stored before changes; the number only keeps a 28.x copy, which would read these records wrong, out of the database */ if (!db.objectStoreNames.contains('sessions')) { const s = db.createObjectStore('sessions', { keyPath: 'id' }); s.createIndex('createdAt', 'createdAt', { unique: false }) } if (!db.objectStoreNames.contains('images')) { const s = db.createObjectStore('images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('documents')) { const s = db.createObjectStore('documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }); s.createIndex('order', 'order', { unique: false }) } if (!db.objectStoreNames.contains('removed_images')) { const s = db.createObjectStore('removed_images', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } if (!db.objectStoreNames.contains('removed_documents')) { const s = db.createObjectStore('removed_documents', { keyPath: 'id' }); s.createIndex('sessionId', 'sessionId', { unique: false }) } }; r.onsuccess = e => { _db = e.target.result; const _ub = document.getElementById('ce-upgrade-banner'); if (_ub) _ub.remove(); /* the other tab closed: the upgrade is done */ _db.onversionchange = () => { _db.close(); showBanner('ce-version-banner', 'Versão nova aberta', ' - outra aba abriu uma versão nova do Capture Engine. Recarregue esta aba.') }; res() }; r.onerror = () => rej(r.error); r.onblocked = e => { SysLogger.info('IDB: another tab or copy has the database open'); if (e.oldVersion < DB_VERSION) showBanner('ce-upgrade-banner', 'Feche as outras abas', ' - uma aba com uma versão anterior do Capture Engine está aberta. Feche-a para terminar a atualização.') } }) }
       // The two storage warnings: one builder, with the look in the .ce-banner classes. The guard on the id shows each warning once.
       function showBanner(id, title, text) { if (document.getElementById(id)) return; const b = document.createElement('div'); b.id = id; b.className = 'ce-banner'; b.setAttribute('role', 'alert'); const t = document.createElement('strong'); t.textContent = title; b.appendChild(t); b.appendChild(document.createTextNode(text)); const btn = document.createElement('button'); btn.className = 'ce-banner-close'; btn.textContent = '✕'; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
       function showQuotaBanner() { showBanner('ce-quota-banner', 'Armazenamento cheio', ' - as capturas deixaram de ser gravadas. Exporte agora (PDF ou ZIP) e apague sessões antigas no histórico.') }
@@ -3830,7 +4237,7 @@
       async function reopenLastSession() { if (!touchScreen()) return; let id = null; try { id = localStorage.getItem(LAST_SESSION_KEY) } catch (e) { } if (!id) return; let s = null; try { s = await idbGet('sessions', id) } catch (e) { } if (!s) return; await loadSession(id); renderSbSessions(); SysLogger.info('Última sessão reaberta: ' + id) }
       async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; lastSessionKeep(sessId); SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
-      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
+      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
       function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
@@ -3839,13 +4246,13 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">✕</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* ═══ RENDER DOC ═══ */
-      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
+      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
-      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(r.label || '')}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round\"><polyline points=\"9 14 4 9 9 4\"/><path d=\"M20 20v-7a4 4 0 0 0-4-4H4\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
+      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
 
 
       /* ═══ IMAGE CAPTURE ═══ */
@@ -3868,11 +4275,11 @@
       async function captureDoc(blob, name, type) { await ensureSession(); let baseName = name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: nextOrder(docs), addedAt: Date.now() }; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } docs.push(o); renderDoc(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Documento capturado: ' + finalName) }
 
       /* ═══ DELETE / RESTORE ═══ */
-      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
-      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
+      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
+      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; delete o.removedAt; o.order = nextOrder(images); let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); await idbDel('removed_images', id); await idbPut('images', o); renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); closeImgModal() };
       window.restoreDoc = async function (id) { const idx = removedDocs.findIndex(x => x.id === id); if (idx < 0) return; const o = removedDocs.splice(idx, 1)[0]; delete o.removedAt; let baseName = o.name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } o.name = finalName; o.order = nextOrder(docs); docs.push(o); await idbDel('removed_documents', id); await idbPut('documents', o); renderDoc(o); $('doc-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
-      window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el) { el.value = newVal } };
+      window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el && document.activeElement !== el) { el.value = imgName(o) } };
       window.setDocName = async function (id, val) { const o = docs.find(x => x.id === id); if (!o) return; const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) { ext = oldName.substring(lastDot) } let newName = val.trim(); if (!newName) { newName = oldName } else { if (ext && !newName.toLowerCase().endsWith(ext.toLowerCase())) { newName += ext } } if (newName.toLowerCase() !== oldName.toLowerCase()) { let base = newName, baseExt = ''; const dotIdx = base.lastIndexOf('.'); if (dotIdx >= 0) { baseExt = base.substring(dotIdx); base = base.substring(0, dotIdx) } let finalName = newName; while (docs.some(d => d.id !== id && d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalName = base + baseExt } newName = finalName } o.name = newName; await idbPut('documents', o); isDirty = true; triggerSave(); const el = document.querySelector(`[data-id="${id}"] .d-input`); if (el) { el.value = newName; el.title = newName } };
 
 
@@ -3890,6 +4297,7 @@
         annDeactivate();
         resetImgZoom();
         const url = URL.createObjectURL(o.blob);
+        $('img-modal-dims').textContent = '';
         const img = $('img-modal-img');
         img.onload = function () {
           $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size);
@@ -3897,7 +4305,7 @@
         };
         img.onerror = function () { URL.revokeObjectURL(url); };
         img.src = url;
-        $('img-modal-title').textContent = o.label || 'Sem título';
+        $('img-modal-title').textContent = imgName(o); // the name with the extension, as the Download writes it (D-0119)
         $('img-modal-restore').style.display = trash ? 'flex' : 'none';
         $('img-modal-dl').style.display = 'flex';
         $('ann-toggle').style.display = trash ? 'none' : '';
@@ -3997,7 +4405,7 @@
           if (typingInField()) return;
           viewerKey(e);
         }
-        if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeTextModal(); }
+        if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); if (textEditDirty()) textEditAlert(); else if (textEditing) $('text-edit-cancel').click(); else closeTextModal(); }
         const _exOv = $('export-overlay'); if (_exOv && _exOv.classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeExportModal(); }
       });
 
@@ -4045,6 +4453,73 @@
         ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => { if (imgOv.classList.contains('open')) e.preventDefault() }, { passive: false }));
       }
 
+      /* The views of the text viewer, built with elements and textContent, never with innerHTML of the file (D-0123) */
+      function mdInline(txt) { const f = document.createDocumentFragment(); const re = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|\[[^\]]+\]\([^)]+\))/g; let last = 0, m; while ((m = re.exec(txt))) { if (m.index > last) f.append(txt.slice(last, m.index)); const t = m[0]; let el; if (t[0] === '`') { el = document.createElement('code'); el.textContent = t.slice(1, -1) } else if (t.startsWith('**')) { el = document.createElement('strong'); el.append(mdInline(t.slice(2, -2))) } else if (t[0] === '*' || t[0] === '_') { el = document.createElement('em'); el.append(mdInline(t.slice(1, -1))) } else { el = document.createElement('span'); el.textContent = t.slice(1, t.indexOf('](')) } f.append(el); last = m.index + t.length } if (last < txt.length) f.append(txt.slice(last)); return f }
+      function mdView(src) { const root = document.createElement('div'), lines = src.replace(/\r\n/g, '\n').split('\n'); let list = null, para = null, pre = null; const end = () => { list = null; para = null }; for (const ln of lines) { if (pre) { if (/^```/.test(ln)) { pre = null } else pre.textContent += (pre.textContent ? '\n' : '') + ln; continue } if (/^```/.test(ln)) { end(); pre = document.createElement('pre'); root.append(pre); continue } const h = /^(#{1,4})\s+(.*)$/.exec(ln), li = /^\s*([-*+]|\d+[.])\s+(.*)$/.exec(ln); if (h) { end(); const el = document.createElement('h' + h[1].length); el.append(mdInline(h[2])); root.append(el) } else if (li) { para = null; const tag = /\d/.test(li[1]) ? 'ol' : 'ul'; if (!list || list.tagName.toLowerCase() !== tag) { list = document.createElement(tag); root.append(list) } const el = document.createElement('li'); el.append(mdInline(li[2])); list.append(el) } else if (!ln.trim()) { end() } else { list = null; if (!para) { para = document.createElement('p'); root.append(para) } else para.append(' '); para.append(mdInline(ln.trim())) } } return root }
+      function csvView(src) { const first = src.split('\n')[0] || '', sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ';' : first.includes('\t') ? '\t' : ','; const rows = []; let row = [], cell = '', q = false; for (let i = 0; i < src.length && rows.length < 2000; i++) { const c = src[i]; if (q) { if (c === '"' && src[i + 1] === '"') { cell += '"'; i++ } else if (c === '"') q = false; else cell += c } else if (c === '"') q = true; else if (c === sep) { row.push(cell); cell = '' } else if (c === '\n') { row.push(cell.replace(/\r$/, '')); rows.push(row); row = []; cell = '' } else cell += c } if (cell || row.length) { row.push(cell); rows.push(row) } const t = document.createElement('table'); rows.forEach((r, ri) => { const tr = document.createElement('tr'); r.forEach(v => { const td = document.createElement(ri ? 'td' : 'th'); td.textContent = v; tr.append(td) }); t.append(tr) }); return t }
+      /* An HTML page runs in a sealed box: without allow-same-origin it reaches neither the session nor the storage of the app, and it keeps the CSP of the app (no internet) */
+      function htmlView(src) { const f = document.createElement('iframe'); f.setAttribute('sandbox', 'allow-scripts allow-modals allow-forms'); f.setAttribute('allow', 'clipboard-write'); f.setAttribute('title', 'Página HTML'); f.srcdoc = src; return f }
+      /* The list of an archive: names, sizes and dates, read from its headers, without extracting anything (D-0126).
+         Returns { rows: [[name, size, date]], note } or null when the format gives no list */
+      const ARCH_EXT = /^(zip|tar|tgz|gz|rar|7z)$/;
+      const archDay = d => d && !isNaN(d) ? String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() : '';
+      const archDate = d => d && !isNaN(d) ? { d, t: archDay(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') } : null;
+      const dosDate = (t, d) => new Date(1980 + (d >> 9), ((d >> 5) & 15) - 1, d & 31, t >> 11, (t >> 5) & 63, (t & 31) * 2);
+      function listZip(u) { const v = new DataView(u.buffer, u.byteOffset, u.byteLength); let e = -1; for (let i = u.length - 22; i >= Math.max(0, u.length - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break } if (e < 0) return null; const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const rows = [], utf = new TextDecoder(), lat = new TextDecoder('latin1'); for (let k = 0; k < n && p + 46 <= u.length && v.getUint32(p, true) === 0x02014b50; k++) { const fl = v.getUint16(p + 8, true), nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true); const name = (fl & 0x800 ? utf : lat).decode(u.subarray(p + 46, p + 46 + nl)); rows.push([name, name.endsWith('/') ? '' : fmtSize(v.getUint32(p + 24, true)), archDate(dosDate(v.getUint16(p + 12, true), v.getUint16(p + 14, true)))]); p += 46 + nl + xl + cl } return { rows } }
+      function listTar(u) { const rows = [], dec = new TextDecoder(), str = (a, b) => dec.decode(u.subarray(a, b)).replace(/\0.*$/s, ''), oct = (a, b) => parseInt(str(a, b).trim() || '0', 8); for (let p = 0; p + 512 <= u.length && rows.length < 5000;) { if (u[p] === 0) break; const name = (str(p + 345, p + 500) ? str(p + 345, p + 500) + '/' : '') + str(p, p + 100), size = oct(p + 124, p + 136), type = String.fromCharCode(u[p + 156] || 48); if (type !== 'x' && type !== 'g' && type !== 'L') rows.push([type === '5' ? name.replace(/\/?$/, '/') : name, type === '5' ? '' : fmtSize(size), archDate(new Date(oct(p + 136, p + 148) * 1000))]); p += 512 + Math.ceil(size / 512) * 512 } return rows.length ? { rows } : null }
+      function listRar(u) { const sig = String.fromCharCode(...u.subarray(0, 8)); const v = new DataView(u.buffer, u.byteOffset, u.byteLength), rows = [], dec = new TextDecoder(); if (sig === 'Rar!\x1a\x07\x01\x00') { let p = 8; const vint = () => { let r = 0, s = 1, b; do { b = u[p++]; r += (b & 127) * s; s *= 128 } while (b & 128 && p < u.length); return r }; while (p + 7 < u.length && rows.length < 5000) { const start = p + 4; p = start; const hs = vint(), body = p, type = vint(), hf = vint(); if (type === 4) return { rows: [], note: 'Lista protegida por senha' }; if (hf & 1) vint(); const ds = hf & 2 ? vint() : 0; if (type === 2) { const ff = vint(), size = vint(); vint(); let t = null; if (ff & 2) { t = new Date(v.getUint32(p, true) * 1000); p += 4 } if (ff & 4) p += 4; vint(); vint(); const nl = vint(); const name = dec.decode(u.subarray(p, p + nl)); rows.push([ff & 1 ? name + '/' : name, ff & 1 ? '' : fmtSize(size), archDate(t)]) } if (type === 5) break; p = body + hs + ds } return { rows } } if (sig.startsWith('Rar!\x1a\x07\x00')) { let p = 7; while (p + 7 <= u.length && rows.length < 5000) { const type = u[p + 2], fl = v.getUint16(p + 3, true), hs = v.getUint16(p + 5, true); if (type === 0x73 && fl & 0x80) return { rows: [], note: 'Lista protegida por senha' }; let add = fl & 0x8000 ? v.getUint32(p + 7, true) : 0; if (type === 0x74) { add = v.getUint32(p + 7, true); const size = v.getUint32(p + 11, true), tm = v.getUint32(p + 20, true), nl = v.getUint16(p + 26, true), big = fl & 0x100 ? 8 : 0; const name = new TextDecoder('latin1').decode(u.subarray(p + 32 + big, p + 32 + big + nl)).split('\0')[0].replace(/\\/g, '/'); const dir = (fl & 0xe0) === 0xe0; rows.push([dir ? name + '/' : name, dir ? '' : fmtSize(size), archDate(dosDate(tm & 0xffff, tm >>> 16))]) } if (!hs || type === 0x7b) break; p += hs + add } return { rows } } return null }
+      async function archiveList(blob, ext) { try { let u = new Uint8Array(await blob.arrayBuffer()); if (ext === 'tgz' || ext === 'gz') { if (typeof DecompressionStream !== 'function') return null; u = new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); return listTar(u) } if (ext === 'zip') return listZip(u); if (ext === 'tar') return listTar(u); if (ext === 'rar') return listRar(u); if (ext === '7z') return { rows: [], note: 'Lista não disponível: o .7z guarda a lista de arquivos comprimida' }; } catch (e) { SysLogger.warn('Archive list: ' + e.message) } return null }
+      /* The list as a tree: the folders with their files under them, indented; the size and the date on the right (D-0126) */
+      const ARCH_ICON = { dir: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' };
+      function archiveView(list) { const box = document.createElement('div'); if (list.note) { const p = document.createElement('p'); p.textContent = list.note; box.append(p) } if (!list.rows.length) return box; const root = { kids: new Map(), files: [], items: [] }; for (const [path, size, date] of list.rows) { const parts = path.split('/').filter(Boolean), isDir = path.endsWith('/'); let n = root; parts.forEach((part, i) => { if (i === parts.length - 1 && !isDir) { const f = { name: part, size, date }; n.files.push(f); n.items.push(f); return } if (!n.kids.has(part)) { const k = { name: part, kids: new Map(), files: [], items: [], date: null }; n.kids.set(part, k); n.items.push(k) } n = n.kids.get(part); if (i === parts.length - 1 && date) n.date = date }) } const count = n => n.files.length + [...n.kids.values()].reduce((a, k) => a + count(k), 0); const last = n => [n.date && n.date.d, ...n.files.map(f => f.date && f.date.d), ...[...n.kids.values()].map(last)].filter(Boolean).sort((x, y) => x - y)[0] || null; /* the folder shows its oldest date, the day it was filled */ const t = document.createElement('table'); t.className = 'arch-table'; const h = document.createElement('tr'); [['Nome', ''], ['Tamanho', 'num'], ['Data', 'num']].forEach(([x, c]) => { const th = document.createElement('th'); th.textContent = x; th.className = c; h.append(th) }); t.append(h); const row = (depth, icon, name, size, date) => { const tr = document.createElement('tr'); tr.className = 'arch-' + icon; const td = document.createElement('td'); td.style.setProperty('--depth', depth); td.innerHTML = `<svg class="arch-icon" viewBox="0 0 24 24" aria-hidden="true">${ARCH_ICON[icon]}</svg>`; const s = document.createElement('span'); s.textContent = name; td.append(s); const a = document.createElement('td'), b = document.createElement('td'); a.className = b.className = 'num'; a.textContent = size; b.textContent = date; tr.append(td, a, b); t.append(tr) }; const walk = (n, depth) => n.items.forEach(k => { if (k.kids) { const c = count(k); row(depth, 'dir', k.name, c + (c === 1 ? ' arquivo' : ' arquivos'), archDay(last(k))); walk(k, depth + 1) } else row(depth, 'file', k.name, k.size, k.date ? k.date.t : '') }); /* in the order of the archive */ walk(root, 0); box.append(t); return box }
+      /* ═══ MARKING AND MENUS (D-0128, D-0129) ═══
+         Item by item: each image and document has a box to mark it; the drag still only changes the order. The right click opens
+         one menu, in the colour of the screen, with what serves where it was clicked */
+      const marked = new Set();
+      function markSync() { document.querySelectorAll('.t-item[data-id], .d-item[data-id]').forEach(el => { const on = marked.has(el.dataset.id); el.classList.toggle('marked', on); const c = el.querySelector('.item-check'); if (c) c.checked = on }); document.body.classList.toggle('has-marked', marked.size > 0) }
+      function markClear() { if (!marked.size) return; marked.clear(); markSync() }
+      function markBox(id) { const c = document.createElement('input'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); c.addEventListener('click', e => e.stopPropagation()); c.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return c }
+      const markedImgs = () => images.filter(o => marked.has(o.id)), markedDocs = () => docs.filter(o => marked.has(o.id));
+      /* The page count of a PDF, read from the file without pdf.js: the /Count of the page tree, else the /Type /Page objects. Empty when the list is compressed */
+      async function pdfPages(blob) { try { const t = new TextDecoder('latin1').decode(new Uint8Array(await blob.arrayBuffer())); const c = [...t.matchAll(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)/g)].map(m => +m[1]); if (c.length) return Math.max(...c); const n = (t.match(/\/Type\s*\/Page[^s]/g) || []).length; return n || 0 } catch (_) { return 0 } }
+      /* The type label of a document, in the colours of --color-file-* (D-0128) */
+      const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
+      const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
+      function docBadge(o) { const ext = fileExt(o.name), kind = FILE_TYPES[ext]; if (!kind) return null; const b = document.createElement('span'); b.className = 'd-type d-type-' + kind; b.textContent = ext.toUpperCase(); b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', 'Abrir documento'); return b }
+      /* Names of the downloads of the marked items: the name of the Export with the count and the word in front (decision 23) */
+      function markedName(ext, imgs, ds) { const n = imgs.length + ds.length, w = !ds.length ? 'imagens' : !imgs.length && ds.every(d => fileExt(d.name) === 'pdf') ? 'pdfs' : 'itens', s = $('session-name').value.trim(); return buildFilename(ext, n + ' ' + w + (s ? ' ' + s : '')) }
+      async function dlMarkedPdf() { const imgs = markedImgs(); if (!imgs.length) return; try { dlBlob(await generatePDF(true, imgs), markedName('pdf', imgs, [])) } catch (e) { SysLogger.error('PDF: ' + e.message); showNotice('Não foi possível gerar o PDF.') } }
+      async function dlMarkedZip() { const imgs = markedImgs(), ds = markedDocs(); if (!imgs.length && !ds.length) return; try { dlBlob(buildZIP(await zipFilesOf(imgs, ds, false)), markedName('zip', imgs, ds)) } catch (e) { SysLogger.error('ZIP: ' + e.message); showNotice('Não foi possível gerar o ZIP.') } }
+      async function removeMarked() { for (const o of markedImgs()) await window.delImg(o.id); for (const o of markedDocs()) await window.delDoc(o.id); markClear() }
+      /* Duplicar: the copy right below the original, named by the rule of the app (contrato.pdf gives contrato-1.pdf) */
+      async function placeAfter(arr, copy, orig, store, sel) { arr.splice(arr.indexOf(copy), 1); arr.splice(arr.indexOf(orig) + 1, 0, copy); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const a = document.querySelector(`${sel}[data-id="${orig.id}"]`), b = document.querySelector(`${sel}[data-id="${copy.id}"]`); if (a && b) a.after(b) }
+      async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; let n = o.label, k; do { const m = n.match(/-(\d+)$/); n = m ? n.slice(0, -m[0].length) + '-' + (+m[1] + 1) : n + '-1'; k = n.toLowerCase() } while (images.some(x => x !== c && x.label.toLowerCase() === k) || removed.some(x => x.label.toLowerCase() === k)); c.label = n; const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
+      async function dupDoc(o) { await captureDoc(o.blob, o.name, o.type); await placeAfter(docs, docs[docs.length - 1], o, 'documents', '.d-item') }
+      async function copyImg(o) { try { let b = o.blob; if (b.type !== 'image/png') b = await new Promise((res, rej) => { const i = new Image(), u = URL.createObjectURL(o.blob); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); URL.revokeObjectURL(u); c.toBlob(x => x ? res(x) : rej(new Error('toBlob')), 'image/png') }; i.onerror = () => rej(new Error('load')); i.src = u }); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); showNotice('Imagem copiada.') } catch (e) { SysLogger.error('Copy image: ' + e.message); showNotice('Não foi possível copiar a imagem.') } }
+      function renameItem(el) { const f = el && el.querySelector('.t-label, .d-input'); if (f) { f.focus(); f.select() } }
+      function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
+      function dlDoc(o) { dlBlob(o.blob, o.name) }
+      async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
+      const MI = { open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      let ctxMenu = null, ctxFrom = null;
+      function ctxClose() { if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
+      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(([icon, label, key, fn, danger]) => { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key) { const k = document.createElement('span'); k.className = 'ctx-key'; k.textContent = key; b.append(k) } b.onclick = () => { ctxClose(); fn() }; m.append(b) }) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext); return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      function initMenus() {
+        ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
+        document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target)) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
+        window.addEventListener('blur', ctxClose); window.addEventListener('resize', ctxClose); document.addEventListener('scroll', ctxClose, true);
+        document.addEventListener('keydown', e => {
+          if (ctxMenu) { const it = [...ctxMenu.querySelectorAll('.ctx-item')], i = it.indexOf(document.activeElement); if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); ctxClose() } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); it[(i + (e.key === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } return }
+          if (document.querySelector('.modal-overlay.open, .sb-overlay.open') || typingInField()) return;
+          const el = document.activeElement && document.activeElement.closest && document.activeElement.closest('#thumb-grid .t-item, #doc-list .d-item');
+          if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }
+          else if (e.key === 'Delete' && (marked.size || el)) { e.preventDefault(); if (marked.size) removeMarked(); else if (el.matches('.t-item')) window.delImg(el.dataset.id); else window.delDoc(el.dataset.id) }
+          else if (e.key === 'F2' && el) { e.preventDefault(); renameItem(el) }
+          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o) { e.preventDefault(); copyImg(o) } }
+          else if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && el) { e.preventDefault(); const r = el.getBoundingClientRect(); ctxOpen(r.left + 12, r.top + 12, ctxGroups(el)) }
+        });
+      }
       /* ═══ TEXT MODAL ═══ */
       let textModalItemId = null, textModalIsTrash = false;
       window.openTextModal = async function (id, trash) {
@@ -4052,15 +4527,16 @@
         if (!o) return;
         textModalItemId = id;
         textModalIsTrash = trash;
-        const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript';
+        const dot = (o.name || '').lastIndexOf('.'), fext = dot >= 0 ? o.name.slice(dot + 1).toLowerCase() : '';
+        const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript' || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
+        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true;
         if (isText) {
-          try {
-            const val = await o.blob.text();
-            $('text-modal-content').value = val;
-          } catch (e) {
-            $('text-modal-content').value = 'Erro ao carregar conteúdo de texto.';
-          }
-          $('text-modal-content').style.display = '';
+          let val = '';
+          try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
+          $('text-modal-content').value = val;
+          const kind = /^(md|markdown)$/.test(fext) ? 'md' : fext === 'csv' ? 'csv' : /^html?$/.test(fext) ? 'html' : 'text';
+          if (kind !== 'text') { view.hidden = false; view.className = 'view-' + kind; view.append(kind === 'md' ? mdView(val) : kind === 'csv' ? csvView(val) : htmlView(val)) }
+          $('text-modal-content').style.display = kind === 'text' ? '' : 'none';
           $('text-modal-copy').style.display = '';
           $('text-modal-binary-msg').style.display = 'none';
         } else {
@@ -4069,22 +4545,37 @@
           $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';
+          if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
         }
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
-        $('text-modal-info').textContent = `${o.name} · ${fmtSize(o.size)}`;
+        $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
         $('text-modal-restore').style.display = trash ? 'flex' : 'none';
+        textEditEnd(); $('text-modal-edit').style.display = isText && !trash ? '' : 'none'; // Editar: the plain text, also of Markdown, CSV and HTML (D-0125)
         $('text-modal-dl').style.display = 'flex';
         $('text-modal-overlay').classList.add('open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
       };
+      /* The minimal text editor (D-0125): Editar turns the page into the plain text, editable; Cancelar and Confirmar end it, as in the image editor.
+         With changes not saved, Esc, the ✕ and a click outside make the two pulse, and nothing closes */
+      let textEditing = false, textEditOrig = '';
+      const textEditDirty = () => textEditing && $('text-modal-content').value !== textEditOrig;
+      function textEditStart() { const ta = $('text-modal-content'); textEditing = true; textEditOrig = ta.value; ta.readOnly = false; ta.style.display = ''; $('text-modal-view').hidden = true; $('text-modal-actions').style.display = 'none'; $('text-modal-edit-actions').style.display = 'flex'; ta.focus() }
+      function textEditEnd() { const ta = $('text-modal-content'); textEditing = false; ta.readOnly = true; $('text-modal-actions').style.display = 'flex'; $('text-modal-edit-actions').style.display = 'none' }
+      function textEditAlert() { ['text-edit-cancel', 'text-edit-save'].forEach(id => { const b = $(id); b.classList.remove('alert-anim'); void b.offsetWidth; b.classList.add('alert-anim') }) }
+      async function textEditSave() { const arr = textModalIsTrash ? removedDocs : docs, o = arr.find(x => x.id === textModalItemId), val = $('text-modal-content').value; if (o && val !== textEditOrig) { o.blob = new Blob([val], { type: o.type || 'text/plain' }); o.size = o.blob.size; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } const sz = document.querySelector(`.d-item[data-id="${o.id}"] .d-size`); if (sz) sz.textContent = fmtSize(o.size); isDirty = true; triggerSave(); updateStatusBar() } textEditEnd(); if (o) window.openTextModal(o.id, textModalIsTrash) }
       function closeTextModal() {
+        if (textEditDirty()) { textEditAlert(); return }
+        textEditEnd();
         $('text-modal-overlay').classList.remove('open');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         $('text-modal-content').value = '';
       }
       $('text-modal-close').onclick = closeTextModal;
+      $('text-modal-edit').onclick = textEditStart;
+      $('text-edit-cancel').onclick = () => { const o = (textModalIsTrash ? removedDocs : docs).find(x => x.id === textModalItemId); textEditEnd(); if (o) window.openTextModal(o.id, textModalIsTrash) };
+      $('text-edit-save').onclick = textEditSave;
       let _textOverlayMdOnBackdrop = false;
       $('text-modal-overlay').addEventListener('mousedown', function (e) { _textOverlayMdOnBackdrop = (e.target === this) });
       $('text-modal-overlay').onclick = function (e) { if (e.target === this && _textOverlayMdOnBackdrop) closeTextModal(); _textOverlayMdOnBackdrop = false };
@@ -4095,22 +4586,10 @@
         }
       };
       $('text-modal-copy').onclick = async function () {
-        const btn = $('text-modal-copy');
-        const val = $('text-modal-content').value;
-        try {
-          await navigator.clipboard.writeText(val);
-          const old = btn.innerHTML;
-          btn.innerHTML = 'Copiado!';
-          btn.style.background = 'var(--color-green-500)';
-          btn.style.color = 'var(--color-white)';
-          setTimeout(() => {
-            btn.innerHTML = old;
-            btn.style.background = '';
-            btn.style.color = '';
-          }, 1500);
-        } catch (err) {
-          SysLogger.error('Erro ao copiar.'); const old = btn.innerHTML; btn.innerHTML = '<span style="color:var(--color-red-500)">Erro!</span>'; setTimeout(() => btn.innerHTML = old, 2000);
-        }
+        const btn = $('text-modal-copy'), old = btn.innerHTML;
+        const show = (cls, html) => { btn.classList.add(cls); btn.innerHTML = html; setTimeout(() => { btn.classList.remove(cls); btn.innerHTML = old }, 1500) };
+        try { await navigator.clipboard.writeText($('text-modal-content').value); show('st-success', '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Copiado') }
+        catch (err) { SysLogger.error('Erro ao copiar.'); show('st-error', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro') }
       };
       $('text-modal-dl').onclick = function () {
         if (!textModalItemId) return;
@@ -4166,6 +4645,10 @@
       const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
       function annSyncSwatches(c = annCurrentColor) { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c)) }
       let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
+      let annTextBg = (() => { try { return localStorage.getItem('text-bg') === '1' } catch (_) { return false } })(); // Texto «Com fundo», kept in this browser (D-0121)
+      /* The letter over a filled text: dark or white, whichever has more contrast, by the same YIQ rule as the buttons of the app (D-0121) */
+      const annOnColor = c => { const m = /^#?([0-9a-f]{6})$/i.exec(c || ''); if (!m) return '#ffffff'; const n = parseInt(m[1], 16), y = ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000; return y >= 128 ? '#1a1917' : '#ffffff' };
+      function annTextLook(inp, c = annCurrentColor) { inp.style.background = annTextBg ? c : 'transparent'; inp.style.color = annTextBg ? annOnColor(c) : c }
       let annTextBold = true, annTextItalic = false, annEditingTextIdx = -1, annSelectedIdx = -1;
       // Annotation drag variables
       let annDragging = false;       // true while the user drags a selected shape
@@ -4336,7 +4819,7 @@
       // An option of a tray shows whether it is on: the active look and aria-pressed
       function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
       // B and I in the Texto tray show the style in use
-      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annSyncTextIcon() }
+      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annPress('ann-text-bg', annTextBg); annSyncTextIcon() }
       // B or I, from its button or Ctrl+B and Ctrl+I: the style of the tool, and of the text field when it is open
       function annFlipStyle(bold) {
         if (bold) annTextBold = !annTextBold; else annTextItalic = !annTextItalic;
@@ -4346,7 +4829,7 @@
       // The Texto button: lit while a text is selected, and its T in the style of that text, else of the tool
       function annSyncTextIcon() {
         const _t = document.querySelector('.ann-btn[data-tool="text"]'), s = annHistory[annSelectedIdx], st = !!s && s.type === 'text';
-        _t.classList.toggle('ann-txt-selected', st); _t.classList.toggle('ann-txt-b', st ? s.bold !== false : annTextBold); _t.classList.toggle('ann-txt-i', st ? !!s.italic : annTextItalic);
+        _t.classList.toggle('ann-txt-selected', st); _t.classList.toggle('ann-txt-b', st ? s.bold !== false : annTextBold); _t.classList.toggle('ann-txt-i', st ? !!s.italic : annTextItalic); _t.classList.toggle('ann-txt-bg', st ? !!s.bg : annTextBg);
       }
       // Tool options (D-0102): a tray stays open while its options are clicked, and closes with a click or the focus elsewhere, Esc or another tool
       let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
@@ -4535,7 +5018,7 @@
         const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
         // Top-right handle in canvas coords: (b.x + b.w + M, b.y - M)
         // Convert to ann-viewport coords and centre the button on the handle
-        const _BTN = 20; // size of the ✕ button (square)
+        const _BTN = 24; // size of the delete button (square, .t-del)
         const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
         const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : _sel.type === 'arrow' ? annArrowDelPoint(_sel) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text; beside the middle of an arrow
         const _z = uiZoom();
@@ -4595,7 +5078,7 @@
           ctx.restore();
         }
       }
-      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.bg) { const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length; ctx.save(); if (h.rot) { ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); ctx.fillRect(-_p, 0, _w + _p * 2, _hh) } else ctx.fillRect(h.x1 - _p, h.y1, _w + _p * 2, _hh); ctx.restore(); ctx.fillStyle = annOnColor(h.color) } if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
@@ -4758,7 +5241,7 @@
         inp.style.lineHeight = (scaledFontSize * ANN_TEXT_LINE_RATIO) + 'px';
         inp.style.fontWeight = annTextBold ? 'bold' : 'normal';
         inp.style.fontStyle = annTextItalic ? 'italic' : 'normal';
-        inp.style.color = annCurrentColor;
+        annTextLook(inp);
         inp.style.pointerEvents = 'auto';
         inp.style.transformOrigin = '0 0'; inp.style.transform = rot ? 'rotate(' + rot + 'deg)' : '';
         inp.value = prefillText || '';
@@ -4775,7 +5258,7 @@
           const _ov = $('ann-text-overlay'); if (_ov) _ov.style.display = 'none';
           if (txt) {
             annPushUndo(); // M3/M4: snapshot BEFORE a new text or an edit of an existing text
-            const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: annTextSize, lw: annLineW() }; if (rot) entry.rot = rot;
+            const entry = { type: 'text', x1: canvasX, y1: canvasY, txt, color: annCurrentColor, bold: annTextBold, italic: annTextItalic, fontSize: annTextSize, lw: annLineW() }; if (rot) entry.rot = rot; if (annTextBg) entry.bg = true;
             if (annEditingTextIdx >= 0 && annEditingTextIdx < annHistory.length) { annHistory[annEditingTextIdx] = entry } else { annHistory.push(entry) }
             setAnnDirty(true);
             annEditingTextIdx = -1;
@@ -4840,6 +5323,11 @@
         window.addEventListener('scroll', hide, true);
       }
       function initAnnotation() {
+        /* − and + right after the tools on a computer, before 90° and Recortar (D-0122). Up to 480 px the tool row is full (D-0109),
+           so there they stay after the colours, as before */
+        { const dn = $('ann-thickness-down'), up = $('ann-thickness-up'), home = dn.parentElement, sel = document.querySelector('#ann-row-tools > .ann-btn[data-tool="select"]'), mq = window.matchMedia('(width <= 30rem)');
+          const sep = document.createElement('div'); sep.className = 'ann-sep'; /* the line between the tools and − + */ const place = () => { if (mq.matches) { sep.remove(); home.append(dn, up); dn.style.marginLeft = 'calc(var(--spacing) * 1)' } else { sel.after(sep, dn, up); dn.style.marginLeft = '' } };
+          place(); mq.addEventListener('change', place) }
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
         // Every tray ends with − and + and the current size (D-0102). Written here, before initTips reads the titles and after BOOT_HTML,
         // so the Quine copies the HTML without them
@@ -4986,11 +5474,12 @@
               setAnnDirty(true); annRenderAll();
             } else annCurrentColor = _color; // no selection: the colour of the tool
             annSyncSwatches(_color);
-            if (annTyping()) { const inp = $('ann-text-input'); inp.style.color = _color; inp.focus() }
+            if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp, _color); inp.focus() }
           };
         });
         // Bold / Italic buttons: same handling
         ['ann-bold-btn', 'ann-italic-btn'].forEach((id, i) => { const b = $(id); annKeepTyping(b); b.onclick = () => annFlipStyle(!i) });
+        { const b = $('ann-text-bg'); annKeepTyping(b); b.onclick = () => { annTextBg = !annTextBg; try { localStorage.setItem('text-bg', annTextBg ? '1' : '0') } catch (_) { } annShowTextStyleBtns(); if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp); inp.focus() } } }
         // With the Texto tool and its field open, the − and + resize the field live
         function annTextLiveResize() { if (annTool === 'text' && annTextPlace && annTyping()) { annTextPlace(); $('ann-text-input').focus() } }
         // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
@@ -5191,7 +5680,7 @@
         function annEditText(i) {
           const _h = annHistory[i];
           annEditingTextIdx = i;
-          annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic;
+          annCurrentColor = _h.color; annTextBold = _h.bold !== false; annTextItalic = !!_h.italic; annTextBg = !!_h.bg;
           annTextSize = _h.fontSize || 24;
           annSyncSwatches(); annShowTextStyleBtns();
           if (annTool !== 'text') annSetTool('text'); // editing a text switches to the Texto tool; its options (B, I) show what the text uses
@@ -5451,7 +5940,7 @@
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
         _annDelBtnEl.title = 'Remover';
-        _annDelBtnEl.textContent = '✕';
+        _annDelBtnEl.innerHTML = TRASH_SVG; // the trash, as every Remover (D-0117)
         // Overrides only the values that differ from the thumbnail context:
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
@@ -5726,7 +6215,7 @@
       }
 
       /* ═══ SIDEBAR ═══ */
-      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions').catch(() => [])).sort((a, b) => b.createdAt - a.createdAt); /* without IndexedDB the list is empty, without an uncaught error (F-0098) */ list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<span class="sb-sess-del" title="Excluir" role="button" tabindex="0" aria-label="Excluir sessão" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')">✕</span>`; el.innerHTML = `<span class="sb-sess-name" role="button" tabindex="0" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
+      async function renderSbSessions() { const list = $('sb-sess-list'); if (!list) return; const all = (await idbAll('sessions').catch(() => [])).sort((a, b) => b.createdAt - a.createdAt); /* without IndexedDB the list is empty, without an uncaught error (F-0098) */ list.innerHTML = ''; if (!all.length) {/* V20: Pristine empty state — leave sidebar state as-is; click-outside collapses it */return; } const sortedOldest = [...all].sort((a, b) => a.createdAt - b.createdAt); all.forEach(s => { const d = new Date(s.createdAt), ds = String(d.getDate()).padStart(2, '0') + '-' + MONTHS[d.getMonth()] + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0'); const idx = sortedOldest.findIndex(x => x.id === s.id); const sessionNum = idx + 1; const fallback = `#${String(sessionNum).padStart(4, '0')}`; const sessionName = s.name || fallback; const el = document.createElement('div'); el.className = 'sb-sess-item' + (s.id === sessId ? ' active' : ''); const delBtn = `<button class="sb-sess-del" title="Eliminar sessão" aria-label="Eliminar sessão" onclick="event.stopPropagation();window.deleteSessionId('${escapeHTML(s.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`; el.innerHTML = `<span class="sb-sess-name" role="button" tabindex="0" data-fallback="${escapeHTML(fallback)}">${escapeHTML(sessionName)}</span><span class="sb-sess-date">${ds}</span>${delBtn}`; el.onclick = () => window.openSession(s.id); list.appendChild(el) }) } function initSidebar() { $('sb-rail').onclick = function () { sbExp = !sbExp; $('sidebar').classList.toggle('expanded', sbExp); if (sbExp) renderSbSessions() }; $('btn-history').onclick = function () { $('sidebar').classList.add('mobile-open'); $('sb-mobile-overlay').classList.add('mobile-open'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; renderSbSessions() }; window.closeMobileSidebar = function () { $('sidebar').classList.remove('mobile-open'); $('sb-mobile-overlay').classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = '' };/* V20: Click-outside auto-collapse when history empty */document.addEventListener('click', function (e) { if (sbExp && !e.target.closest('#sidebar') && !e.target.closest('#sb-rail')) { const ll = $('sb-sess-list'); if (ll && !ll.children.length) { sbExp = false; const sb = $('sidebar'); if (sb) sb.classList.remove('expanded') } } }, { capture: false }) }
       window.openSession = async function (id) { if (isDirty) await triggerSave(); await loadSession(id); renderSbSessions(); if (window.closeMobileSidebar) window.closeMobileSidebar() };
       window.deleteSessionId = async function (id) {
         /* V17: Capture neighbor BEFORE deletion for auto-navigation */
@@ -6215,14 +6704,14 @@
       }
       // The .pdf button back to rest after the success or error state (cls)
       function pdfBtnReset(btn, cls) { btn.classList.remove(cls); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; btn.disabled = false; updateBtns() }
-      async function generatePDF(returnBlob = false) {
+      async function generatePDF(returnBlob = false, list = images) {
         if (!returnBlob && await moveUndrawableToDocs()) { updateBtns(); return }
         const pdfFmt = lerLayoutPDF(); const btn = $('btn-pdf');
         if (!returnBlob) { btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; }
         try {
           await new Promise(r => setTimeout(r, 50));
           const quality = TOKEN_JPEG_QUALITY; const jpegBlobs = [];
-          for (const img of images) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
+          for (const img of list) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
           const blob = await buildPdfBlob(jpegBlobs, pdfFmt);
           if (returnBlob) return blob;
           dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
@@ -6240,16 +6729,18 @@
       function resetZipMode() { zipModeActive = false; const bPdf = $('btn-pdf'), bZip = $('btn-zip'); bPdf.classList.remove('btn-outline'); bPdf.classList.remove('btn-zip-cta'); bZip.classList.remove('btn-outline'); bZip.classList.remove('btn-zip-cta'); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; initPdfModal(); bZip.onclick = handleZipClick; updateBtns(); updateBtnTitles() }
       function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* btn-zip-cta gives the two ZIP choices the look of the Adicionar buttons */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.setAttribute('aria-description', "Exportar imagens num único PDF dentro do ZIP"); bZip.setAttribute('aria-description', "Exportar imagens em arquivos separados dentro do ZIP"); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
       document.addEventListener('click', (e) => { if (zipModeActive && !e.target.closest('#export-section')) resetZipMode() });
-      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Lower-case key: images and documents are deduplicated upstream in
+      /* The files of a ZIP: the images (or one PDF of them) and the documents, with names that do not collide */
+      async function zipFilesOf(imgs, ds, isPdf) { const usedZipNames = new Set(); /* Lower-case key: images and documents are deduplicated upstream in
    separate namespaces, but they share ONE namespace here. Windows and macOS are
    case-insensitive, so 'Relatorio.png' and 'relatorio.png' would collide when extracted.
    The same invariant that AGENTS.md section 3 requires for all deduplication (D26). */
-function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const ext = imgExt(img.blob.type); const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
+function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true, imgs); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of imgs) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const ext = imgExt(img.blob.type); const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of ds) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
    a file name (< > : " | ? *) and the control characters. A document renamed in the
    app to 'rel:atorio.txt' made an entry that Explorer does not extract. The image
    captions were already protected by an allow list; this closes the
    asymmetry between the two naming paths (D27). */
-const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replace(/\.\.\\/g, '').replace(/^\.*\//g, '').replace(/^\.+/, '').replace(/[<>:"|?*\u0000-\u001f]/g, '').replace(/[. ]+$/, '').trim() || 'documento'; files.push({ name: dedupeZipName(safeDocName), data: u8 }) } const zipBlob = buildZIP(files); dlBlob(zipBlob, buildFilename('zip')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success'); $('btn-pdf').disabled = (!images.length || docs.length > 0); holdSuccess(() => { btn.classList.remove('st-success'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }); SysLogger.info('ZIP gerado: ' + fmtSize(zipBlob.size)) } catch (e) { SysLogger.error('ZIP: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro'; holdSuccess(() => { btn.classList.remove('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }) } }
+const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replace(/\.\.\\/g, '').replace(/^\.*\//g, '').replace(/^\.+/, '').replace(/[<>:"|?*\u0000-\u001f]/g, '').replace(/[. ]+$/, '').trim() || 'documento'; files.push({ name: dedupeZipName(safeDocName), data: u8 }) } return files }
+      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const files = await zipFilesOf(images, docs, isPdf); const zipBlob = buildZIP(files); dlBlob(zipBlob, buildFilename('zip')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success'); $('btn-pdf').disabled = (!images.length || docs.length > 0); holdSuccess(() => { btn.classList.remove('st-success'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }); SysLogger.info('ZIP gerado: ' + fmtSize(zipBlob.size)) } catch (e) { SysLogger.error('ZIP: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro'; holdSuccess(() => { btn.classList.remove('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }) } }
       function buildZIP(files) { const crc32Tab = (function () { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++)c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c } return t })(); function crc32(buf) { let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++)c = crc32Tab[(c ^ buf[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0 } function u16(v) { return [v & 0xFF, (v >> 8) & 0xFF] } function u32(v) { return [v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF, (v >> 24) & 0xFF] } const localParts = [], centralParts = []; let localOfs = 0; for (const f of files) { const nameU8 = ENC.encode(f.name); const crc = crc32(f.data); const now = new Date(); const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF; const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF; const local = new Uint8Array([0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, ...nameU8]); const central = new Uint8Array([0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(localOfs), ...nameU8]); localParts.push(local, f.data); centralParts.push(central); localOfs += local.length + f.data.length } const centralOfs = localOfs; let centralSize = 0; centralParts.forEach(p => centralSize += p.length); const eocd = new Uint8Array([0x50, 0x4B, 0x05, 0x06, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(centralSize), ...u32(centralOfs), 0, 0]); return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' }) }
 
       /* ═══ QUINE ENGINE ═══ */
@@ -6276,9 +6767,9 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.7.3 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.0.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
-function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
+function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
 
         }) ();

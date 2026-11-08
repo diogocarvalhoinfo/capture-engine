@@ -182,7 +182,7 @@ O Capture Engine aceita conteúdo de três formas:
 | Categoria | Formatos |
 |---|---|
 | Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens), também com uma extensão que o navegador não conhece: a imagem é reconhecida pelo conteúdo |
-| Documentos de texto | TXT, CSV, XML, JSON, HTML, e outros formatos de texto simples (visualizáveis diretamente na app) |
+| Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet. «Editar» muda o texto puro, com Cancelar e Confirmar |
 | Documentos binários | PDF, DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
 **Nomeação automática sem colisões:**
@@ -195,7 +195,7 @@ Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automat
 
 ### 6.2 Visualizador de imagens (Zoom & Pan)
 
-Ao clicar numa imagem, abre um visualizador com zoom e navegação.
+Ao clicar numa imagem, abre um visualizador com zoom e navegação. O título é o nome com a extensão, o mesmo que o Download grava, e logo depois dele vêm as dimensões e o tamanho.
 
 | Ação | Como fazer |
 |---|---|
@@ -220,18 +220,18 @@ No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arra
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também as 8 cores, «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), «Desfazer», «Refazer», «Cancelar» e «Confirmar».
+  - A barra tem também «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), logo depois das ferramentas no computador e depois das cores no telefone, as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar».
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400. O ícone do desenho livre e o da seta engrossam e afinam com a espessura de cada um.
   - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. Um clique na ferramenta já escolhida (no telefone, um toque) abre as opções numa bandeja logo acima. O duplo clique e o botão apertado por 1 s também abrem. As opções ficam lado a lado, sempre na mesma ordem, e a escolhida fica marcada. Cada uma mostra o nome ao passar o mouse. Com a bandeja aberta, o ponto fica na cor principal. Um clique fora, o Esc, outra ferramenta ou um novo clique na ferramenta fecham a bandeja; um clique na imagem já começa o desenho. Com o Texto, a bandeja fica aberta enquanto se digita, e o B, o I, o − e o + valem para o texto aberto. Pelo teclado, a seta para cima abre, e as setas para os lados andam entre as opções. A barra não muda de forma, e a bandeja acompanha a tela quando ela muda de tamanho.
     - Em todas, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles. O tamanho é um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
     - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão, com o ícone de xadrez) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Com «Sólido», o botão da ferramenta mostra a ponta cheia.
-    - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I). O T da ferramenta mostra o estilo, o do texto selecionado ou o que vai ser usado: mais grosso com «Negrito», inclinado com «Itálico». Um duplo clique num texto o reabre para editar.
+    - Texto: **Negrito**, **Itálico** e **Com fundo**, que ligam e desligam cada um (o negrito e o itálico também com Ctrl+B e Ctrl+I). Com fundo, o texto fica sobre um retângulo na cor escolhida, com a letra escura ou branca, a que der mais contraste. O T da ferramenta mostra o estilo, o do texto selecionado ou o que vai ser usado: mais grosso com «Negrito», inclinado com «Itálico». Um duplo clique num texto o reabre para editar.
     - Com um retângulo, um círculo ou um marca-texto selecionado, a opção da mesma ferramenta muda também essa anotação, e o Ctrl+Z desfaz. Escolher outra ferramenta, ou o Texto, tira a seleção, e as opções voltam a valer para a ferramenta. Para mudar o negrito ou o itálico de um texto, faça um duplo clique nele e use as opções. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador. A cada abertura do editor, o texto volta a 24, com o negrito ligado e o itálico desligado.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Com anotações por salvar, fechar o editor (pelo ✕, pelo Esc ou por um clique fora) faz o Cancelar e o Confirmar crescerem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
-- Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou botão ✕
-- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o do meio sobre uma anotação a selecionam, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar. Um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
+- Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou com a lixeira
+- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o do meio sobre uma anotação a selecionam, com as alças e a lixeira, e já a arrastam. A barra passa ao Selecionar. Um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
 - Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
 - Redimensionar: alças nos 4 cantos de cada anotação, menos a seta. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção. Numa seta curta, o meio continua a mover a seta. O texto muda de tamanho por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto
 - Shift: o Retângulo desenha um quadrado, o Círculo um círculo perfeito (sem o Shift, ele desenha uma elipse), e a Seta e o Desenho livre andam em passos de 45°. Vale ao desenhar e ao redimensionar, também quando o Shift é apertado no meio do gesto
@@ -248,7 +248,10 @@ No telefone:
 - Os botões de apagar e de restaurar ficam sempre visíveis.
 - A barra quebra em linhas conforme a largura: as ferramentas, as cores com o − e o +, e as ações. Até 480 px, as ferramentas, o 90° e o Recortar ficam numa linha só, e os botões encolhem até 30 px quando a tela é mais estreita.
 
-### 6.4 Reordenação
+### 6.4 Marcar, menus e reordenação
+
+Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Esc, ou um clique fora dos itens, desmarca tudo.
+
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
 - Em imagens: arraste a miniatura para a posição desejada na grade
@@ -271,7 +274,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
-> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Excluir») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
+> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Eliminar sessão») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
 
 ### 6.6 Export PDF
 
@@ -535,6 +538,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
+| **Cópias anteriores à 29** | Depois de abrir a versão 29 num navegador, uma cópia mais antiga, no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Nada se perde; a 29 mostra tudo. Use sempre a versão mais nova. |
+| **Lista do .7z** | Um .zip, .tar, .tar.gz ou .rar mostra a lista de arquivos; um .7z não, porque guarda essa lista comprimida. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Navegação privada** | Em alguns navegadores, a navegação privada não deixa gravar as capturas. Elas ficam na aba aberta, a barra de estado diz «Só nesta aba», e um aviso vermelho aparece no topo. Exporte em PDF ou ZIP antes de fechar a aba. |
 | **Aba privada no iPhone** | Numa aba privada, as capturas não são gravadas. Se o Safari recarregar ou fechar a aba, elas se perdem: exporte antes de sair do Safari. |
@@ -584,7 +589,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
 - **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox, e no Safari do iPhone (iOS 26.5), no site publicado. O Safari do Mac não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
-- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
+- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**, a partir da mesma série: todas usam a mesma base `CaptureEngineDB`. A exceção é uma cópia anterior à versão 29 aberta depois de uma 29, que não abre a base (ver «Limitações conhecidas»). Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (outra origem ou outro perfil):
   - **janela anônima ou privada**;
   - **outro perfil** do navegador;
@@ -602,8 +607,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem cerca de 400 KB. É normal?**
-Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 400 KB, e a do Export User fica menor, sem o Visual Builder.
+**O meu arquivo HTML tem cerca de 430 KB. É normal?**
+Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 430 KB, e a do Export User fica menor, sem o Visual Builder.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
@@ -631,7 +636,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** 28.7.3. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.0.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
@@ -668,7 +673,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 
 **Estado medido em novembro de 2026,** só com o teclado, com o Playwright no Windows: Edge 156, Firefox 150 e WebKit 26.4 (o motor do Safari). São versões diferentes das testadas à mão em «Requisitos». O resultado foi o mesmo nos três:
 - **Teclado:** o Tab alcança todos os controles, e Enter ou Espaço os ativam. Isso inclui as miniaturas, os documentos, os itens dos «Removidos», as sessões do Histórico, cada chip do layout do PDF, as abas do Visual Builder e os cartões de exportação.
-- **Botões que aparecem com o mouse:** o ✕ de remover e o botão de restaurar aparecem também quando recebem o foco.
+- **Botões que aparecem com o mouse:** a lixeira de remover e o botão de restaurar aparecem também quando recebem o foco.
 - **Barras recolhidas:** com o Histórico ou os «Removidos» fechados, o conteúdo deles fica fora da ordem do Tab, e o Tab passa só pelas setas que os abrem. Por isso, o layout não se desloca.
 - **Modais:** com um modal aberto, o Tab fica dentro dele, e o resto da página não recebe o foco. Ao fechar, o foco volta ao elemento de onde o modal foi aberto.
 - **Esc:** no editor, fecha primeiro a bandeja de opções; sem bandeja e sem anotações por salvar, volta ao visualizador. Com anotações por salvar, mostra o aviso, como num clique fora. Fecha também o visualizador, o modal de texto e a exportação da ferramenta. As setas ← → trocam de imagem no visualizador; no editor, andam só na barra. O Visual Builder fecha só pelo ✕, que o Tab alcança; é uma escolha, para não perder configurações por acidente.
