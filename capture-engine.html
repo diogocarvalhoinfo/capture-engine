@@ -3764,7 +3764,8 @@
          order, and the sort in loadSession then returns different orders between
          reloads). max+1 never collides. See D45. */
       function nextOrder(arr) { return arr.length ? Math.max(...arr.map(x => x.order)) + 1 : 0 }
-      function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(1) + ' MB' }
+      /* Sizes with a decimal comma, as in Portuguese, and a space that does not break between the number and the unit (D-0120) */
+      function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
       const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
