@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: o PDF sem o pdf.js (abrir no leitor do navegador, contar as páginas, juntar, diminuir o tamanho, o PDF em Imagens e as páginas dele no .pdf), colar uma imagem por cima da foto e as camadas no editor, o Recortar com Cantos livres e Endireitar, e os Cantos livres começando no papel achado. A caixa de marcar passa a aparecer só depois de «Marcar», e o menu dos marcados é o mesmo em qualquer item.
 
+Teste do Export User (`AGENTS.md` §11, Parte B): os arquivos exportados por quem mantém o projeto às 22h13, já na 29.1.0, abertos por `file://` no Edge 157 com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor, o título e o rodapé aplicados, a imagem colada (um evento de colar com a imagem, como o do Ctrl+V) entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.1.0, e ela exporta uma nova cópia User, igual byte a byte à exportada por quem mantém o projeto.
+
 ### Adicionado
 
 - **O PDF abre no visualizador (D-0130):** antes, um PDF em Documentos mostrava só «Faça download para visualizar». Agora «Abrir», o clique e o Enter mostram o PDF dentro da moldura do visualizador, com o leitor do próprio navegador: as páginas, o zoom e o texto selecionável. O menu do clique direito ganhou «Abrir» no PDF. Testado no Chrome em 1536 × 777, nos temas claro e escuro, e em 375 × 812: sem erros no console, e o endereço do PDF é liberado ao fechar. No iPhone, o Safari pode mostrar só a primeira página; isso não foi testado, e está no README, em «Limitações conhecidas».
