@@ -3012,7 +3012,8 @@
       font-weight: 600;
     }
 
-    #text-modal-view.view-html {
+    #text-modal-view.view-html,
+    #text-modal-view.view-pdf {
       overflow: hidden;
     }
 
@@ -4504,7 +4505,7 @@
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
       function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(([icon, label, key, fn, danger]) => { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key) { const k = document.createElement('span'); k.className = 'ctx-key'; k.textContent = key; b.append(k) } b.onclick = () => { ctxClose(); fn() }; m.append(b) }) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
-      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext); return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
       function initMenus() {
         ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
         document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target)) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
@@ -4522,6 +4523,9 @@
       }
       /* ═══ TEXT MODAL ═══ */
       let textModalItemId = null, textModalIsTrash = false;
+      /* A PDF opens in the reader of the browser itself, in an iframe with a blob: address; the CSP allows it by default-src (D-0130) */
+      let pdfViewUrl = null;
+      const pdfViewDrop = () => { if (pdfViewUrl) { URL.revokeObjectURL(pdfViewUrl); pdfViewUrl = null } };
       window.openTextModal = async function (id, trash) {
         const arr = trash ? removedDocs : docs, o = arr.find(x => x.id === id);
         if (!o) return;
@@ -4529,7 +4533,7 @@
         textModalIsTrash = trash;
         const dot = (o.name || '').lastIndexOf('.'), fext = dot >= 0 ? o.name.slice(dot + 1).toLowerCase() : '';
         const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript' || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
-        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true;
+        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
           try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
@@ -4546,6 +4550,7 @@
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';
           if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
+          if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
         }
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
         $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
@@ -4571,6 +4576,7 @@
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         $('text-modal-content').value = '';
+        $('text-modal-view').replaceChildren(); pdfViewDrop();
       }
       $('text-modal-close').onclick = closeTextModal;
       $('text-modal-edit').onclick = textEditStart;

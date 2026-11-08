@@ -401,10 +401,16 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  │ (Consolas, Monaco, monospace)                      │  │    (TXT, CSV, JSON...)
 │  └────────────────────────────────────────────────────┘  │
 │
-│  OU, para arquivos binários (PDF, DOCX, etc.):          │
+│  OU, para um PDF:                                        │
 │
 │  ┌────────────────────────────────────────────────────┐  │
-│  │           [ícone]  PDF                             │  │  ← modo binário
+│  │ iframe com blob: (o leitor do próprio navegador)   │  │  ← .view-pdf
+│  └────────────────────────────────────────────────────┘  │
+│
+│  OU, para os outros binários (DOCX, XLSX, etc.):         │
+│
+│  ┌────────────────────────────────────────────────────┐  │
+│  │           [ícone]  DOCX                            │  │  ← modo binário
 │  │   Faça download para visualizar o documento        │  │    (textarea oculta)
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
@@ -416,6 +422,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 **Como o motor decide entre modo texto e modo binário:**
 - MIME type começa com `text/` → modo texto (visualizável inline)
 - MIME type é `application/json`, `application/xml`, etc. → modo texto
+- Extensão `.pdf` ou MIME `application/pdf` → modo binário, com o PDF num `iframe` de endereço `blob:` (D-0130)
 - Qualquer outro MIME type → modo binário (download apenas)
 
 ---
