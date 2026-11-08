@@ -2326,23 +2326,33 @@
     /* ═══ MARKING (D-0128, D-0135) ═══
        A box per item; on images in the top left corner. It shows only while something is marked: «Marcar», in the menu of the right click, starts it */
     .item-check {
-      display: none;
+      display: block;
       width: 16px;
       height: 16px;
       margin: 0;
-      flex-shrink: 0;
       cursor: pointer;
       accent-color: var(--color-primary)
     }
 
-    .t-item .item-check {
-      position: absolute;
-      top: calc(var(--spacing) * 1.5);
-      left: calc(var(--spacing) * 1.5);
-      z-index: var(--z-raised)
+    /* The box sits in a label 10 px larger on each side: the same box on screen, a hit area of 36 px (P7) */
+    .item-check-hit {
+      display: none;
+      position: relative;
+      z-index: var(--z-raised);
+      flex-shrink: 0;
+      padding: calc(var(--spacing) * 2.5);
+      margin: calc(var(--spacing) * -2.5);
+      cursor: pointer
     }
 
-    .has-marked .item-check {
+    .t-item .item-check-hit {
+      position: absolute;
+      top: calc(var(--spacing) * -1);
+      left: calc(var(--spacing) * -1);
+      margin: 0
+    }
+
+    .has-marked .item-check-hit {
       display: block
     }
 
@@ -4544,7 +4554,7 @@
       const marked = new Set();
       function markSync() { document.querySelectorAll('.t-item[data-id], .d-item[data-id]').forEach(el => { const on = marked.has(el.dataset.id); el.classList.toggle('marked', on); const c = el.querySelector('.item-check'); if (c) c.checked = on }); document.body.classList.toggle('has-marked', marked.size > 0) }
       function markClear() { if (!marked.size) return; marked.clear(); markSync() }
-      function markBox(id) { const c = document.createElement('input'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); c.addEventListener('click', e => e.stopPropagation()); c.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return c }
+      function markBox(id) { const c = document.createElement('input'), l = document.createElement('label'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); l.className = 'item-check-hit'; l.append(c); l.addEventListener('click', e => e.stopPropagation()); l.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return l }
       const markedImgs = () => images.filter(o => marked.has(o.id)), markedDocs = () => docs.filter(o => marked.has(o.id));
       /* The page count of a PDF, read from the file without pdf.js: the /Count of the page tree, else the /Type /Page objects. Empty when the list is compressed */
       /* The pages of the page tree, walked by the reader below. The /Count in plain sight is only the fallback (an encrypted object stream):
