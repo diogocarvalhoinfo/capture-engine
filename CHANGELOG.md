@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.0.0] - 2026-11-08
+
+Major: o banco do navegador passa à versão 3 (D-0127), e uma cópia anterior à 29 não abre mais as sessões no mesmo navegador. Inclui a lixeira, «Eliminar sessão», a informação no título, a vírgula nos tamanhos, o Texto «Com fundo», o − e o + depois das ferramentas, um visualizador para tudo, o editor de texto, a lista dos arquivos compactados, marcar item a item, o tipo em cor e o menu do clique direito.
 
 ### Modificado
 

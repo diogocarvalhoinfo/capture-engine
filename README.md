@@ -607,8 +607,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem cerca de 400 KB. É normal?**
-Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 400 KB, e a do Export User fica menor, sem o Visual Builder.
+**O meu arquivo HTML tem cerca de 430 KB. É normal?**
+Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 430 KB, e a do Export User fica menor, sem o Visual Builder.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
@@ -636,7 +636,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** 28.7.3. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.0.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
