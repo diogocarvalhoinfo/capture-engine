@@ -243,7 +243,7 @@ Motor de anotação:
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse num lugar sem anotação. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
-  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Mas **depois de salvar e reabrir a imagem**, o Desfazer/Refazer passa a reverter apenas as anotações (setas, texto, traços) — o crop e a rotação já salvos não são revertidos. As anotações ainda voltam para a posição exata.
+  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Depois de salvar e reabrir a imagem, o Desfazer reverte primeiro as anotações e, por fim, volta à foto como foi capturada: sem recorte, giro, perspectiva ou endireitamento. Confirmar nesse ponto guarda a foto inicial; o Refazer volta ao que estava.
 
 No telefone:
 - O desenho por toque funciona (Pointer Events).

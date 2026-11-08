@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O Ctrl+Z volta à foto como foi capturada (D-0140):** depois de confirmar um recorte, os Cantos livres ou o Endireitar e reabrir o editor, o Ctrl+Z não voltava a foto. Agora ele tira primeiro as anotações e depois volta à foto inicial, sem recorte, giro, perspectiva ou endireitamento; o Ctrl+Y refaz, e o Confirmar nesse ponto guarda a foto inicial. Junto, um Ctrl+Z apertado enquanto o editor ainda abria era desfeito pela abertura; agora vale o último. Testado no Chrome com um recorte, com os Cantos livres e com uma anotação sobre um recorte; sair sem confirmar deixa a foto como estava.
+
 ## [29.1.0] - 2026-11-08
 
 Minor: o PDF sem o pdf.js (abrir no leitor do navegador, contar as páginas, juntar, diminuir o tamanho, o PDF em Imagens e as páginas dele no .pdf), colar uma imagem por cima da foto e as camadas no editor, o Recortar com Cantos livres e Endireitar, e os Cantos livres começando no papel achado. A caixa de marcar passa a aparecer só depois de «Marcar», e o menu dos marcados é o mesmo em qualquer item.
