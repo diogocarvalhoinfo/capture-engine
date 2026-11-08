@@ -185,10 +185,10 @@ Um componente novo usa uma destas superfícies, com o seu fundo, borda, raio e s
 | Painel (Imagens, Documentos, barra lateral, Histórico, «Removidos») | `.ev-block`, `#left-sidebar`, `#sidebar`, `#trash-bar` | `--color-card` | 1 px `--color-border` | `--radius-lg` | `--shadow-card` |
 | Linha de documento | `.d-item` | `--color-card`; no hover, `--color-background` | 1 px transparente | `--radius-lg` | nenhuma |
 | Linha do Histórico | `.sb-sess-item` | no hover e ativa, `--color-background` | nenhuma | `--radius-sm` | nenhuma |
-| Modal claro (texto) | `.modal-box` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-modal` |
+| Página do visualizador de documentos | `.doc-page`, dentro do visualizador | `--color-card` | nenhuma | `--radius-lg` | nenhuma |
 | Visual Builder e exportação | `.sb-modal` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-settings` |
 | Histórico no telefone | `#sidebar`, até 900 px | `--color-card` | 1 px `--color-border` | `--radius-xl` | `--shadow-sidebar` |
-| Visualizador | `#img-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
+| Visualizador (imagem e documento) | `#img-modal-overlay .modal-box`, `#text-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
 | Bandeja das opções do editor | `.ann-flyout` | `--color-viewer-tray` | 1 px `--color-viewer-control-border` | `--radius-xl` | `--shadow-dragging` |
 | Barra de zoom | `#zoom-ui` | `--color-viewer-floating`, com desfoque | 1 px `--color-viewer-border` | `--radius-lg` | `--shadow-viewer-zoom` |
 | Faixa de armazenamento | `.ce-banner` | `--color-banner-critical` | nenhuma | nenhum; largura total, no topo | nenhuma |
@@ -439,7 +439,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos «Removidos» |
 | Editor | **Confirmar** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
 | Editor | **Cancelar** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
-| Modal de texto | **Restaurar**, **Copiar texto** e **Download** | Contorno | `var(--color-card)` + `var(--color-foreground)`, borda `var(--color-border-strong)` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
+| Visualizador de documento | **Restaurar**, **Copiar texto** e **Download** | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
 
 O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
 
