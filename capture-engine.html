@@ -4527,6 +4527,31 @@
       async function pdfWalk(doc, ref, inh, out, depth) { const n = ref && ref.R; if (n === undefined || doc.nodes.has(n) || depth > 64) return; const d = await pdfGet(doc, n); if (!(d instanceof Map)) return; const kids = await pdfR(doc, d.get('Kids')); if (!Array.isArray(kids)) { out.push({ n, d, inh }); return } doc.nodes.add(n); const h = { ...inh }; PDF_INH.forEach(k => { if (d.has(k)) h[k] = d.get(k) }); for (const k of kids) await pdfWalk(doc, k, h, out, depth + 1) }
       async function pdfPageTree(doc) { doc.nodes = new Set(); const pages = []; if (!doc.trailer) return pages; doc.rootRef = doc.trailer.get('Root'); const root = await pdfR(doc, doc.rootRef); if (root instanceof Map) await pdfWalk(doc, root.get('Pages'), {}, pages, 0); return pages }
       async function pdfOpen(blob) { const u = new Uint8Array(await blob.arrayBuffer()), doc = { u, t: pdfLatin(u), x: new Map(), cache: new Map(), stm: new Map(), trailer: null }; const i = doc.t.lastIndexOf('startxref'), m = i >= 0 ? /^startxref\s+(\d+)/.exec(doc.t.slice(i, i + 40)) : null; try { await pdfXrefChain(doc, m ? +m[1] : -1) } catch (_) { doc.trailer = null } let pages = await pdfPageTree(doc); if (!pages.length) { await pdfScan(doc); pages = await pdfPageTree(doc) } const v = /%PDF-(\d\.\d)/.exec(doc.t.slice(0, 1024)); doc.pages = pages; doc.ver = v ? +v[1] : 1.4; doc.enc = !!(doc.trailer && doc.trailer.get('Encrypt')); return doc }
+      /* ═══ PDF WRITER ═══ Copies the pages of PDFs read by pdfOpen into a new PDF, written by hand in the style of buildPdfBlob.
+         Each source object gets a new number when first used; each page takes what it inherits (PDF_INH) and the new /Parent; the xref table closes the file.
+         A reference to a /Pages node or to the catalog of a source becomes null, so the old page tree does not come along. Streams keep their stored bytes */
+      const pdfHexStr = b => { const h = []; for (let i = 0; i < b.length; i++) h.push((b[i] < 16 ? '0' : '') + b[i].toString(16)); return '<' + h.join('') + '>' };
+      const pdfNameStr = n => '/' + [...n].map(ch => { const c = ch.charCodeAt(0); return c > 32 && c < 127 && !PDF_DL[c] && c !== 35 ? ch : '#' + (c < 16 ? '0' : '') + c.toString(16) }).join('');
+      const pdfNumStr = v => Number.isInteger(v) ? String(v) : String(+v.toFixed(5));
+      function pdfSer(v, ref) { if (v === null || v === undefined) return 'null'; if (typeof v === 'number') return pdfNumStr(v); if (typeof v === 'boolean') return String(v); if (Array.isArray(v)) return '[' + v.map(x => pdfSer(x, ref)).join(' ') + ']'; if (v instanceof Map) { let s = '<<'; v.forEach((x, k) => { s += pdfNameStr(k) + ' ' + pdfSer(x, ref) }); return s + '>>' } if (v.N !== undefined) return pdfNameStr(v.N); if (v.S) return pdfHexStr(v.S); return v.R !== undefined ? ref(v.R) : 'null' }
+      function pdfPageDict(pg) { const d = new Map(pg.d); d.delete('Parent'); d.set('Type', { N: 'Page' }); PDF_INH.forEach(k => { if (!d.has(k) && pg.inh[k] !== undefined) d.set(k, pg.inh[k]) }); if (!d.has('MediaBox')) d.set('MediaBox', [0, 0, 612, 792]); if (!d.has('Resources')) d.set('Resources', new Map()); return d }
+      function pdfWriteVal(v, ref, w) { if (!v || !v.D) { w(pdfSer(v, ref)); return } const d = new Map(v.D); d.set('Length', v.B.length); w(pdfSer(d, ref) + '\nstream\n'); w(v.B); w('\nendstream') }
+      async function pdfCopyPages(docs) {
+        const parts = [], xrefs = [0, 0], maps = docs.map(() => new Map()), queue = [], pageOf = new Map(), kids = []; let ofs = 0, qi = 0;
+        const w = s => { const b = typeof s === 'string' ? ENC.encode(s) : s; parts.push(b); ofs += b.length };
+        const num = (di, n) => { const m = maps[di]; if (!m.has(n)) { m.set(n, xrefs.length + 1); xrefs.push(0); queue.push([di, n]) } return m.get(n) };
+        const refOf = di => r => docs[di].nodes.has(r) || (docs[di].rootRef && docs[di].rootRef.R === r) ? 'null' : num(di, r) + ' 0 R';
+        w(`%PDF-${Math.max(1.4, ...docs.map(d => d.ver)).toFixed(1)}\n%\xE2\xE3\xCF\xD3\n`);
+        docs.forEach((d, di) => d.pages.forEach(pg => { kids.push(num(di, pg.n) + ' 0 R'); pageOf.set(di + ':' + pg.n, pg) }));
+        while (qi < queue.length) { const [di, n] = queue[qi++], pg = pageOf.get(di + ':' + n), ref = refOf(di), nn = maps[di].get(n); xrefs[nn - 1] = ofs; w(nn + ' 0 obj\n'); if (pg) w('<</Parent 2 0 R' + pdfSer(pdfPageDict(pg), ref).slice(2)); else pdfWriteVal(await pdfGet(docs[di], n), ref, w); w('\nendobj\n') }
+        xrefs[0] = ofs; w('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+        xrefs[1] = ofs; w(`2 0 obj\n<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${kids.length} >>\nendobj\n`);
+        const xrefOfs = ofs; let xrefStr = 'xref\n0 ' + (xrefs.length + 1) + '\n0000000000 65535 f \n'; for (const x of xrefs) xrefStr += String(x).padStart(10, '0') + ' 00000 n \n';
+        w(xrefStr + `trailer\n<< /Size ${xrefs.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`);
+        return new Blob(parts, { type: 'application/pdf' });
+      }
+      /* Joins whole PDFs, in the order given. An encrypted PDF cannot be copied without its password: it stops the join */
+      async function pdfJoin(blobs) { const docs = []; for (const b of blobs) docs.push(await pdfOpen(b)); if (docs.some(d => d.enc)) throw new Error('PDF join: encrypted source'); if (docs.some(d => !d.pages.length)) throw new Error('PDF join: no pages found'); return pdfCopyPages(docs) }
       /* The type label of a document, in the colours of --color-file-* (D-0128) */
       const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
       const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
