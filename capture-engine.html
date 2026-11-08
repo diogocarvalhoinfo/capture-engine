@@ -1034,6 +1034,22 @@
       background: var(--color-red-500)
     }
 
+    /* The ✕ of the selected annotation (D-0137): solid red always, a small icon, and a hit area 10 px larger on each side than the icon */
+    #ann-shape-del-btn {
+      width: 18px;
+      height: 18px;
+      background: var(--color-red-500);
+      font-size: var(--text-micro);
+      font-weight: bold;
+      line-height: 1
+    }
+
+    #ann-shape-del-btn::after {
+      content: "";
+      position: absolute;
+      inset: -10px
+    }
+
     /* The trash: the icon of the Removidos header, and of every Remover */
     .trash-icon {
       width: 16px;
@@ -3750,7 +3766,7 @@
                 <line x1="12" y1="2" x2="12" y2="22"/>
               </svg></button>
             <div class="ann-flyout" role="group" aria-label="Camadas">
-              <button class="ann-btn ann-opt" id="ann-layer-up" title="Trazer para frente (Ctrl+])"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" /><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2" /><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-layer-up" title="Trazer para frente (Ctrl+])"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" /><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2" /><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-layer-down" title="Enviar para trás (Ctrl+[)"><svg viewBox="0 0 24 24"><rect x="14" y="14" width="8" height="8" rx="2" /><rect x="2" y="2" width="8" height="8" rx="2" /><path d="M7 14v1a2 2 0 0 0 2 2h1" /><path d="M14 7h1a2 2 0 0 1 2 2v1" /></svg></button>
             </div>
           </div>
@@ -6174,7 +6190,7 @@
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
         _annDelBtnEl.title = 'Apagar';
-        _annDelBtnEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'; // the ✕: an annotation does not go to «Removidos» (D-0137)
+        _annDelBtnEl.textContent = '✕'; // the ✕ of before: solid red, small, with a larger hit area (D-0137, P6)
         // Overrides only the values that differ from the thumbnail context:
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
