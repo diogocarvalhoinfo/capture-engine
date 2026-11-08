@@ -14,6 +14,9 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Tamanhos com vírgula (D-0120):** «6.3 KB» passa a «6,3 KB», com um espaço que não quebra entre o número e a unidade. Vale na barra de estado, nas linhas de documento, no visualizador e no modal de texto.
 - **Texto «Com fundo» (D-0121):** a bandeja do Texto ganha «Com fundo», depois do Negrito e do Itálico. O texto fica sobre um retângulo na cor escolhida, com a letra escura ou branca, a que der mais contraste.
 - **O − e o + depois das ferramentas (D-0122):** no computador, a espessura fica logo depois do Selecionar, antes do 90° e do Recortar. No telefone, a linha das ferramentas não tem lugar, e ela fica depois das cores, como antes (medido em 375 px).
+- **Um visualizador para tudo (D-0123):** os documentos de texto abrem na moldura escura do visualizador de imagem, com os mesmos botões. O Markdown aparece formatado, o CSV numa tabela, e uma página HTML roda isolada, sem acesso aos dados do app nem à internet (testado no Chrome 156: o armazenamento dá `SecurityError`, e uma imagem externa é bloqueada).
+- **F-0116: «Copiado» (D-0124):** o «Copiar texto» mostra «Copiado» com o círculo e o ✓, em verde, ou «Erro» com o círculo e o ✕, em vermelho, como o .pdf e o .zip, e volta em 1,5 s.
+- **A faixa de tamanho do `validate.sh` vai até 520 KB:** a versão 29 cresce com os documentos; o arquivo passou de 400 KB nesta entrega (401 799 bytes). O check 25 continua a avisar de um salto inesperado.
 
 ## [28.7.3] - 2026-11-08
 

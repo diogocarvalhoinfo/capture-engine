@@ -2635,10 +2635,6 @@
       max-height: none;
     }
 
-    #text-modal-overlay .modal-box {
-      height: calc(80vh / var(--app-zoom));
-    }
-
     /* The Safari of the iPhone counts 1vh on the screen without its bars, taller than what is visible with them. The
        viewer passed the screen, with the ✕ above it and «Editar» below it (F-0108). The dvh follows the visible area. */
     @supports (height: 1dvh) {
@@ -2655,7 +2651,7 @@
       }
 
       #text-modal-overlay .modal-box {
-        height: calc(80dvh / var(--app-zoom));
+        height: calc(94dvh / var(--app-zoom));
       }
     }
 
@@ -2699,22 +2695,142 @@
       }
     }
 
-    #img-modal-overlay .modal-hdr {
+    /* One viewer for everything: the text viewer has the frame of the image viewer, and only the middle changes with the type (D-0123) */
+    #text-modal-overlay {
+      background: var(--color-viewer-backdrop);
+    }
+
+    #text-modal-overlay .modal-box {
+      background: transparent;
+      box-shadow: none;
+      width: calc(96vw / var(--app-zoom));
+      height: calc(94vh / var(--app-zoom));
+      max-width: none;
+      max-height: none;
+    }
+
+    #text-modal-actions .btn-send {
+      width: calc(var(--spacing) * 30);
+    }
+
+    /* The page in the middle: the text, the formatted Markdown, the CSV table or the HTML page */
+    .doc-page {
+      flex: 1;
+      min-height: 0;
+      width: min(100%, 60rem);
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: auto;
+      padding: calc(var(--spacing) * 4);
+      background: var(--color-card);
+      color: var(--color-foreground);
+      border-radius: var(--radius-lg);
+    }
+
+    #text-modal-view {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    #text-modal-view[hidden] {
+      display: none;
+    }
+
+    #text-modal-view :is(h1, h2, h3, h4) {
+      margin: calc(var(--spacing) * 4) 0 calc(var(--spacing) * 2);
+      line-height: 1.3;
+    }
+
+    #text-modal-view h1 {
+      font-size: var(--text-xl);
+    }
+
+    #text-modal-view h2 {
+      font-size: var(--text-lg);
+    }
+
+    #text-modal-view :is(h3, h4) {
+      font-size: var(--text-base);
+    }
+
+    #text-modal-view :is(p, ul, ol, pre, table) {
+      margin: 0 0 calc(var(--spacing) * 3);
+    }
+
+    #text-modal-view :is(ul, ol) {
+      padding-left: calc(var(--spacing) * 6);
+    }
+
+    #text-modal-view :is(code, pre) {
+      font-family: monospace;
+      font-size: var(--text-code);
+      background: var(--color-background);
+      border-radius: var(--radius-sm);
+    }
+
+    #text-modal-view code {
+      padding: 0 calc(var(--spacing) * 1);
+    }
+
+    #text-modal-view pre {
+      padding: calc(var(--spacing) * 3);
+      overflow: auto;
+    }
+
+    #text-modal-view table {
+      border-collapse: collapse;
+      font-size: var(--text-control);
+    }
+
+    #text-modal-view :is(th, td) {
+      border: 1px solid var(--color-border-strong);
+      padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    #text-modal-view th {
+      background: var(--color-background);
+    }
+
+    #text-modal-view.view-html {
+      overflow: hidden;
+    }
+
+    #text-modal-view iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--color-white);
+      border-radius: var(--radius-sm);
+    }
+
+
+    #img-modal-overlay .modal-hdr,
+    #text-modal-overlay .modal-hdr {
       border-bottom: none;
       padding: calc(var(--spacing) * 3.5) 0;
     }
 
-    #img-modal-overlay .modal-title {
+    #img-modal-overlay .modal-title,
+    #text-modal-overlay .modal-title {
       color: var(--color-white);
     }
 
-    #img-modal-overlay .modal-close {
+    #img-modal-overlay .modal-close,
+    #text-modal-overlay .modal-close {
       background: var(--color-viewer-surface);
       color: var(--color-white);
       right: 0;
     }
 
-    #img-modal-overlay .modal-close:hover {
+    #img-modal-overlay .modal-close:hover,
+    #text-modal-overlay .modal-close:hover {
       background: var(--color-viewer-close-hover);
     }
 
@@ -2735,14 +2851,16 @@
     /* The editor tools and the secondary buttons of the viewer (Download, Restaurar) share these two rules (D-0098):
        a change in the viewer controls reaches both */
     #img-modal-overlay .ann-btn,
-    #img-modal-overlay .btn-viewer {
+    #img-modal-overlay .btn-viewer,
+    #text-modal-overlay .btn-viewer {
       color: var(--color-viewer-control-foreground);
       background: var(--color-viewer-control);
       border: 1px solid var(--color-viewer-control-border);
     }
 
     #img-modal-overlay .ann-btn:hover,
-    #img-modal-overlay .btn-viewer:hover {
+    #img-modal-overlay .btn-viewer:hover,
+    #text-modal-overlay .btn-viewer:hover {
       color: var(--color-white);
       background: var(--color-viewer-control-hover);
       border-color: var(--color-viewer-control-border-hover);
@@ -2905,7 +3023,8 @@
       animation: ann-alert var(--duration-ann-alert) var(--ease-in-out) 2 !important;
     }
 
-    #img-modal-overlay .modal-info {
+    #img-modal-overlay .modal-info,
+    #text-modal-overlay .modal-info {
       color: var(--color-viewer-muted-foreground);
     }
 
@@ -3451,7 +3570,7 @@
 
   <!-- ═══ MODAL: DOCUMENT/TEXT VIEWER ═══ -->
   <div class="modal-overlay" id="text-modal-overlay">
-    <div class="modal-box" style="max-width:calc(85vw / var(--app-zoom)); width:650px">
+    <div class="modal-box">
       <div class="modal-hdr">
         <div class="modal-title-row"><span class="modal-title" id="text-modal-title">Visualizar documento</span><span class="modal-info" id="text-modal-info"></span></div>
         <button class="modal-close" id="text-modal-close" aria-label="Fechar"><svg viewBox="0 0 24 24">
@@ -3459,10 +3578,10 @@
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg></button>
       </div>
-      <div
-        style="flex:1; overflow:auto; padding:calc(var(--spacing) * 4); background:var(--color-background); display:flex; flex-direction:column; min-height:0; position:relative">
+      <div class="doc-page">
         <textarea id="text-modal-content" readonly
-          style="width:100%; flex:1; resize:none; border:none; background:var(--color-background); color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
+          style="width:100%; flex:1; resize:none; border:none; background:transparent; color:var(--color-foreground); font-family:Consolas, Monaco, 'Courier New', monospace; font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
+        <div id="text-modal-view" hidden></div>
         <div id="text-modal-binary-msg"
           style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:var(--text-control); padding:calc(var(--spacing) * 6); line-height:1.6; gap:calc(var(--spacing) * 3)">
         </div>
@@ -3470,24 +3589,21 @@
       <!-- FOOTER -->
       <div
         style="padding:calc(var(--spacing) * 4); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(var(--spacing) * 2); flex-shrink:0">
-        <div style="display:flex; gap:calc(var(--spacing) * 2); justify-content:center">
-          <button class="btn-send" id="text-modal-restore"
-            style="display:none;background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+        <div id="text-modal-actions" style="display:flex; gap:calc(var(--spacing) * 2); justify-content:center">
+          <button class="btn-send btn-viewer" id="text-modal-restore" style="display:none">
             <svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <polyline points="3 3 3 8 8 8" />
             </svg> Restaurar
           </button>
-          <button class="btn-send" id="text-modal-copy"
-            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+          <button class="btn-send btn-viewer" id="text-modal-copy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:14px; height:14px">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg> Copiar texto
           </button>
-          <button class="btn-send" id="text-modal-dl"
-            style="background:var(--color-card);color:var(--color-foreground);border:1px solid var(--color-border-strong)">
+          <button class="btn-send btn-viewer" id="text-modal-dl">
             <svg viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -4102,6 +4218,12 @@
         ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => { if (imgOv.classList.contains('open')) e.preventDefault() }, { passive: false }));
       }
 
+      /* The views of the text viewer, built with elements and textContent, never with innerHTML of the file (D-0123) */
+      function mdInline(txt) { const f = document.createDocumentFragment(); const re = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|\[[^\]]+\]\([^)]+\))/g; let last = 0, m; while ((m = re.exec(txt))) { if (m.index > last) f.append(txt.slice(last, m.index)); const t = m[0]; let el; if (t[0] === '`') { el = document.createElement('code'); el.textContent = t.slice(1, -1) } else if (t.startsWith('**')) { el = document.createElement('strong'); el.append(mdInline(t.slice(2, -2))) } else if (t[0] === '*' || t[0] === '_') { el = document.createElement('em'); el.append(mdInline(t.slice(1, -1))) } else { el = document.createElement('span'); el.textContent = t.slice(1, t.indexOf('](')) } f.append(el); last = m.index + t.length } if (last < txt.length) f.append(txt.slice(last)); return f }
+      function mdView(src) { const root = document.createElement('div'), lines = src.replace(/\r\n/g, '\n').split('\n'); let list = null, para = null, pre = null; const end = () => { list = null; para = null }; for (const ln of lines) { if (pre) { if (/^```/.test(ln)) { pre = null } else pre.textContent += (pre.textContent ? '\n' : '') + ln; continue } if (/^```/.test(ln)) { end(); pre = document.createElement('pre'); root.append(pre); continue } const h = /^(#{1,4})\s+(.*)$/.exec(ln), li = /^\s*([-*+]|\d+[.])\s+(.*)$/.exec(ln); if (h) { end(); const el = document.createElement('h' + h[1].length); el.append(mdInline(h[2])); root.append(el) } else if (li) { para = null; const tag = /\d/.test(li[1]) ? 'ol' : 'ul'; if (!list || list.tagName.toLowerCase() !== tag) { list = document.createElement(tag); root.append(list) } const el = document.createElement('li'); el.append(mdInline(li[2])); list.append(el) } else if (!ln.trim()) { end() } else { list = null; if (!para) { para = document.createElement('p'); root.append(para) } else para.append(' '); para.append(mdInline(ln.trim())) } } return root }
+      function csvView(src) { const first = src.split('\n')[0] || '', sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ';' : first.includes('\t') ? '\t' : ','; const rows = []; let row = [], cell = '', q = false; for (let i = 0; i < src.length && rows.length < 2000; i++) { const c = src[i]; if (q) { if (c === '"' && src[i + 1] === '"') { cell += '"'; i++ } else if (c === '"') q = false; else cell += c } else if (c === '"') q = true; else if (c === sep) { row.push(cell); cell = '' } else if (c === '\n') { row.push(cell.replace(/\r$/, '')); rows.push(row); row = []; cell = '' } else cell += c } if (cell || row.length) { row.push(cell); rows.push(row) } const t = document.createElement('table'); rows.forEach((r, ri) => { const tr = document.createElement('tr'); r.forEach(v => { const td = document.createElement(ri ? 'td' : 'th'); td.textContent = v; tr.append(td) }); t.append(tr) }); return t }
+      /* An HTML page runs in a sealed box: without allow-same-origin it reaches neither the session nor the storage of the app, and it keeps the CSP of the app (no internet) */
+      function htmlView(src) { const f = document.createElement('iframe'); f.setAttribute('sandbox', 'allow-scripts allow-modals allow-forms'); f.setAttribute('allow', 'clipboard-write'); f.setAttribute('title', 'Página HTML'); f.srcdoc = src; return f }
       /* ═══ TEXT MODAL ═══ */
       let textModalItemId = null, textModalIsTrash = false;
       window.openTextModal = async function (id, trash) {
@@ -4109,15 +4231,16 @@
         if (!o) return;
         textModalItemId = id;
         textModalIsTrash = trash;
-        const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript';
+        const dot = (o.name || '').lastIndexOf('.'), fext = dot >= 0 ? o.name.slice(dot + 1).toLowerCase() : '';
+        const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript' || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
+        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true;
         if (isText) {
-          try {
-            const val = await o.blob.text();
-            $('text-modal-content').value = val;
-          } catch (e) {
-            $('text-modal-content').value = 'Erro ao carregar conteúdo de texto.';
-          }
-          $('text-modal-content').style.display = '';
+          let val = '';
+          try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
+          $('text-modal-content').value = val;
+          const kind = /^(md|markdown)$/.test(fext) ? 'md' : fext === 'csv' ? 'csv' : /^html?$/.test(fext) ? 'html' : 'text';
+          if (kind !== 'text') { view.hidden = false; view.className = 'view-' + kind; view.append(kind === 'md' ? mdView(val) : kind === 'csv' ? csvView(val) : htmlView(val)) }
+          $('text-modal-content').style.display = kind === 'text' ? '' : 'none';
           $('text-modal-copy').style.display = '';
           $('text-modal-binary-msg').style.display = 'none';
         } else {
@@ -4152,22 +4275,10 @@
         }
       };
       $('text-modal-copy').onclick = async function () {
-        const btn = $('text-modal-copy');
-        const val = $('text-modal-content').value;
-        try {
-          await navigator.clipboard.writeText(val);
-          const old = btn.innerHTML;
-          btn.innerHTML = 'Copiado!';
-          btn.style.background = 'var(--color-green-500)';
-          btn.style.color = 'var(--color-white)';
-          setTimeout(() => {
-            btn.innerHTML = old;
-            btn.style.background = '';
-            btn.style.color = '';
-          }, 1500);
-        } catch (err) {
-          SysLogger.error('Erro ao copiar.'); const old = btn.innerHTML; btn.innerHTML = '<span style="color:var(--color-red-500)">Erro!</span>'; setTimeout(() => btn.innerHTML = old, 2000);
-        }
+        const btn = $('text-modal-copy'), old = btn.innerHTML;
+        const show = (cls, html) => { btn.classList.add(cls); btn.innerHTML = html; setTimeout(() => { btn.classList.remove(cls); btn.innerHTML = old }, 1500) };
+        try { await navigator.clipboard.writeText($('text-modal-content').value); show('st-success', '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Copiado') }
+        catch (err) { SysLogger.error('Erro ao copiar.'); show('st-error', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro') }
       };
       $('text-modal-dl').onclick = function () {
         if (!textModalItemId) return;
