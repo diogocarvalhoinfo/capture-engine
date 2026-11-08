@@ -675,6 +675,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 - **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal.
 - **Contraste WCAG:** verificado para a cor de destaque principal (ver `design-tokens.md` §6, a nota sobre o `TOKEN_ACCENT_FG_OVERRIDE`).
 - **Leitores de tela:** não testados.
+- **Ampliar com dois dedos:** no telefone, a pinça amplia só a foto do visualizador, e não a página. É de propósito: a pinça na página ampliava a tela inteira e tirava o ✕ da tela. Para letra maior, use o tamanho de letra do navegador, que a interface acompanha.
 - **Safari no Mac:** por padrão, o Tab do Safari só passa pelos campos de texto. Para alcançar também os botões, ligue «Pressionar Tab para destacar cada item» nos ajustes avançados do Safari, ou use Option+Tab.
 
 **ARIA e foco — o que existe:**

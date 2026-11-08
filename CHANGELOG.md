@@ -10,6 +10,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O «Erro» do .pdf e do .zip fica aceso (D-0114):** antes, o botão ficava vermelho com «Erro» e voltava sozinho em 2,5 s. Quem olhava para outro lado não via a falha. Agora o vermelho fica aceso, como o verde «Concluído», até o próximo clique, tecla, colar ou soltar na página. O «Erro» ganha um círculo com ✕, como o círculo com ✓ do «Concluído». A mensagem completa continua no console.
 - **Ícone e nome na Tela de Início do iPhone (D-0115):** o ícone aparecia com uma borda branca, porque tinha cantos transparentes que o iPhone preenche de branco. Agora é um quadrado preto, e o iPhone arredonda os cantos. Ao adicionar, o nome sugerido era «Capture»; agora é «Capture Engine». Quem já adicionou o ícone precisa removê-lo e adicionar de novo para ver a mudança.
+- **A página não amplia com dois dedos, de propósito (D-0116):** a auditoria de 2026-11-08 apontou o bloqueio da ampliação (F-0113). O dono o manteve: a pinça amplia só a foto do visualizador, e não a interface. O motivo e o custo estão no AGENTS §13, e o README §13 o explica a quem usa. Nada muda no app.
 
 ### Corrigido
 
