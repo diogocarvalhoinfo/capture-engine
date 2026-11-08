@@ -17,6 +17,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Um visualizador para tudo (D-0123):** os documentos de texto abrem na moldura escura do visualizador de imagem, com os mesmos botões. O Markdown aparece formatado, o CSV numa tabela, e uma página HTML roda isolada, sem acesso aos dados do app nem à internet (testado no Chrome 156: o armazenamento dá `SecurityError`, e uma imagem externa é bloqueada).
 - **F-0116: «Copiado» (D-0124):** o «Copiar texto» mostra «Copiado» com o círculo e o ✓, em verde, ou «Erro» com o círculo e o ✕, em vermelho, como o .pdf e o .zip, e volta em 1,5 s.
 - **A faixa de tamanho do `validate.sh` vai até 520 KB:** a versão 29 cresce com os documentos; o arquivo passou de 400 KB nesta entrega (401 799 bytes). O check 25 continua a avisar de um salto inesperado.
+- **Editar um documento de texto (D-0125):** «Editar» mostra o texto puro, também do Markdown, do CSV e do HTML, e o rodapé troca para Cancelar e Confirmar, como no editor de imagem. Com mudanças por salvar, o Esc, o ✕ e o clique fora fazem os dois pulsarem.
 
 ## [28.7.3] - 2026-11-08
 
