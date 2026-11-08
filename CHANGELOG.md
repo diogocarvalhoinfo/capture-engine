@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **A lixeira no lugar do ✕ ao remover (D-0117):** o ✕ removia um item e também fechava e cancelava. Agora remover tem a lixeira dos «Removidos», que diz para onde o item vai: cinza nas linhas de documento, vermelha ao apontar; e, sobre uma foto, num quadrado escuro que fica vermelho ao apontar. A anotação selecionada no editor ganha a mesma lixeira. Os botões passaram a 24 px (F-0122), e o restaurar da miniatura usa a seta circular do botão «Restaurar» (F-0121).
+- **F-0117: «Apagar sessão» (D-0118):** o ✕ «Excluir» do Histórico virou a lixeira «Apagar sessão», cinza e vermelha ao apontar, com 24 px (32 px no telefone). Continua a apagar na hora, sem janela (D7), porque a sessão não vai para os «Removidos». A palavra é outra que a dos itens, «Remover», para marcar a única ação do app que não volta.
 
 ## [28.7.3] - 2026-11-08
 
