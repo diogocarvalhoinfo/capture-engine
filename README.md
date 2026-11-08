@@ -248,7 +248,10 @@ No telefone:
 - Os botões de apagar e de restaurar ficam sempre visíveis.
 - A barra quebra em linhas conforme a largura: as ferramentas, as cores com o − e o +, e as ações. Até 480 px, as ferramentas, o 90° e o Recortar ficam numa linha só, e os botões encolhem até 30 px quando a tela é mais estreita.
 
-### 6.4 Reordenação
+### 6.4 Marcar, menus e reordenação
+
+Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Esc desmarca.
+
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
 - Em imagens: arraste a miniatura para a posição desejada na grade

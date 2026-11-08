@@ -68,6 +68,14 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
 | `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom, setas e a lixeira das miniaturas, flutuando sobre a imagem |
 | `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
+| `--color-selected` | `color-mix(in srgb, var(--color-primary) 8%, transparent)` | — | Fundo de um item marcado, com a borda na cor principal (D-0128) |
+| `--color-file-pdf` | `#b30b00` | — | Etiqueta de tipo: PDF (D-0128) |
+| `--color-file-docx` | `#2b579a` | — | Etiqueta de tipo: Word |
+| `--color-file-xlsx` | `#217346` | — | Etiqueta de tipo: Excel e CSV |
+| `--color-file-pptx` | `#b7472a` | — | Etiqueta de tipo: PowerPoint |
+| `--color-file-zip` | `#fbbf24` | — | Etiqueta de tipo: arquivos compactados |
+| `--color-file-zip-foreground` | `#1a1917` | — | Letra da etiqueta dos arquivos compactados |
+| `--color-file-text` | `#64748b` | — | Etiqueta de tipo: TXT, Markdown e HTML |
 
 > [!NOTE]
 > **Tema escuro e anti-FOUC.**
@@ -210,6 +218,7 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
 | `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | telefone |
 | `--z-offcanvas` | `1045` | `#sidebar` no telefone, acima do seu fundo | telefone |
+| `--z-popover` | `1070` | Menu do clique direito, acima dos modais (D-0129) | global |
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
