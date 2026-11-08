@@ -27,13 +27,13 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-foreground` | `#1a1917` | `#e4e4e4` | Texto principal |
 | `--color-muted-foreground` | `#6b6a66` | `#9a9a9a` | Texto secundário: datas, legendas, metadados |
 | `--color-primary` | `#e86b2e` | — | Cor principal, escolhida no Visual Builder: botões e elementos ativos |
-| `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal; calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
+| `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal (botões, chips, contadores de bloco); calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
 | `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
 | `--color-ring` | `var(--color-primary)` | — | Contorno do foco do teclado |
 | `--color-green-500` | `#22c55e` | — | Sucesso, estado «Gravado», confirmar a anotação |
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
-| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contadores, spinner, botões verdes e vermelhos, avisos de armazenamento) |
+| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos «Removidos», spinner, botões verdes e vermelhos, avisos de armazenamento) |
 | `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
 | `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
