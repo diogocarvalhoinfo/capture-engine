@@ -385,6 +385,12 @@ imagem-1 → imagem-2 → imagem-3   ✅
 imagem-1 → imagem-1-1            ❌
 ```
 
+**Nome sem número:** um nome que não termina em `-N` ganha `-1` na primeira repetição, e depois segue o incremento. Vale na captura (`captureDoc`), no restaurar e no renomear. Medido no Chrome 156, com o mesmo arquivo enviado três vezes:
+
+```
+nota.txt → nota-1.txt → nota-2.txt
+```
+
 **Verificação cross-list obrigatória:** A unicidade verifica-se contra *ambas* as listas simultaneamente — itens ativos **e** itens nos «Removidos». Um item restaurado dos «Removidos» nunca colide com um ativo.
 
 **Extensão de arquivo:** Ao renomear um documento, a extensão original é sempre preservada. Se o usuário escrever `relatorio` (sem extensão) num documento `.pdf`, o nome final é `relatorio.pdf`.
@@ -868,7 +874,7 @@ original.
 Ferramenta `annSetTool('crop')`. Comportamento:
 - **Primeira ativação (sem cropBox salvo):** define `annCropBox = {0, 0, w, h}` abrangendo toda a imagem; mostra máscara escurecida (60%) fora da área selecionada; 4 alças em "L" nos cantos para ajuste.
 - **Reativação (com cropBox salvo):** expande o canvas para as dimensões do `origBlob`, com a rotação aplicada, e desloca as coordenadas +cx/+cy. Mostra a área de crop anterior, para reajustar ou recuperar áreas cortadas.
-- **Salvar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações (`annRenderSaved`), persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy (`annSaveCrop`), chama `annDeactivate()`.
+- **Confirmar (`ann-save`):** grava o novo `o.blob` combinando imagem + anotações (`annRenderSaved`), persiste `o.cropBox = {cX, cY, fW, fH}` no IDB, reverte coordenadas -cx/-cy (`annSaveCrop`), chama `annDeactivate()`.
 - **`annCropBox`**: estado ativo do recorte em memória (`{x, y, w, h}`) durante a edição. Null fora do modo crop.
 - **Invariante:** `origBlob` nunca é cortado. Todo recorte é reversível.
 
