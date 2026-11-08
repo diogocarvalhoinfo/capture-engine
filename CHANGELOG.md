@@ -15,6 +15,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **F-0110: o «Download» do visualizador grava a extensão certa.** Antes, um GIF ou um WebP baixado pelo visualizador saía com `.png`, embora o conteúdo continuasse GIF ou WebP; o .zip já usava a extensão certa. Agora os dois usam a mesma tabela de tipos. Testado no Chrome 156 com PNG, JPEG, GIF e WebP: o visualizador e o .zip dão os mesmos quatro nomes.
 - **Imagem reconhecida pelo conteúdo:** uma foto com uma extensão que o navegador não conhece, como `.huge`, ia para Documentos com «pré-visualização não disponível». Agora, quando o navegador não diz o tipo, o app lê os primeiros bytes e reconhece PNG, JPEG, GIF, WebP, BMP e AVIF. A imagem entra em Imagens, e o Download e o .zip gravam a extensão certa. Testado no Chrome 156 com quatro imagens sem extensão conhecida e um arquivo de texto, que continua em Documentos.
+- **F-0111: o contador de Imagens e de Documentos usa a cor de texto calculada.** O número ficava sempre branco sobre a cor principal; com o laranja padrão, o contraste era de cerca de 3,2:1, em letra de 11 px. Agora segue a mesma cor de texto dos botões .pdf e .zip: escura no laranja (cerca de 5,5:1) e branca numa cor escura, como o azul `#2563eb` (medido no Chrome 156). O contador dos «Removidos» continua branco sobre o vermelho. Junto, saiu uma segunda regra `@keyframes pulse` que nunca valia (F-0118); a captura da barra lateral antes e depois deu zero pixels diferentes.
 
 ## [28.7.2] - 2026-11-07
 
