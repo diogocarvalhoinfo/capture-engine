@@ -701,7 +701,8 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 
 | Função | Assinatura | O que faz |
 |---|---|---|
-| `captureFile(f)` | `async (File) → void` | Porta de entrada de todo arquivo (botões, arrastar e colar). Uma imagem que o navegador desenha vai para `captureImg`; o resto, incluindo HEIC, TIFF e RAW, vai para `captureDoc`, com o nome e os bytes originais, e um aviso |
+| `captureFile(f)` | `async (File) → void` | Porta de entrada de todo arquivo (botões, arrastar e colar). Uma imagem que o navegador desenha vai para `captureImg`; o resto, incluindo HEIC, TIFF e RAW, vai para `captureDoc`, com o nome e os bytes originais, e um aviso. Sem um tipo de imagem do navegador, o `sniffImageType` lê os primeiros bytes |
+| `sniffImageType(blob)` | `async (Blob) → string` | O tipo de uma imagem pelos primeiros 12 bytes: PNG, JPEG, GIF, WebP, BMP ou AVIF; `''` para o resto. A imagem entra com esse tipo, e o Download e o ZIP gravam a extensão dele (uma foto salva como `.huge` vira `imagem-N.jpg`) |
 | `canDrawImage(blob)` | `(Blob) → Promise<boolean>` | Abre a imagem e desenha-a num canvas de 1 × 1 px. É o mesmo caminho do `imgToJPEG` do PDF: o que passa aqui entra no PDF |
 | `moveUndrawableToDocs()` | `async () → number` | Antes do PDF e do ZIP, passa para «Documentos» as imagens que o navegador não desenha (sessões gravadas antes do `captureFile`). A extensão vem do tipo ou dos primeiros bytes (`sniffExt`) |
 | `holdSuccess(reset)` | `(Function) → void` | Mantém o verde «Concluído» e o vermelho «Erro» do botão PDF ou ZIP até a próxima interação na página (`pointerdown`, `keydown`, `paste`, `drop`). Teclas sozinhas de modificador (Alt, Ctrl, Shift, Tab) não contam, porque o Alt + Tab para trocar de janela as envia |

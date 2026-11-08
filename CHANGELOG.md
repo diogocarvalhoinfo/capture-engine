@@ -14,6 +14,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **F-0110: o «Download» do visualizador grava a extensão certa.** Antes, um GIF ou um WebP baixado pelo visualizador saía com `.png`, embora o conteúdo continuasse GIF ou WebP; o .zip já usava a extensão certa. Agora os dois usam a mesma tabela de tipos. Testado no Chrome 156 com PNG, JPEG, GIF e WebP: o visualizador e o .zip dão os mesmos quatro nomes.
+- **Imagem reconhecida pelo conteúdo:** uma foto com uma extensão que o navegador não conhece, como `.huge`, ia para Documentos com «pré-visualização não disponível». Agora, quando o navegador não diz o tipo, o app lê os primeiros bytes e reconhece PNG, JPEG, GIF, WebP, BMP e AVIF. A imagem entra em Imagens, e o Download e o .zip gravam a extensão certa. Testado no Chrome 156 com quatro imagens sem extensão conhecida e um arquivo de texto, que continua em Documentos.
 
 ## [28.7.2] - 2026-11-07
 
