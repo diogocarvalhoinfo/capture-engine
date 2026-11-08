@@ -1533,6 +1533,7 @@ O que ficou para depois, com o ID e a origem.
 | ID | O quê | Origem |
 |---|---|---|
 | F-0074 | Frases com mais de 30 palavras no `AGENTS.md`: cerca de 40 na contagem automática de 2026-11-06, das quais cerca de 30 vieram na 28.7.0 (as decisões D-0093 a D-0108, a §7 e a §11, Parte B). | Auditorias de 2026-11-04 e de 2026-11-06 |
+| F-0120 | Curvas e fontes escritas à mão no CSS: `cubic-bezier` em seis regras (uma igual a `--ease-in-out`), `sans-serif` e `serif` genéricos nas opções do editor e no campo de texto da anotação, e `Consolas` no modal de texto. Trocar por tokens (`--ease-*`, `--font-*`) pede captura antes e depois, sem nenhum pixel diferente. | Auditoria de 2026-11-08 |
 
 ### IDs
 
