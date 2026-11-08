@@ -6111,8 +6111,8 @@
         const _annDelBtnEl = document.createElement('button');
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
-        _annDelBtnEl.title = 'Remover';
-        _annDelBtnEl.innerHTML = TRASH_SVG; // the trash, as every Remover (D-0117)
+        _annDelBtnEl.title = 'Apagar';
+        _annDelBtnEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'; // the ✕: an annotation does not go to «Removidos» (D-0137)
         // Overrides only the values that differ from the thumbnail context:
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
