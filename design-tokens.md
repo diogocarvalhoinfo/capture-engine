@@ -176,6 +176,25 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 Os elementos `.t-item` e `.t-label` têm `border-radius: 0`: a miniatura fica com cantos retos, e só a moldura `.t-wrap` é arredondada.
 
+### Superfícies
+
+Um componente novo usa uma destas superfícies, com o seu fundo, borda, raio e sombra. Uma superfície nova pede a decisão do dono. Há duas famílias: as claras, que seguem o tema, e as escuras do visualizador, iguais nos dois temas.
+
+| Superfície | Seletor | Fundo | Borda | Raio | Sombra |
+|---|---|---|---|---|---|
+| Painel (Imagens, Documentos, barra lateral, Histórico, «Removidos») | `.ev-block`, `#left-sidebar`, `#sidebar`, `#trash-bar` | `--color-card` | 1 px `--color-border` | `--radius-lg` | `--shadow-card` |
+| Linha de documento | `.d-item` | `--color-card`; no hover, `--color-background` | 1 px transparente | `--radius-lg` | nenhuma |
+| Linha do Histórico | `.sb-sess-item` | no hover e ativa, `--color-background` | nenhuma | `--radius-sm` | nenhuma |
+| Modal claro (texto) | `.modal-box` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-modal` |
+| Visual Builder e exportação | `.sb-modal` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-settings` |
+| Histórico no telefone | `#sidebar`, até 900 px | `--color-card` | 1 px `--color-border` | `--radius-xl` | `--shadow-sidebar` |
+| Visualizador | `#img-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
+| Bandeja das opções do editor | `.ann-flyout` | `--color-viewer-tray` | 1 px `--color-viewer-control-border` | `--radius-xl` | `--shadow-dragging` |
+| Barra de zoom | `#zoom-ui` | `--color-viewer-floating`, com desfoque | 1 px `--color-viewer-border` | `--radius-lg` | `--shadow-viewer-zoom` |
+| Faixa de armazenamento | `.ce-banner` | `--color-banner-critical` | nenhuma | nenhum; largura total, no topo | nenhuma |
+| Aviso do rodapé | `.ce-notice` | `--color-foreground`, letra `--color-background` | nenhuma | `--radius-md` | `--shadow-modal` |
+| Balão (tooltip) | `.ce-tip` | `--color-foreground`, letra `--color-card`; no visualizador, `--color-white` | nenhuma | `--radius-sm` | `--shadow-control` |
+
 ---
 
 ## 4. Camadas (z-index)

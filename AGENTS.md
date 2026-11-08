@@ -30,7 +30,7 @@ Não é necessário ler o documento inteiro antes de cada tarefa. Use esta tabel
 |---|---|
 | **Primeira vez no código** | §0, §1, §2, §3, §4, §5, §11 |
 | **Corrigir um bug pontual** | §0, §1, §5, §11 + a seção do motor afetado |
-| **Adicionar funcionalidade** | §0, §1, §2, §3, §4, §5, §7, §10, §11 |
+| **Adicionar funcionalidade** | §0, §1, §2, §3, §4, §5, §7, §10, §11 + `design-tokens.md` §3, «Superfícies», antes de criar um elemento na tela |
 | **Modificar o ciclo de sessões** | §0, §1, §4, §6, §7 (funções de sessão), §11 |
 | **Modificar a anotação** | §0, §1, §7 (funções de anotação), §9, §11 |
 | **Modificar o Quine / Export** | §0, §1, §1.2, §5, §7 (funções Quine), §11 |
