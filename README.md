@@ -246,7 +246,7 @@ No telefone:
 - O desenho por toque funciona (Pointer Events).
 - A página por trás não rola enquanto um modal está aberto.
 - Os botões de apagar e de restaurar ficam sempre visíveis.
-- A barra quebra em linhas conforme a largura: as ferramentas, as cores com o − e o +, e as ações. Até cerca de 420 px, as ferramentas ocupam duas linhas.
+- A barra quebra em linhas conforme a largura: as ferramentas, as cores com o − e o +, e as ações. Até 480 px, as ferramentas, o 90° e o Recortar ficam numa linha só, e os botões encolhem até 30 px quando a tela é mais estreita.
 
 ### 6.4 Reordenação
 
