@@ -3758,10 +3758,17 @@
           <button class="ann-btn" id="ann-rotate-btn" title="Girar 90°"><svg viewBox="0 0 24 24">
               <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
             </svg></button>
-          <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24">
-              <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
-              <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
-            </svg></button>
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24">
+                <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
+                <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+              </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Modos do recorte">
+              <button class="ann-btn ann-opt active" id="ann-crop-rect" aria-pressed="true" title="Retângulo"><svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14" /><path d="M18 22V8a2 2 0 0 0-2-2H2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-crop-quad" aria-pressed="false" title="Cantos livres"><svg viewBox="0 0 24 24"><path d="M5 5 19 3 21 20 3 18Z" /><circle cx="5" cy="5" r="1.6" fill="currentColor" /><circle cx="19" cy="3" r="1.6" fill="currentColor" /><circle cx="21" cy="20" r="1.6" fill="currentColor" /><circle cx="3" cy="18" r="1.6" fill="currentColor" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-crop-level" aria-pressed="false" title="Endireitar"><svg viewBox="0 0 24 24"><path d="M6.5 4.5 19.4 7.2 16.9 19.5 4 16.8Z" /><path d="M2 12h3M19 12h3" /></svg></button>
+            </div>
+          </div>
           </div>
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
@@ -4857,6 +4864,33 @@
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
       }
+      /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
+         Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.
+         Endireitar: a round handle turns the photo over a grid (the image turns by CSS in the preview); Confirmar turns it and cuts the empty corners.
+         Both write on the photo on Confirmar, with the annotations (D-0138): a perspective does not keep a rectangle a rectangle */
+      let annCropMode = 'rect', annQuad = null, annLevel = 0, annModeDrag = null, annLevelFrom = 0, annLevelBase = 0;
+      const ANN_CROP_BTNS = { rect: 'ann-crop-rect', quad: 'ann-crop-quad', level: 'ann-crop-level' };
+      function annModeReset() { const cv = $('ann-canvas'), w = cv.width, h = cv.height; annQuad = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: h }, { x: 0, y: h }]; annLevel = 0; annModeDrag = null; $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '' }
+      function annSetCropMode(m) { annCropMode = m; annModeReset(); Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === m)); const cv = $('ann-canvas'); if (m !== 'rect' && annCropBox) annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height }; annRenderAll() }
+      function annModePending() { if (annCropMode === 'level') return Math.abs(annLevel) >= 0.05; if (annCropMode !== 'quad' || !annQuad) return false; const cv = $('ann-canvas'), c = [[0, 0], [cv.width, 0], [cv.width, cv.height], [0, cv.height]]; return annQuad.some((p, i) => Math.hypot(p.x - c[i][0], p.y - c[i][1]) > 1) }
+      const annLevelHandle = () => { const cv = $('ann-canvas'); return { x: cv.width / 2, y: 40 * annPx() } };
+      function annDownMode(e) { const p = annCanvasXY(e), r = ANN_HIT_SIZE * annPx(); annModeDrag = null; if (annCropMode === 'quad') { let best = -1, bd = r; annQuad.forEach((q, i) => { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = i } }); if (best >= 0) annModeDrag = best } else { const hd = annLevelHandle(); if (Math.hypot(p.x - hd.x, p.y - hd.y) < r) { const cv = $('ann-canvas'); annModeDrag = 'level'; annLevelBase = annLevel; annLevelFrom = Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) } } annDraggingCrop = annModeDrag !== null }
+      function annMoveMode(e) { const p = annCanvasXY(e), cv = $('ann-canvas'); if (annCropMode === 'quad' && typeof annModeDrag === 'number') { annQuad[annModeDrag] = { x: Math.max(0, Math.min(cv.width, p.x)), y: Math.max(0, Math.min(cv.height, p.y)) } } else if (annModeDrag === 'level') { let a = annLevelBase + (Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) - annLevelFrom) * 180 / Math.PI; a = ((a + 540) % 360) - 180; a = Math.max(-45, Math.min(45, a)); annLevel = Math.abs(a) < 0.3 ? 0 : a; $('img-modal-img').style.transform = annLevel ? `rotate(${annLevel}deg)` : ''; $('ann-wrap').style.overflow = 'hidden' } annRenderAll() }
+      function annUpMode() { annDraggingCrop = false; annModeDrag = null; annRenderAll() }
+      /* The overlay of the two modes: the quadrilateral with its four dots, or the grid with the round handle and, while dragging, the angle */
+      function annDrawCropMode(ctx, cv) { const k = annPx(); ctx.save(); if (annCropMode === 'quad') { ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.moveTo(annQuad[0].x, annQuad[0].y); annQuad.slice(1).forEach(q => ctx.lineTo(q.x, q.y)); ctx.closePath(); ctx.fill('evenodd'); ctx.lineWidth = 2 * k; ctx.strokeStyle = '#ffffff'; ctx.stroke(); annQuad.forEach(q => annDot(ctx, q.x, q.y, 9 * k, k)) } else { if (annLevel) { const r = annLevelKeep(cv.width, cv.height, annLevel); ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.rect((cv.width - r.w) / 2, (cv.height - r.h) / 2, r.w, r.h); ctx.fill('evenodd') } ctx.strokeStyle = 'rgb(255 255 255 / 55%)'; ctx.lineWidth = k; ctx.beginPath(); for (let i = 1; i < 6; i++) { const x = cv.width * i / 6, y = cv.height * i / 6; ctx.moveTo(x, 0); ctx.lineTo(x, cv.height); ctx.moveTo(0, y); ctx.lineTo(cv.width, y) } ctx.stroke(); const hd = annLevelHandle(); annDot(ctx, hd.x, hd.y, 11 * k, k); if (annModeDrag === 'level') annAngleLabel(ctx, hd.x, hd.y + 34 * k, k) } ctx.restore() }
+      function annDot(ctx, x, y, r, k) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 2 * k; ctx.strokeStyle = 'rgb(0 0 0 / 60%)'; ctx.stroke() }
+      function annAngleLabel(ctx, x, y, k) { const t = annLevel.toFixed(1).replace('.', ',').replace('-0,0', '0,0') + '\u00b0'; ctx.font = `600 ${13 * k}px sans-serif`; const w = ctx.measureText(t).width + 16 * k, h = 24 * k; ctx.fillStyle = 'rgb(25 25 25 / 80%)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, 6 * k); else ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y) }
+      /* The homography that takes the points d[i] to s[i] (four pairs), by Gaussian elimination of the 8 x 8 system */
+      function annHomography(d, s) { const A = []; for (let i = 0; i < 4; i++) { const [u, v] = d[i], [x, y] = s[i]; A.push([u, v, 1, 0, 0, 0, -u * x, -v * x, x], [0, 0, 0, u, v, 1, -u * y, -v * y, y]) } for (let c = 0; c < 8; c++) { let m = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[m][c])) m = r; [A[c], A[m]] = [A[m], A[c]]; for (let r = 0; r < 8; r++) { if (r === c) continue; const f = A[r][c] / A[c][c]; for (let k = c; k < 9; k++) A[r][k] -= f * A[c][k] } } return [...A.map((row, i) => row[8] / row[i]), 1] }
+      /* Cantos livres: the paper becomes a straight rectangle, as wide and tall as its longest sides; each pixel is read from the photo by the homography, with bilinear sampling */
+      function annWarpQuad(src, q) { const L = (a, b) => Math.hypot(a.x - b.x, a.y - b.y), W = Math.max(1, Math.round(Math.max(L(q[0], q[1]), L(q[3], q[2])))), H = Math.max(1, Math.round(Math.max(L(q[0], q[3]), L(q[1], q[2])))), h = annHomography([[0, 0], [W, 0], [W, H], [0, H]], q.map(p => [p.x, p.y])), sw = src.width, sh = src.height, sd = src.getContext('2d').getImageData(0, 0, sw, sh).data, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d'), out = ctx.createImageData(W, H), od = out.data; for (let v = 0; v < H; v++) for (let u = 0; u < W; u++) { const z = h[6] * u + h[7] * v + 1, x = Math.min(sw - 1.001, Math.max(0, (h[0] * u + h[1] * v + h[2]) / z)), y = Math.min(sh - 1.001, Math.max(0, (h[3] * u + h[4] * v + h[5]) / z)); annBilinear(sd, sw, x, y, od, (v * W + u) * 4) } ctx.putImageData(out, 0, 0); return cv }
+      function annBilinear(sd, sw, x, y, od, o) { const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, i = (y0 * sw + x0) * 4, j = i + sw * 4; for (let c = 0; c < 4; c++) { const t = sd[i + c] + (sd[i + 4 + c] - sd[i + c]) * fx, b = sd[j + c] + (sd[j + 4 + c] - sd[j + c]) * fx; od[o + c] = t + (b - t) * fy } }
+      /* Endireitar: the photo turns by the angle, and the largest rectangle with its proportion that has no empty corner is kept */
+      function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
+      function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
+      /* Confirmar with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
+      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
          the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
@@ -4904,7 +4938,7 @@
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
-        clearAnnAwait(); annPasteForget();
+        clearAnnAwait(); annPasteForget(); annCropMode = 'rect'; Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === 'rect')); $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '';
         annActive = false; annDrawing = false; annSelectedIdx = -1;
         // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
         annDragging = annResizing = annDraggingCrop = annDragDirty = annResizeDirty = false;
@@ -4934,7 +4968,7 @@
         if (o) {
           const img = $('img-modal-img');
           const u = URL.createObjectURL(o.blob);
-          img.onload = () => URL.revokeObjectURL(u);
+          img.onload = () => { URL.revokeObjectURL(u); $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) }; // the info follows the saved image (B8)
           img.src = u;
         }
       }
@@ -4975,6 +5009,7 @@
       }
       // Leaving Recortar without applying it: a saved crop shows the cropped image again
       async function annLeaveCrop(o, cv) {
+        if (annCropMode !== 'rect') annSetCropMode('rect');
         annCropBox = null;
         if (o && o.cropBox && o.origBlob) {
           await annShowBlob(o.blob, cv);
@@ -5203,7 +5238,8 @@
         annDrawSelectionOverlay();
         annUpdateDelBtn();
         annSyncTextIcon();
-        if (annTool === 'crop') {
+        if (annTool === 'crop' && annCropMode !== 'rect') annDrawCropMode(annGetCtx(), $('ann-canvas'));
+        else if (annTool === 'crop') {
           const cv = $('ann-canvas'), ctx = annGetCtx();
           ctx.save();
           ctx.fillStyle = 'rgb(0 0 0 / 60%)';
@@ -5499,7 +5535,7 @@
         // so the Quine copies the HTML without them
         document.querySelectorAll('.ann-flyout').forEach(f => {
           const b = f.parentElement.querySelector('[data-tool]'); f.id = 'ann-fly-' + b.dataset.tool; b.setAttribute('aria-controls', f.id); b.setAttribute('aria-expanded', 'false'); // F-0090
-          if (b.dataset.tool === 'select') return; // the tray of Selecionar holds only the layers (B7.2)
+          if (b.dataset.tool === 'select' || b.dataset.tool === 'crop') return; // the trays of Selecionar (layers, B7.2) and Recortar (modes, B8) have no size
           f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>');
         });
         initTips();
@@ -5516,7 +5552,7 @@
         }
         $('ann-canvas').addEventListener('pointermove', e => {
           const cv = e.currentTarget;
-          if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
+          if (annTool !== 'crop' || !annCropBox || annDraggingCrop || annCropMode !== 'rect') { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
         $('ann-canvas').addEventListener('pointermove', e => { annPtr = annCanvasXY(e); const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; e.currentTarget.style.cursor = annSelectCursorAt(annPtr) });
@@ -5553,6 +5589,7 @@
         }
         $('ann-save').onclick = async () => {
           if (annCommitText) annCommitText();
+          if (annTool === 'crop' && annModePending()) { await annSaveMode(); return }
           const img = $('img-modal-img');
           let fW = img.naturalWidth, fH = img.naturalHeight, cX = 0, cY = 0;
           if (annCropBox) {
@@ -5683,6 +5720,7 @@
         });
         annSyncFillBtns();
         $('ann-layer-up').onclick = () => annLayer(1, false); $('ann-layer-down').onclick = () => annLayer(-1, false);
+        Object.entries(ANN_CROP_BTNS).forEach(([m, id]) => { $(id).onclick = () => annSetCropMode(m) });
         // Tool buttons: a click on the chosen tool opens or closes its tray (D-0102)
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
           let _hold = 0, _held = false;
@@ -5828,7 +5866,7 @@
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
           if (e.button === 2) annDownGrab(e);
           else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
-          else if (annTool === 'crop') annDownCrop(e);
+          else if (annTool === 'crop') { if (annCropMode === 'rect') annDownCrop(e); else annDownMode(e) }
           else if (annTool === 'select') annDownSelect(e);
           else if (annTool === 'text') annDownText(e);
           else annDownDraw(e);
@@ -5920,6 +5958,7 @@
           }
         }
         function annMoveCrop(e) {
+          if (annCropMode !== 'rect') { annMoveMode(e); return }
           const p = annCanvasXY(e);
           const dx = p.x - annStart.x, dy = p.y - annStart.y;
           annStart = p;
@@ -6040,6 +6079,7 @@
         });
         // End of a crop drag: a box smaller than 10 px is dropped
         function annUpCrop() {
+          if (annCropMode !== 'rect') { annUpMode(); return }
           annDraggingCrop = false;
           if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
           annRenderAll();
