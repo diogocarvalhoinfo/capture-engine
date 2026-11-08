@@ -535,6 +535,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
+| **Lista do .7z** | Um .zip, .tar, .tar.gz ou .rar mostra a lista de arquivos; um .7z não, porque guarda essa lista comprimida. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Navegação privada** | Em alguns navegadores, a navegação privada não deixa gravar as capturas. Elas ficam na aba aberta, a barra de estado diz «Só nesta aba», e um aviso vermelho aparece no topo. Exporte em PDF ou ZIP antes de fechar a aba. |
 | **Aba privada no iPhone** | Numa aba privada, as capturas não são gravadas. Se o Safari recarregar ou fechar a aba, elas se perdem: exporte antes de sair do Safari. |
