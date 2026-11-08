@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **A lixeira no lugar do ✕ ao remover (D-0117):** o ✕ removia um item e também fechava e cancelava. Agora remover tem a lixeira dos «Removidos», que diz para onde o item vai: cinza nas linhas de documento, vermelha ao apontar; e, sobre uma foto, num quadrado escuro que fica vermelho ao apontar. A anotação selecionada no editor ganha a mesma lixeira. Os botões passaram a 24 px (F-0122), e o restaurar da miniatura usa a seta circular do botão «Restaurar» (F-0121).
+
 ## [28.7.3] - 2026-11-08
 
 Patch: o «Erro» do .pdf e do .zip fica aceso, o ícone do iPhone sem borda branca, o Download do visualizador com a extensão certa, a imagem reconhecida pelo conteúdo, e as correções da auditoria de 2026-11-08.

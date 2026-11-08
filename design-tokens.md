@@ -66,7 +66,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-mark` | `rgb(255 255 255 / 30%)` | — | Ponto acima de uma ferramenta que tem opções (D-0102) |
 | `--color-viewer-tray` | `#1b1b1b` | — | Bandeja das opções de uma ferramenta (D-0102) |
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
-| `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom e setas, flutuando sobre a imagem |
+| `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom, setas e a lixeira das miniaturas, flutuando sobre a imagem |
 | `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
 
 > [!NOTE]
@@ -141,7 +141,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--radius-sm` | `0.25rem` | Campos, chips e o botão de remover (4px) |
+| `--radius-sm` | `0.25rem` | A lixeira e o restaurar das miniaturas, a lixeira e o nome do documento, a etiqueta do tamanho, a linha do Histórico e o balão (4px) |
 | `--radius-md` | `0.375rem` | A moldura da miniatura, o item arrastado, o espaço onde ele cai, os campos e o aviso do rodapé (6px) |
 | `--radius-lg` | `0.5rem` | Botões, chips, abas, painéis, linhas de documento e caixas (8px) |
 | `--radius-xl` | `0.75rem` | Modais e diálogos (12px) |
