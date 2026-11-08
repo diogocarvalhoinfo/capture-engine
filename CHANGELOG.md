@@ -19,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A faixa de tamanho do `validate.sh` vai até 520 KB:** a versão 29 cresce com os documentos; o arquivo passou de 400 KB nesta entrega (401 799 bytes). O check 25 continua a avisar de um salto inesperado.
 - **Editar um documento de texto (D-0125):** «Editar» mostra o texto puro, também do Markdown, do CSV e do HTML, e o rodapé troca para Cancelar e Confirmar, como no editor de imagem. Com mudanças por salvar, o Esc, o ✕ e o clique fora fazem os dois pulsarem.
 - **A lista de um arquivo compactado (D-0126):** um .zip, .tar, .tar.gz ou .rar abre no visualizador com os nomes, os tamanhos e as datas, sem extrair nada. O .7z mostra «Lista não disponível». Testado no Chrome 156 com .zip, .tar e .tar.gz gerados pelo Python, e com um .rar 5 montado à mão; um .rar de verdade, feito pelo WinRAR, não foi testado.
+- **O banco na versão 3 (D-0127):** a 29 abre a base de dados do navegador na versão 3, sem mudar nada do que estava guardado. **Impacto:** uma cópia anterior à 29, aberta depois no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Medido no Chrome 156 com a cópia exportada da 28.7.3: ela não lê nem apaga nada, e a 29 reaberta mostra a sessão e a imagem como estavam. Com uma aba antiga aberta, a 29 pede para fechá-la e termina a atualização em seguida. Os scripts de recuperação do AGENTS §14 passam a abrir a base sem número de versão.
 
 ## [28.7.3] - 2026-11-08
 
