@@ -252,7 +252,7 @@ No telefone:
 
 ### 6.4 Marcar, menus e reordenação
 
-Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Num PDF, «Diminuir o tamanho» cria uma cópia menor, em três níveis, com o tamanho de cada um à direita. Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Com dois ou mais PDFs marcados, «Juntar em um PDF» cria «juntado.pdf» em Documentos, com as páginas na ordem da lista. Esc, ou um clique fora dos itens, desmarca tudo.
+Para marcar vários itens, use «Marcar» no menu do clique direito: aparece uma caixa de marcar em cada imagem e em cada documento, até se desmarcar tudo. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Num PDF, «Diminuir o tamanho» cria uma cópia menor, em três níveis, com o tamanho de cada um à direita. Com vários marcados, o menu é o mesmo em qualquer um deles: baixa os marcados num .zip, ou num .pdf quando nenhum está em Documentos, ou os remove. Com dois ou mais PDFs marcados, «Juntar em um PDF» cria «juntado.pdf» em Documentos, com as páginas na ordem da lista. Esc, ou um clique fora dos itens, desmarca tudo.
 
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
