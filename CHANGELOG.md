@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **O texto com fundo é o padrão (D-0141):** o texto novo do editor sai sobre um retângulo na cor escolhida, e a bandeja do Texto ganhou «Fundo transparente», ao lado de «Com fundo». A escolha fica no navegador. Textos já feitos não mudam. Testado no Chrome nos temas claro e escuro e em 360 × 740: o padrão sai com fundo, o transparente sai sem, a escolha volta depois de recarregar, e a bandeja cabe na tela.
+
 ### Corrigido
 
 - **O Ctrl+Z volta à foto como foi capturada (D-0140):** depois de confirmar um recorte, os Cantos livres ou o Endireitar e reabrir o editor, o Ctrl+Z não voltava a foto. Agora ele tira primeiro as anotações e depois volta à foto inicial, sem recorte, giro, perspectiva ou endireitamento; o Ctrl+Y refaz, e o Confirmar nesse ponto guarda a foto inicial. Junto, um Ctrl+Z apertado enquanto o editor ainda abria era desfeito pela abertura; agora vale o último. Testado no Chrome com um recorte, com os Cantos livres e com uma anotação sobre um recorte; sair sem confirmar deixa a foto como estava.
