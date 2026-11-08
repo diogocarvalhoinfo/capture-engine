@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [28.7.3] - 2026-11-08
+
+Patch: o «Erro» do .pdf e do .zip fica aceso, o ícone do iPhone sem borda branca, o Download do visualizador com a extensão certa, a imagem reconhecida pelo conteúdo, e as correções da auditoria de 2026-11-08.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): os arquivos exportados por quem mantém o projeto às 09h46, já na 28.7.3, abertos por `file://` no Edge 157 com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor, o título e o rodapé aplicados, a imagem colada com Ctrl+V entra na grade, a sessão volta no Histórico depois de recarregar, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 28.7.3, e ela exporta uma nova cópia User.
+
+Auditoria de 2026-11-08 (Prompt 3): achados F-0110 a F-0127. Ficaram fora o motor de anotação linha a linha, o Visual Builder, o telefone de verdade e o leitor de tela. O F-0120 foi para os pendentes do AGENTS, e o F-0113 virou a D-0116.
 
 ### Modificado
 
