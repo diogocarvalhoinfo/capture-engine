@@ -6859,6 +6859,10 @@
         xrefStr += `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`; w(xrefStr);
         return new Blob(objs, { type: 'application/pdf' });
       }
+      async function jpegsOf(list, quality) { const out = []; for (const img of list) out.push({ jpeg: await imgToJPEG(img.blob, quality), label: img.label }); return out }
+      /* The .pdf leads everything in Imagens (D1, B6.7): each run of photos becomes pages by buildPdfBlob, each PDF gives its own pages,
+         all in the order of the grid, joined by pdfCopyPages. The photos follow the Layout PDF; the pages of a PDF keep their size */
+      async function pdfMixed(list, pdfFmt, quality) { const parts = []; let run = []; const flush = async () => { if (run.length) parts.push(await pdfOpen(await buildPdfBlob(await jpegsOf(run, quality), pdfFmt))); run = [] }; for (const o of list) { if (o.kind !== 'pdf') { run.push(o); continue } await flush(); const d = await pdfOpen(o.blob); if (d.enc) { showNotice(`«${imgName(o)}» está protegido por senha, e as páginas dele não podem entrar no PDF.`); throw new Error('PDF export: encrypted source') } parts.push(d) } await flush(); return pdfCopyPages(parts) }
       // The .pdf button back to rest after the success or error state (cls)
       function pdfBtnReset(btn, cls) { btn.classList.remove(cls); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; btn.disabled = false; updateBtns() }
       async function generatePDF(returnBlob = false, list = images) {
@@ -6867,9 +6871,8 @@
         if (!returnBlob) { btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; }
         try {
           await new Promise(r => setTimeout(r, 50));
-          const quality = TOKEN_JPEG_QUALITY; const jpegBlobs = [];
-          for (const img of list.filter(x => x.kind !== 'pdf')) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
-          const blob = await buildPdfBlob(jpegBlobs, pdfFmt);
+          const quality = TOKEN_JPEG_QUALITY;
+          const blob = list.some(x => x.kind === 'pdf') ? await pdfMixed(list, pdfFmt, quality) : await buildPdfBlob(await jpegsOf(list, quality), pdfFmt);
           if (returnBlob) return blob;
           dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
           holdSuccess(() => pdfBtnReset(btn, 'st-success')); SysLogger.info('PDF gerado: ' + fmtSize(blob.size))
