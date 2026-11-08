@@ -2480,6 +2480,36 @@
       background: var(--color-border)
     }
 
+    /* Inside the editor the menu is dark, as the trays (decision 12) */
+    .ctx-menu.ctx-dark {
+      background: var(--color-viewer-tray);
+      border-color: var(--color-viewer-control-border)
+    }
+
+    .ctx-dark .ctx-item {
+      color: var(--color-viewer-control-foreground)
+    }
+
+    .ctx-dark .ctx-icon,
+    .ctx-dark .ctx-key {
+      color: var(--color-viewer-muted-foreground);
+      stroke: var(--color-viewer-muted-foreground)
+    }
+
+    .ctx-dark .ctx-item:hover,
+    .ctx-dark .ctx-item:focus-visible {
+      background: var(--color-viewer-control-hover)
+    }
+
+    .ctx-dark .ctx-sep {
+      background: var(--color-viewer-control-border)
+    }
+
+    .ctx-dark .ctx-danger:hover,
+    .ctx-dark .ctx-danger:focus-visible {
+      color: var(--color-red-500)
+    }
+
     /* ═══ RESPONSIVE ═══ */
     @media (width <= 56.25rem) {
       /* Allow page to scroll vertically on mobile */
@@ -4665,10 +4695,10 @@
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
-      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      function ctxOpen(x, y, groups, dark) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu' + (dark ? ' ctx-dark' : ''); m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
       /* One item of the menu; with a sixth value (a function that gives the rows), it opens a submenu instead (B6.5) */
       function ctxItem([icon, label, key, fn, danger, sub]) { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key || sub) { const k = document.createElement('span'); k.className = 'ctx-key'; if (sub) k.innerHTML = '<svg class="ctx-icon ctx-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>'; else k.textContent = key; b.append(k) } if (sub) { b.sub = sub; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => ctxSubOpen(b, sub, true); b.onmouseenter = () => ctxSubOpen(b, sub, false) } else { b.onclick = () => { ctxClose(); fn() }; b.onmouseenter = ctxSubClose } return b }
       /* The submenu: the same form as the menu, beside the item; on the left when the right has no room, below the item when neither side has */
@@ -5924,16 +5954,22 @@
           clearAnnAwait(); // a click on the image means: keep editing
           if (annSpaceHeld) return;
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
-          if (e.button === 2) annDownGrab(e);
+          if (e.button === 2) { annRightAt = { x: e.clientX, y: e.clientY }; annDownGrab(e) }
           else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
           else if (annTool === 'crop') { if (annCropMode === 'rect') annDownCrop(e); else annDownMode(e) }
           else if (annTool === 'select') annDownSelect(e);
           else if (annTool === 'text') annDownText(e);
           else annDownDraw(e);
         });
+        /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
+        let annRightAt = null;
+        function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
           e.preventDefault();
+          const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5; annRightAt = null;
+          if (!still || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+          ctxOpen(e.clientX, e.clientY, [[['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
         // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
         function annTextAt(p) {
