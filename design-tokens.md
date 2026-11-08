@@ -76,6 +76,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-file-zip` | `#fbbf24` | — | Etiqueta de tipo: arquivos compactados |
 | `--color-file-zip-foreground` | `#1a1917` | — | Letra da etiqueta dos arquivos compactados |
 | `--color-file-text` | `#64748b` | — | Etiqueta de tipo: TXT, Markdown e HTML |
+| `--color-archive-folder` | `var(--color-yellow-500)` | — | Ícone de pasta na lista de um arquivo compactado (D-0126) |
 
 > [!NOTE]
 > **Tema escuro e anti-FOUC.**

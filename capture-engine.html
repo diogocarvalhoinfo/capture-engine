@@ -137,6 +137,7 @@
       --color-file-zip: #fbbf24;
       --color-file-zip-foreground: #1a1917;
       --color-file-text: #64748b;
+      --color-archive-folder: var(--color-yellow-500);
       --thumb-size: 140px;
     }
 
@@ -2954,6 +2955,63 @@
       background: var(--color-background);
     }
 
+    /* The list of an archive (D-0126): no grid, thin lines between the rows, the folders in bold */
+    #text-modal-view .arch-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-control);
+    }
+
+    #text-modal-view .arch-table :is(th, td) {
+      border: 0;
+      border-bottom: 1px solid var(--color-border);
+      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+      background: transparent;
+    }
+
+    #text-modal-view .arch-table th {
+      font-size: var(--text-caption);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--color-muted-foreground);
+    }
+
+    #text-modal-view .arch-table td:first-child {
+      padding-left: calc(var(--spacing) * (3 + var(--depth) * 6));
+    }
+
+    #text-modal-view .arch-table .num {
+      width: 1%;
+      text-align: right;
+      color: var(--color-muted-foreground);
+      font-size: var(--text-xs);
+    }
+
+    #text-modal-view .arch-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: -3px;
+      margin-right: calc(var(--spacing) * 2);
+    }
+
+    #text-modal-view .arch-dir td:first-child {
+      font-weight: 600;
+    }
+
+    #text-modal-view .arch-dir .arch-icon {
+      stroke: var(--color-archive-folder);
+    }
+
+    #text-modal-view .arch-dir .num:last-child {
+      font-weight: 600;
+    }
+
     #text-modal-view.view-html {
       overflow: hidden;
     }
@@ -4404,13 +4462,16 @@
       /* The list of an archive: names, sizes and dates, read from its headers, without extracting anything (D-0126).
          Returns { rows: [[name, size, date]], note } or null when the format gives no list */
       const ARCH_EXT = /^(zip|tar|tgz|gz|rar|7z)$/;
-      const archDate = d => d && !isNaN(d) ? String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0') : '';
+      const archDay = d => d && !isNaN(d) ? String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() : '';
+      const archDate = d => d && !isNaN(d) ? { d, t: archDay(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') } : null;
       const dosDate = (t, d) => new Date(1980 + (d >> 9), ((d >> 5) & 15) - 1, d & 31, t >> 11, (t >> 5) & 63, (t & 31) * 2);
       function listZip(u) { const v = new DataView(u.buffer, u.byteOffset, u.byteLength); let e = -1; for (let i = u.length - 22; i >= Math.max(0, u.length - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break } if (e < 0) return null; const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const rows = [], utf = new TextDecoder(), lat = new TextDecoder('latin1'); for (let k = 0; k < n && p + 46 <= u.length && v.getUint32(p, true) === 0x02014b50; k++) { const fl = v.getUint16(p + 8, true), nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true); const name = (fl & 0x800 ? utf : lat).decode(u.subarray(p + 46, p + 46 + nl)); rows.push([name, name.endsWith('/') ? '' : fmtSize(v.getUint32(p + 24, true)), archDate(dosDate(v.getUint16(p + 12, true), v.getUint16(p + 14, true)))]); p += 46 + nl + xl + cl } return { rows } }
       function listTar(u) { const rows = [], dec = new TextDecoder(), str = (a, b) => dec.decode(u.subarray(a, b)).replace(/\0.*$/s, ''), oct = (a, b) => parseInt(str(a, b).trim() || '0', 8); for (let p = 0; p + 512 <= u.length && rows.length < 5000;) { if (u[p] === 0) break; const name = (str(p + 345, p + 500) ? str(p + 345, p + 500) + '/' : '') + str(p, p + 100), size = oct(p + 124, p + 136), type = String.fromCharCode(u[p + 156] || 48); if (type !== 'x' && type !== 'g' && type !== 'L') rows.push([type === '5' ? name.replace(/\/?$/, '/') : name, type === '5' ? '' : fmtSize(size), archDate(new Date(oct(p + 136, p + 148) * 1000))]); p += 512 + Math.ceil(size / 512) * 512 } return rows.length ? { rows } : null }
       function listRar(u) { const sig = String.fromCharCode(...u.subarray(0, 8)); const v = new DataView(u.buffer, u.byteOffset, u.byteLength), rows = [], dec = new TextDecoder(); if (sig === 'Rar!\x1a\x07\x01\x00') { let p = 8; const vint = () => { let r = 0, s = 1, b; do { b = u[p++]; r += (b & 127) * s; s *= 128 } while (b & 128 && p < u.length); return r }; while (p + 7 < u.length && rows.length < 5000) { const start = p + 4; p = start; const hs = vint(), body = p, type = vint(), hf = vint(); if (type === 4) return { rows: [], note: 'Lista protegida por senha' }; if (hf & 1) vint(); const ds = hf & 2 ? vint() : 0; if (type === 2) { const ff = vint(), size = vint(); vint(); let t = null; if (ff & 2) { t = new Date(v.getUint32(p, true) * 1000); p += 4 } if (ff & 4) p += 4; vint(); vint(); const nl = vint(); const name = dec.decode(u.subarray(p, p + nl)); rows.push([ff & 1 ? name + '/' : name, ff & 1 ? '' : fmtSize(size), archDate(t)]) } if (type === 5) break; p = body + hs + ds } return { rows } } if (sig.startsWith('Rar!\x1a\x07\x00')) { let p = 7; while (p + 7 <= u.length && rows.length < 5000) { const type = u[p + 2], fl = v.getUint16(p + 3, true), hs = v.getUint16(p + 5, true); if (type === 0x73 && fl & 0x80) return { rows: [], note: 'Lista protegida por senha' }; let add = fl & 0x8000 ? v.getUint32(p + 7, true) : 0; if (type === 0x74) { add = v.getUint32(p + 7, true); const size = v.getUint32(p + 11, true), tm = v.getUint32(p + 20, true), nl = v.getUint16(p + 26, true), big = fl & 0x100 ? 8 : 0; const name = new TextDecoder('latin1').decode(u.subarray(p + 32 + big, p + 32 + big + nl)).split('\0')[0].replace(/\\/g, '/'); const dir = (fl & 0xe0) === 0xe0; rows.push([dir ? name + '/' : name, dir ? '' : fmtSize(size), archDate(dosDate(tm & 0xffff, tm >>> 16))]) } if (!hs || type === 0x7b) break; p += hs + add } return { rows } } return null }
       async function archiveList(blob, ext) { try { let u = new Uint8Array(await blob.arrayBuffer()); if (ext === 'tgz' || ext === 'gz') { if (typeof DecompressionStream !== 'function') return null; u = new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); return listTar(u) } if (ext === 'zip') return listZip(u); if (ext === 'tar') return listTar(u); if (ext === 'rar') return listRar(u); if (ext === '7z') return { rows: [], note: 'Lista não disponível: o .7z guarda a lista de arquivos comprimida' }; } catch (e) { SysLogger.warn('Archive list: ' + e.message) } return null }
-      function archiveView(list) { const box = document.createElement('div'); if (list.note) { const p = document.createElement('p'); p.textContent = list.note; box.append(p) } if (list.rows.length) { const files = list.rows.filter(r => !r[0].endsWith('/')).length, p = document.createElement('p'); p.textContent = files + (files === 1 ? ' arquivo' : ' arquivos'); box.append(p); const t = document.createElement('table'), h = document.createElement('tr'); ['Nome', 'Tamanho', 'Data'].forEach(x => { const th = document.createElement('th'); th.textContent = x; h.append(th) }); t.append(h); list.rows.forEach(r => { const tr = document.createElement('tr'); r.forEach(x => { const td = document.createElement('td'); td.textContent = x; tr.append(td) }); t.append(tr) }); box.append(t) } return box }
+      /* The list as a tree: the folders with their files under them, indented; the size and the date on the right (D-0126) */
+      const ARCH_ICON = { dir: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' };
+      function archiveView(list) { const box = document.createElement('div'); if (list.note) { const p = document.createElement('p'); p.textContent = list.note; box.append(p) } if (!list.rows.length) return box; const root = { kids: new Map(), files: [], items: [] }; for (const [path, size, date] of list.rows) { const parts = path.split('/').filter(Boolean), isDir = path.endsWith('/'); let n = root; parts.forEach((part, i) => { if (i === parts.length - 1 && !isDir) { const f = { name: part, size, date }; n.files.push(f); n.items.push(f); return } if (!n.kids.has(part)) { const k = { name: part, kids: new Map(), files: [], items: [], date: null }; n.kids.set(part, k); n.items.push(k) } n = n.kids.get(part); if (i === parts.length - 1 && date) n.date = date }) } const count = n => n.files.length + [...n.kids.values()].reduce((a, k) => a + count(k), 0); const last = n => [n.date && n.date.d, ...n.files.map(f => f.date && f.date.d), ...[...n.kids.values()].map(last)].filter(Boolean).sort((x, y) => x - y)[0] || null; /* the folder shows its oldest date, the day it was filled */ const t = document.createElement('table'); t.className = 'arch-table'; const h = document.createElement('tr'); [['Nome', ''], ['Tamanho', 'num'], ['Data', 'num']].forEach(([x, c]) => { const th = document.createElement('th'); th.textContent = x; th.className = c; h.append(th) }); t.append(h); const row = (depth, icon, name, size, date) => { const tr = document.createElement('tr'); tr.className = 'arch-' + icon; const td = document.createElement('td'); td.style.setProperty('--depth', depth); td.innerHTML = `<svg class="arch-icon" viewBox="0 0 24 24" aria-hidden="true">${ARCH_ICON[icon]}</svg>`; const s = document.createElement('span'); s.textContent = name; td.append(s); const a = document.createElement('td'), b = document.createElement('td'); a.className = b.className = 'num'; a.textContent = size; b.textContent = date; tr.append(td, a, b); t.append(tr) }; const walk = (n, depth) => n.items.forEach(k => { if (k.kids) { const c = count(k); row(depth, 'dir', k.name, c + (c === 1 ? ' arquivo' : ' arquivos'), archDay(last(k))); walk(k, depth + 1) } else row(depth, 'file', k.name, k.size, k.date ? k.date.t : '') }); /* in the order of the archive */ walk(root, 0); box.append(t); return box }
       /* ═══ MARKING AND MENUS (D-0128, D-0129) ═══
          Item by item: each image and document has a box to mark it; the drag still only changes the order. The right click opens
          one menu, in the colour of the screen, with what serves where it was clicked */
