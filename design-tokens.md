@@ -66,8 +66,17 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-mark` | `rgb(255 255 255 / 30%)` | — | Ponto acima de uma ferramenta que tem opções (D-0102) |
 | `--color-viewer-tray` | `#1b1b1b` | — | Bandeja das opções de uma ferramenta (D-0102) |
 | `--color-viewer-surface-hover` | `rgb(255 255 255 / 18%)` | — | Hover desses botões e das setas |
-| `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom e setas, flutuando sobre a imagem |
+| `--color-viewer-floating` | `rgb(25 25 25 / 70%)` | — | Barra de zoom, setas e a lixeira das miniaturas, flutuando sobre a imagem |
 | `--color-annotation-swatch-border` | `rgb(120 120 120 / 50%)` | — | Borda das amostras preta e branca da paleta |
+| `--color-selected` | `color-mix(in srgb, var(--color-primary) 8%, transparent)` | — | Fundo de um item marcado, com a borda na cor principal (D-0128) |
+| `--color-file-pdf` | `#b30b00` | — | Etiqueta de tipo: PDF (D-0128) |
+| `--color-file-docx` | `#2b579a` | — | Etiqueta de tipo: Word |
+| `--color-file-xlsx` | `#217346` | — | Etiqueta de tipo: Excel e CSV |
+| `--color-file-pptx` | `#b7472a` | — | Etiqueta de tipo: PowerPoint |
+| `--color-file-zip` | `#fbbf24` | — | Etiqueta de tipo: arquivos compactados |
+| `--color-file-zip-foreground` | `#1a1917` | — | Letra da etiqueta dos arquivos compactados |
+| `--color-file-text` | `#64748b` | — | Etiqueta de tipo: TXT, Markdown e HTML |
+| `--color-archive-folder` | `var(--color-yellow-500)` | — | Ícone de pasta na lista de um arquivo compactado (D-0126) |
 
 > [!NOTE]
 > **Tema escuro e anti-FOUC.**
@@ -141,7 +150,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--radius-sm` | `0.25rem` | Campos, chips e o botão de remover (4px) |
+| `--radius-sm` | `0.25rem` | A lixeira e o restaurar das miniaturas, a lixeira e o nome do documento, a etiqueta do tamanho, a linha do Histórico e o balão (4px) |
 | `--radius-md` | `0.375rem` | A moldura da miniatura, o item arrastado, o espaço onde ele cai, os campos e o aviso do rodapé (6px) |
 | `--radius-lg` | `0.5rem` | Botões, chips, abas, painéis, linhas de documento e caixas (8px) |
 | `--radius-xl` | `0.75rem` | Modais e diálogos (12px) |
@@ -185,10 +194,10 @@ Um componente novo usa uma destas superfícies, com o seu fundo, borda, raio e s
 | Painel (Imagens, Documentos, barra lateral, Histórico, «Removidos») | `.ev-block`, `#left-sidebar`, `#sidebar`, `#trash-bar` | `--color-card` | 1 px `--color-border` | `--radius-lg` | `--shadow-card` |
 | Linha de documento | `.d-item` | `--color-card`; no hover, `--color-background` | 1 px transparente | `--radius-lg` | nenhuma |
 | Linha do Histórico | `.sb-sess-item` | no hover e ativa, `--color-background` | nenhuma | `--radius-sm` | nenhuma |
-| Modal claro (texto) | `.modal-box` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-modal` |
+| Página do visualizador de documentos | `.doc-page`, dentro do visualizador | `--color-card` | nenhuma | `--radius-lg` | nenhuma |
 | Visual Builder e exportação | `.sb-modal` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-settings` |
 | Histórico no telefone | `#sidebar`, até 900 px | `--color-card` | 1 px `--color-border` | `--radius-xl` | `--shadow-sidebar` |
-| Visualizador | `#img-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
+| Visualizador (imagem e documento) | `#img-modal-overlay .modal-box`, `#text-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
 | Bandeja das opções do editor | `.ann-flyout` | `--color-viewer-tray` | 1 px `--color-viewer-control-border` | `--radius-xl` | `--shadow-dragging` |
 | Barra de zoom | `#zoom-ui` | `--color-viewer-floating`, com desfoque | 1 px `--color-viewer-border` | `--radius-lg` | `--shadow-viewer-zoom` |
 | Faixa de armazenamento | `.ce-banner` | `--color-banner-critical` | nenhuma | nenhum; largura total, no topo | nenhuma |
@@ -210,6 +219,7 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
 | `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | telefone |
 | `--z-offcanvas` | `1045` | `#sidebar` no telefone, acima do seu fundo | telefone |
+| `--z-popover` | `1070` | Menu do clique direito, acima dos modais (D-0129) | global |
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
@@ -362,14 +372,14 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                       imagem-1                      [×]  │
-│   ↑ .modal-title: só o nome (16px, centrado)    ↑ 32px  │
+│        imagem-1.png  1920×1080 · 245,0 KB           [×]  │
+│   ↑ .modal-title (16px) e .modal-info (11px), na   ↑ 32px│
+│     mesma linha; o nome corta antes da informação        │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
 │ ‹│                    [Imagem]                        │› │  ← setas, com 2 imagens ou mais
 │  │                               [ − ] 100% [ + ]    │  │  ← #zoom-ui, só com zoom > 100%
 │  └────────────────────────────────────────────────────┘  │
-│                   1920×1080 · 245.0 KB                   │  ← #img-modal-dims (11px)
 ├──────────────────────────────────────────────────────────┤
 │        [Restaurar]  [Editar]  [Download]                 │
 │         ↑ só nos «Removidos», no lugar do Editar         │
@@ -384,7 +394,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     relatorio.txt                   [×]  │
+│                 relatorio.txt  2,4 KB           [×]  │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
 │  │ Texto: área de texto com fonte monoespaçada        │  │  ← modo texto
@@ -400,7 +410,6 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 ├──────────────────────────────────────────────────────────┤
 │  [Restaurar]  [Copiar texto]  [Download]                  │
 │   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
-│             relatorio.txt · 2.4 KB                       │  ← #text-modal-info (11px)
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -440,7 +449,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos «Removidos» |
 | Editor | **Confirmar** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
 | Editor | **Cancelar** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
-| Modal de texto | **Restaurar**, **Copiar texto** e **Download** | Contorno | `var(--color-card)` + `var(--color-foreground)`, borda `var(--color-border-strong)` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
+| Visualizador de documento | **Restaurar**, **Copiar texto** e **Download** | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
 
 O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
 

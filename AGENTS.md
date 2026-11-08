@@ -506,7 +506,12 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 **Nome da base de dados:** `CaptureEngineDB`
 
 > **Escopo de armazenamento (origem):** o IndexedDB é particionado por **origem** = protocolo + host + porta. A mesma `CaptureEngineDB` aberta via `file://`, `http://localhost:8080` e `https://<user>.github.io` são **três bases distintas e isoladas** — sem compartilhamento entre elas, mesmo no mesmo perfil de navegador. Dentro de `file://`, o caminho do arquivo não altera a origem (mesma base). Decorre disto que distribuir a ferramenta hospedada vs como arquivo local resulta em históricos separados.
-**Versão do schema:** `2`
+**Versão do schema:** `3` (`DB_VERSION`), desde a 29.0.0 (D-0127).
+
+- **O que a versão 3 muda:** nenhum dado guardado. Ela marca que um registro de `images` pode ter um PDF (`kind`) e imagens coladas no editor (`annBlobs`), que uma 28.x leria errado. Por isso uma cópia 28.x não abre mais a base.
+- **O que uma cópia 28.x faz depois (medido no Chrome 156, com a cópia exportada da 28.7.3):** o `open` com a versão 2 falha (`VersionError`), aparece a faixa «Armazenamento indisponível», o Histórico fica vazio, e uma captura nova fica «Só nesta aba». Ela não lê nem apaga nada; a 29 reaberta mostra tudo como estava.
+- **Aba antiga aberta:** se uma aba 28.x está aberta quando a 29 abre, a atualização espera, e a 29 mostra a faixa «Feche as outras abas». Ao fechar a aba antiga, a atualização termina, e a faixa some. Uma aba aberta quando uma versão futura atualizar a base fecha a conexão e pede para recarregar (`onversionchange`).
+- **Caminho de volta:** não há como voltar a base para a versão 2. Para voltar a uma 28.x, exporte antes as sessões na 29 (PDF ou ZIP); depois, apague os dados do site no navegador e abra a 28.x, que começa vazia.
 
 > **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V25+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
 
@@ -517,8 +522,8 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 Incrementar a versão e adicionar a store com `contains` guard — usuários existentes passam pelo `onupgradeneeded` e recebem a nova store; stores existentes e dados não são tocados:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
-const r = indexedDB.open('CaptureEngineDB', 3);
+// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
   // Stores existentes — manter os guards para não recriar
@@ -538,8 +543,8 @@ r.onupgradeneeded = e => {
 Por exemplo, adicionar o campo `tags` à store `images`. Os registros existentes não têm `tags` — é necessário iterar e reescrever:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
-const r = indexedDB.open('CaptureEngineDB', 3);
+// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
   const tx = e.target.transaction; // transação de upgrade — usar este, não criar novo
@@ -666,7 +671,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `reopenLastSession()` | `async () → void` | Numa tela de toque (`hover: none`), reabre a última sessão, se ela ainda existe (D-0113) | No `init()`, depois do `boot()` |
 | `saveSession()` | `async () → void` | Persiste sessão atual no IndexedDB | Pelo auto-save e `triggerSave()` |
 | `triggerSave()` | `async () → void` | Chama `saveSession()` se `isDirty`, reseta flag | Em digitação e após capturas |
-| `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No botão ✕ da sidebar |
+| `deleteSessionId(id)` | `async (string) → void` | Apaga sessão e todos os seus items; navega ou reset | No ✕ «Eliminar sessão» do Histórico |
 | `renderSbSessions()` | `async () → void` | Re-renderiza a lista de sessões na sidebar. A lista só é montada quando a barra abre: numa página recém-carregada, `#sb-sess-list` fica vazio no DOM mesmo com sessões no banco (um teste automático precisa abrir a barra antes de contar) | Após qualquer alteração de sessão |
 | `idCase(v)` | `string → string` | `v` em maiúsculas com «Maiúsculas» ligado, senão como foi digitado (D-0096) | Ao carregar uma sessão e ao montar o nome dela |
 | `upperKeepCaret(f)` | `HTMLInputElement → void` | Passa o valor do campo para maiúsculas sem mexer no cursor (D-0096) | No `input` dos campos «Quem» e «O que», com «Maiúsculas» ligado |
@@ -848,17 +853,17 @@ ativar arrasto:
 
 | Comportamento | Descrição e Invariantes |
 |---|---|
-| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e botão apagar (✕). A seleção limpa ao confirmar, ao escolher o Texto ou uma ferramenta de outro tipo; o Selecionar e uma ferramenta do mesmo tipo a mantêm (F-0091). O botão do Texto fica aceso, como as outras ferramentas, quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (classe `.ann-txt-selected`). O T mostra o estilo em uso, o do texto selecionado ou o da ferramenta: `.ann-txt-b` (negrito, traço mais grosso) e `.ann-txt-i` (itálico, inclinado), pelo `annSyncTextIcon`. |
+| **Selecionar** | Ativa por padrão ao abrir imagem com anotações existentes (se vazia, ativa `free`). Permite clicar numa forma para selecioná-la. Exibe caixa de seleção sólida e fina (não mais tracejada) e o botão de remover (a lixeira). A seleção limpa ao confirmar, ao escolher o Texto ou uma ferramenta de outro tipo; o Selecionar e uma ferramenta do mesmo tipo a mantêm (F-0091). O botão do Texto fica aceso, como as outras ferramentas, quando a ferramenta texto está ativa **OU** quando há uma anotação de texto selecionada (classe `.ann-txt-selected`). O T mostra o estilo em uso, o do texto selecionado ou o da ferramenta: `.ann-txt-b` (negrito, traço mais grosso) e `.ann-txt-i` (itálico, inclinado), pelo `annSyncTextIcon`. |
 | **Mover (Arrastar)** | A anotação selecionada pode ser movida arrastando-a (o arrasto começa no primeiro clique sobre a forma). A caixa acompanha em tempo real; o botão ✕ é oculto durante o arrasto e reaparece ao soltar. O **botão direito** e o **do meio** agarram e movem em qualquer ferramenta, sem desenhar e sem o menu de contexto nativo (ver «Botões direito e do meio»). |
 | **Seta** | Uma seta selecionada não tem caixa: tem uma alça redonda em cada ponta (`'p1'` no início, `'p2'` na ponta), e cada alça move só a sua ponta. O ✕ fica ao lado do meio da seta, a 28 px das alças (`annArrowDelPoint`). |
 | **Shift** | Ao desenhar e ao redimensionar, o Retângulo desenha um quadrado, o Círculo um círculo perfeito, e a Seta e o Desenho livre andam em passos de 45° (`annShiftPoint`, D-0093). |
 | **Marca-texto** | Um traço livre com o campo `hl` (`'soft'` ou `'solid'`), pontas retas e larguras de `ANN_HL_SIZES` (`annStrokeStyle`). As opções «Translúcido» e «Sólido» ficam acima da ferramenta (D-0102). |
 | **Opções das ferramentas** | Cada ferramenta com opções fica num `.ann-tool-wrap`, com as opções num `.ann-flyout` acima dela. `annOpenFlyout` abre (clique na ferramenta já escolhida, duplo clique, 1 s apertado ou seta para cima), `annCloseFlyout` fecha (Esc, clique ou foco fora, novo clique na ferramenta, troca de ferramenta; escolher uma opção não fecha). `annFill` guarda a segunda opção de cada ferramenta, pela tabela `ANN_OPT2`: «Preenchido» no retângulo e no círculo (a anotação ganha `fill: true`) e «Sólido» no marca-texto (`hl: 'solid'`). O `annPlaceFlyout` põe a bandeja dentro da tela ao abrir e a cada `resize` (F-0085, F-0093). O `aria-controls` e o `aria-expanded` das ferramentas são escritos no boot (F-0090). Toda bandeja termina com `.ann-size-btn` (− e +, que chamam o `onclick` de `#ann-thickness-down` e `#ann-thickness-up`) e `.ann-size-val`, que `annSyncSizeVal` preenche: o tamanho da anotação selecionada ou o da ferramenta, um ponto por passo ou o número do texto. |
-| **Botões direito e do meio** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, selecionam-na, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar, e `annTempSelectFrom` guarda a ferramenta de antes; `annEndTempSelect` volta a ela num clique fora das anotações ou ao apagar a anotação (D-0103). No Recortar, só agarram e movem. |
+| **Botões direito e do meio** | Sobre uma anotação, em qualquer ferramenta menos o Recortar, selecionam-na, com as alças e a lixeira, e já a arrastam. A barra passa ao Selecionar, e `annTempSelectFrom` guarda a ferramenta de antes; `annEndTempSelect` volta a ela num clique fora das anotações ou ao apagar a anotação (D-0103). No Recortar, só agarram e movem. |
 | **Ctrl** | Com o Ctrl (Cmd no Mac) apertado, qualquer ferramenta funciona como o Selecionar; `annCtrlHeld` guarda o estado, `annQuasiSelect` acende o botão Selecionar enquanto ele dura, e `annCtrlUp` tira a seleção ao soltar a tecla (D-0101). `annHandleCursor` dá a cada alça o cursor do lado que ela puxa, girado com o texto. |
 | **Redimensionar** | A caixa de seleção possui quatro alças pequenas e arredondadas nos cantos. Funcionam nas duas direções. Textos sofrem redimensionamento por escala contínua visual ao puxar pelas alças. |
 | **Editar Propriedades** | Com anotação selecionada: os botões −/+ ajustam espessura (formas) ou tamanho da fonte (texto); no texto, a ferramenta Texto fica com o tamanho novo. A paleta de cores altera a cor da anotação selecionada. Níveis de espessura escalam agora em `[1, 2, 4, 6, 8, 12]`. |
-| **Apagar** | O botão ✕ (reutiliza classe `.t-del`) ou a tecla `Delete` apagam a anotação selecionada. O ✕ e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
+| **Apagar** | A lixeira (reutiliza a classe `.t-del`, como a das miniaturas, D-0117) ou a tecla `Delete` apagam a anotação selecionada. A lixeira e a caixa aparecem logo ao selecionar (sem precisar arrastar). |
 | **Desfazer / Refazer** | **REESCRITO (Snapshot Model):** Utiliza duas pilhas de estado completas (`annUndoStack` e `annRedoStack`). `annHistory` é a fonte única da verdade. Toda mutação chama `annPushUndo()` (usa `annCommitUndo` + `annCloneState`) **ANTES** de alterar o `annHistory`. `annCommitUndo` ignora snapshots idênticos ao topo (deduplicação introduzida na D18). `annDoUndo` e `annDoRedo` são `async`. Detectam mudanças em `rot` e `crop` no snapshot. Se `rot` mudou, regeneram o bitmap base com `getRotatedBlob(origBlob, _prev.rot)` e atualizam `annCurrentRotation`. Se `crop` mudou, trocam a imagem base entre `o.blob` e `origBlob` e redimensionam o canvas. Se o snapshot tiver `pcrop`, restaura também a `o.cropBox` persistida. Nova ação limpa `annRedoStack`. Movimentos/redimensionamentos só geram histórico se houve mudança efetiva (via flags `annDragDirty` / `annResizeDirty`). O histórico de desfazer é por sessão e fica apenas em memória (reseta ao recarregar a página). Ao reentrar numa imagem salva, a pilha é semeada passo a passo para permitir desfazer as anotações existentes até o original. Teto de memória: `ANN_HISTORY_MAX = 50`. **Invariante Crítica:** NÃO reintroduzir o modelo antigo de pilha única com flags como `_isMoveUndo` (causava bugs graves de ordem temporal).<br><br>**Nota:** `setAnnDirty(true)` é chamado em todo caminho de mutação junto ao `annPushUndo()`, acionando o timer de auto-save. `annIsDirty`/`setAnnDirty` (controle de salvar e alertar ao fechar) e `annDragDirty`/`annResizeDirty` (flags efêmeros por gesto para o undo) são sistemas distintos que coexistem — um não substitui o outro. |
 
 **Ferramenta «Girar 90°»**
@@ -883,7 +888,7 @@ Ferramenta `annSetTool('crop')`. Comportamento:
 | Função | O que faz |
 |---|---|
 | `annEndTempSelect()` | Sai do Selecionar aberto pelo botão direito ou do meio: tira a seleção e volta a `annTempSelectFrom`. Devolve `true` quando voltou (D-0103) |
-| `annDeleteSelected()` | Apaga a anotação selecionada, com desfazer, e volta à ferramenta de antes. Chamada pelo Delete (`annDeleteKey`) e pelo ✕ da anotação. Devolve `true` quando havia uma |
+| `annDeleteSelected()` | Apaga a anotação selecionada, com desfazer, e volta à ferramenta de antes. Chamada pelo Delete (`annDeleteKey`) e pela lixeira da anotação. Devolve `true` quando havia uma |
 | `annPlaceFlyout(f)` | Põe a bandeja `f` dentro da tela, com 8 px de margem; chamada ao abrir e a cada `resize` (F-0085, F-0093) |
 | `annLightTool(t)` | Acende o botão da ferramenta `t` (classe `active` e `aria-pressed`, F-0090); usada pelo `annSetTool` e pelo `annQuasiSelect` |
 | `annTyping()` | `true` com o campo de texto aberto |
@@ -1525,6 +1530,19 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0114 | **O «Erro» do PDF e do ZIP fica aceso até o próximo clique** | Antes, o vermelho «Erro» sumia sozinho em 2,5 s, e quem olhava para outro lado não via a falha. Agora fica aceso como o verde «Concluído», pelo `holdSuccess()`, até um clique, uma tecla, um colar ou um soltar na página. O «Concluído» tem o círculo com ✓; o «Erro» ganha o círculo com ✕. |
 | D-0115 | **No iPhone, o ícone da Tela de Início não tem borda branca e o nome é «Capture Engine»** | O `apple-touch-icon` tinha os cantos arredondados e 1 px transparente em volta. O iPhone preenche a transparência de branco e arredonda o ícone por conta própria, então aparecia uma borda branca. Agora o ícone é um quadrado preto, sem transparência. O nome sugerido ao adicionar vinha do `short_name` do manifesto, «Capture». Agora o `short_name` e a nova `<meta name="apple-mobile-web-app-title">` dizem «Capture Engine». |
 | D-0116 | **A página não amplia com dois dedos; só a foto do visualizador amplia** | O viewport mantém `maximum-scale=1,user-scalable=no`. **Motivo:** a pinça amplia só a foto do visualizador (F-0107), nunca a interface; sem o bloqueio, a pinça ampliava a tela inteira, e o ✕ saía da tela. O Safari do iPhone ignora o bloqueio, e por isso o visualizador tem a sua própria pinça. O custo aceito: no Chrome do Android, quem precisa de letra maior não amplia a página com dois dedos (WCAG 1.4.4); o tamanho de letra do navegador continua a valer, porque os textos estão em `rem` (D-0082). Fecha o F-0113, aceito por escolha. Origem: DECISOES-PENDENTES, decisão 26, 2026-11-08. |
+| D-0117 | **A lixeira no lugar do ✕ ao remover** | O ícone de remover é a lixeira do cabeçalho dos «Removidos» (`TRASH_SVG`, classe `.trash-icon`), nas linhas de documento, nas miniaturas e na anotação selecionada do editor. **Motivo:** o ✕ fica só para fechar e cancelar, e a lixeira diz para onde o item vai. Nas linhas, a lixeira é cinza e fica vermelha ao apontar, sobre o fundo de destaque. Sobre uma foto, um quadrado escuro (`--color-viewer-floating`) com a lixeira, vermelho ao apontar, porque o ícone solto sumiria numa foto de qualquer cor. Os botões têm 24 px (F-0122), e o restaurar da miniatura usa a mesma seta circular do botão «Restaurar» (F-0121). Origem: DECISOES-PENDENTES, decisão 9, 2026-11-08. |
+| D-0118 | **«Eliminar sessão», com o ✕ e sem janela de confirmação** | O botão de apagar uma sessão no Histórico continua o ✕, agora com o nome «Eliminar sessão», no lugar de «Excluir», e com 24 px (32 px no telefone). A D7 fica: elimina na hora, sem janela. **Motivo:** a sessão não vai para os «Removidos», por isso não leva a lixeira nem a palavra «Remover», que são dos itens que voltam. «Excluir» quer dizer «deixar de fora» em Portugal. Fecha o F-0117. Origem: DECISOES-PENDENTES, decisão 1, 2026-11-08. |
+| D-0119 | **A informação do item na linha do título** | No visualizador, o título é o nome com a extensão, como o Download o grava («imagem-1.png»), e logo depois vem a informação, menor e cinza («1600×900 · 6,3 KB»); no modal de texto, o tamanho. O nome corta com reticências antes da informação, que nunca quebra. A linha que ficava entre a imagem e a barra saiu, e também a linha embaixo dos botões do modal de texto, que repetia o nome. A legenda da miniatura mostra a extensão; ao editar, só o nome muda, e a extensão fica, como nos documentos. **Motivo:** o alto da tela fica livre, e nada fica entre as bandejas e a barra do editor. Origem: DECISOES-PENDENTES, decisão 10, 2026-11-08. |
+| D-0120 | **Tamanhos com vírgula, e o número junto da unidade** | O `fmtSize` escreve «6,3 KB»: vírgula decimal, que os dois países usam, e um espaço que não quebra (`\u00a0`) entre o número e a unidade, para «6,3» e «KB» nunca ficarem em linhas diferentes. Vale na barra de estado, nas linhas de documento, no visualizador e no modal de texto. Origem: DECISOES-PENDENTES, decisões 11 e 18, 2026-11-08. |
+| D-0121 | **Texto «Com fundo»** | A bandeja do Texto fica Negrito, Itálico, «Com fundo», e depois o tamanho. Com «Com fundo», o texto ganha um retângulo na cor escolhida atrás das linhas, e a letra fica escura ou branca pelo mesmo cálculo YIQ dos botões do app (`annOnColor`). A anotação guarda `bg: true`; a escolha fica no navegador (`text-bg`), e o T da ferramenta mostra um quadrado suave. Origem: DECISOES-PENDENTES, pedido N1, 2026-11-08. |
+| D-0122 | **O − e o + logo depois das ferramentas, no computador** | Acima de 480 px, o − e o + da barra ficam depois do Selecionar, antes do 90° e do Recortar. Até 480 px, a linha das ferramentas está cheia (D-0109), e eles ficam depois das cores, como antes. O lugar muda em tempo de execução, depois do `BOOT_HTML`; o arquivo exportado guarda o lugar antigo. Origem: DECISOES-PENDENTES, pedido N3, 2026-11-08. |
+| D-0123 | **Um visualizador para tudo** | O modal de texto ganha a moldura do visualizador de imagem: o fundo escuro, o título branco com a informação, o ✕ e os botões escuros (`.btn-viewer`, D-0098), com «Copiar texto» nos tipos de texto. No meio, uma página na cor do cartão (`.doc-page`) mostra o tipo: o texto; o Markdown formatado; o CSV numa tabela; e o HTML num `iframe` com `srcdoc` e `sandbox="allow-scripts allow-modals allow-forms"`, sem `allow-same-origin`. As três vistas são montadas com elementos e `textContent`, nunca com `innerHTML` do arquivo. O HTML aberto não alcança o armazenamento do app (dá `SecurityError`) e herda a CSP, sem internet (decisão 6). Origem: DECISOES-PENDENTES, decisões 6 e 19, e DECISOES §6, 2026-11-08. |
+| D-0124 | **«Copiado», como o «Concluído»** | O «Copiar texto» mostra «Copiado», sem exclamação, com o círculo e o ✓ e o verde de `.st-success`; numa falha, «Erro», com o círculo e o ✕ e o vermelho de `.st-error`. Volta ao normal em 1,5 s, porque copiar não sai da tela, ao contrário do .pdf e do .zip (D-0114). Fecha o F-0116. Origem: DECISOES-PENDENTES, decisão 27, 2026-11-08. |
+| D-0125 | **O editor de texto mínimo** | Nos documentos de texto (também Markdown, CSV e HTML), «Editar» mostra o texto puro, editável, no lugar da página, e o rodapé troca para Cancelar (✕ vermelho) e Confirmar (verde), como no editor de imagem. O Confirmar grava o texto no mesmo documento, e o tamanho muda na linha. Com mudança por salvar, o Esc, o ✕ e o clique fora fazem os dois pulsarem, e nada fecha. Nos «Removidos», não há «Editar». Origem: DECISOES-PENDENTES, decisão 15, 2026-11-08. |
+| D-0126 | **A lista de um arquivo compactado** | Um .zip, .tar, .tar.gz, .tgz ou .rar abre no visualizador com a lista de nomes, tamanhos e datas, lida dos cabeçalhos, sem extrair nada (`archiveList`). O .tar.gz passa pelo `DecompressionStream` do navegador. Um .rar com os cabeçalhos cifrados mostra «Lista protegida por senha». O .7z mostra «Lista não disponível», porque guarda a lista de arquivos comprimida, e ler essa lista pediria um descompressor LZMA embutido. Origem: DECISOES §6, 2026-11-08. |
+| D-0127 | **O banco na versão 3** | A 29.0.0 abre a `CaptureEngineDB` na versão 3, sem mudar nenhum dado guardado. O número impede que uma cópia 28.x abra uma base com registros que ela leria errado (o PDF em Imagens e as imagens coladas no editor). Uma cópia 28.x aberta depois no mesmo navegador mostra «Armazenamento indisponível» e não toca em nada (medido). O caminho de volta está no §6. Origem: DECISOES-PENDENTES, decisão 8, 2026-11-08. |
+| D-0128 | **Marcar item a item, e o tipo em cor** | Cada imagem e cada documento tem uma caixa de marcar (`.item-check`); nas imagens, no canto de cima à esquerda. Ela aparece com o mouse em cima, quando há algo marcado, e sempre no toque. O item marcado ganha a borda na cor principal e o fundo `--color-selected`. Esc, ou um clique ou toque fora dos itens, desmarca tudo. Não há arrastar para marcar nem Ctrl+A: o arrastar continua só a mudar a ordem. Nas linhas de documento, o tipo vira uma etiqueta colorida (`--color-file-*`) no lugar do ícone, e um PDF mostra as páginas, lidas do arquivo sem o pdf.js. Origem: DECISOES-PENDENTES, decisões 13 e 14, 2026-11-08. |
+| D-0129 | **O menu do clique direito** | Um só menu (`ctxOpen`), com a forma do painel claro (`--color-card`, borda `--color-border`, `--radius-lg`, `--shadow-settings`) e a camada `--z-popover`; a cor segue o tema. Atalho à direita, em cinza; uma linha entre os grupos; «Remover» fica vermelho ao apontar, com o ícone e o atalho. Itens: numa imagem, Abrir, Editar, Copiar imagem (Ctrl+C), Duplicar, Renomear (F2), Download e Remover (Del); num documento, os mesmos, sem Copiar, e Editar só nos de texto; com vários marcados, Download .pdf, Download .zip e Remover; numa área vazia, Adicionar imagem, ou Adicionar documento e Nova nota de texto. Duplicar põe a cópia logo abaixo, pela regra de nomes. O download dos marcados leva a quantidade e a palavra na frente («4-IMAGENS-», «2-PDFS-», «5-ITENS-»). Shift+F10 e a tecla de menu abrem o menu pelo teclado. Origem: DECISOES-PENDENTES, decisões 12, 16 e 23, 2026-11-08. |
 
 ### Pendentes
 
@@ -1556,7 +1574,7 @@ Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a deci
 
 **Modelo de armazenamento (confirmado por bateria de testes — Windows 11 25H2, Edge 148, Chrome 148):**
 
-A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, por isso a base é, na prática, **compartilhada por perfil de navegador**. Consequências confirmadas:
+A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 3)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, por isso a base é, na prática, **compartilhada por perfil de navegador**. Consequências confirmadas:
 
 | Condição | Encontra os dados? |
 | --- | --- |
@@ -1592,7 +1610,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 5. Se a opção "Save as" não estiver disponível, use o console (tab **Console**):
    ```js
    // Substituir 'images' pelo nome da store e o ID pelo valor real
-   const req = indexedDB.open('CaptureEngineDB', 2);
+   const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
    req.onsuccess = e => {
      const db = e.target.result;
      const tx = db.transaction('images', 'readonly');
@@ -1635,7 +1653,7 @@ Acima de 80 % de uso, a quota pode causar falhas na gravação. **Solução:** e
 
 **Listar sessões com nome, usuário e data** (para saber qual sessão extrair com o script abaixo):
 ```js
-const req = indexedDB.open('CaptureEngineDB', 2);
+const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
 req.onsuccess = e => {
   const db = e.target.result;
   db.transaction('sessions', 'readonly')
@@ -1656,7 +1674,7 @@ req.onsuccess = e => {
 **Extrair imagens de uma sessão específica** (com o ID obtido no script acima):
 ```js
 const SESSION_ID = 'COLE_O_ID_AQUI'; // ID do console.log acima
-const req2 = indexedDB.open('CaptureEngineDB', 2);
+const req2 = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
 req2.onsuccess = e => {
   const db = e.target.result;
   const idx = db.transaction('images', 'readonly')
