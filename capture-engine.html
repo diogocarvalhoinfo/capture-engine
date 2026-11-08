@@ -4552,6 +4552,8 @@
       }
       /* Joins whole PDFs, in the order given. An encrypted PDF cannot be copied without its password: it stops the join */
       async function pdfJoin(blobs) { const docs = []; for (const b of blobs) docs.push(await pdfOpen(b)); if (docs.some(d => d.enc)) throw new Error('PDF join: encrypted source'); if (docs.some(d => !d.pages.length)) throw new Error('PDF join: no pages found'); return pdfCopyPages(docs) }
+      /* «Juntar em um PDF», in the menu of two or more marked PDFs: «juntado.pdf» in Documentos, with the pages in the order of the list */
+      window.joinPdfs = async function (ds) { try { const blob = await pdfJoin(ds.map(d => d.blob)); await captureDoc(blob, 'juntado.pdf', 'application/pdf'); markClear() } catch (e) { SysLogger.error(e.message); showNotice(/encrypted/.test(e.message) ? 'Um dos PDFs está protegido por senha e não pode ser juntado.' : 'Não foi possível juntar os PDFs.') } };
       /* The type label of a document, in the colours of --color-file-* (D-0128) */
       const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
       const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
