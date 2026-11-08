@@ -34,7 +34,7 @@ Ferramenta para capturar, organizar e exportar imagens e documentos como evidên
 ![Primeira tela do Capture Engine, com a identificação, a exportação, as zonas de imagens e de documentos, o histórico e os removidos anotados](docs/images/overview.png)
 
 1. **Identificação**: os campos «Quem» e «O que» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
-2. **Exportar**: gera um PDF só com imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
+2. **Exportar**: gera um PDF com o que está em Imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
 3. **Imagens**: cole com Ctrl+V, arraste, ou use «Adicionar imagem». <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
 4. **Documentos**: qualquer outro arquivo; os de texto abrem na própria ferramenta. <!-- anotação: alvo=#doc-zone; lado=cima; ponto=0.9,0 -->
 5. **Histórico**: as sessões anteriores, apagadas depois de 48 horas sem uso. <!-- anotação: alvo=#sb-rail; lado=direita; ponto=1,0.3 -->
