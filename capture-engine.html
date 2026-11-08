@@ -1628,6 +1628,29 @@
       text-align: center
     }
 
+    /* The information of the item on the line of the title, after the name: smaller and grey. The name gives way first,
+       with an ellipsis, and the information never breaks (D-0119) */
+    .modal-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: calc(var(--spacing) * 2);
+      min-width: 0;
+      max-width: 420px
+    }
+
+    .modal-title-row .modal-title {
+      min-width: 0;
+      max-width: none
+    }
+
+    .modal-info {
+      flex-shrink: 0;
+      font-size: var(--text-caption);
+      color: var(--color-muted-foreground);
+      white-space: nowrap
+    }
+
     .modal-close {
       position: absolute;
       right: 20px;
@@ -2876,7 +2899,7 @@
       animation: ann-alert var(--duration-ann-alert) var(--ease-in-out) 2 !important;
     }
 
-    #img-modal-overlay #img-modal-dims {
+    #img-modal-overlay .modal-info {
       color: var(--color-viewer-muted-foreground);
     }
 
@@ -3221,7 +3244,7 @@
   <div class="modal-overlay" id="img-modal-overlay">
     <div class="modal-box">
       <div class="modal-hdr">
-        <span class="modal-title" id="img-modal-title">Visualizar imagem</span>
+        <div class="modal-title-row"><span class="modal-title" id="img-modal-title">Visualizar imagem</span><span class="modal-info" id="img-modal-dims"></span></div>
         <button class="modal-close" id="img-modal-close" aria-label="Fechar"><svg viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -3235,9 +3258,6 @@
             style="max-width:100%;max-height:100%;display:block;border-radius:0;user-select:none">
           <canvas id="ann-canvas"
             style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;cursor:crosshair;touch-action:none"></canvas>
-        </div>
-        <div style="padding:calc(var(--spacing) * 3) 0 0;text-align:center;flex-shrink:0;line-height:1;z-index:var(--z-raised)">
-          <span id="img-modal-dims" style="font-size:var(--text-caption);color:var(--color-viewer-muted-foreground)"></span>
         </div>
         <!-- ZOOM CONTROLS -->
         <div id="zoom-ui"
@@ -3426,7 +3446,7 @@
   <div class="modal-overlay" id="text-modal-overlay">
     <div class="modal-box" style="max-width:calc(85vw / var(--app-zoom)); width:650px">
       <div class="modal-hdr">
-        <span class="modal-title" id="text-modal-title">Visualizar documento</span>
+        <div class="modal-title-row"><span class="modal-title" id="text-modal-title">Visualizar documento</span><span class="modal-info" id="text-modal-info"></span></div>
         <button class="modal-close" id="text-modal-close" aria-label="Fechar"><svg viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -3468,8 +3488,6 @@
             </svg> Download
           </button>
         </div>
-        <span id="text-modal-info"
-          style="font-size:var(--text-caption); color:var(--color-muted-foreground); text-align:center; margin:0 auto"></span>
       </div>
     </div>
   </div>
@@ -3750,6 +3768,7 @@
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
       const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
+      const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
       /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
       const TRASH_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
       const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -3868,13 +3887,13 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = o.label || ''; lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('change', () => window.setLabel(o.id, lb.value)); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* ═══ RENDER DOC ═══ */
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
-      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(r.label || '')}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
+      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
 
 
       /* ═══ IMAGE CAPTURE ═══ */
@@ -3901,7 +3920,7 @@
       window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; delete o.removedAt; o.order = nextOrder(images); let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); await idbDel('removed_images', id); await idbPut('images', o); renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); closeImgModal() };
       window.restoreDoc = async function (id) { const idx = removedDocs.findIndex(x => x.id === id); if (idx < 0) return; const o = removedDocs.splice(idx, 1)[0]; delete o.removedAt; let baseName = o.name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } o.name = finalName; o.order = nextOrder(docs); docs.push(o); await idbDel('removed_documents', id); await idbPut('documents', o); renderDoc(o); $('doc-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
-      window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el) { el.value = newVal } };
+      window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el && document.activeElement !== el) { el.value = imgName(o) } };
       window.setDocName = async function (id, val) { const o = docs.find(x => x.id === id); if (!o) return; const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) { ext = oldName.substring(lastDot) } let newName = val.trim(); if (!newName) { newName = oldName } else { if (ext && !newName.toLowerCase().endsWith(ext.toLowerCase())) { newName += ext } } if (newName.toLowerCase() !== oldName.toLowerCase()) { let base = newName, baseExt = ''; const dotIdx = base.lastIndexOf('.'); if (dotIdx >= 0) { baseExt = base.substring(dotIdx); base = base.substring(0, dotIdx) } let finalName = newName; while (docs.some(d => d.id !== id && d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalName = base + baseExt } newName = finalName } o.name = newName; await idbPut('documents', o); isDirty = true; triggerSave(); const el = document.querySelector(`[data-id="${id}"] .d-input`); if (el) { el.value = newName; el.title = newName } };
 
 
@@ -3919,6 +3938,7 @@
         annDeactivate();
         resetImgZoom();
         const url = URL.createObjectURL(o.blob);
+        $('img-modal-dims').textContent = '';
         const img = $('img-modal-img');
         img.onload = function () {
           $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size);
@@ -3926,7 +3946,7 @@
         };
         img.onerror = function () { URL.revokeObjectURL(url); };
         img.src = url;
-        $('img-modal-title').textContent = o.label || 'Sem título';
+        $('img-modal-title').textContent = imgName(o); // the name with the extension, as the Download writes it (D-0119)
         $('img-modal-restore').style.display = trash ? 'flex' : 'none';
         $('img-modal-dl').style.display = 'flex';
         $('ann-toggle').style.display = trash ? 'none' : '';
@@ -4100,7 +4120,7 @@
           $('text-modal-copy').style.display = 'none';
         }
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
-        $('text-modal-info').textContent = `${o.name} · ${fmtSize(o.size)}`;
+        $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
         $('text-modal-restore').style.display = trash ? 'flex' : 'none';
         $('text-modal-dl').style.display = 'flex';
         $('text-modal-overlay').classList.add('open');

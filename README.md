@@ -195,7 +195,7 @@ Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automat
 
 ### 6.2 Visualizador de imagens (Zoom & Pan)
 
-Ao clicar numa imagem, abre um visualizador com zoom e navegação.
+Ao clicar numa imagem, abre um visualizador com zoom e navegação. O título é o nome com a extensão, o mesmo que o Download grava, e logo depois dele vêm as dimensões e o tamanho.
 
 | Ação | Como fazer |
 |---|---|
