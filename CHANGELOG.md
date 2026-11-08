@@ -12,6 +12,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **F-0117: «Eliminar sessão» (D-0118):** o ✕ «Excluir» do Histórico passa a «Eliminar sessão», cinza e vermelho ao apontar, com 24 px (32 px no telefone). Continua o ✕, e não a lixeira, porque a sessão não vai para os «Removidos»; e continua a eliminar na hora, sem janela (D7).
 - **A informação na linha do título (D-0119):** no visualizador, o título passa a ser o nome com a extensão, «imagem-1.png», e logo depois vem «1600×900 · 6,3 KB», menor e cinza. A linha que ficava entre a imagem e a barra saiu, e assim nada fica entre as bandejas do editor e a barra. No modal de texto, o tamanho vai para o título, e a linha embaixo dos botões, que repetia o nome, saiu. A legenda da miniatura mostra a extensão; ao editar, só o nome muda.
 - **Tamanhos com vírgula (D-0120):** «6.3 KB» passa a «6,3 KB», com um espaço que não quebra entre o número e a unidade. Vale na barra de estado, nas linhas de documento, no visualizador e no modal de texto.
+- **Texto «Com fundo» (D-0121):** a bandeja do Texto ganha «Com fundo», depois do Negrito e do Itálico. O texto fica sobre um retângulo na cor escolhida, com a letra escura ou branca, a que der mais contraste.
+- **O − e o + depois das ferramentas (D-0122):** no computador, a espessura fica logo depois do Selecionar, antes do 90° e do Recortar. No telefone, a linha das ferramentas não tem lugar, e ela fica depois das cores, como antes (medido em 375 px).
 
 ## [28.7.3] - 2026-11-08
 
