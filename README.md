@@ -271,7 +271,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
-> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** pela lixeira («Apagar sessão») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
+> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Eliminar sessão») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
 
 ### 6.6 Export PDF
 
