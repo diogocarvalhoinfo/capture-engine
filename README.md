@@ -250,7 +250,7 @@ No telefone:
 
 ### 6.4 Marcar, menus e reordenação
 
-Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Esc desmarca.
+Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Esc, ou um clique fora dos itens, desmarca tudo.
 
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
