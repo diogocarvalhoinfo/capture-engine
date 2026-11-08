@@ -3175,7 +3175,8 @@
     }
 
     .ann-btn[aria-controls] {
-      position: relative
+      position: relative;
+      touch-action: none
     }
 
     .ann-btn[aria-controls]::after {
@@ -5772,6 +5773,7 @@
         $('ann-layer-up').onclick = () => annLayer(1, false); $('ann-layer-down').onclick = () => annLayer(-1, false);
         Object.entries(ANN_CROP_BTNS).forEach(([m, id]) => { $(id).onclick = () => annSetCropMode(m) });
         // Tool buttons: a click on the chosen tool opens or closes its tray (D-0102)
+        let annFlyHover = null; // the tray opened by the mouse over its tool (P4)
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
           let _hold = 0, _held = false;
           const open = () => { annSetTool(b.dataset.tool); annOpenFlyout(b) };
@@ -5785,8 +5787,16 @@
           b.addEventListener('pointerdown', e => { _held = false; if (e.button === 0) _hold = setTimeout(() => { _held = true; open() }, 1000) });
           ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
           b.addEventListener('contextmenu', e => e.preventDefault()); // a long touch opens the options, not the system menu
+          /* P4, to try: the mouse over a tool opens its tray at once, and leaving the tool and its tray closes it.
+             Pressing a tool and dragging up opens its tray too, on mouse and touch, and letting go on an option picks it */
+          const wrap = b.parentElement, fly = wrap.querySelector('.ann-flyout');
+          wrap.addEventListener('pointerenter', e => { if (e.pointerType !== 'mouse' || !annActive) return; clearTimeout(wrap._leave); if (annFlyoutOpen === fly) return; annCloseFlyout(); annOpenFlyout(b); annFlyHover = fly });
+          wrap.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse') return; wrap._leave = setTimeout(() => { if (annFlyHover === fly && annFlyoutOpen === fly) annCloseFlyout(); if (annFlyHover === fly) annFlyHover = null }, 250) });
+          b.addEventListener('pointerdown', e => { if (e.button !== 0) return; const y0 = e.clientY; let up = false; const mv = ev => { if (up || y0 - ev.clientY < 12) return; up = true; _held = true; clearTimeout(_hold); if (annFlyoutOpen !== fly) { annCloseFlyout(); open() } annFlyHover = null }; const end = ev => { document.removeEventListener('pointermove', mv); if (!up) return; const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button'); if (opt) opt.click() }; document.addEventListener('pointermove', mv); document.addEventListener('pointerup', end, { once: true }) });
           b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
         });
+        // An option of the tray of another tool picks that tool first (a tray opened by the mouse over it, or by dragging up; P4)
+        document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('click', e => { if (e.target.closest('button') && f.dataset.tool && annTool !== f.dataset.tool) annSetTool(f.dataset.tool) }, true));
         // Inside the tray: the left and right arrows move between its buttons, Esc closes and goes back to the tool; a click elsewhere closes
         document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('keydown', e => {
           const all = [...f.querySelectorAll('button')], k = all.indexOf(document.activeElement);
