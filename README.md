@@ -181,7 +181,7 @@ O Capture Engine aceita conteúdo de três formas:
 
 | Categoria | Formatos |
 |---|---|
-| Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens) |
+| Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens), também com uma extensão que o navegador não conhece: a imagem é reconhecida pelo conteúdo |
 | Documentos de texto | TXT, CSV, XML, JSON, HTML, e outros formatos de texto simples (visualizáveis diretamente na app) |
 | Documentos binários | PDF, DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
