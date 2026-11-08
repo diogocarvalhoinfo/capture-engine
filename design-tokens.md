@@ -60,7 +60,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-viewer-surface` | `rgb(255 255 255 / 8%)` | — | Botão de fechar sobre o visualizador |
 | `--color-viewer-close-hover` | `rgb(255 255 255 / 20%)` | — | Hover do botão de fechar do visualizador |
 | `--color-viewer-border` | `rgb(255 255 255 / 10%)` | — | Borda da barra de ferramentas e da barra de zoom |
-| `--color-viewer-control-border` | `#3f3f3f` | — | Borda desses botões |
+| `--color-viewer-control-border` | `#3f3f3f` | — | Borda desses botões e da bandeja das opções (`.ann-flyout`) |
 | `--color-viewer-line` | `rgb(255 255 255 / 15%)` | — | Abas e bordas finas do visualizador |
 | `--color-viewer-muted-foreground` | `rgb(255 255 255 / 60%)` | — | Dimensões da imagem, sobre o visualizador |
 | `--color-viewer-mark` | `rgb(255 255 255 / 30%)` | — | Ponto acima de uma ferramenta que tem opções (D-0102) |
@@ -142,8 +142,8 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | Token | Valor | Uso |
 |---|---|---|
 | `--radius-sm` | `0.25rem` | Campos, chips e o botão de remover (4px) |
-| `--radius-md` | `0.375rem` | Botões, cartões de documento e a moldura da miniatura (6px) |
-| `--radius-lg` | `0.5rem` | Painéis internos e caixas (8px) |
+| `--radius-md` | `0.375rem` | A moldura da miniatura, o item arrastado, o espaço onde ele cai, os campos e o aviso do rodapé (6px) |
+| `--radius-lg` | `0.5rem` | Botões, chips, abas, painéis, linhas de documento e caixas (8px) |
 | `--radius-xl` | `0.75rem` | Modais e diálogos (12px) |
 | `--radius-circle` | `50%` | Elementos redondos: botões de ícone, amostras, spinner |
 | `--radius-full` | `calc(infinity * 1px)` | Pílulas: contadores e o interruptor |
@@ -158,7 +158,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
 | `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
 | `--shadow-input-focus` | `0 0 0 1px var(--color-primary)` | Campos com foco |
-| `--shadow-dragging` | `0 12px 30px rgb(0 0 0 / 35%)` | Item em arrasto |
+| `--shadow-dragging` | `0 12px 30px rgb(0 0 0 / 35%)` | Item em arrasto e a bandeja das opções do editor (`.ann-flyout`) |
 | `--shadow-sidebar` | `0 12px 48px rgb(0 0 0 / 30%)` | Barra lateral no telefone |
 | `--shadow-settings` | `0 10px 25px rgb(0 0 0 / 20%)` | Visual Builder e painel de exportação |
 | `--shadow-modal` | `0 24px 64px rgb(0 0 0 / 45%)` | Modais |
@@ -307,11 +307,12 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  [⬚] Capture Engine                         [⚙] [💾] [🌙]   │
-│   ↑ logo + brand name                         ↑ tb-actions    │
+│  [⬚] Capture Engine                 [⚙] [💾] [↻] [🕒] [🌙]   │
+│   ↑ logo + brand name                 ↑ tb-actions             │
 └────────────────────────────────────────────────────────────────┘
   height: 64px (--top-bar-h)
-  Os botões [⚙] [💾] são ADMIN_BUTTONS — removidos em exports User
+  [⚙] [💾]: ADMIN_BUTTONS, removidos em exports User
+  [↻] «Atualizar»; [🕒] «Histórico», só até 900 px de largura; [🌙] tema
 ```
 
 ### Layout principal
@@ -321,16 +322,18 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │ BARRA DE TOPO (64px)                                                  │
 ├──────────────┬────────────────────────────┬──────────────────┬───────┤
 │ LEFT SIDEBAR │  PAINEL IMAGENS            │  PAINEL DOCS     │ SB    │
-│              │  [▲ IMAGENS  ] [count]     │  [≡ DOCUMENTOS ] │  ☰   │
-│ [Quem     ]  │  ┌──────────────────────┐  │  ┌────────────┐  │       │
+│ IDENTIFICAÇÃO│  [▣ IMAGENS ] [count]      │  [▤ DOCUMENTOS]  │  ‹    │
+│ [Quem     ]  │  ┌──────────────────────┐  │  ┌────────────┐  │  🕒   │
 │ [O que    ]  │  │  drop zone / grid    │  │  │ doc list   │  │       │
-│              │  │  (thumbnails 140px)  │  │  └────────────┘  │       │
-│ [Auto]       │  └──────────────────────┘  │                  │       │
-│ [A4V][A4H]   │                            │                  │       │
-│              │                            │                  │       │
-│ [PDF] [ZIP]  │                            │                  │       │
+│ LAYOUT PDF   │  │  (thumbnails 140px)  │  │  └────────────┘  │       │
+│ [Auto][▭][▯] │  └──────────────────────┘  │                  │       │
+│ CAPTURA      │                            │                  │       │
+│ [Adicionar…] │                            │                  │       │
+│ EXPORTAR     │                            │                  │       │
+│ [.pdf] [.zip]│                            │                  │       │
+│ ● Gravado    │                            │                  │       │
 ├──────────────┴────────────────────────────┴──────────────────┴───────┤
-│ TRASH BAR  [🗑 Removidos  3]  ← expande ao clicar                    │
+│ TRASH BAR  [🗑 REMOVIDOS  3]                              [⌃]        │
 ├───────────────────────────────────────────────────────────────────────┤
 │ RODAPÉ  © 2026 • CAPTURE ENGINE • DIOGO CARVALHO     (opacity: 0.5)  │
 └───────────────────────────────────────────────────────────────────────┘
@@ -340,17 +343,17 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Visualizar imagem — imagem-1.png                   [×]  │
-│   ↑ .modal-title (16px, centrado)               ↑ 32px  │
+│                       imagem-1                      [×]  │
+│   ↑ .modal-title: só o nome (16px, centrado)    ↑ 32px  │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
-│  │                                                    │  │
-│  │                    [Imagem]                        │  │
-│  │                                                    │  │
-│  │                               [ − ] 100% [ + ]    │  │  ← #zoom-ui
-│  └────────────────────────────────────────────────────┘  │    visível
-├──────────────────────────────────────────────────────────┤    apenas zoom > 100%
-│  [Restaurar]  [Editar]  [Download]   1920 × 1080 · 245 KB│
+│ ‹│                    [Imagem]                        │› │  ← setas, com 2 imagens ou mais
+│  │                               [ − ] 100% [ + ]    │  │  ← #zoom-ui, só com zoom > 100%
+│  └────────────────────────────────────────────────────┘  │
+│                   1920×1080 · 245.0 KB                   │  ← #img-modal-dims (11px)
+├──────────────────────────────────────────────────────────┤
+│        [Restaurar]  [Editar]  [Download]                 │
+│         ↑ só nos «Removidos», no lugar do Editar         │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -362,7 +365,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Visualizar documento — relatorio.txt               [×]  │
+│                     relatorio.txt                   [×]  │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
 │  │ Texto: área de texto com fonte monoespaçada        │  │  ← modo texto
@@ -378,6 +381,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 ├──────────────────────────────────────────────────────────┤
 │  [Restaurar]  [Copiar texto]  [Download]                  │
 │   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
+│             relatorio.txt · 2.4 KB                       │  ← #text-modal-info (11px)
 └──────────────────────────────────────────────────────────┘
 ```
 
