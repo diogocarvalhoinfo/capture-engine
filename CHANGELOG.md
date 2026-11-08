@@ -11,6 +11,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O «Erro» do .pdf e do .zip fica aceso (D-0114):** antes, o botão ficava vermelho com «Erro» e voltava sozinho em 2,5 s. Quem olhava para outro lado não via a falha. Agora o vermelho fica aceso, como o verde «Concluído», até o próximo clique, tecla, colar ou soltar na página. O «Erro» ganha um círculo com ✕, como o círculo com ✓ do «Concluído». A mensagem completa continua no console.
 - **Ícone e nome na Tela de Início do iPhone (D-0115):** o ícone aparecia com uma borda branca, porque tinha cantos transparentes que o iPhone preenche de branco. Agora é um quadrado preto, e o iPhone arredonda os cantos. Ao adicionar, o nome sugerido era «Capture»; agora é «Capture Engine». Quem já adicionou o ícone precisa removê-lo e adicionar de novo para ver a mudança.
 
+### Corrigido
+
+- **F-0110: o «Download» do visualizador grava a extensão certa.** Antes, um GIF ou um WebP baixado pelo visualizador saía com `.png`, embora o conteúdo continuasse GIF ou WebP; o .zip já usava a extensão certa. Agora os dois usam a mesma tabela de tipos. Testado no Chrome 156 com PNG, JPEG, GIF e WebP: o visualizador e o .zip dão os mesmos quatro nomes.
+
 ## [28.7.2] - 2026-11-07
 
 Patch: no telefone, a ferramenta volta à última sessão, e o ✕ do visualizador fica sempre à vista, com o aviso quando há desenho por salvar.

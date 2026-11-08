@@ -3731,6 +3731,9 @@
          reloads). max+1 never collides. See D45. */
       function nextOrder(arr) { return arr.length ? Math.max(...arr.map(x => x.order)) + 1 : 0 }
       function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(1) + ' MB' }
+      /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
+      const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
+      const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
       const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       function buildFilename(ext, baseName) { const n = new Date(), hh = String(n.getHours()).padStart(2, '0'), mn = String(n.getMinutes()).padStart(2, '0'), dd = String(n.getDate()).padStart(2, '0'), mmm = MONTHS[n.getMonth()], yyyy = n.getFullYear(), raw = (baseName != null ? baseName : $('session-name').value).trim(); let s = ''; if (raw) s = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9\s\-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').toUpperCase(); const prefix = s ? s + '-' : ''; return `${prefix}${hh}h${mn}m-${dd}-${mmm}-${yyyy}.${ext}` }
       const ENC = new TextEncoder();
@@ -3956,7 +3959,7 @@
         _imgOverlayMdOnBackdrop = false;
       };
       $('img-modal-restore').onclick = function () { if (modalItemId) window.restoreImg(modalItemId) };
-      $('img-modal-dl').onclick = function () { const arr = modalIsTrash ? removed : images, o = arr.find(x => x.id === modalItemId); if (o) { const ext = o.blob.type === 'image/jpeg' ? 'jpg' : 'png', name = o.label ? o.label + '.' + ext : 'imagem.' + ext, url = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000) } };
+      $('img-modal-dl').onclick = function () { const arr = modalIsTrash ? removed : images, o = arr.find(x => x.id === modalItemId); if (o) { const ext = imgExt(o.blob.type), name = o.label ? o.label + '.' + ext : 'imagem.' + ext, url = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000) } };
 
       // Keyboard navigation
       // A focused text field (e.g. the annotation text editor) keeps its own keys: its native Ctrl+Z/Ctrl+Y
@@ -6249,7 +6252,7 @@
    separate namespaces, but they share ONE namespace here. Windows and macOS are
    case-insensitive, so 'Relatorio.png' and 'relatorio.png' would collide when extracted.
    The same invariant that AGENTS.md section 3 requires for all deduplication (D26). */
-function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const extMap = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' }; const ext = extMap[img.blob.type] || 'jpg'; const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
+function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const ext = imgExt(img.blob.type); const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
    a file name (< > : " | ? *) and the control characters. A document renamed in the
    app to 'rel:atorio.txt' made an entry that Explorer does not extract. The image
    captions were already protected by an allow list; this closes the
