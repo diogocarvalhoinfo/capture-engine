@@ -93,6 +93,7 @@
       --z-offcanvas-backdrop: 1040;
       --z-offcanvas: 1045;
       --z-modal: 1055;
+      --z-popover: 1070;
       --z-toast: 1090;
       --duration-fast-02: 110ms;
       --duration-moderate-01: 150ms;
@@ -128,6 +129,14 @@
       --color-drop-placeholder: color-mix(in srgb, var(--color-foreground) 5%, transparent);
       --color-drop-placeholder-border: color-mix(in srgb, var(--color-foreground) 8%, transparent);
       --top-bar-h: 64px;
+      --color-selected: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      --color-file-pdf: #b30b00;
+      --color-file-docx: #2b579a;
+      --color-file-xlsx: #217346;
+      --color-file-pptx: #b7472a;
+      --color-file-zip: #fbbf24;
+      --color-file-zip-foreground: #1a1917;
+      --color-file-text: #64748b;
       --thumb-size: 140px;
     }
 
@@ -2269,6 +2278,153 @@
       backdrop-filter: blur(10px)
     }
 
+    /* ═══ MARKING (D-0128) ═══
+       A box per item; on images in the top left corner. It shows on hover, with something marked, and always on touch */
+    .item-check {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+      opacity: 0;
+      transition: opacity var(--duration-moderate-01)
+    }
+
+    .t-item .item-check {
+      position: absolute;
+      top: calc(var(--spacing) * 1.5);
+      left: calc(var(--spacing) * 1.5);
+      z-index: var(--z-raised)
+    }
+
+    .item-check:checked,
+    .item-check:focus-visible,
+    .has-marked .item-check,
+    .t-item:hover .item-check,
+    .d-item:hover .item-check {
+      opacity: 1
+    }
+
+    .t-item.marked,
+    .d-item.marked {
+      border-color: var(--color-primary);
+      background: var(--color-selected)
+    }
+
+    /* The type of a document in its colour (D-0128) */
+    .d-type {
+      min-width: 40px;
+      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-micro);
+      font-weight: 700;
+      text-align: center;
+      color: var(--color-white);
+      flex-shrink: 0;
+      cursor: pointer
+    }
+
+    .d-type-pdf {
+      background: var(--color-file-pdf)
+    }
+
+    .d-type-docx {
+      background: var(--color-file-docx)
+    }
+
+    .d-type-xlsx {
+      background: var(--color-file-xlsx)
+    }
+
+    .d-type-pptx {
+      background: var(--color-file-pptx)
+    }
+
+    .d-type-zip {
+      background: var(--color-file-zip);
+      color: var(--color-file-zip-foreground)
+    }
+
+    .d-type-text {
+      background: var(--color-file-text)
+    }
+
+    .d-pages {
+      font-size: var(--text-caption);
+      color: var(--color-muted-foreground);
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+
+    /* ═══ MENU OF THE RIGHT CLICK (D-0129) ═══
+       One form; the colour follows the screen, as the panels */
+    .ctx-menu {
+      position: fixed;
+      z-index: var(--z-popover);
+      min-width: 220px;
+      padding: calc(var(--spacing) * 1);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-settings)
+    }
+
+    .ctx-item {
+      display: flex;
+      align-items: center;
+      gap: calc(var(--spacing) * 2.5);
+      width: 100%;
+      padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.5);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-control);
+      color: var(--color-foreground);
+      text-align: left
+    }
+
+    .ctx-icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0
+    }
+
+    .ctx-key {
+      margin-left: auto;
+      padding-left: calc(var(--spacing) * 6);
+      font-size: var(--text-xs);
+      color: var(--color-muted-foreground)
+    }
+
+    .ctx-item:hover,
+    .ctx-item:focus-visible {
+      background: var(--color-background)
+    }
+
+    .ctx-danger:hover,
+    .ctx-danger:focus-visible,
+    .ctx-danger:hover :is(.ctx-icon, .ctx-key),
+    .ctx-danger:focus-visible :is(.ctx-icon, .ctx-key) {
+      color: var(--color-red-500);
+      stroke: var(--color-red-500)
+    }
+
+    .ctx-sep {
+      height: 1px;
+      margin: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
+      background: var(--color-border)
+    }
+
+    @media (hover: none) {
+      .item-check {
+        opacity: 1
+      }
+    }
+
     /* ═══ RESPONSIVE ═══ */
     @media (width <= 56.25rem) {
       /* Allow page to scroll vertically on mobile */
@@ -4023,7 +4179,7 @@
       async function reopenLastSession() { if (!touchScreen()) return; let id = null; try { id = localStorage.getItem(LAST_SESSION_KEY) } catch (e) { } if (!id) return; let s = null; try { s = await idbGet('sessions', id) } catch (e) { } if (!s) return; await loadSession(id); renderSbSessions(); SysLogger.info('Última sessão reaberta: ' + id) }
       async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; lastSessionKeep(sessId); SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
-      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
+      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
       function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
@@ -4032,10 +4188,10 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* ═══ RENDER DOC ═══ */
-      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del')) return; window.openTextModal(o.id, false) }); $('doc-list').appendChild(el) }
+      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
       function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
@@ -4061,8 +4217,8 @@
       async function captureDoc(blob, name, type) { await ensureSession(); let baseName = name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: nextOrder(docs), addedAt: Date.now() }; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } docs.push(o); renderDoc(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Documento capturado: ' + finalName) }
 
       /* ═══ DELETE / RESTORE ═══ */
-      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
-      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
+      window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); await idbDel('images', id); await idbPut('removed_images', o); const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
+      window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); await idbDel('documents', id); await idbPut('removed_documents', o); const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; delete o.removedAt; o.order = nextOrder(images); let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); await idbDel('removed_images', id); await idbPut('images', o); renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); closeImgModal() };
       window.restoreDoc = async function (id) { const idx = removedDocs.findIndex(x => x.id === id); if (idx < 0) return; const o = removedDocs.splice(idx, 1)[0]; delete o.removedAt; let baseName = o.name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot >= 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } o.name = finalName; o.order = nextOrder(docs); docs.push(o); await idbDel('removed_documents', id); await idbPut('documents', o); renderDoc(o); $('doc-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
       window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { newVal = oldVal } if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el && document.activeElement !== el) { el.value = imgName(o) } };
@@ -4255,6 +4411,54 @@
       function listRar(u) { const sig = String.fromCharCode(...u.subarray(0, 8)); const v = new DataView(u.buffer, u.byteOffset, u.byteLength), rows = [], dec = new TextDecoder(); if (sig === 'Rar!\x1a\x07\x01\x00') { let p = 8; const vint = () => { let r = 0, s = 1, b; do { b = u[p++]; r += (b & 127) * s; s *= 128 } while (b & 128 && p < u.length); return r }; while (p + 7 < u.length && rows.length < 5000) { const start = p + 4; p = start; const hs = vint(), body = p, type = vint(), hf = vint(); if (type === 4) return { rows: [], note: 'Lista protegida por senha' }; if (hf & 1) vint(); const ds = hf & 2 ? vint() : 0; if (type === 2) { const ff = vint(), size = vint(); vint(); let t = null; if (ff & 2) { t = new Date(v.getUint32(p, true) * 1000); p += 4 } if (ff & 4) p += 4; vint(); vint(); const nl = vint(); const name = dec.decode(u.subarray(p, p + nl)); rows.push([ff & 1 ? name + '/' : name, ff & 1 ? '' : fmtSize(size), archDate(t)]) } if (type === 5) break; p = body + hs + ds } return { rows } } if (sig.startsWith('Rar!\x1a\x07\x00')) { let p = 7; while (p + 7 <= u.length && rows.length < 5000) { const type = u[p + 2], fl = v.getUint16(p + 3, true), hs = v.getUint16(p + 5, true); if (type === 0x73 && fl & 0x80) return { rows: [], note: 'Lista protegida por senha' }; let add = fl & 0x8000 ? v.getUint32(p + 7, true) : 0; if (type === 0x74) { add = v.getUint32(p + 7, true); const size = v.getUint32(p + 11, true), tm = v.getUint32(p + 20, true), nl = v.getUint16(p + 26, true), big = fl & 0x100 ? 8 : 0; const name = new TextDecoder('latin1').decode(u.subarray(p + 32 + big, p + 32 + big + nl)).split('\0')[0].replace(/\\/g, '/'); const dir = (fl & 0xe0) === 0xe0; rows.push([dir ? name + '/' : name, dir ? '' : fmtSize(size), archDate(dosDate(tm & 0xffff, tm >>> 16))]) } if (!hs || type === 0x7b) break; p += hs + add } return { rows } } return null }
       async function archiveList(blob, ext) { try { let u = new Uint8Array(await blob.arrayBuffer()); if (ext === 'tgz' || ext === 'gz') { if (typeof DecompressionStream !== 'function') return null; u = new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); return listTar(u) } if (ext === 'zip') return listZip(u); if (ext === 'tar') return listTar(u); if (ext === 'rar') return listRar(u); if (ext === '7z') return { rows: [], note: 'Lista não disponível: o .7z guarda a lista de arquivos comprimida' }; } catch (e) { SysLogger.warn('Archive list: ' + e.message) } return null }
       function archiveView(list) { const box = document.createElement('div'); if (list.note) { const p = document.createElement('p'); p.textContent = list.note; box.append(p) } if (list.rows.length) { const files = list.rows.filter(r => !r[0].endsWith('/')).length, p = document.createElement('p'); p.textContent = files + (files === 1 ? ' arquivo' : ' arquivos'); box.append(p); const t = document.createElement('table'), h = document.createElement('tr'); ['Nome', 'Tamanho', 'Data'].forEach(x => { const th = document.createElement('th'); th.textContent = x; h.append(th) }); t.append(h); list.rows.forEach(r => { const tr = document.createElement('tr'); r.forEach(x => { const td = document.createElement('td'); td.textContent = x; tr.append(td) }); t.append(tr) }); box.append(t) } return box }
+      /* ═══ MARKING AND MENUS (D-0128, D-0129) ═══
+         Item by item: each image and document has a box to mark it; the drag still only changes the order. The right click opens
+         one menu, in the colour of the screen, with what serves where it was clicked */
+      const marked = new Set();
+      function markSync() { document.querySelectorAll('.t-item[data-id], .d-item[data-id]').forEach(el => { const on = marked.has(el.dataset.id); el.classList.toggle('marked', on); const c = el.querySelector('.item-check'); if (c) c.checked = on }); document.body.classList.toggle('has-marked', marked.size > 0) }
+      function markClear() { if (!marked.size) return; marked.clear(); markSync() }
+      function markBox(id) { const c = document.createElement('input'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); c.addEventListener('click', e => e.stopPropagation()); c.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return c }
+      const markedImgs = () => images.filter(o => marked.has(o.id)), markedDocs = () => docs.filter(o => marked.has(o.id));
+      /* The page count of a PDF, read from the file without pdf.js: the /Count of the page tree, else the /Type /Page objects. Empty when the list is compressed */
+      async function pdfPages(blob) { try { const t = new TextDecoder('latin1').decode(new Uint8Array(await blob.arrayBuffer())); const c = [...t.matchAll(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)/g)].map(m => +m[1]); if (c.length) return Math.max(...c); const n = (t.match(/\/Type\s*\/Page[^s]/g) || []).length; return n || 0 } catch (_) { return 0 } }
+      /* The type label of a document, in the colours of --color-file-* (D-0128) */
+      const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
+      const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
+      function docBadge(o) { const ext = fileExt(o.name), kind = FILE_TYPES[ext]; if (!kind) return null; const b = document.createElement('span'); b.className = 'd-type d-type-' + kind; b.textContent = ext.toUpperCase(); b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', 'Abrir documento'); return b }
+      /* Names of the downloads of the marked items: the name of the Export with the count and the word in front (decision 23) */
+      function markedName(ext, imgs, ds) { const n = imgs.length + ds.length, w = !ds.length ? 'imagens' : !imgs.length && ds.every(d => fileExt(d.name) === 'pdf') ? 'pdfs' : 'itens', s = $('session-name').value.trim(); return buildFilename(ext, n + ' ' + w + (s ? ' ' + s : '')) }
+      async function dlMarkedPdf() { const imgs = markedImgs(); if (!imgs.length) return; try { dlBlob(await generatePDF(true, imgs), markedName('pdf', imgs, [])) } catch (e) { SysLogger.error('PDF: ' + e.message); showNotice('Não foi possível gerar o PDF.') } }
+      async function dlMarkedZip() { const imgs = markedImgs(), ds = markedDocs(); if (!imgs.length && !ds.length) return; try { dlBlob(buildZIP(await zipFilesOf(imgs, ds, false)), markedName('zip', imgs, ds)) } catch (e) { SysLogger.error('ZIP: ' + e.message); showNotice('Não foi possível gerar o ZIP.') } }
+      async function removeMarked() { for (const o of markedImgs()) await window.delImg(o.id); for (const o of markedDocs()) await window.delDoc(o.id); markClear() }
+      /* Duplicar: the copy right below the original, named by the rule of the app (contrato.pdf gives contrato-1.pdf) */
+      async function placeAfter(arr, copy, orig, store, sel) { arr.splice(arr.indexOf(copy), 1); arr.splice(arr.indexOf(orig) + 1, 0, copy); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const a = document.querySelector(`${sel}[data-id="${orig.id}"]`), b = document.querySelector(`${sel}[data-id="${copy.id}"]`); if (a && b) a.after(b) }
+      async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; let n = o.label, k; do { const m = n.match(/-(\d+)$/); n = m ? n.slice(0, -m[0].length) + '-' + (+m[1] + 1) : n + '-1'; k = n.toLowerCase() } while (images.some(x => x !== c && x.label.toLowerCase() === k) || removed.some(x => x.label.toLowerCase() === k)); c.label = n; const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
+      async function dupDoc(o) { await captureDoc(o.blob, o.name, o.type); await placeAfter(docs, docs[docs.length - 1], o, 'documents', '.d-item') }
+      async function copyImg(o) { try { let b = o.blob; if (b.type !== 'image/png') b = await new Promise((res, rej) => { const i = new Image(), u = URL.createObjectURL(o.blob); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); URL.revokeObjectURL(u); c.toBlob(x => x ? res(x) : rej(new Error('toBlob')), 'image/png') }; i.onerror = () => rej(new Error('load')); i.src = u }); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); showNotice('Imagem copiada.') } catch (e) { SysLogger.error('Copy image: ' + e.message); showNotice('Não foi possível copiar a imagem.') } }
+      function renameItem(el) { const f = el && el.querySelector('.t-label, .d-input'); if (f) { f.focus(); f.select() } }
+      function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
+      function dlDoc(o) { dlBlob(o.blob, o.name) }
+      async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
+      const MI = { open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      let ctxMenu = null, ctxFrom = null;
+      function ctxClose() { if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
+      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(([icon, label, key, fn, danger]) => { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key) { const k = document.createElement('span'); k.className = 'ctx-key'; k.textContent = key; b.append(k) } b.onclick = () => { ctxClose(); fn() }; m.append(b) }) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext); return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      function initMenus() {
+        ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
+        document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target)) ctxClose() }, true); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
+        window.addEventListener('blur', ctxClose); window.addEventListener('resize', ctxClose); document.addEventListener('scroll', ctxClose, true);
+        document.addEventListener('keydown', e => {
+          if (ctxMenu) { const it = [...ctxMenu.querySelectorAll('.ctx-item')], i = it.indexOf(document.activeElement); if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); ctxClose() } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); it[(i + (e.key === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } return }
+          if (document.querySelector('.modal-overlay.open, .sb-overlay.open') || typingInField()) return;
+          const el = document.activeElement && document.activeElement.closest && document.activeElement.closest('#thumb-grid .t-item, #doc-list .d-item');
+          if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }
+          else if (e.key === 'Delete' && (marked.size || el)) { e.preventDefault(); if (marked.size) removeMarked(); else if (el.matches('.t-item')) window.delImg(el.dataset.id); else window.delDoc(el.dataset.id) }
+          else if (e.key === 'F2' && el) { e.preventDefault(); renameItem(el) }
+          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o) { e.preventDefault(); copyImg(o) } }
+          else if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && el) { e.preventDefault(); const r = el.getBoundingClientRect(); ctxOpen(r.left + 12, r.top + 12, ctxGroups(el)) }
+        });
+      }
       /* ═══ TEXT MODAL ═══ */
       let textModalItemId = null, textModalIsTrash = false;
       window.openTextModal = async function (id, trash) {
@@ -6439,14 +6643,14 @@
       }
       // The .pdf button back to rest after the success or error state (cls)
       function pdfBtnReset(btn, cls) { btn.classList.remove(cls); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; btn.disabled = false; updateBtns() }
-      async function generatePDF(returnBlob = false) {
+      async function generatePDF(returnBlob = false, list = images) {
         if (!returnBlob && await moveUndrawableToDocs()) { updateBtns(); return }
         const pdfFmt = lerLayoutPDF(); const btn = $('btn-pdf');
         if (!returnBlob) { btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; }
         try {
           await new Promise(r => setTimeout(r, 50));
           const quality = TOKEN_JPEG_QUALITY; const jpegBlobs = [];
-          for (const img of images) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
+          for (const img of list) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
           const blob = await buildPdfBlob(jpegBlobs, pdfFmt);
           if (returnBlob) return blob;
           dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
@@ -6464,16 +6668,18 @@
       function resetZipMode() { zipModeActive = false; const bPdf = $('btn-pdf'), bZip = $('btn-zip'); bPdf.classList.remove('btn-outline'); bPdf.classList.remove('btn-zip-cta'); bZip.classList.remove('btn-outline'); bZip.classList.remove('btn-zip-cta'); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; initPdfModal(); bZip.onclick = handleZipClick; updateBtns(); updateBtnTitles() }
       function handleZipClick(e) { if (e) e.stopPropagation(); if (images.length === 0) { generateZIP(false); return } zipModeActive = true; const bPdf = $('btn-pdf'), bZip = $('btn-zip');/* btn-zip-cta gives the two ZIP choices the look of the Adicionar buttons */bPdf.classList.add('btn-zip-cta'); bZip.classList.add('btn-zip-cta'); bPdf.disabled = false; bZip.disabled = false; bPdf.setAttribute('aria-description', "Exportar imagens num único PDF dentro do ZIP"); bZip.setAttribute('aria-description', "Exportar imagens em arquivos separados dentro do ZIP"); bPdf.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Imagens em PDF'; bZip.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Imagens separadas'; bPdf.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(true) }; bZip.onclick = (ev) => { ev.stopPropagation(); resetZipMode(); generateZIP(false) } }
       document.addEventListener('click', (e) => { if (zipModeActive && !e.target.closest('#export-section')) resetZipMode() });
-      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const usedZipNames = new Set(); /* Lower-case key: images and documents are deduplicated upstream in
+      /* The files of a ZIP: the images (or one PDF of them) and the documents, with names that do not collide */
+      async function zipFilesOf(imgs, ds, isPdf) { const usedZipNames = new Set(); /* Lower-case key: images and documents are deduplicated upstream in
    separate namespaces, but they share ONE namespace here. Windows and macOS are
    case-insensitive, so 'Relatorio.png' and 'relatorio.png' would collide when extracted.
    The same invariant that AGENTS.md section 3 requires for all deduplication (D26). */
-function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of images) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const ext = imgExt(img.blob.type); const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of docs) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
+function dedupeZipName(name) { const k = s => s.toLowerCase(); if (!usedZipNames.has(k(name))) { usedZipNames.add(k(name)); return name } const dot = name.lastIndexOf('.'); const base = dot > 0 ? name.slice(0, dot) : name; const ext = dot > 0 ? name.slice(dot) : ''; let n = 1, candidate; do { candidate = base + '-' + (++n) + ext } while (usedZipNames.has(k(candidate))); usedZipNames.add(k(candidate)); return candidate } const files = []; if (isPdf) { const pdfBlob = await generatePDF(true, imgs); files.push({ name: dedupeZipName('Imagens.pdf'), data: new Uint8Array(await pdfBlob.arrayBuffer()) }) } else { for (const img of imgs) { const u8 = new Uint8Array(await img.blob.arrayBuffer()); const ext = imgExt(img.blob.type); const cleanLabel = (img.label || 'imagem').normalize('NFC').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim().replace(/\s+/g, ' ') || 'imagem'; const name = `${cleanLabel}.${ext}`; files.push({ name: dedupeZipName(name), data: u8 }) } } for (const dc of ds) { const u8 = new Uint8Array(await dc.blob.arrayBuffer()); /* Besides the path traversal, removes the characters that Windows does not accept in
    a file name (< > : " | ? *) and the control characters. A document renamed in the
    app to 'rel:atorio.txt' made an entry that Explorer does not extract. The image
    captions were already protected by an allow list; this closes the
    asymmetry between the two naming paths (D27). */
-const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replace(/\.\.\\/g, '').replace(/^\.*\//g, '').replace(/^\.+/, '').replace(/[<>:"|?*\u0000-\u001f]/g, '').replace(/[. ]+$/, '').trim() || 'documento'; files.push({ name: dedupeZipName(safeDocName), data: u8 }) } const zipBlob = buildZIP(files); dlBlob(zipBlob, buildFilename('zip')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success'); $('btn-pdf').disabled = (!images.length || docs.length > 0); holdSuccess(() => { btn.classList.remove('st-success'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }); SysLogger.info('ZIP gerado: ' + fmtSize(zipBlob.size)) } catch (e) { SysLogger.error('ZIP: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro'; holdSuccess(() => { btn.classList.remove('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }) } }
+const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replace(/\.\.\\/g, '').replace(/^\.*\//g, '').replace(/^\.+/, '').replace(/[<>:"|?*\u0000-\u001f]/g, '').replace(/[. ]+$/, '').trim() || 'documento'; files.push({ name: dedupeZipName(safeDocName), data: u8 }) } return files }
+      async function generateZIP(usePdf = false) { await moveUndrawableToDocs(); const isPdf = usePdf && images.length > 0; const btn = $('btn-zip'); btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; $('btn-pdf').disabled = true; try { await new Promise(r => setTimeout(r, 50)); const files = await zipFilesOf(images, docs, isPdf); const zipBlob = buildZIP(files); dlBlob(zipBlob, buildFilename('zip')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success'); $('btn-pdf').disabled = (!images.length || docs.length > 0); holdSuccess(() => { btn.classList.remove('st-success'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }); SysLogger.info('ZIP gerado: ' + fmtSize(zipBlob.size)) } catch (e) { SysLogger.error('ZIP: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro'; holdSuccess(() => { btn.classList.remove('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip'; updateBtns() }) } }
       function buildZIP(files) { const crc32Tab = (function () { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++)c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c } return t })(); function crc32(buf) { let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++)c = crc32Tab[(c ^ buf[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0 } function u16(v) { return [v & 0xFF, (v >> 8) & 0xFF] } function u32(v) { return [v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF, (v >> 24) & 0xFF] } const localParts = [], centralParts = []; let localOfs = 0; for (const f of files) { const nameU8 = ENC.encode(f.name); const crc = crc32(f.data); const now = new Date(); const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF; const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF; const local = new Uint8Array([0x50, 0x4B, 0x03, 0x04, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, ...nameU8]); const central = new Uint8Array([0x50, 0x4B, 0x01, 0x02, 20, 0, 20, 0, 0, 8, 0, 0, ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(f.data.length), ...u32(f.data.length), ...u16(nameU8.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(localOfs), ...nameU8]); localParts.push(local, f.data); centralParts.push(central); localOfs += local.length + f.data.length } const centralOfs = localOfs; let centralSize = 0; centralParts.forEach(p => centralSize += p.length); const eocd = new Uint8Array([0x50, 0x4B, 0x05, 0x06, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(centralSize), ...u32(centralOfs), 0, 0]); return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' }) }
 
       /* ═══ QUINE ENGINE ═══ */
@@ -6502,7 +6708,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
               } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 28.7.3 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
-function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
+function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
 
         }) ();
