@@ -506,7 +506,12 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 **Nome da base de dados:** `CaptureEngineDB`
 
 > **Escopo de armazenamento (origem):** o IndexedDB é particionado por **origem** = protocolo + host + porta. A mesma `CaptureEngineDB` aberta via `file://`, `http://localhost:8080` e `https://<user>.github.io` são **três bases distintas e isoladas** — sem compartilhamento entre elas, mesmo no mesmo perfil de navegador. Dentro de `file://`, o caminho do arquivo não altera a origem (mesma base). Decorre disto que distribuir a ferramenta hospedada vs como arquivo local resulta em históricos separados.
-**Versão do schema:** `2`
+**Versão do schema:** `3` (`DB_VERSION`), desde a 29.0.0 (D-0127).
+
+- **O que a versão 3 muda:** nenhum dado guardado. Ela marca que um registro de `images` pode ter um PDF (`kind`) e imagens coladas no editor (`annBlobs`), que uma 28.x leria errado. Por isso uma cópia 28.x não abre mais a base.
+- **O que uma cópia 28.x faz depois (medido no Chrome 156, com a cópia exportada da 28.7.3):** o `open` com a versão 2 falha (`VersionError`), aparece a faixa «Armazenamento indisponível», o Histórico fica vazio, e uma captura nova fica «Só nesta aba». Ela não lê nem apaga nada; a 29 reaberta mostra tudo como estava.
+- **Aba antiga aberta:** se uma aba 28.x está aberta quando a 29 abre, a atualização espera, e a 29 mostra a faixa «Feche as outras abas». Ao fechar a aba antiga, a atualização termina, e a faixa some. Uma aba aberta quando uma versão futura atualizar a base fecha a conexão e pede para recarregar (`onversionchange`).
+- **Caminho de volta:** não há como voltar a base para a versão 2. Para voltar a uma 28.x, exporte antes as sessões na 29 (PDF ou ZIP); depois, apague os dados do site no navegador e abra a 28.x, que começa vazia.
 
 > **Nota de migração de schema:** O `onupgradeneeded` atual usa `if (!db.objectStoreNames.contains(...))` — padrão aditivo seguro. Adicionar uma nova object store em V25+ é seguro sem migração destrutiva. Porém, **alterar campos de uma store existente** (ex: adicionar campo obrigatório a `images`) **não é seguro** com a lógica atual: o `onupgradeneeded` não executa para usuários já na versão 2. Qualquer alteração de schema existente requer incrementar a versão da base (`indexedDB.open('CaptureEngineDB', 3)`) e implementar lógica de migração explícita dentro de `onupgradeneeded`.
 
@@ -517,8 +522,8 @@ grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_EN
 Incrementar a versão e adicionar a store com `contains` guard — usuários existentes passam pelo `onupgradeneeded` e recebem a nova store; stores existentes e dados não são tocados:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
-const r = indexedDB.open('CaptureEngineDB', 3);
+// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
   // Stores existentes — manter os guards para não recriar
@@ -538,8 +543,8 @@ r.onupgradeneeded = e => {
 Por exemplo, adicionar o campo `tags` à store `images`. Os registros existentes não têm `tags` — é necessário iterar e reescrever:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 2)  →  indexedDB.open('CaptureEngineDB', 3)
-const r = indexedDB.open('CaptureEngineDB', 3);
+// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
   const tx = e.target.transaction; // transação de upgrade — usar este, não criar novo
@@ -1535,6 +1540,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0124 | **«Copiado», como o «Concluído»** | O «Copiar texto» mostra «Copiado», sem exclamação, com o círculo e o ✓ e o verde de `.st-success`; numa falha, «Erro», com o círculo e o ✕ e o vermelho de `.st-error`. Volta ao normal em 1,5 s, porque copiar não sai da tela, ao contrário do .pdf e do .zip (D-0114). Fecha o F-0116. Origem: DECISOES-PENDENTES, decisão 27, 2026-11-08. |
 | D-0125 | **O editor de texto mínimo** | Nos documentos de texto (também Markdown, CSV e HTML), «Editar» mostra o texto puro, editável, no lugar da página, e o rodapé troca para Cancelar (✕ vermelho) e Confirmar (verde), como no editor de imagem. O Confirmar grava o texto no mesmo documento, e o tamanho muda na linha. Com mudança por salvar, o Esc, o ✕ e o clique fora fazem os dois pulsarem, e nada fecha. Nos «Removidos», não há «Editar». Origem: DECISOES-PENDENTES, decisão 15, 2026-11-08. |
 | D-0126 | **A lista de um arquivo compactado** | Um .zip, .tar, .tar.gz, .tgz ou .rar abre no visualizador com a lista de nomes, tamanhos e datas, lida dos cabeçalhos, sem extrair nada (`archiveList`). O .tar.gz passa pelo `DecompressionStream` do navegador. Um .rar com os cabeçalhos cifrados mostra «Lista protegida por senha». O .7z mostra «Lista não disponível», porque guarda a lista de arquivos comprimida, e ler essa lista pediria um descompressor LZMA embutido. Origem: DECISOES §6, 2026-11-08. |
+| D-0127 | **O banco na versão 3** | A 29.0.0 abre a `CaptureEngineDB` na versão 3, sem mudar nenhum dado guardado. O número impede que uma cópia 28.x abra uma base com registros que ela leria errado (o PDF em Imagens e as imagens coladas no editor). Uma cópia 28.x aberta depois no mesmo navegador mostra «Armazenamento indisponível» e não toca em nada (medido). O caminho de volta está no §6. Origem: DECISOES-PENDENTES, decisão 8, 2026-11-08. |
 
 ### Pendentes
 
@@ -1566,7 +1572,7 @@ Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a deci
 
 **Modelo de armazenamento (confirmado por bateria de testes — Windows 11 25H2, Edge 148, Chrome 148):**
 
-A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, por isso a base é, na prática, **compartilhada por perfil de navegador**. Consequências confirmadas:
+A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 3)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, por isso a base é, na prática, **compartilhada por perfil de navegador**. Consequências confirmadas:
 
 | Condição | Encontra os dados? |
 | --- | --- |
@@ -1602,7 +1608,7 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 2)` — **sem n
 5. Se a opção "Save as" não estiver disponível, use o console (tab **Console**):
    ```js
    // Substituir 'images' pelo nome da store e o ID pelo valor real
-   const req = indexedDB.open('CaptureEngineDB', 2);
+   const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
    req.onsuccess = e => {
      const db = e.target.result;
      const tx = db.transaction('images', 'readonly');
@@ -1645,7 +1651,7 @@ Acima de 80 % de uso, a quota pode causar falhas na gravação. **Solução:** e
 
 **Listar sessões com nome, usuário e data** (para saber qual sessão extrair com o script abaixo):
 ```js
-const req = indexedDB.open('CaptureEngineDB', 2);
+const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
 req.onsuccess = e => {
   const db = e.target.result;
   db.transaction('sessions', 'readonly')
@@ -1666,7 +1672,7 @@ req.onsuccess = e => {
 **Extrair imagens de uma sessão específica** (com o ID obtido no script acima):
 ```js
 const SESSION_ID = 'COLE_O_ID_AQUI'; // ID do console.log acima
-const req2 = indexedDB.open('CaptureEngineDB', 2);
+const req2 = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
 req2.onsuccess = e => {
   const db = e.target.result;
   const idx = db.transaction('images', 'readonly')

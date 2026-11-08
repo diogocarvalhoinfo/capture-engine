@@ -535,6 +535,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
 | **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
 | **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
+| **Cópias anteriores à 29** | Depois de abrir a versão 29 num navegador, uma cópia mais antiga, no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Nada se perde; a 29 mostra tudo. Use sempre a versão mais nova. |
 | **Lista do .7z** | Um .zip, .tar, .tar.gz ou .rar mostra a lista de arquivos; um .7z não, porque guarda essa lista comprimida. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
 | **Navegação privada** | Em alguns navegadores, a navegação privada não deixa gravar as capturas. Elas ficam na aba aberta, a barra de estado diz «Só nesta aba», e um aviso vermelho aparece no topo. Exporte em PDF ou ZIP antes de fechar a aba. |
@@ -585,7 +586,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
 - **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox, e no Safari do iPhone (iOS 26.5), no site publicado. O Safari do Mac não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
-- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**. Uma versão antiga vê as sessões da nova, porque todas usam a mesma base `CaptureEngineDB`. Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
+- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**, a partir da mesma série: todas usam a mesma base `CaptureEngineDB`. A exceção é uma cópia anterior à versão 29 aberta depois de uma 29, que não abre a base (ver «Limitações conhecidas»). Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (outra origem ou outro perfil):
   - **janela anônima ou privada**;
   - **outro perfil** do navegador;
