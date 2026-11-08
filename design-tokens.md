@@ -362,14 +362,14 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                       imagem-1                      [×]  │
-│   ↑ .modal-title: só o nome (16px, centrado)    ↑ 32px  │
+│        imagem-1.png  1920×1080 · 245,0 KB           [×]  │
+│   ↑ .modal-title (16px) e .modal-info (11px), na   ↑ 32px│
+│     mesma linha; o nome corta antes da informação        │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
 │ ‹│                    [Imagem]                        │› │  ← setas, com 2 imagens ou mais
 │  │                               [ − ] 100% [ + ]    │  │  ← #zoom-ui, só com zoom > 100%
 │  └────────────────────────────────────────────────────┘  │
-│                   1920×1080 · 245.0 KB                   │  ← #img-modal-dims (11px)
 ├──────────────────────────────────────────────────────────┤
 │        [Restaurar]  [Editar]  [Download]                 │
 │         ↑ só nos «Removidos», no lugar do Editar         │
@@ -384,7 +384,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                     relatorio.txt                   [×]  │
+│                 relatorio.txt  2,4 KB           [×]  │
 ├──────────────────────────────────────────────────────────┤
 │  ┌────────────────────────────────────────────────────┐  │
 │  │ Texto: área de texto com fonte monoespaçada        │  │  ← modo texto
@@ -400,7 +400,6 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 ├──────────────────────────────────────────────────────────┤
 │  [Restaurar]  [Copiar texto]  [Download]                  │
 │   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
-│             relatorio.txt · 2.4 KB                       │  ← #text-modal-info (11px)
 └──────────────────────────────────────────────────────────┘
 ```
 
