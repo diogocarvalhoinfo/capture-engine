@@ -691,7 +691,7 @@ Para uso em produção com requisitos de recuperação de dados, recomenda-se Ch
 | Setas do Histórico e dos «Removidos» | `aria-expanded` | Diz se a barra está aberta |
 | Ferramentas do editor | `aria-pressed` em todas; nas que têm opções (desenho livre, retângulo, círculo, seta, marca-texto, texto), `aria-controls` e `aria-expanded`, e as opções num `role="group"` com nome | Diz qual ferramenta está ativa, qual bandeja ela abre e se a bandeja está aberta |
 | Opções das ferramentas (Contorno, Preenchido, Translúcido, Sólido, Negrito, Itálico) | `aria-pressed` | Diz qual está escolhida |
-| ✕ do Visual Builder e da exportação | `aria-label="Fechar"` | O botão só contém o ícone |
+| ✕ do visualizador, do modal de texto, do Histórico no telefone, do Visual Builder e da exportação | `aria-label="Fechar"` | O botão só contém o ícone |
 | Conteúdo fora do modal aberto e das barras recolhidas | `inert` | Tira esse conteúdo do Tab e dos leitores de tela, sem mudar o que se vê |
 
 **Conformidade declarada:** nenhuma conformidade formal com WCAG 2.1 ou EN 301 549 foi auditada nesta versão.
