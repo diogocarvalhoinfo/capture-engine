@@ -34,7 +34,7 @@ Ferramenta para capturar, organizar e exportar imagens e documentos como evidên
 ![Primeira tela do Capture Engine, com a identificação, a exportação, as zonas de imagens e de documentos, o histórico e os removidos anotados](docs/images/overview.png)
 
 1. **Identificação**: os campos «Quem» e «O que» dão o nome à sessão. <!-- anotação: alvo=#id-section-wrap; lado=esquerda; ponto=0,0.5 -->
-2. **Exportar**: gera um PDF só com imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
+2. **Exportar**: gera um PDF com o que está em Imagens, ou um ZIP com imagens e documentos. <!-- anotação: alvo=#export-section; lado=esquerda; ponto=0,0.5 -->
 3. **Imagens**: cole com Ctrl+V, arraste, ou use «Adicionar imagem». <!-- anotação: alvo=#img-zone; lado=cima; ponto=0.5,0 -->
 4. **Documentos**: qualquer outro arquivo; os de texto abrem na própria ferramenta. <!-- anotação: alvo=#doc-zone; lado=cima; ponto=0.9,0 -->
 5. **Histórico**: as sessões anteriores, apagadas depois de 48 horas sem uso. <!-- anotação: alvo=#sb-rail; lado=direita; ponto=1,0.3 -->
@@ -151,7 +151,7 @@ A versão publicada no GitHub Pages (cartão «Abrir o site», no topo) funciona
            ↓
 3. Capturar → Ctrl+V, arrastar arquivos, ou clicar "Adicionar imagem"/"Adicionar documento"
            ↓
-4. Organizar → Arrastar itens para reordenar, clicar para ver ou anotar
+4. Organizar → Arrastar itens para reordenar, clicar para ver ou anotar. Um PDF arrastado de Documentos para Imagens fica junto das fotos, e volta do mesmo jeito
            ↓
 5. Exportar → PDF (imagens) ou ZIP (imagens + documentos)
 ```
@@ -183,7 +183,8 @@ O Capture Engine aceita conteúdo de três formas:
 |---|---|
 | Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens), também com uma extensão que o navegador não conhece: a imagem é reconhecida pelo conteúdo |
 | Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet. «Editar» muda o texto puro, com Cancelar e Confirmar |
-| Documentos binários | PDF, DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
+| PDF | Abre no visualizador, com o leitor do próprio navegador |
+| Documentos binários | DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
 **Nomeação automática sem colisões:**
 Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automaticamente `imagem-2`, `imagem-3`, etc. Renomeações manuais seguem a mesma lógica — nunca geram nomes duplicados.
@@ -230,12 +231,14 @@ Motor de anotação:
     - Com um retângulo, um círculo ou um marca-texto selecionado, a opção da mesma ferramenta muda também essa anotação, e o Ctrl+Z desfaz. Escolher outra ferramenta, ou o Texto, tira a seleção, e as opções voltam a valer para a ferramenta. Para mudar o negrito ou o itálico de um texto, faça um duplo clique nele e use as opções. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador. A cada abertura do editor, o texto volta a 24, com o negrito ligado e o itálico desligado.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
   - Com anotações por salvar, fechar o editor (pelo ✕, pelo Esc ou por um clique fora) faz o Cancelar e o Confirmar crescerem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
-- Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou com a lixeira
-- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o do meio sobre uma anotação a selecionam, com as alças e a lixeira, e já a arrastam. A barra passa ao Selecionar. Um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
+- Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou com o ✕ do canto (a anotação não vai para os «Removidos»; volta com o Desfazer). A bandeja do Selecionar tem «Trazer para frente» (Ctrl+]) e «Enviar para trás» (Ctrl+[); Ctrl+Shift+] e Ctrl+Shift+[ levam ao topo e ao fundo
+- Colar por cima: com o editor aberto, o Ctrl+V cola a imagem copiada por cima da foto, como uma anotação. Ela se move, muda de tamanho pelos cantos sem perder a proporção e sai com o Delete. Ao confirmar, fica gravada na foto
+- Mover: arrastar qualquer anotação para reposicionar. Em qualquer ferramenta, menos o Recortar, o botão direito ou o do meio sobre uma anotação a selecionam, com as alças e o ✕, e já a arrastam. A barra passa ao Selecionar. Um clique fora das anotações, ou apagar a anotação, volta à ferramenta de antes
 - Ctrl (Cmd no Mac): enquanto está apertado, qualquer ferramenta funciona como o Selecionar. Um clique numa anotação seleciona; arrastar move, e arrastar uma alça redimensiona. O botão Selecionar fica aceso enquanto isso. Ao soltar o Ctrl, a ferramenta de antes volta, sem alças na tela
 - Redimensionar: alças nos 4 cantos de cada anotação, menos a seta. A seta tem uma alça em cada ponta: cada alça move só a sua ponta, e a seta nunca troca de direção. Numa seta curta, o meio continua a mover a seta. O texto muda de tamanho por escala contínua, e o tamanho novo aparece na bandeja do Texto e vale para o próximo texto
 - Shift: o Retângulo desenha um quadrado, o Círculo um círculo perfeito (sem o Shift, ele desenha uma elipse), e a Seta e o Desenho livre andam em passos de 45°. Vale ao desenhar e ao redimensionar, também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
+- Recortar: a bandeja tem Retângulo (o padrão), Cantos livres e Endireitar. Em **Cantos livres**, as bolinhas já começam no papel quando ele é mais claro que o fundo; arraste cada uma até a ponta do papel, se precisar; o Confirmar desfaz a perspectiva, e o papel vira um retângulo reto. Em **Endireitar**, arraste a bolinha de cima para girar, olhando a grade; o ângulo aparece enquanto arrasta, e o Confirmar gira e corta os cantos vazios. Os dois gravam na foto, com as anotações: depois de confirmar, não há como voltar à foto de antes
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse num lugar sem anotação. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
@@ -250,7 +253,7 @@ No telefone:
 
 ### 6.4 Marcar, menus e reordenação
 
-Cada imagem e cada documento tem uma caixa de marcar, que aparece com o mouse em cima. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Com vários marcados, o menu baixa os marcados num .pdf ou num .zip, ou os remove. Esc, ou um clique fora dos itens, desmarca tudo.
+Para marcar vários itens, use «Marcar» no menu do clique direito: aparece uma caixa de marcar em cada imagem e em cada documento, até se desmarcar tudo. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Num PDF, «Diminuir o tamanho» cria uma cópia menor, em três níveis, com o tamanho de cada um à direita. Com vários marcados, o menu é o mesmo em qualquer um deles: baixa os marcados num .zip, ou num .pdf quando nenhum está em Documentos, ou os remove. Com dois ou mais PDFs marcados, «Juntar em um PDF» cria «juntado.pdf» em Documentos, com as páginas na ordem da lista. Esc, ou um clique fora dos itens, desmarca tudo.
 
 
 Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
@@ -278,7 +281,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 ### 6.6 Export PDF
 
-Gera um PDF com uma imagem por página.
+Gera um PDF com tudo o que está em Imagens: uma foto por página e, no lugar do cartão de um PDF, as páginas dele, na ordem da grade.
 
 Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a próxima ação na página: um clique, uma tecla, colar ou arrastar. Ir a outra janela anexar o arquivo e voltar não tira o verde, por isso a última ação continua à vista.
 
@@ -292,10 +295,10 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 
 **Processo de geração:**
 1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
-2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada
+2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada. As páginas de um PDF que está em Imagens entram como estão, com o tamanho e o texto delas
 3. O arquivo é transferido automaticamente
 
-**Quando o botão PDF fica desativado:** Quando há documentos (não-imagens) na sessão. O motor PDF processa apenas imagens. Para sessões mistas, use o ZIP.
+**Quando o botão PDF fica desativado:** Quando há documentos na sessão. O .pdf leva só o que está em Imagens. Para sessões com documentos, use o ZIP, ou arraste o PDF para Imagens.
 
 **Os arquivos originais não são alterados.** A conversão JPEG acontece apenas na memória, durante a geração do PDF. Os originais ficam na sessão no formato em que foram capturados.
 
@@ -536,8 +539,9 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem sincronização** | Os dados só existem no navegador do computador onde foram criados. Não há sincronização entre dispositivos. |
 | **Dependente do navegador** | Limpar dados do navegador apaga todos os dados. |
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
-| **PDF sem documentos** | O export PDF processa apenas imagens. Documentos (PDF, DOCX, etc.) requerem export ZIP. |
-| **Sem pré-visualização de binários** | Documentos binários (PDF, DOCX, XLSX) não têm pré-visualização inline — apenas download. |
+| **PDF sem documentos** | O export PDF leva só o que está em Imagens: as fotos e os PDFs arrastados para lá. Os documentos (DOCX, XLSX, etc.) requerem o export ZIP. Um PDF protegido por senha, em Imagens, para o export PDF. |
+| **Sem pré-visualização de binários** | Os documentos do Word, do Excel e do PowerPoint não têm pré-visualização, só o Download. O PDF abre no leitor do próprio navegador. |
+| **PDF no iPhone** | O PDF abre no leitor do próprio navegador. No iPhone, o Safari pode mostrar só a primeira página; isso ainda não foi testado num iPhone. |
 | **Cópias anteriores à 29** | Depois de abrir a versão 29 num navegador, uma cópia mais antiga, no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Nada se perde; a 29 mostra tudo. Use sempre a versão mais nova. |
 | **Lista do .7z** | Um .zip, .tar, .tar.gz ou .rar mostra a lista de arquivos; um .7z não, porque guarda essa lista comprimida. |
 | **Quota do navegador** | Com o espaço do navegador esgotado, as capturas novas deixam de ser gravadas e ficam só na aba aberta, e um aviso vermelho aparece no topo. Ver a nota abaixo da tabela. |
@@ -607,8 +611,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ## 12. Perguntas frequentes
 
-**O meu arquivo HTML tem cerca de 430 KB. É normal?**
-Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 430 KB, e a do Export User fica menor, sem o Visual Builder.
+**O meu arquivo HTML tem cerca de 490 KB. É normal?**
+Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem cerca de 490 KB, e a do Export User fica menor, sem o Visual Builder.
 
 **Os meus dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
@@ -636,7 +640,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** 29.0.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.1.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada

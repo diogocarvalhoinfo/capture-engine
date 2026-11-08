@@ -963,6 +963,34 @@
       border-radius: var(--radius-md)
     }
 
+    .t-pdf {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--spacing) * 2);
+      background: var(--color-background);
+      pointer-events: none
+    }
+
+    .t-pdf-icon {
+      width: 40px;
+      height: 40px;
+      fill: none;
+      stroke: var(--color-file-pdf);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .t-pdf-info {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--color-muted-foreground)
+    }
+
     .t-overlay {
       position: absolute;
       inset: 0;
@@ -2279,17 +2307,16 @@
       backdrop-filter: blur(10px)
     }
 
-    /* ═══ MARKING (D-0128) ═══
-       A box per item; on images in the top left corner. It shows on hover, with something marked, and always on touch */
+    /* ═══ MARKING (D-0128, D-0135) ═══
+       A box per item; on images in the top left corner. It shows only while something is marked: «Marcar», in the menu of the right click, starts it */
     .item-check {
+      display: none;
       width: 16px;
       height: 16px;
       margin: 0;
       flex-shrink: 0;
       cursor: pointer;
-      accent-color: var(--color-primary);
-      opacity: 0;
-      transition: opacity var(--duration-moderate-01)
+      accent-color: var(--color-primary)
     }
 
     .t-item .item-check {
@@ -2299,12 +2326,8 @@
       z-index: var(--z-raised)
     }
 
-    .item-check:checked,
-    .item-check:focus-visible,
-    .has-marked .item-check,
-    .t-item:hover .item-check,
-    .d-item:hover .item-check {
-      opacity: 1
+    .has-marked .item-check {
+      display: block
     }
 
     .t-item.marked,
@@ -2414,16 +2437,21 @@
       stroke: var(--color-red-500)
     }
 
+    .ctx-item:disabled {
+      background: none;
+      color: var(--color-muted-foreground);
+      cursor: default
+    }
+
+    .ctx-chev {
+      width: 14px;
+      height: 14px
+    }
+
     .ctx-sep {
       height: 1px;
       margin: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
       background: var(--color-border)
-    }
-
-    @media (hover: none) {
-      .item-check {
-        opacity: 1
-      }
     }
 
     /* ═══ RESPONSIVE ═══ */
@@ -3012,7 +3040,8 @@
       font-weight: 600;
     }
 
-    #text-modal-view.view-html {
+    #text-modal-view.view-html,
+    #text-modal-view.view-pdf {
       overflow: hidden;
     }
 
@@ -3477,7 +3506,7 @@
               <circle cx="8.5" cy="8.5" r="1.5" />
               <polyline points="21 15 16 10 5 21" />
             </svg>
-            <span class="blk-hdr-title">Imagens</span>
+            <span class="blk-hdr-title" id="img-title">Imagens</span>
             <span class="count-badge zero" id="img-badge">0</span>
           </div>
           <div class="drop-zone" id="img-zone">
@@ -3711,22 +3740,35 @@
               <button class="ann-btn ann-opt" id="ann-text-bg" title="Com fundo"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor" fill-opacity="0.35" stroke="none" /><path d="M8 9h8M12 9v7" /></svg></button>
             </div>
           </div>
-          <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
-              <polyline points="5 9 2 12 5 15"/>
-              <polyline points="9 5 12 2 15 5"/>
-              <polyline points="15 19 12 22 9 19"/>
-              <polyline points="19 9 22 12 19 15"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <line x1="12" y1="2" x2="12" y2="22"/>
-            </svg></button>
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="select" title="Selecionar"><svg viewBox="0 0 24 24">
+                <polyline points="5 9 2 12 5 15"/>
+                <polyline points="9 5 12 2 15 5"/>
+                <polyline points="15 19 12 22 9 19"/>
+                <polyline points="19 9 22 12 19 15"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <line x1="12" y1="2" x2="12" y2="22"/>
+              </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Camadas">
+              <button class="ann-btn ann-opt" id="ann-layer-up" title="Trazer para frente (Ctrl+])"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" /><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2" /><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-layer-down" title="Enviar para trás (Ctrl+[)"><svg viewBox="0 0 24 24"><rect x="14" y="14" width="8" height="8" rx="2" /><rect x="2" y="2" width="8" height="8" rx="2" /><path d="M7 14v1a2 2 0 0 0 2 2h1" /><path d="M14 7h1a2 2 0 0 1 2 2v1" /></svg></button>
+            </div>
+          </div>
           <div class="ann-sep"></div>
           <button class="ann-btn" id="ann-rotate-btn" title="Girar 90°"><svg viewBox="0 0 24 24">
               <text x="12" y="12" dy=".35em" font-size="14" font-family="sans-serif" font-weight="600" text-anchor="middle" stroke="none" fill="currentColor">90°</text>
             </svg></button>
-          <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24">
-              <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
-              <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
-            </svg></button>
+          <div class="ann-tool-wrap">
+            <button class="ann-btn" data-tool="crop" title="Recortar"><svg viewBox="0 0 24 24">
+                <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
+                <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+              </svg></button>
+            <div class="ann-flyout" role="group" aria-label="Modos do recorte">
+              <button class="ann-btn ann-opt active" id="ann-crop-rect" aria-pressed="true" title="Retângulo"><svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14" /><path d="M18 22V8a2 2 0 0 0-2-2H2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-crop-quad" aria-pressed="false" title="Cantos livres"><svg viewBox="0 0 24 24"><path d="M5 5 19 3 21 20 3 18Z" /><circle cx="5" cy="5" r="1.6" fill="currentColor" /><circle cx="19" cy="3" r="1.6" fill="currentColor" /><circle cx="21" cy="20" r="1.6" fill="currentColor" /><circle cx="3" cy="18" r="1.6" fill="currentColor" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-crop-level" aria-pressed="false" title="Endireitar"><svg viewBox="0 0 24 24"><path d="M6.5 4.5 19.4 7.2 16.9 19.5 4 16.8Z" /><path d="M2 12h3M19 12h3" /></svg></button>
+            </div>
+          </div>
           </div>
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
@@ -3850,7 +3892,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (29.0.0) -->
+  <!-- VISUAL BUILDER MODAL (29.1.0) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3868,7 +3910,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.0.0</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.1.0</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -4124,7 +4166,7 @@
       /* Sizes with a decimal comma, as in Portuguese, and a space that does not break between the number and the unit (D-0120) */
       function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
-      const IMG_EXT_BY_TYPE = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
+      const IMG_EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
       const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
       /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
@@ -4148,7 +4190,7 @@
         const elT = $('status-time');
         const elD = $('status-details');
         if (!elT || !elD) return;
-        const ni = images.length, nd = docs.length;
+        const np = images.filter(i => i.kind === 'pdf').length, ni = images.length - np, nd = docs.length;
         let totalBytes = 0;
         images.forEach(i => totalBytes += i.blob.size);
         docs.forEach(d => totalBytes += d.size || d.blob?.size || 0);
@@ -4161,10 +4203,11 @@
         if (images.some(i => memOnly.has(i)) || docs.some(d => memOnly.has(d))) timeStr = 'S\u00f3 nesta aba';
         elT.textContent = timeStr;
         elD.innerHTML = '';
-        if (ni || nd) {
+        if (ni || np || nd) {
           function mkPart(val, label) { const s = document.createElement('span'); s.textContent = val; const f = document.createTextNode('\u00a0' + label); const wrap = document.createElement('span'); wrap.appendChild(s); wrap.appendChild(f); return wrap }
           const parts = [];
           if (ni) parts.push(mkPart(ni, 'img' + (ni > 1 ? 's' : '')));
+          if (np) parts.push(mkPart(np, 'PDF' + (np > 1 ? 's' : '')));
           if (nd) parts.push(mkPart(nd, 'doc' + (nd > 1 ? 's' : '')));
           parts.push(mkPart(fmtSize(totalBytes), ''));
           parts.forEach((p, i) => { elD.appendChild(p); if (i < parts.length - 1) { const dot = document.createTextNode(' \u00b7 '); elD.appendChild(dot) } });
@@ -4240,19 +4283,21 @@
       async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
-      function updateCounters() { const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
+      function updateCounters() { $('img-title').textContent = images.some(x => x.kind === 'pdf') ? 'Imagens e PDF' : 'Imagens'; const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
       let zipModeActive = false;
       function updateBtns() { if (zipModeActive && images.length === 0) resetZipMode(); if (zipModeActive) return; const hi = images.length > 0, hd = docs.length > 0; $('btn-pdf').disabled = (!hi || hd); $('btn-zip').disabled = !(hi || hd) }
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); if (o.kind === 'pdf') { URL.revokeObjectURL(url); pdfFace(el, o) } else { const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url) } const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
+      /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label and «PDF · N páginas» */
+      function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
       /* ═══ RENDER DOC ═══ */
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
 
       /* ═══ RENDER TRASH ═══ */
-      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
+      function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; if (r.kind === 'pdf') pdfFace(el, r); grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
 
 
       /* ═══ IMAGE CAPTURE ═══ */
@@ -4267,7 +4312,7 @@
       /* The extension from the first bytes, when the browser gives no type (HEIC on Windows) */
       async function sniffExt(blob) { const h = new Uint8Array(await blob.slice(0, 12).arrayBuffer()); const t = String.fromCharCode(...h); if (t.slice(4, 8) === 'ftyp') { const brand = t.slice(8, 12); return /^(heic|heix|hevc|mif1|msf1)$/.test(brand) ? 'heic' : brand === 'avif' ? 'avif' : 'bin' } if (t.startsWith('II*\x00') || t.startsWith('MM\x00*')) return 'tif'; return 'bin' }
       /* A session saved before this check can hold such an image: before the PDF, it moves to Documents */
-      async function moveUndrawableToDocs() { const bad = []; for (const o of images) if (!(await canDrawImage(o.blob))) bad.push(o); for (const o of bad) { images.splice(images.indexOf(o), 1); await idbDel('images', o.id); const el = document.querySelector(`.t-item[data-id="${o.id}"]`); if (el) el.remove(); const ext = (o.blob.type.split('/')[1] || await sniffExt(o.blob)).replace(/[^a-z0-9]/gi, ''); await captureDoc(o.blob, `${o.label}.${ext}`, o.blob.type) } if (!images.length) $('img-empty').style.display = ''; if (bad.length) { scheduleUIUpdate(); isDirty = true; showNotice(`${bad.length === 1 ? 'Uma imagem' : bad.length + ' imagens'} num formato que o navegador não abre ${bad.length === 1 ? 'passou' : 'passaram'} para Documentos, sem alterações. O PDF só leva as imagens que o navegador abre; o ZIP leva o arquivo original.`) } return bad.length }
+      async function moveUndrawableToDocs() { const bad = []; for (const o of images) if (o.kind !== 'pdf' && !(await canDrawImage(o.blob))) bad.push(o); for (const o of bad) { images.splice(images.indexOf(o), 1); await idbDel('images', o.id); const el = document.querySelector(`.t-item[data-id="${o.id}"]`); if (el) el.remove(); const ext = (o.blob.type.split('/')[1] || await sniffExt(o.blob)).replace(/[^a-z0-9]/gi, ''); await captureDoc(o.blob, `${o.label}.${ext}`, o.blob.type) } if (!images.length) $('img-empty').style.display = ''; if (bad.length) { scheduleUIUpdate(); isDirty = true; showNotice(`${bad.length === 1 ? 'Uma imagem' : bad.length + ' imagens'} num formato que o navegador não abre ${bad.length === 1 ? 'passou' : 'passaram'} para Documentos, sem alterações. O PDF só leva as imagens que o navegador abre; o ZIP leva o arquivo original.`) } return bad.length }
       /* After an export, the button stays green until the next interaction on the page: a click, a key, paste or drop.
          Switching to another window and back is not an interaction, so the person still sees what was done last. */
       function holdSuccess(reset) { const evs = ['pointerdown', 'keydown', 'paste', 'drop']; const mods = ['Alt', 'Control', 'Shift', 'Meta', 'Tab', 'OS']; const done = e => { if (e.type === 'keydown' && mods.includes(e.key)) return; evs.forEach(t => document.removeEventListener(t, done, true)); reset() }; setTimeout(() => evs.forEach(t => document.addEventListener(t, done, true)), 0) }
@@ -4292,6 +4337,7 @@
       window.openImgModal = function (id, trash) {
         const arr = trash ? removed : images, o = arr.find(x => x.id === id);
         if (!o) return;
+        if (o.kind === 'pdf') { window.openTextModal(id, trash); return } // a PDF in Imagens opens in the document viewer (B6.6)
         modalIsTrash = trash;
         modalItemId = id;
         annDeactivate();
@@ -4315,7 +4361,7 @@
         $('img-modal-overlay').classList.add('open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
-        const _navShow = (trash ? removed : images).length > 1;
+        const _navShow = (trash ? removed : images).filter(x => x.kind !== 'pdf').length > 1;
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navShow ? 'flex' : 'none'; });
       };
 
@@ -4334,7 +4380,7 @@
       window.imgModalNav = function (dir) {
         if (typeof hasUnsavedAnnotations === 'function' && hasUnsavedAnnotations()) { triggerUnsavedAlert(); return; }
         if (!modalItemId) return;
-        const arr = modalIsTrash ? removed : images;
+        const arr = (modalIsTrash ? removed : images).filter(x => x.kind !== 'pdf');
         if (arr.length <= 1) return;
         const idx = arr.findIndex(x => x.id === modalItemId);
         if (idx < 0) return;
@@ -4364,7 +4410,7 @@
       // Keyboard navigation
       // A focused text field (e.g. the annotation text editor) keeps its own keys: its native Ctrl+Z/Ctrl+Y
       // undo the TYPING, not the annotation undo/redo
-      const typingInField = () => document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
+      const typingInField = () => document.activeElement && ((document.activeElement.tagName === 'INPUT' && document.activeElement.type !== 'checkbox') || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
       // Ctrl+Z undoes; Ctrl+Shift+Z and Ctrl+Y redo. Returns true when the key was used
       function annUndoKey(e) {
         const k = e.key.toLowerCase();
@@ -4381,9 +4427,13 @@
         annRenderAll(); annEndTempSelect();
         return true;
       }
+      /* Layers (B7.2): the selected annotation one step to the front or to the back, or to the top or the bottom; each change has Undo */
+      function annLayer(dir, toEnd) { const i = annSelectedIdx, n = annHistory.length; if (i < 0 || i >= n) return; const j = toEnd ? (dir > 0 ? n - 1 : 0) : Math.max(0, Math.min(n - 1, i + dir)); if (j === i) return; annPushUndo(); const [h] = annHistory.splice(i, 1); annHistory.splice(j, 0, h); annSelectedIdx = j; setAnnDirty(true); annRenderAll() }
+      /* Ctrl+] and Ctrl+[ move one step; with Shift, to the top or the bottom. The key code holds on any keyboard layout */
+      function annLayerKey(e) { if (!(e.ctrlKey || e.metaKey)) return false; const up = e.code === 'BracketRight' || e.key === ']' || e.key === '}', down = e.code === 'BracketLeft' || e.key === '[' || e.key === '{'; if (!up && !down) return false; e.preventDefault(); annLayer(up ? 1 : -1, e.shiftKey); return true }
       function annDeleteKey(e) { if (e.key !== 'Delete' || !annDeleteSelected()) return false; e.preventDefault(); return true }
       // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
-      const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e));
+      const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e) || annLayerKey(e));
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
       function viewerKey(e) {
         if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Confirmar or Cancelar (F-0083)
@@ -4481,7 +4531,87 @@
       function markBox(id) { const c = document.createElement('input'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); c.addEventListener('click', e => e.stopPropagation()); c.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return c }
       const markedImgs = () => images.filter(o => marked.has(o.id)), markedDocs = () => docs.filter(o => marked.has(o.id));
       /* The page count of a PDF, read from the file without pdf.js: the /Count of the page tree, else the /Type /Page objects. Empty when the list is compressed */
-      async function pdfPages(blob) { try { const t = new TextDecoder('latin1').decode(new Uint8Array(await blob.arrayBuffer())); const c = [...t.matchAll(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)/g)].map(m => +m[1]); if (c.length) return Math.max(...c); const n = (t.match(/\/Type\s*\/Page[^s]/g) || []).length; return n || 0 } catch (_) { return 0 } }
+      /* The pages of the page tree, walked by the reader below. The /Count in plain sight is only the fallback (an encrypted object stream):
+         a /Count written as a reference ("15 0 R") or left behind by an incremental update gives a wrong number */
+      async function pdfPages(blob) { try { const d = await pdfOpen(blob); if (d.pages.length) return d.pages.length; const c = [...d.t.matchAll(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)(?!\s+\d+\s+R)/g)].map(m => +m[1]); return c.length ? Math.max(...c) : (d.t.match(/\/Type\s*\/Page[^s]/g) || []).length } catch (_) { return 0 } }
+      /* ═══ PDF READER ═══ A PDF reader in plain JavaScript, without pdf.js: the classic xref table and the xref stream, objects in object streams (/ObjStm),
+         and FlateDecode through the DecompressionStream of the browser. A broken xref falls back to a scan of the "N G obj" headers.
+         Values: number, boolean, null, array, Map (dictionary), { N } name, { S } string bytes, { R, G } reference, { K } keyword, { D, B } stream (dictionary and the stored bytes) */
+      const PDF_WS = new Uint8Array(256), PDF_DL = new Uint8Array(256), PDF_HEXV = new Uint8Array(256).fill(255), PDF_ESC = { 110: 10, 114: 13, 116: 9, 98: 8, 102: 12 }, PDF_INH = ['Resources', 'MediaBox', 'CropBox', 'Rotate'];
+      [0, 9, 10, 12, 13, 32].forEach(c => { PDF_WS[c] = 1 }); [37, 40, 41, 47, 60, 62, 91, 93, 123, 125].forEach(c => { PDF_DL[c] = 1 }); [...'0123456789abcdef'].forEach((h, i) => { PDF_HEXV[h.charCodeAt(0)] = i; PDF_HEXV[h.toUpperCase().charCodeAt(0)] = i });
+      const pdfLatin = b => { let s = ''; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return s };
+      const pdfIsName = (v, n) => !!v && v.N === n;
+      const pdfR = async (doc, v) => v && v.R !== undefined ? pdfGet(doc, v.R) : v;
+      function pdfSkip(L) { const u = L.u; for (;;) { while (L.p < u.length && PDF_WS[u[L.p]]) L.p++; if (u[L.p] !== 37) return; while (L.p < u.length && u[L.p] !== 10 && u[L.p] !== 13) L.p++ } }
+      function pdfWord(L) { const u = L.u, s = L.p; while (L.p < u.length && !PDF_WS[u[L.p]] && !PDF_DL[u[L.p]]) L.p++; return pdfLatin(u.subarray(s, L.p)) }
+      function pdfName(L) { L.p++; return { N: pdfWord(L).replace(/#([0-9a-fA-F][0-9a-fA-F])/g, (_, h) => String.fromCharCode(parseInt(h, 16))) } }
+      function pdfEsc(L, out) { const u = L.u, c = u[L.p++], k = PDF_ESC[c]; if (k !== undefined) { out.push(k); return } if (c >= 48 && c <= 55) { let v = c - 48; for (let i = 0; i < 2 && u[L.p] >= 48 && u[L.p] <= 55; i++) v = v * 8 + u[L.p++] - 48; out.push(v & 255); return } if (c === 13 && u[L.p] === 10) L.p++; if (c !== 10 && c !== 13) out.push(c) }
+      function pdfLit(L) { const u = L.u, out = []; let depth = 1; L.p++; while (L.p < u.length) { const c = u[L.p++]; if (c === 92) { pdfEsc(L, out); continue } if (c === 40) depth++; if (c === 41 && !--depth) break; out.push(c) } return { S: Uint8Array.from(out) } }
+      function pdfHex(L) { const u = L.u, out = []; let h = -1; L.p++; while (L.p < u.length && u[L.p] !== 62) { const v = PDF_HEXV[u[L.p++]]; if (v > 15) continue; if (h < 0) h = v; else { out.push(h * 16 + v); h = -1 } } L.p++; if (h >= 0) out.push(h * 16); return { S: Uint8Array.from(out) } }
+      function pdfDict(L) { const m = new Map(); L.p += 2; for (;;) { pdfSkip(L); const c = L.u[L.p]; if (c === 62 || L.p >= L.u.length) { L.p += 2; return m } if (c !== 47) { pdfValue(L); continue } const k = pdfName(L).N; m.set(k, pdfValue(L)) } }
+      function pdfArray(L) { const a = []; L.p++; for (;;) { pdfSkip(L); if (L.u[L.p] === 93 || L.p >= L.u.length) { L.p++; return a } a.push(pdfValue(L)) } }
+      function pdfNumRef(L, w) { const n = +w; if (isNaN(n)) return w === 'null' ? null : { K: w }; if (!/^\d+$/.test(w)) return n; const s = L.p; pdfSkip(L); const g = pdfWord(L); pdfSkip(L); const e = L.u[L.p + 1]; if (/^\d+$/.test(g) && L.u[L.p] === 82 && (e === undefined || PDF_WS[e] || PDF_DL[e])) { L.p++; return { R: n, G: +g } } L.p = s; return n }
+      function pdfValue(L) { pdfSkip(L); const u = L.u, c = u[L.p]; if (c === 47) return pdfName(L); if (c === 40) return pdfLit(L); if (c === 60) return u[L.p + 1] === 60 ? pdfDict(L) : pdfHex(L); if (c === 91) return pdfArray(L); const w = pdfWord(L); if (!w) { L.p++; return null } if (w === 'true' || w === 'false') return w === 'true'; return pdfNumRef(L, w) }
+      /* The object at a byte offset ("num gen obj ... endobj"); null when the number there is not the one asked for */
+      async function pdfObjAt(doc, ofs, num) { const L = { u: doc.u, p: ofs }, n = pdfValue(L); pdfValue(L); const kw = pdfValue(L); if (typeof n !== 'number' || (num !== undefined && n !== num) || !kw || kw.K !== 'obj') return null; const v = pdfValue(L); pdfSkip(L); const s = L.p; if (!(v instanceof Map) || pdfWord(L) !== 'stream') { L.p = s; return v } return { D: v, B: await pdfStreamBytes(doc, v, L) } }
+      async function pdfStreamBytes(doc, d, L) { const u = doc.u; if (u[L.p] === 13) L.p++; if (u[L.p] === 10) L.p++; const s = L.p, n = await pdfR(doc, d.get('Length')); if (typeof n === 'number' && n >= 0 && s + n <= u.length) { const L2 = { u, p: s + n }; pdfSkip(L2); if (doc.t.startsWith('endstream', L2.p)) return u.subarray(s, s + n) } let e = doc.t.indexOf('endstream', s); if (e < 0) e = u.length; while (e > s && (u[e - 1] === 10 || u[e - 1] === 13)) e--; return u.subarray(s, e) }
+      async function pdfInflate(data) { const ds = new DecompressionStream('deflate'), w = ds.writable.getWriter(); w.write(data).catch(() => { }); w.close().catch(() => { }); const r = ds.readable.getReader(), parts = []; let n = 0; try { for (;;) { const x = await r.read(); if (x.done) break; parts.push(x.value); n += x.value.length } } catch (_) { /* a damaged end keeps what came before it */ } const out = new Uint8Array(n); let o = 0; parts.forEach(p => { out.set(p, o); o += p.length }); return out }
+      const pdfPaeth = (a, b, c) => { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); return pa <= pb && pa <= pc ? a : pb <= pc ? b : c };
+      function pdfUnfilter(t, src, out, o, rl, bpp) { for (let i = 0; i < rl; i++) { const a = i >= bpp ? out[o + i - bpp] : 0, up = o >= rl ? out[o + i - rl] : 0, c = i >= bpp && o >= rl ? out[o + i - rl - bpp] : 0; let v = src[i]; if (t === 1) v += a; if (t === 2) v += up; if (t === 3) v += (a + up) >> 1; if (t === 4) v += pdfPaeth(a, up, c); out[o + i] = v & 255 } }
+      /* The PNG predictors (Predictor 10 to 15), which the xref streams use */
+      function pdfPredict(b, d) { const pr = d instanceof Map ? d.get('Predictor') || 1 : 1; if (pr < 10) return b; const col = d.get('Colors') || 1, bpc = d.get('BitsPerComponent') || 8, bpp = Math.max(1, Math.ceil(col * bpc / 8)), rl = Math.ceil((d.get('Columns') || 1) * col * bpc / 8), rows = Math.floor(b.length / (rl + 1)), out = new Uint8Array(rows * rl); for (let r = 0; r < rows; r++) pdfUnfilter(b[r * (rl + 1)], b.subarray(r * (rl + 1) + 1, (r + 1) * (rl + 1)), out, r * rl, rl, bpp); return out }
+      /* The bytes of a stream after its filters; null for a filter other than FlateDecode */
+      async function pdfDecode(o) { let f = o.D.get('Filter'), p = o.D.get('DecodeParms'); f = Array.isArray(f) ? f : f ? [f] : []; p = Array.isArray(p) ? p : [p]; let b = o.B; for (let i = 0; i < f.length; i++) { if (!pdfIsName(f[i], 'FlateDecode') && !pdfIsName(f[i], 'Fl')) return null; b = pdfPredict(await pdfInflate(b), p[i]) } return b }
+      function pdfXrefRow(doc, L) { pdfSkip(L); const o = +pdfWord(L); pdfSkip(L); const g = +pdfWord(L); pdfSkip(L); return pdfWord(L) === 'n' ? { o, g } : null }
+      function pdfXrefTable(doc, ofs) { const L = { u: doc.u, p: ofs + 4 }; for (;;) { pdfSkip(L); const a = pdfWord(L); if (a === 'trailer') { const t = pdfValue(L); return t instanceof Map ? t : null } pdfSkip(L); const s = +a, n = +pdfWord(L); if (!a || !(s >= 0 && n >= 0)) return null; for (let i = 0; i < n; i++) { const e = pdfXrefRow(doc, L); if (!doc.x.has(s + i)) doc.x.set(s + i, e) } } }
+      function pdfXrefEntry(doc, num, b, p, W) { if (doc.x.has(num)) return; const f = (k, s) => { let v = 0; for (let i = 0; i < W[k]; i++) v = v * 256 + b[s + i]; return v }, t = W[0] ? f(0, p) : 1, a = f(1, p + W[0]), c = f(2, p + W[0] + W[1]); doc.x.set(num, t === 1 ? { o: a, g: c } : t === 2 ? { s: a, i: c } : null) }
+      async function pdfXrefStream(doc, ofs) { const o = await pdfObjAt(doc, ofs); if (!o || !o.D || !pdfIsName(o.D.get('Type'), 'XRef')) return null; const d = o.D, b = await pdfDecode(o), W = d.get('W'); if (!b || !Array.isArray(W) || W.length < 3) return null; const idx = d.get('Index') || [0, d.get('Size') || 0], row = W[0] + W[1] + W[2]; let p = 0; for (let k = 0; k + 1 < idx.length; k += 2) for (let i = 0; i < idx[k + 1] && p + row <= b.length; i++, p += row) pdfXrefEntry(doc, idx[k] + i, b, p, W); return d }
+      /* From startxref back through /Prev (and /XRefStm in hybrid files); the newest entry of an object wins */
+      async function pdfXrefChain(doc, ofs) { const seen = new Set(); while (ofs >= 0 && ofs < doc.u.length && !seen.has(ofs)) { seen.add(ofs); const t = doc.t.startsWith('xref', ofs) ? pdfXrefTable(doc, ofs) : await pdfXrefStream(doc, ofs); if (!t) return; if (!doc.trailer) doc.trailer = t; const xs = t.get('XRefStm'); if (typeof xs === 'number' && !seen.has(xs)) { seen.add(xs); await pdfXrefStream(doc, xs) } const p = t.get('Prev'); ofs = typeof p === 'number' ? p : -1 } }
+      async function pdfObjStm(doc, n) { if (doc.stm.has(n)) return doc.stm.get(n); doc.stm.set(n, null); const o = await pdfGet(doc, n), b = o && o.D ? await pdfDecode(o) : null; if (!b) return null; const L = { u: b, p: 0 }, N = o.D.get('N') || 0, first = o.D.get('First') || 0, offs = []; for (let i = 0; i < N; i++) { pdfValue(L); offs.push(first + pdfValue(L)) } const s = { b, offs }; doc.stm.set(n, s); return s }
+      async function pdfGet(doc, num) { if (doc.cache.has(num)) return doc.cache.get(num); doc.cache.set(num, null); const e = doc.x.get(num); let v = null; if (e && e.o !== undefined) v = await pdfObjAt(doc, e.o, num); else if (e) { const s = await pdfObjStm(doc, e.s); if (s && e.i < s.offs.length) v = pdfValue({ u: s.b, p: s.offs[e.i] }) } doc.cache.set(num, v); return v }
+      /* A broken xref: every "N G obj" header, the xref streams for the objects inside object streams, and the last trailer that names a /Root */
+      async function pdfScan(doc) { doc.x = new Map(); doc.cache = new Map(); doc.stm = new Map(); doc.trailer = null; const xs = []; for (const m of doc.t.matchAll(/(\d+)\s+(\d+)\s+obj\b/g)) { doc.x.set(+m[1], { o: m.index }); if (/\/Type\s*\/XRef\b/.test(doc.t.substr(m.index + m[0].length, 400).split('stream')[0])) xs.push(m.index) } for (const o of xs) { const t = await pdfXrefStream(doc, o); if (t && t.get('Root')) doc.trailer = t } const i = doc.t.lastIndexOf('trailer'), t = i >= 0 ? pdfValue({ u: doc.u, p: i + 7 }) : null; if (t instanceof Map && t.get('Root')) doc.trailer = t }
+      /* The page tree, depth first; each page keeps what it inherits (PDF_INH). doc.nodes holds the /Pages nodes */
+      async function pdfWalk(doc, ref, inh, out, depth) { const n = ref && ref.R; if (n === undefined || doc.nodes.has(n) || depth > 64) return; const d = await pdfGet(doc, n); if (!(d instanceof Map)) return; const kids = await pdfR(doc, d.get('Kids')); if (!Array.isArray(kids)) { out.push({ n, d, inh }); return } doc.nodes.add(n); const h = { ...inh }; PDF_INH.forEach(k => { if (d.has(k)) h[k] = d.get(k) }); for (const k of kids) await pdfWalk(doc, k, h, out, depth + 1) }
+      async function pdfPageTree(doc) { doc.nodes = new Set(); const pages = []; if (!doc.trailer) return pages; doc.rootRef = doc.trailer.get('Root'); const root = await pdfR(doc, doc.rootRef); if (root instanceof Map) await pdfWalk(doc, root.get('Pages'), {}, pages, 0); return pages }
+      async function pdfOpen(blob) { const u = new Uint8Array(await blob.arrayBuffer()), doc = { u, t: pdfLatin(u), x: new Map(), cache: new Map(), stm: new Map(), trailer: null }; const i = doc.t.lastIndexOf('startxref'), m = i >= 0 ? /^startxref\s+(\d+)/.exec(doc.t.slice(i, i + 40)) : null; try { await pdfXrefChain(doc, m ? +m[1] : -1) } catch (_) { doc.trailer = null } let pages = await pdfPageTree(doc); if (!pages.length) { await pdfScan(doc); pages = await pdfPageTree(doc) } const v = /%PDF-(\d\.\d)/.exec(doc.t.slice(0, 1024)); doc.pages = pages; doc.ver = v ? +v[1] : 1.4; doc.enc = !!(doc.trailer && doc.trailer.get('Encrypt')); return doc }
+      /* ═══ PDF WRITER ═══ Copies the pages of PDFs read by pdfOpen into a new PDF, written by hand in the style of buildPdfBlob.
+         Each source object gets a new number when first used; each page takes what it inherits (PDF_INH) and the new /Parent; the xref table closes the file.
+         A reference to a /Pages node or to the catalog of a source becomes null, so the old page tree does not come along. Streams keep their stored bytes */
+      const pdfHexStr = b => { const h = []; for (let i = 0; i < b.length; i++) h.push((b[i] < 16 ? '0' : '') + b[i].toString(16)); return '<' + h.join('') + '>' };
+      const pdfNameStr = n => '/' + [...n].map(ch => { const c = ch.charCodeAt(0); return c > 32 && c < 127 && !PDF_DL[c] && c !== 35 ? ch : '#' + (c < 16 ? '0' : '') + c.toString(16) }).join('');
+      const pdfNumStr = v => Number.isInteger(v) ? String(v) : String(+v.toFixed(5));
+      function pdfSer(v, ref) { if (v === null || v === undefined) return 'null'; if (typeof v === 'number') return pdfNumStr(v); if (typeof v === 'boolean') return String(v); if (Array.isArray(v)) return '[' + v.map(x => pdfSer(x, ref)).join(' ') + ']'; if (v instanceof Map) { let s = '<<'; v.forEach((x, k) => { s += pdfNameStr(k) + ' ' + pdfSer(x, ref) }); return s + '>>' } if (v.N !== undefined) return pdfNameStr(v.N); if (v.S) return pdfHexStr(v.S); return v.R !== undefined ? ref(v.R) : 'null' }
+      function pdfPageDict(pg) { const d = new Map(pg.d); d.delete('Parent'); d.set('Type', { N: 'Page' }); PDF_INH.forEach(k => { if (!d.has(k) && pg.inh[k] !== undefined) d.set(k, pg.inh[k]) }); if (!d.has('MediaBox')) d.set('MediaBox', [0, 0, 612, 792]); if (!d.has('Resources')) d.set('Resources', new Map()); return d }
+      function pdfWriteVal(v, ref, w) { if (!v || !v.D) { w(pdfSer(v, ref)); return } const d = new Map(v.D); d.set('Length', v.B.length); w(pdfSer(d, ref) + '\nstream\n'); w(v.B); w('\nendstream') }
+      async function pdfCopyPages(docs, edit) {
+        const parts = [], xrefs = [0, 0], maps = docs.map(() => new Map()), queue = [], pageOf = new Map(), kids = []; let ofs = 0, qi = 0;
+        const w = s => { const b = typeof s === 'string' ? ENC.encode(s) : s; parts.push(b); ofs += b.length };
+        const num = (di, n) => { const m = maps[di]; if (!m.has(n)) { m.set(n, xrefs.length + 1); xrefs.push(0); queue.push([di, n]) } return m.get(n) };
+        const refOf = di => r => docs[di].nodes.has(r) || (docs[di].rootRef && docs[di].rootRef.R === r) ? 'null' : num(di, r) + ' 0 R';
+        w(`%PDF-${Math.max(1.4, ...docs.map(d => d.ver)).toFixed(1)}\n%\xE2\xE3\xCF\xD3\n`);
+        docs.forEach((d, di) => d.pages.forEach(pg => { kids.push(num(di, pg.n) + ' 0 R'); pageOf.set(di + ':' + pg.n, pg) }));
+        while (qi < queue.length) { const [di, n] = queue[qi++], pg = pageOf.get(di + ':' + n), ref = refOf(di), nn = maps[di].get(n); xrefs[nn - 1] = ofs; w(nn + ' 0 obj\n'); if (pg) w('<</Parent 2 0 R' + pdfSer(pdfPageDict(pg), ref).slice(2)); else { const v = await pdfGet(docs[di], n); pdfWriteVal(edit ? await edit(v, di, n) : v, ref, w) } w('\nendobj\n') }
+        xrefs[0] = ofs; w('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+        xrefs[1] = ofs; w(`2 0 obj\n<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${kids.length} >>\nendobj\n`);
+        const xrefOfs = ofs; let xrefStr = 'xref\n0 ' + (xrefs.length + 1) + '\n0000000000 65535 f \n'; for (const x of xrefs) xrefStr += String(x).padStart(10, '0') + ' 00000 n \n';
+        w(xrefStr + `trailer\n<< /Size ${xrefs.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`);
+        return new Blob(parts, { type: 'application/pdf' });
+      }
+      /* Joins whole PDFs, in the order given. An encrypted PDF cannot be copied without its password: it stops the join */
+      async function pdfJoin(blobs) { const docs = []; for (const b of blobs) docs.push(await pdfOpen(b)); if (docs.some(d => d.enc)) throw new Error('PDF join: encrypted source'); if (docs.some(d => !d.pages.length)) throw new Error('PDF join: no pages found'); return pdfCopyPages(docs) }
+      /* «Juntar em um PDF», in the menu of two or more marked PDFs: «juntado.pdf» in Documentos, with the pages in the order of the list */
+      window.joinPdfs = async function (ds) { try { const blob = await pdfJoin(ds.map(d => d.blob)); await captureDoc(blob, 'juntado.pdf', 'application/pdf'); markClear() } catch (e) { SysLogger.error(e.message); showNotice(/encrypted/.test(e.message) ? 'Um dos PDFs está protegido por senha e não pode ser juntado.' : 'Não foi possível juntar os PDFs.') } };
+      /* «Diminuir o tamanho» (B6.5): the JPEG images (/DCTDecode) of the PDF go through the canvas again, once per level; a new image that is not smaller keeps its old bytes.
+         Each image is decoded once and encoded at the three qualities; the three copies are written by pdfCopyPages and kept per blob, so the sizes in the submenu are the real ones */
+      const PDF_SHRINK = [['Leve', 0.8], ['Equilibrado', 0.6], ['Máximo', 0.4]], shrinkCache = new WeakMap();
+      const pdfIsJpeg = v => { if (!v || !v.D || !pdfIsName(v.D.get('Subtype'), 'Image')) return false; const f = v.D.get('Filter'), g = Array.isArray(f) && f.length === 1 ? f[0] : f; return (pdfIsName(g, 'DCTDecode') || pdfIsName(g, 'DCT')) && !v.D.has('Decode') && !Array.isArray(v.D.get('Mask')) };
+      async function jpegLevels(bytes) { try { const bmp = await createImageBitmap(new Blob([bytes], { type: 'image/jpeg' })), c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height; const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0); bmp.close(); const out = []; for (const [, q] of PDF_SHRINK) { const b = await new Promise(r => c.toBlob(r, 'image/jpeg', q)); out.push(b ? new Uint8Array(await b.arrayBuffer()) : null) } return out } catch (_) { return null } }
+      function pdfJpegSwap(v, alt, i) { const b = alt && alt[i]; if (!b || b.length >= v.B.length) return v; const d = new Map(v.D); d.set('Filter', { N: 'DCTDecode' }); d.set('ColorSpace', { N: 'DeviceRGB' }); d.set('BitsPerComponent', 8); d.delete('DecodeParms'); return { D: d, B: b } }
+      async function pdfShrink(blob) { const doc = await pdfOpen(blob); if (doc.enc) throw new Error('PDF shrink: encrypted source'); if (!doc.pages.length) throw new Error('PDF shrink: no pages found'); const alt = new Map(); await pdfCopyPages([doc], async (v, di, n) => { if (pdfIsJpeg(v)) alt.set(n, await jpegLevels(v.B)); return v }); const out = []; for (let i = 0; i < PDF_SHRINK.length; i++) { let swapped = 0; const blob = await pdfCopyPages([doc], async (v, di, n) => { const s = pdfJpegSwap(v, alt.get(n), i); if (s !== v) swapped++; return s }); out.push({ blob, swapped }) } return out }
+      /* The rows of the submenu: the size of each copy on the right, «…» while it is measured. A row is off when no image got smaller or the copy is not smaller than the original */
+      function shrinkRows(o) { let p = shrinkCache.get(o.blob); if (!p) { p = pdfShrink(o.blob); shrinkCache.set(o.blob, p); p.catch(() => shrinkCache.delete(o.blob)) } return PDF_SHRINK.map(([label], i) => [label, p.then(bs => [fmtSize(bs[i].blob.size), !bs[i].swapped || bs[i].blob.size >= o.blob.size]), async () => { try { const bs = await p; await captureDoc(bs[i].blob, o.name, 'application/pdf'); await placeAfter(docs, docs[docs.length - 1], o, 'documents', '.d-item') } catch (e) { SysLogger.error(e.message); showNotice('Não foi possível diminuir o PDF.') } }]) }
       /* The type label of a document, in the colours of --color-file-* (D-0128) */
       const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
       const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
@@ -4494,42 +4624,68 @@
       /* Duplicar: the copy right below the original, named by the rule of the app (contrato.pdf gives contrato-1.pdf) */
       async function placeAfter(arr, copy, orig, store, sel) { arr.splice(arr.indexOf(copy), 1); arr.splice(arr.indexOf(orig) + 1, 0, copy); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const a = document.querySelector(`${sel}[data-id="${orig.id}"]`), b = document.querySelector(`${sel}[data-id="${copy.id}"]`); if (a && b) a.after(b) }
       async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; let n = o.label, k; do { const m = n.match(/-(\d+)$/); n = m ? n.slice(0, -m[0].length) + '-' + (+m[1] + 1) : n + '-1'; k = n.toLowerCase() } while (images.some(x => x !== c && x.label.toLowerCase() === k) || removed.some(x => x.label.toLowerCase() === k)); c.label = n; const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
+      /* A PDF in Imagens (B6.6): a record of the images store with kind: 'pdf', the name without «.pdf» as the caption, the bytes as they are */
+      async function addPdfImage(blob, label, at) { await ensureSession(); let lb = label || 'documento'; const taken = x => x.label.toLowerCase() === lb.toLowerCase(); while (images.some(taken) || removed.some(taken)) { const m = lb.match(/-(\d+)$/); lb = m ? lb.slice(0, -m[0].length) + '-' + (+m[1] + 1) : lb + '-1' } const o = { id: genId('img'), sessionId: sessId, blob: blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' }), label: lb, order: nextOrder(images), addedAt: Date.now(), kind: 'pdf' }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); if (at !== undefined) await placeAt(images, o, at, 'images', '.t-item'); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); return o }
+      async function dupPdfImg(o) { const c = await addPdfImage(o.blob, o.label); await placeAfter(images, c, o, 'images', '.t-item') }
+      /* Puts a record at a place of its list, on the screen and in IndexedDB */
+      async function placeAt(arr, o, at, store, sel) { arr.splice(arr.indexOf(o), 1); arr.splice(Math.min(at, arr.length), 0, o); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const el = document.querySelector(`${sel}[data-id="${o.id}"]`), nx = arr[arr.indexOf(o) + 1], ne = nx && document.querySelector(`${sel}[data-id="${nx.id}"]`); if (el && ne) ne.before(el) }
+      /* Dragging a PDF from Documentos to Imagens moves it there, and back (B6.6); the bytes do not change, only the store */
+      async function movePdfAcross(id, fromImg, at) { marked.delete(id); markSync(); if (fromImg) { const o = images.find(x => x.id === id); if (!o) return; images.splice(images.indexOf(o), 1); await idbDel('images', id); if (!images.length) $('img-empty').style.display = ''; await captureDoc(o.blob, imgName(o), 'application/pdf'); await placeAt(docs, docs[docs.length - 1], at, 'documents', '.d-item') } else { const d = docs.find(x => x.id === id); if (!d) return; docs.splice(docs.indexOf(d), 1); await idbDel('documents', id); if (!docs.length) $('doc-empty').style.display = ''; await addPdfImage(d.blob, d.name.replace(/\.pdf$/i, ''), at) } updateCounters(); updateBtns(); isDirty = true; triggerSave() }
       async function dupDoc(o) { await captureDoc(o.blob, o.name, o.type); await placeAfter(docs, docs[docs.length - 1], o, 'documents', '.d-item') }
       async function copyImg(o) { try { let b = o.blob; if (b.type !== 'image/png') b = await new Promise((res, rej) => { const i = new Image(), u = URL.createObjectURL(o.blob); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); URL.revokeObjectURL(u); c.toBlob(x => x ? res(x) : rej(new Error('toBlob')), 'image/png') }; i.onerror = () => rej(new Error('load')); i.src = u }); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); showNotice('Imagem copiada.') } catch (e) { SysLogger.error('Copy image: ' + e.message); showNotice('Não foi possível copiar a imagem.') } }
       function renameItem(el) { const f = el && el.querySelector('.t-label, .d-input'); if (f) { f.focus(); f.select() } }
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
-      function ctxClose() { if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
-      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(([icon, label, key, fn, danger]) => { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key) { const k = document.createElement('span'); k.className = 'ctx-key'; k.textContent = key; b.append(k) } b.onclick = () => { ctxClose(); fn() }; m.append(b) }) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
-      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext); return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
+      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      /* One item of the menu; with a sixth value (a function that gives the rows), it opens a submenu instead (B6.5) */
+      function ctxItem([icon, label, key, fn, danger, sub]) { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key || sub) { const k = document.createElement('span'); k.className = 'ctx-key'; if (sub) k.innerHTML = '<svg class="ctx-icon ctx-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>'; else k.textContent = key; b.append(k) } if (sub) { b.sub = sub; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => ctxSubOpen(b, sub, true); b.onmouseenter = () => ctxSubOpen(b, sub, false) } else { b.onclick = () => { ctxClose(); fn() }; b.onmouseenter = ctxSubClose } return b }
+      /* The submenu: the same form as the menu, beside the item; on the left when the right has no room, below the item when neither side has */
+      let ctxSub = null;
+      function ctxSubClose() { if (!ctxSub) return; ctxSub.from.setAttribute('aria-expanded', 'false'); ctxSub.remove(); ctxSub = null }
+      function ctxSubRow([label, key, fn]) { const r = document.createElement('button'); r.className = 'ctx-item'; r.setAttribute('role', 'menuitem'); const l = document.createElement('span'), k = document.createElement('span'); l.textContent = label; k.className = 'ctx-key'; k.textContent = '…'; r.append(l, k); Promise.resolve(key).then(([t, off]) => { k.textContent = t; r.disabled = !!off }, () => { k.textContent = '—'; r.disabled = true }); r.onclick = () => { ctxClose(); fn() }; return r }
+      function ctxSubPlace(m, b) { const z = uiZoom(), pr = ctxMenu.getBoundingClientRect(), br = b.getBoundingClientRect(), r = m.getBoundingClientRect(); let x = pr.right - 4, y = br.top - 5; if (x + r.width > innerWidth - 4) x = pr.left - r.width + 4; if (x < 4) { x = Math.max(4, Math.min(br.left + 24, innerWidth - r.width - 4)); y = br.bottom } m.style.left = x / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px' }
+      function ctxSubOpen(b, sub, focus) { if (!ctxSub || ctxSub.from !== b) { ctxSubClose(); const m = document.createElement('div'); m.className = 'ctx-menu ctx-sub'; m.setAttribute('role', 'menu'); m.from = b; sub().forEach(row => m.append(ctxSubRow(row))); document.body.append(m); ctxSub = m; b.setAttribute('aria-expanded', 'true'); ctxSubPlace(m, b) } if (focus) { const f = ctxSub.querySelector('.ctx-item'); if (f) f.focus({ preventScroll: true }) } }
+      /* The keys of an open menu: up and down move, right opens the submenu, left and Esc go back from it, Tab and Esc close */
+      function ctxKey(e) { const a = document.activeElement, inSub = !!ctxSub && ctxSub.contains(a), it = [...(inSub ? ctxSub : ctxMenu).querySelectorAll('.ctx-item:not(:disabled)')], i = it.indexOf(a), k = e.key; if (k === 'Tab' || (k === 'Escape' && !inSub)) { e.preventDefault(); ctxClose(); return } if (inSub && (k === 'Escape' || k === 'ArrowLeft')) { e.preventDefault(); const p = ctxSub.from; ctxSubClose(); p.focus(); return } if (k === 'ArrowRight' && a && a.sub) { e.preventDefault(); ctxSubOpen(a, a.sub, true); return } if ((k === 'ArrowDown' || k === 'ArrowUp') && it.length) { e.preventDefault(); it[(i + (k === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } }
+      /* «Marcar» in the menu marks the item and shows the boxes of all items; «Desmarcar» on the last one hides them (D-0135) */
+      function markToggle(id) { if (marked.has(id)) marked.delete(id); else marked.add(id); markSync() }
+      /* The menu of the marked items is the same whatever item opens it (D-0136): Juntar when all are PDFs, the .pdf when none is in Documentos (D1), the .zip and Remover */
+      function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) return markedGroups(); const mk = ['check', marked.has(id) ? 'Desmarcar' : 'Marcar', '', () => markToggle(id)]; if (ti) { const o = images.find(x => x.id === id); if (o.kind === 'pdf') return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['dup', 'Duplicar', '', () => dupPdfImg(o)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]; return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)], mk].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
       function initMenus() {
         ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
-        document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target)) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
+        document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target))) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
         window.addEventListener('blur', ctxClose); window.addEventListener('resize', ctxClose); document.addEventListener('scroll', ctxClose, true);
         document.addEventListener('keydown', e => {
-          if (ctxMenu) { const it = [...ctxMenu.querySelectorAll('.ctx-item')], i = it.indexOf(document.activeElement); if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); ctxClose() } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); it[(i + (e.key === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } return }
+          if (ctxMenu) { ctxKey(e); return }
           if (document.querySelector('.modal-overlay.open, .sb-overlay.open') || typingInField()) return;
           const el = document.activeElement && document.activeElement.closest && document.activeElement.closest('#thumb-grid .t-item, #doc-list .d-item');
           if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }
           else if (e.key === 'Delete' && (marked.size || el)) { e.preventDefault(); if (marked.size) removeMarked(); else if (el.matches('.t-item')) window.delImg(el.dataset.id); else window.delDoc(el.dataset.id) }
           else if (e.key === 'F2' && el) { e.preventDefault(); renameItem(el) }
-          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o) { e.preventDefault(); copyImg(o) } }
+          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o && o.kind !== 'pdf') { e.preventDefault(); copyImg(o) } }
           else if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && el) { e.preventDefault(); const r = el.getBoundingClientRect(); ctxOpen(r.left + 12, r.top + 12, ctxGroups(el)) }
         });
       }
       /* ═══ TEXT MODAL ═══ */
       let textModalItemId = null, textModalIsTrash = false;
+      /* A PDF opens in the reader of the browser itself, in an iframe with a blob: address; the CSP allows it by default-src (D-0130) */
+      let pdfViewUrl = null;
+      const pdfViewDrop = () => { if (pdfViewUrl) { URL.revokeObjectURL(pdfViewUrl); pdfViewUrl = null } };
+      /* The record the document viewer shows: a document, or a PDF of Imagens seen as a document (B6.6) */
+      function textRec(id, trash) { const d = (trash ? removedDocs : docs).find(x => x.id === id); if (d) return d; const p = (trash ? removed : images).find(x => x.id === id && x.kind === 'pdf'); return p ? { id: p.id, name: imgName(p), type: 'application/pdf', size: p.blob.size, blob: p.blob, inImages: true } : null }
       window.openTextModal = async function (id, trash) {
-        const arr = trash ? removedDocs : docs, o = arr.find(x => x.id === id);
+        const o = textRec(id, trash);
         if (!o) return;
         textModalItemId = id;
         textModalIsTrash = trash;
         const dot = (o.name || '').lastIndexOf('.'), fext = dot >= 0 ? o.name.slice(dot + 1).toLowerCase() : '';
         const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript' || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
-        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true;
+        const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
           try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
@@ -4546,6 +4702,7 @@
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';
           if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
+          if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
         }
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
         $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
@@ -4571,6 +4728,7 @@
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         $('text-modal-content').value = '';
+        $('text-modal-view').replaceChildren(); pdfViewDrop();
       }
       $('text-modal-close').onclick = closeTextModal;
       $('text-modal-edit').onclick = textEditStart;
@@ -4581,7 +4739,7 @@
       $('text-modal-overlay').onclick = function (e) { if (e.target === this && _textOverlayMdOnBackdrop) closeTextModal(); _textOverlayMdOnBackdrop = false };
       $('text-modal-restore').onclick = async function () {
         if (textModalItemId && textModalIsTrash) {
-          await window.restoreDoc(textModalItemId);
+          const r = textRec(textModalItemId, true); if (r && r.inImages) await window.restoreImg(textModalItemId); else await window.restoreDoc(textModalItemId);
           closeTextModal();
         }
       };
@@ -4593,7 +4751,7 @@
       };
       $('text-modal-dl').onclick = function () {
         if (!textModalItemId) return;
-        const o = (textModalIsTrash ? removedDocs : docs).find(x => x.id === textModalItemId);
+        const o = textRec(textModalItemId, textModalIsTrash);
         if (!o) return;
         const url = URL.createObjectURL(o.blob), a = document.createElement('a');
         a.href = url;
@@ -4706,11 +4864,59 @@
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
       }
+      /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
+         Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.
+         Endireitar: a round handle turns the photo over a grid (the image turns by CSS in the preview); Confirmar turns it and cuts the empty corners.
+         Both write on the photo on Confirmar, with the annotations (D-0138): a perspective does not keep a rectangle a rectangle */
+      let annCropMode = 'rect', annQuad = null, annLevel = 0, annModeDrag = null, annLevelFrom = 0, annLevelBase = 0;
+      const ANN_CROP_BTNS = { rect: 'ann-crop-rect', quad: 'ann-crop-quad', level: 'ann-crop-level' };
+      function annModeReset() { const cv = $('ann-canvas'), w = cv.width, h = cv.height; annQuad = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: h }, { x: 0, y: h }]; annLevel = 0; annModeDrag = null; $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '' }
+      function annSetCropMode(m) { annCropMode = m; annModeReset(); if (m === 'quad') { try { const q = paperFind($('img-modal-img')); if (q) annQuad = q } catch (e) { SysLogger.warn('paperFind: ' + e.message) } } Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === m)); const cv = $('ann-canvas'); if (m !== 'rect' && annCropBox) annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height }; annRenderAll() }
+      function annModePending() { if (annCropMode === 'level') return Math.abs(annLevel) >= 0.05; if (annCropMode !== 'quad' || !annQuad) return false; const cv = $('ann-canvas'), c = [[0, 0], [cv.width, 0], [cv.width, cv.height], [0, cv.height]]; return annQuad.some((p, i) => Math.hypot(p.x - c[i][0], p.y - c[i][1]) > 1) }
+      const annLevelHandle = () => { const cv = $('ann-canvas'); return { x: cv.width / 2, y: 40 * annPx() } };
+      function annDownMode(e) { const p = annCanvasXY(e), r = ANN_HIT_SIZE * annPx(); annModeDrag = null; if (annCropMode === 'quad') { let best = -1, bd = r; annQuad.forEach((q, i) => { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = i } }); if (best >= 0) annModeDrag = best } else { const hd = annLevelHandle(); if (Math.hypot(p.x - hd.x, p.y - hd.y) < r) { const cv = $('ann-canvas'); annModeDrag = 'level'; annLevelBase = annLevel; annLevelFrom = Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) } } annDraggingCrop = annModeDrag !== null }
+      function annMoveMode(e) { const p = annCanvasXY(e), cv = $('ann-canvas'); if (annCropMode === 'quad' && typeof annModeDrag === 'number') { annQuad[annModeDrag] = { x: Math.max(0, Math.min(cv.width, p.x)), y: Math.max(0, Math.min(cv.height, p.y)) } } else if (annModeDrag === 'level') { let a = annLevelBase + (Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) - annLevelFrom) * 180 / Math.PI; a = ((a + 540) % 360) - 180; a = Math.max(-45, Math.min(45, a)); annLevel = Math.abs(a) < 0.3 ? 0 : a; $('img-modal-img').style.transform = annLevel ? `rotate(${annLevel}deg)` : ''; $('ann-wrap').style.overflow = 'hidden' } annRenderAll() }
+      function annUpMode() { annDraggingCrop = false; annModeDrag = null; annRenderAll() }
+      /* The overlay of the two modes: the quadrilateral with its four dots, or the grid with the round handle and, while dragging, the angle */
+      function annDrawCropMode(ctx, cv) { const k = annPx(); ctx.save(); if (annCropMode === 'quad') { ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.moveTo(annQuad[0].x, annQuad[0].y); annQuad.slice(1).forEach(q => ctx.lineTo(q.x, q.y)); ctx.closePath(); ctx.fill('evenodd'); ctx.lineWidth = 2 * k; ctx.strokeStyle = '#ffffff'; ctx.stroke(); annQuad.forEach(q => annDot(ctx, q.x, q.y, 9 * k, k)) } else { if (annLevel) { const r = annLevelKeep(cv.width, cv.height, annLevel); ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.rect((cv.width - r.w) / 2, (cv.height - r.h) / 2, r.w, r.h); ctx.fill('evenodd') } ctx.strokeStyle = 'rgb(255 255 255 / 55%)'; ctx.lineWidth = k; ctx.beginPath(); for (let i = 1; i < 6; i++) { const x = cv.width * i / 6, y = cv.height * i / 6; ctx.moveTo(x, 0); ctx.lineTo(x, cv.height); ctx.moveTo(0, y); ctx.lineTo(cv.width, y) } ctx.stroke(); const hd = annLevelHandle(); annDot(ctx, hd.x, hd.y, 11 * k, k); if (annModeDrag === 'level') annAngleLabel(ctx, hd.x, hd.y + 34 * k, k) } ctx.restore() }
+      function annDot(ctx, x, y, r, k) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 2 * k; ctx.strokeStyle = 'rgb(0 0 0 / 60%)'; ctx.stroke() }
+      function annAngleLabel(ctx, x, y, k) { const t = annLevel.toFixed(1).replace('.', ',').replace('-0,0', '0,0') + '\u00b0'; ctx.font = `600 ${13 * k}px sans-serif`; const w = ctx.measureText(t).width + 16 * k, h = 24 * k; ctx.fillStyle = 'rgb(25 25 25 / 80%)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, 6 * k); else ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y) }
+      /* Finds the paper (B9, D-0139): the photo at 480 px, gray, the Otsu threshold, the largest light region, and its corners by the extremes of x+y and x−y.
+         Null when no paper is clear (less than 12 % or more than 97 % of the photo): the corners then start at the corners of the photo */
+      function paperFind(img) { const nw = img.naturalWidth, nh = img.naturalHeight; if (!nw || !nh) return null; const S = 480 / Math.max(nw, nh), w = Math.max(1, Math.round(nw * S)), h = Math.max(1, Math.round(nh * S)), cv = document.createElement('canvas'); cv.width = w; cv.height = h; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, w, h); const d = x.getImageData(0, 0, w, h).data, g = new Uint8Array(w * h), hist = new Uint32Array(256); for (let i = 0; i < w * h; i++) { const v = (d[i * 4] * 77 + d[i * 4 + 1] * 150 + d[i * 4 + 2] * 29) >> 8; g[i] = v; hist[v]++ } const lab = new Int32Array(w * h), best = paperBlob(g, paperOtsu(hist, w * h), w, h, lab); return best && best.n >= w * h * 0.12 && best.n <= w * h * 0.97 ? paperCorners(lab, best.id, w, S) : null }
+      function paperCorners(lab, id, w, S) { const c = [[Infinity, 0, 0], [-Infinity, 0, 0], [-Infinity, 0, 0], [Infinity, 0, 0]]; for (let i = 0; i < lab.length; i++) { if (lab[i] !== id) continue; const px = i % w, py = (i / w) | 0, s = px + py, df = px - py; if (s < c[0][0]) c[0] = [s, px, py]; if (df > c[1][0]) c[1] = [df, px, py]; if (s > c[2][0]) c[2] = [s, px, py]; if (df < c[3][0]) c[3] = [df, px, py] } return c.map(([, px, py]) => ({ x: px / S, y: py / S })) }
+      function paperOtsu(hist, n) { let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i]; let sb = 0, wb = 0, best = 0, t = 128; for (let i = 0; i < 256; i++) { wb += hist[i]; if (!wb) continue; const wf = n - wb; if (!wf) break; sb += i * hist[i]; const mb = sb / wb, mf = (sum - sb) / wf, v = wb * wf * (mb - mf) * (mb - mf); if (v > best) { best = v; t = i } } return t }
+      function paperBlob(g, t, w, h, lab) { let id = 0, best = null; const st = new Int32Array(w * h); for (let s = 0; s < w * h; s++) { if (lab[s] || g[s] <= t) continue; id++; let top = 0, n = 0; st[top++] = s; lab[s] = id; while (top) { const i = st[--top]; n++; const px = i % w; for (const j of [i - 1, i + 1, i - w, i + w]) { if (j < 0 || j >= w * h || lab[j] || g[j] <= t) continue; if ((j === i - 1 && px === 0) || (j === i + 1 && px === w - 1)) continue; lab[j] = id; st[top++] = j } } if (!best || n > best.n) best = { id, n } } return best }
+      /* The homography that takes the points d[i] to s[i] (four pairs), by Gaussian elimination of the 8 x 8 system */
+      function annHomography(d, s) { const A = []; for (let i = 0; i < 4; i++) { const [u, v] = d[i], [x, y] = s[i]; A.push([u, v, 1, 0, 0, 0, -u * x, -v * x, x], [0, 0, 0, u, v, 1, -u * y, -v * y, y]) } for (let c = 0; c < 8; c++) { let m = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[m][c])) m = r; [A[c], A[m]] = [A[m], A[c]]; for (let r = 0; r < 8; r++) { if (r === c) continue; const f = A[r][c] / A[c][c]; for (let k = c; k < 9; k++) A[r][k] -= f * A[c][k] } } return [...A.map((row, i) => row[8] / row[i]), 1] }
+      /* Cantos livres: the paper becomes a straight rectangle, as wide and tall as its longest sides; each pixel is read from the photo by the homography, with bilinear sampling */
+      function annWarpQuad(src, q) { const L = (a, b) => Math.hypot(a.x - b.x, a.y - b.y), W = Math.max(1, Math.round(Math.max(L(q[0], q[1]), L(q[3], q[2])))), H = Math.max(1, Math.round(Math.max(L(q[0], q[3]), L(q[1], q[2])))), h = annHomography([[0, 0], [W, 0], [W, H], [0, H]], q.map(p => [p.x, p.y])), sw = src.width, sh = src.height, sd = src.getContext('2d').getImageData(0, 0, sw, sh).data, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d'), out = ctx.createImageData(W, H), od = out.data; for (let v = 0; v < H; v++) for (let u = 0; u < W; u++) { const z = h[6] * u + h[7] * v + 1, x = Math.min(sw - 1.001, Math.max(0, (h[0] * u + h[1] * v + h[2]) / z)), y = Math.min(sh - 1.001, Math.max(0, (h[3] * u + h[4] * v + h[5]) / z)); annBilinear(sd, sw, x, y, od, (v * W + u) * 4) } ctx.putImageData(out, 0, 0); return cv }
+      function annBilinear(sd, sw, x, y, od, o) { const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, i = (y0 * sw + x0) * 4, j = i + sw * 4; for (let c = 0; c < 4; c++) { const t = sd[i + c] + (sd[i + 4 + c] - sd[i + c]) * fx, b = sd[j + c] + (sd[j + 4 + c] - sd[j + c]) * fx; od[o + c] = t + (b - t) * fy } }
+      /* Endireitar: the photo turns by the angle, and the largest rectangle with its proportion that has no empty corner is kept */
+      function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
+      function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
+      /* Confirmar with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
+      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
+      /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
+         { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
+         the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
+      const annPasteBlobs = new Map(), annPasteBmp = new Map();
+      async function annPasteBitmap(id) { if (annPasteBmp.has(id)) return annPasteBmp.get(id); const b = annPasteBlobs.get(id); if (!b) return null; try { const bmp = await createImageBitmap(b); annPasteBmp.set(id, bmp); return bmp } catch (_) { return null } }
+      function annPasteForget() { annPasteBmp.forEach(b => { try { b.close() } catch (_) { } }); annPasteBmp.clear(); annPasteBlobs.clear() }
+      async function annPasteImage(blob) { const id = genId('pimg'); annPasteBlobs.set(id, blob); const bmp = await annPasteBitmap(id); if (!bmp) { annPasteBlobs.delete(id); showNotice('Não foi possível colar esta imagem.'); return } if (annCommitText) annCommitText(); const cv = $('ann-canvas'), box = annCropBox || { x: 0, y: 0, w: cv.width, h: cv.height }, k = Math.min(1, box.w * 0.5 / bmp.width, box.h * 0.5 / bmp.height), w = bmp.width * k, h = bmp.height * k, x = box.x + (box.w - w) / 2, y = box.y + (box.h - h) / 2; annPushUndo(); annHistory.push({ type: 'image', id, x1: x, y1: y, x2: x + w, y2: y + h, ar: bmp.width / bmp.height, rot: 0 }); await annSetTool('select'); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
+      /* The image of a paste: a file of the clipboard, or an image item (a screenshot) */
+      function annPasteFrom(cd) { const f = [...(cd.files || [])].find(x => x.type.startsWith('image/')) || [...(cd.items || [])].map(i => i.kind === 'file' && i.type.startsWith('image/') ? i.getAsFile() : null).find(Boolean); if (f) annPasteImage(f) }
+      function annDrawImage(ctx, h) { const bmp = annPasteBmp.get(h.id); if (!bmp) return; const x = Math.min(h.x1, h.x2), y = Math.min(h.y1, h.y2), w = Math.abs(h.x2 - h.x1), hh = Math.abs(h.y2 - h.y1), r = h.rot || 0, sw = r % 180 ? hh : w, sh = r % 180 ? w : hh; ctx.save(); ctx.translate(x + w / 2, y + hh / 2); ctx.rotate(r * Math.PI / 180); ctx.drawImage(bmp, -sw / 2, -sh / 2, sw, sh); ctx.restore() }
+      /* The corners of a pasted image keep its proportion; the anchor is the opposite corner */
+      function annKeepRatio(sh, p) { const ar = (sh.rot || 0) % 180 ? 1 / sh.ar : sh.ar, dx = p.x - annResizeAnchorX, dy = p.y - annResizeAnchorY, w = Math.max(Math.abs(dx), Math.abs(dy) * ar, 4); return { x: annResizeAnchorX + Math.sign(dx || 1) * w, y: annResizeAnchorY + Math.sign(dy || 1) * w / ar } }
+      /* On Confirmar, the record keeps only the blobs that the history or the redo still use */
+      function annKeepBlobs(o) { const keep = {}; let n = 0; [annHistory, ...annRedoStack.map(st => st.h)].forEach(a => a.forEach(h => { if (h.type === 'image' && annPasteBlobs.has(h.id) && !keep[h.id]) { keep[h.id] = annPasteBlobs.get(h.id); n++ } })); if (n) o.annBlobs = keep; else delete o.annBlobs }
       async function annActivate() {
         annActive = true;
         const o = images.find(x => x.id === modalItemId);
         annCurrentRotation = o ? (o.rotation || 0) : 0;
         annHistory = (o && o.annHistory) ? JSON.parse(JSON.stringify(o.annHistory)) : [];
+        annPasteForget(); if (o && o.annBlobs) { for (const [id, b] of Object.entries(o.annBlobs)) { annPasteBlobs.set(id, b); await annPasteBitmap(id) } }
         setAnnDirty(false);
         annUndoStack = [];
         annRedoStack = (o && o.annRedoStack) ? JSON.parse(JSON.stringify(o.annRedoStack)) : [];
@@ -4738,7 +4944,7 @@
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
-        clearAnnAwait();
+        clearAnnAwait(); annPasteForget(); annCropMode = 'rect'; Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === 'rect')); $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '';
         annActive = false; annDrawing = false; annSelectedIdx = -1;
         // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
         annDragging = annResizing = annDraggingCrop = annDragDirty = annResizeDirty = false;
@@ -4762,13 +4968,13 @@
         const _annDbEl = $('ann-shape-del-btn'); if (_annDbEl) _annDbEl.style.display = 'none';
         if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
         if ($('img-modal-default-actions')) $('img-modal-default-actions').style.display = 'flex';
-        if ($('img-modal-overlay').classList.contains('open')) { var _navArr = modalIsTrash ? removed : images; ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
+        if ($('img-modal-overlay').classList.contains('open')) { var _navArr = (modalIsTrash ? removed : images).filter(function (x) { return x.kind !== 'pdf' }); ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.remove('active'));
         const o = images.find(x => x.id === modalItemId);
         if (o) {
           const img = $('img-modal-img');
           const u = URL.createObjectURL(o.blob);
-          img.onload = () => URL.revokeObjectURL(u);
+          img.onload = () => { URL.revokeObjectURL(u); $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) }; // the info follows the saved image (B8)
           img.src = u;
         }
       }
@@ -4809,6 +5015,7 @@
       }
       // Leaving Recortar without applying it: a saved crop shows the cropped image again
       async function annLeaveCrop(o, cv) {
+        if (annCropMode !== 'rect') annSetCropMode('rect');
         annCropBox = null;
         if (o && o.cropBox && o.origBlob) {
           await annShowBlob(o.blob, cv);
@@ -5037,7 +5244,8 @@
         annDrawSelectionOverlay();
         annUpdateDelBtn();
         annSyncTextIcon();
-        if (annTool === 'crop') {
+        if (annTool === 'crop' && annCropMode !== 'rect') annDrawCropMode(annGetCtx(), $('ann-canvas'));
+        else if (annTool === 'crop') {
           const cv = $('ann-canvas'), ctx = annGetCtx();
           ctx.save();
           ctx.fillStyle = 'rgb(0 0 0 / 60%)';
@@ -5078,7 +5286,7 @@
           ctx.restore();
         }
       }
-      function annDrawShape(ctx, h) { ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.bg) { const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length; ctx.save(); if (h.rot) { ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); ctx.fillRect(-_p, 0, _w + _p * 2, _hh) } else ctx.fillRect(h.x1 - _p, h.y1, _w + _p * 2, _hh); ctx.restore(); ctx.fillStyle = annOnColor(h.color) } if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) { if (h.type === 'image') { annDrawImage(ctx, h); return } ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.bg) { const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length; ctx.save(); if (h.rot) { ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); ctx.fillRect(-_p, 0, _w + _p * 2, _hh) } else ctx.fillRect(h.x1 - _p, h.y1, _w + _p * 2, _hh); ctx.restore(); ctx.fillStyle = annOnColor(h.color) } if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
@@ -5325,7 +5533,7 @@
       function initAnnotation() {
         /* − and + right after the tools on a computer, before 90° and Recortar (D-0122). Up to 480 px the tool row is full (D-0109),
            so there they stay after the colours, as before */
-        { const dn = $('ann-thickness-down'), up = $('ann-thickness-up'), home = dn.parentElement, sel = document.querySelector('#ann-row-tools > .ann-btn[data-tool="select"]'), mq = window.matchMedia('(width <= 30rem)');
+        { const dn = $('ann-thickness-down'), up = $('ann-thickness-up'), home = dn.parentElement, sel = document.querySelector('#ann-row-tools .ann-btn[data-tool="select"]').parentElement, mq = window.matchMedia('(width <= 30rem)');
           const sep = document.createElement('div'); sep.className = 'ann-sep'; /* the line between the tools and − + */ const place = () => { if (mq.matches) { sep.remove(); home.append(dn, up); dn.style.marginLeft = 'calc(var(--spacing) * 1)' } else { sel.after(sep, dn, up); dn.style.marginLeft = '' } };
           place(); mq.addEventListener('change', place) }
         $('ann-toggle').onclick = () => { if (!modalIsTrash) annActivate() };
@@ -5333,6 +5541,7 @@
         // so the Quine copies the HTML without them
         document.querySelectorAll('.ann-flyout').forEach(f => {
           const b = f.parentElement.querySelector('[data-tool]'); f.id = 'ann-fly-' + b.dataset.tool; b.setAttribute('aria-controls', f.id); b.setAttribute('aria-expanded', 'false'); // F-0090
+          if (b.dataset.tool === 'select' || b.dataset.tool === 'crop') return; // the trays of Selecionar (layers, B7.2) and Recortar (modes, B8) have no size
           f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>');
         });
         initTips();
@@ -5349,7 +5558,7 @@
         }
         $('ann-canvas').addEventListener('pointermove', e => {
           const cv = e.currentTarget;
-          if (annTool !== 'crop' || !annCropBox || annDraggingCrop) { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
+          if (annTool !== 'crop' || !annCropBox || annDraggingCrop || annCropMode !== 'rect') { if (cv.dataset.cropCursor) { cv.style.cursor = ''; delete cv.dataset.cropCursor } return }
           cv.style.cursor = annCropCursorAt(annCanvasXY(e), annCropBox, ANN_HIT_SIZE * annPx()); cv.dataset.cropCursor = '1';
         });
         $('ann-canvas').addEventListener('pointermove', e => { annPtr = annCanvasXY(e); const _ctrl = (e.ctrlKey || e.metaKey) && annTool !== 'crop'; if ((annTool !== 'select' && !_ctrl) || annResizing || annDragging) return; e.currentTarget.style.cursor = annSelectCursorAt(annPtr) });
@@ -5380,11 +5589,13 @@
           delete o.origBlob;
           delete o.annHistory;
           delete o.annRedoStack;
+          delete o.annBlobs;
           delete o.rotation;
           delete o.cropBox;
         }
         $('ann-save').onclick = async () => {
           if (annCommitText) annCommitText();
+          if (annTool === 'crop' && annModePending()) { await annSaveMode(); return }
           const img = $('img-modal-img');
           let fW = img.naturalWidth, fH = img.naturalHeight, cX = 0, cY = 0;
           if (annCropBox) {
@@ -5399,6 +5610,7 @@
             if (annCropBox) annSaveCrop(o, img, cX, cY, fW, fH);
             o.annHistory = JSON.parse(JSON.stringify(annHistory));
             o.annRedoStack = JSON.parse(JSON.stringify(annRedoStack));
+            annKeepBlobs(o);
             o.rotation = annCurrentRotation;
             annForgetIfUntouched(o);
             await idbPut('images', o);
@@ -5429,6 +5641,7 @@
               else {
                 const nx1 = h - e.y1, ny1 = e.x1, nx2 = h - e.y2, ny2 = e.x2;
                 e.x1 = nx1; e.y1 = ny1; e.x2 = nx2; e.y2 = ny2;
+                if (e.type === 'image') e.rot = ((e.rot || 0) + 90) % 360;
               }
             });
           });
@@ -5512,6 +5725,8 @@
           };
         });
         annSyncFillBtns();
+        $('ann-layer-up').onclick = () => annLayer(1, false); $('ann-layer-down').onclick = () => annLayer(-1, false);
+        Object.entries(ANN_CROP_BTNS).forEach(([m, id]) => { $(id).onclick = () => annSetCropMode(m) });
         // Tool buttons: a click on the chosen tool opens or closes its tray (D-0102)
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => {
           let _hold = 0, _held = false;
@@ -5657,7 +5872,7 @@
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
           if (e.button === 2) annDownGrab(e);
           else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
-          else if (annTool === 'crop') annDownCrop(e);
+          else if (annTool === 'crop') { if (annCropMode === 'rect') annDownCrop(e); else annDownMode(e) }
           else if (annTool === 'select') annDownSelect(e);
           else if (annTool === 'text') annDownText(e);
           else annDownDraw(e);
@@ -5749,6 +5964,7 @@
           }
         }
         function annMoveCrop(e) {
+          if (annCropMode !== 'rect') { annMoveMode(e); return }
           const p = annCanvasXY(e);
           const dx = p.x - annStart.x, dy = p.y - annStart.y;
           annStart = p;
@@ -5809,6 +6025,7 @@
           let _p = annCanvasXY(e); annShift = e.shiftKey;
           const _sh = annHistory[annSelectedIdx];
           if (annShift && (annResizeHandle === 'p1' || annResizeHandle === 'p2' || ((_sh.type === 'rect' || _sh.type === 'circle') && annResizeHandle.length === 2))) _p = annShiftPoint(annShiftKind(_sh.type), { x: annResizeAnchorX, y: annResizeAnchorY }, _p);
+          if (_sh.type === 'image' && annResizeHandle.length === 2) _p = annKeepRatio(_sh, _p);
           if (annResizeHandle === 'rot') annResizeTurn(_sh, _p, e);
           else if (_sh.type === 'text') annResizeText(_sh, _p);
           else if (annResizeHandle === 'p1') { _sh.x1 = _p.x; _sh.y1 = _p.y; }
@@ -5868,6 +6085,7 @@
         });
         // End of a crop drag: a box smaller than 10 px is dropped
         function annUpCrop() {
+          if (annCropMode !== 'rect') { annUpMode(); return }
           annDraggingCrop = false;
           if (annCropBox && (annCropBox.w < 10 || annCropBox.h < 10)) annCropBox = null;
           annRenderAll();
@@ -5939,8 +6157,8 @@
         const _annDelBtnEl = document.createElement('button');
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
-        _annDelBtnEl.title = 'Remover';
-        _annDelBtnEl.innerHTML = TRASH_SVG; // the trash, as every Remover (D-0117)
+        _annDelBtnEl.title = 'Apagar';
+        _annDelBtnEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'; // the ✕: an annotation does not go to «Removidos» (D-0137)
         // Overrides only the values that differ from the thumbnail context:
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
@@ -5981,6 +6199,7 @@
             const ae = document.activeElement;
             if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;
             e.preventDefault();
+            if (annActive) { annPasteFrom(e.clipboardData); return } // in the editor, Ctrl+V pastes over the photo (B7)
             const items = e.clipboardData?.items;
             if (!items) return;
             // Path 1: files copied from the operating system (several at once)
@@ -6049,6 +6268,13 @@
             return null;
           }
 
+          // A PDF crosses to the other list (B6.6): over the other zone, a second placeholder (phx) shows the place there, with the height of an item of that list
+          const other = container === tg ? dl : tg, otherZone = $(container === tg ? 'doc-zone' : 'img-zone'), otherSel = container === tg ? '.d-item' : '.t-item', otherEmpty = $(container === tg ? 'doc-empty' : 'img-empty');
+          let phx = null;
+          function canCross() { const id = dragEl && dragEl.dataset.id; return container === tg ? images.some(x => x.id === id && x.kind === 'pdf') : docs.some(x => x.id === id && fileExt(x.name) === 'pdf') }
+          function crossBefore(cx, cy) { const cRect = other.getBoundingClientRect(), px = (cx - cRect.left) / uiZoom() + other.scrollLeft, py = (cy - cRect.top) / uiZoom() + other.scrollTop; for (const el of other.querySelectorAll(otherSel)) { const oy = el.offsetTop, oh = el.offsetHeight; if (other === dl ? py < oy + oh / 2 : (py < oy || (py <= oy + oh && px < el.offsetLeft + el.offsetWidth / 2))) return el } return null }
+          function crossOver(cx, cy) { const r = otherZone.getBoundingClientRect(), inside = canCross() && cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom; if (!inside) { if (phx) { phx.remove(); phx = null; ph.style.display = ''; if (!other.querySelector(otherSel)) otherEmpty.style.display = '' } return false } if (!phx) { const first = other.querySelector(otherSel); phx = document.createElement('div'); phx.className = 'reorder-placeholder'; phx.style.height = (first ? first.offsetHeight : other === dl ? 46 : 176) + 'px'; ph.style.display = 'none'; otherEmpty.style.display = 'none' } const before = crossBefore(cx, cy); if (before) other.insertBefore(phx, before); else other.appendChild(phx); return true }
+
           function positionFloat(cx, cy) {
             // top-left corner of the item = cursor - grab offset (in viewport coords)
             dragEl.style.left = (cx - grabDX) / uiZoom() + 'px';
@@ -6076,6 +6302,7 @@
             }
             e.preventDefault();
             positionFloat(cx, cy);
+            if (crossOver(cx, cy)) return;
             // moves the placeholder to the target position (the siblings slide via FLIP)
             const before = targetBefore(cx, cy);
             // Skips when the target already matches the current place of the placeholder (no useless FLIP).
@@ -6152,6 +6379,7 @@
             if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
             if (movedEl) movedEl.style.touchAction = '';
             if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
+            if (phx) { const at = [...other.children].filter(c => c === phx || c.matches(otherSel)).indexOf(phx); phx.remove(); phx = null; if (placeholder) placeholder.remove(); movedEl.remove(); await movePdfAcross(movedEl.dataset.id, container === tg, at); return }
 
             dropInPlace(movedEl, placeholder);
             await saveOrder();
@@ -6702,6 +6930,10 @@
         xrefStr += `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOfs}\n%%EOF\n`; w(xrefStr);
         return new Blob(objs, { type: 'application/pdf' });
       }
+      async function jpegsOf(list, quality) { const out = []; for (const img of list) out.push({ jpeg: await imgToJPEG(img.blob, quality), label: img.label }); return out }
+      /* The .pdf leads everything in Imagens (D1, B6.7): each run of photos becomes pages by buildPdfBlob, each PDF gives its own pages,
+         all in the order of the grid, joined by pdfCopyPages. The photos follow the Layout PDF; the pages of a PDF keep their size */
+      async function pdfMixed(list, pdfFmt, quality) { const parts = []; let run = []; const flush = async () => { if (run.length) parts.push(await pdfOpen(await buildPdfBlob(await jpegsOf(run, quality), pdfFmt))); run = [] }; for (const o of list) { if (o.kind !== 'pdf') { run.push(o); continue } await flush(); const d = await pdfOpen(o.blob); if (d.enc) { showNotice(`«${imgName(o)}» está protegido por senha, e as páginas dele não podem entrar no PDF.`); throw new Error('PDF export: encrypted source') } parts.push(d) } await flush(); return pdfCopyPages(parts) }
       // The .pdf button back to rest after the success or error state (cls)
       function pdfBtnReset(btn, cls) { btn.classList.remove(cls); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> .pdf'; btn.disabled = false; updateBtns() }
       async function generatePDF(returnBlob = false, list = images) {
@@ -6710,9 +6942,8 @@
         if (!returnBlob) { btn.innerHTML = '<div class="spinner"></div> Processando...'; btn.disabled = true; }
         try {
           await new Promise(r => setTimeout(r, 50));
-          const quality = TOKEN_JPEG_QUALITY; const jpegBlobs = [];
-          for (const img of list) { const b = await imgToJPEG(img.blob, quality); jpegBlobs.push({ jpeg: b, label: img.label }) }
-          const blob = await buildPdfBlob(jpegBlobs, pdfFmt);
+          const quality = TOKEN_JPEG_QUALITY;
+          const blob = list.some(x => x.kind === 'pdf') ? await pdfMixed(list, pdfFmt, quality) : await buildPdfBlob(await jpegsOf(list, quality), pdfFmt);
           if (returnBlob) return blob;
           dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
           holdSuccess(() => pdfBtnReset(btn, 'st-success')); SysLogger.info('PDF gerado: ' + fmtSize(blob.size))
@@ -6767,7 +6998,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.0.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.1.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
 function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();

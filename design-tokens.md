@@ -198,6 +198,7 @@ Um componente novo usa uma destas superfícies, com o seu fundo, borda, raio e s
 | Visual Builder e exportação | `.sb-modal` | `--color-card` | nenhuma | `--radius-xl` | `--shadow-settings` |
 | Histórico no telefone | `#sidebar`, até 900 px | `--color-card` | 1 px `--color-border` | `--radius-xl` | `--shadow-sidebar` |
 | Visualizador (imagem e documento) | `#img-modal-overlay .modal-box`, `#text-modal-overlay .modal-box` | transparente, sobre `--color-viewer-backdrop` | nenhuma | — | nenhuma |
+| Menu do clique direito e o submenu | `.ctx-menu`, `.ctx-sub` | `--color-card`; item no hover, `--color-background` | 1 px `--color-border` | `--radius-lg` | `--shadow-settings` |
 | Bandeja das opções do editor | `.ann-flyout` | `--color-viewer-tray` | 1 px `--color-viewer-control-border` | `--radius-xl` | `--shadow-dragging` |
 | Barra de zoom | `#zoom-ui` | `--color-viewer-floating`, com desfoque | 1 px `--color-viewer-border` | `--radius-lg` | `--shadow-viewer-zoom` |
 | Faixa de armazenamento | `.ce-banner` | `--color-banner-critical` | nenhuma | nenhum; largura total, no topo | nenhuma |
@@ -219,7 +220,7 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 | `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
 | `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | telefone |
 | `--z-offcanvas` | `1045` | `#sidebar` no telefone, acima do seu fundo | telefone |
-| `--z-popover` | `1070` | Menu do clique direito, acima dos modais (D-0129) | global |
+| `--z-popover` | `1070` | Menu do clique direito e o submenu, acima dos modais (D-0129, D-0131) | global |
 | `--z-modal` | `1055` | `.modal-overlay`, `.sb-overlay` | global |
 | `--z-toast` | `1090` | Avisos de quota e de armazenamento, **acima dos modais** de propósito, para um aviso crítico nunca ficar escondido | global |
 
@@ -401,10 +402,16 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  │ (Consolas, Monaco, monospace)                      │  │    (TXT, CSV, JSON...)
 │  └────────────────────────────────────────────────────┘  │
 │
-│  OU, para arquivos binários (PDF, DOCX, etc.):          │
+│  OU, para um PDF:                                        │
 │
 │  ┌────────────────────────────────────────────────────┐  │
-│  │           [ícone]  PDF                             │  │  ← modo binário
+│  │ iframe com blob: (o leitor do próprio navegador)   │  │  ← .view-pdf
+│  └────────────────────────────────────────────────────┘  │
+│
+│  OU, para os outros binários (DOCX, XLSX, etc.):         │
+│
+│  ┌────────────────────────────────────────────────────┐  │
+│  │           [ícone]  DOCX                            │  │  ← modo binário
 │  │   Faça download para visualizar o documento        │  │    (textarea oculta)
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
@@ -416,6 +423,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 **Como o motor decide entre modo texto e modo binário:**
 - MIME type começa com `text/` → modo texto (visualizável inline)
 - MIME type é `application/json`, `application/xml`, etc. → modo texto
+- Extensão `.pdf` ou MIME `application/pdf` → modo binário, com o PDF num `iframe` de endereço `blob:` (D-0130)
 - Qualquer outro MIME type → modo binário (download apenas)
 
 ---
