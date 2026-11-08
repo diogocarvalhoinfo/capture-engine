@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Adicionado
+
+- **A bandeja das ferramentas abre de mais dois jeitos, para testar (D-0142):** com o mouse em cima de uma ferramenta, a bandeja dela abre na hora e fecha ao tirar o mouse; e apertando uma ferramenta e arrastando para cima, a bandeja abre, e soltar sobre uma opção a escolhe. Escolher uma opção da bandeja de outra ferramenta escolhe também a ferramenta. Testado no Chrome com o mouse, nos temas claro e escuro; o arrastar no toque, num telefone de verdade, não foi testado. O GIF do editor foi gravado de novo, com esta mudança e com o T do texto com fundo.
+
 ### Modificado
 
 - **O texto com fundo é o padrão (D-0141):** o texto novo do editor sai sobre um retângulo na cor escolhida, e a bandeja do Texto ganhou «Fundo transparente», ao lado de «Com fundo». A escolha fica no navegador. Textos já feitos não mudam. Testado no Chrome nos temas claro e escuro e em 360 × 740: o padrão sai com fundo, o transparente sai sem, a escolha volta depois de recarregar, e a bandeja cabe na tela.
