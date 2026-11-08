@@ -2307,17 +2307,16 @@
       backdrop-filter: blur(10px)
     }
 
-    /* ═══ MARKING (D-0128) ═══
-       A box per item; on images in the top left corner. It shows on hover, with something marked, and always on touch */
+    /* ═══ MARKING (D-0128, D-0135) ═══
+       A box per item; on images in the top left corner. It shows only while something is marked: «Marcar», in the menu of the right click, starts it */
     .item-check {
+      display: none;
       width: 16px;
       height: 16px;
       margin: 0;
       flex-shrink: 0;
       cursor: pointer;
-      accent-color: var(--color-primary);
-      opacity: 0;
-      transition: opacity var(--duration-moderate-01)
+      accent-color: var(--color-primary)
     }
 
     .t-item .item-check {
@@ -2327,12 +2326,8 @@
       z-index: var(--z-raised)
     }
 
-    .item-check:checked,
-    .item-check:focus-visible,
-    .has-marked .item-check,
-    .t-item:hover .item-check,
-    .d-item:hover .item-check {
-      opacity: 1
+    .has-marked .item-check {
+      display: block
     }
 
     .t-item.marked,
@@ -2457,12 +2452,6 @@
       height: 1px;
       margin: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
       background: var(--color-border)
-    }
-
-    @media (hover: none) {
-      .item-check {
-        opacity: 1
-      }
     }
 
     /* ═══ RESPONSIVE ═══ */
@@ -4414,7 +4403,7 @@
       // Keyboard navigation
       // A focused text field (e.g. the annotation text editor) keeps its own keys: its native Ctrl+Z/Ctrl+Y
       // undo the TYPING, not the annotation undo/redo
-      const typingInField = () => document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
+      const typingInField = () => document.activeElement && ((document.activeElement.tagName === 'INPUT' && document.activeElement.type !== 'checkbox') || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable);
       // Ctrl+Z undoes; Ctrl+Shift+Z and Ctrl+Y redo. Returns true when the key was used
       function annUndoKey(e) {
         const k = e.key.toLowerCase();
@@ -4641,7 +4630,7 @@
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
       function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
@@ -4655,7 +4644,11 @@
       function ctxSubOpen(b, sub, focus) { if (!ctxSub || ctxSub.from !== b) { ctxSubClose(); const m = document.createElement('div'); m.className = 'ctx-menu ctx-sub'; m.setAttribute('role', 'menu'); m.from = b; sub().forEach(row => m.append(ctxSubRow(row))); document.body.append(m); ctxSub = m; b.setAttribute('aria-expanded', 'true'); ctxSubPlace(m, b) } if (focus) { const f = ctxSub.querySelector('.ctx-item'); if (f) f.focus({ preventScroll: true }) } }
       /* The keys of an open menu: up and down move, right opens the submenu, left and Esc go back from it, Tab and Esc close */
       function ctxKey(e) { const a = document.activeElement, inSub = !!ctxSub && ctxSub.contains(a), it = [...(inSub ? ctxSub : ctxMenu).querySelectorAll('.ctx-item:not(:disabled)')], i = it.indexOf(a), k = e.key; if (k === 'Tab' || (k === 'Escape' && !inSub)) { e.preventDefault(); ctxClose(); return } if (inSub && (k === 'Escape' || k === 'ArrowLeft')) { e.preventDefault(); const p = ctxSub.from; ctxSubClose(); p.focus(); return } if (k === 'ArrowRight' && a && a.sub) { e.preventDefault(); ctxSubOpen(a, a.sub, true); return } if ((k === 'ArrowDown' || k === 'ArrowUp') && it.length) { e.preventDefault(); it[(i + (k === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } }
-      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) { const imgs = markedImgs(), ds = markedDocs(); const pdfs = ds.length > 1 && ds.every(d => fileExt(d.name) === 'pdf'); return ti ? [[['dl', 'Download .pdf', '', dlMarkedPdf], ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] : [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(ds)]] : []), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] } if (ti) { const o = images.find(x => x.id === id); if (o.kind === 'pdf') return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['dup', 'Duplicar', '', () => dupPdfImg(o)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]; return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)]].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
+      /* «Marcar» in the menu marks the item and shows the boxes of all items; «Desmarcar» on the last one hides them (D-0135) */
+      function markToggle(id) { if (marked.has(id)) marked.delete(id); else marked.add(id); markSync() }
+      /* The menu of the marked items is the same whatever item opens it (D-0136): Juntar when all are PDFs, the .pdf when none is in Documentos (D1), the .zip and Remover */
+      function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] }
+      function ctxGroups(target) { const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item'); if (ti || di) { const id = (ti || di).dataset.id; if (marked.has(id) && marked.size > 1) return markedGroups(); const mk = ['check', marked.has(id) ? 'Desmarcar' : 'Marcar', '', () => markToggle(id)]; if (ti) { const o = images.find(x => x.id === id); if (o.kind === 'pdf') return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['dup', 'Duplicar', '', () => dupPdfImg(o)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]; return [[['open', 'Abrir', 'Enter', () => window.openImgModal(id, false)], ['edit', 'Editar', '', async () => { window.openImgModal(id, false); await annActivate() }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]] } const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf'; return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => { await window.openTextModal(id, false); textEditStart() }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)], mk].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]] } if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]]; if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]]; return null }
       function initMenus() {
         ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
         document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target))) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
