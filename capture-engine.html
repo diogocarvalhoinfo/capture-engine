@@ -3596,6 +3596,13 @@
               <polyline points="3 3 3 8 8 8" />
             </svg> Restaurar
           </button>
+          <button class="btn-send" id="text-modal-edit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+              <path d="m15 5 4 4" />
+            </svg> Editar
+          </button>
           <button class="btn-send btn-viewer" id="text-modal-copy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:14px; height:14px">
@@ -3610,6 +3617,19 @@
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg> Download
           </button>
+        </div>
+        <div id="text-modal-edit-actions" style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center">
+          <button class="ann-btn" id="text-edit-cancel" title="Cancelar"
+            style="background:var(--color-red-500);color:var(--color-white);border-color:var(--color-red-500)"><svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg></button>
+          <button class="ann-btn" id="text-edit-save" title="Confirmar"
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg></button>
         </div>
       </div>
     </div>
@@ -4170,7 +4190,7 @@
           if (typingInField()) return;
           viewerKey(e);
         }
-        if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeTextModal(); }
+        if ($('text-modal-overlay').classList.contains('open') && e.key === 'Escape') { e.preventDefault(); if (textEditDirty()) textEditAlert(); else if (textEditing) $('text-edit-cancel').click(); else closeTextModal(); }
         const _exOv = $('export-overlay'); if (_exOv && _exOv.classList.contains('open') && e.key === 'Escape') { e.preventDefault(); closeExportModal(); }
       });
 
@@ -4253,18 +4273,32 @@
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
         $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
         $('text-modal-restore').style.display = trash ? 'flex' : 'none';
+        textEditEnd(); $('text-modal-edit').style.display = isText && !trash ? '' : 'none'; // Editar: the plain text, also of Markdown, CSV and HTML (D-0125)
         $('text-modal-dl').style.display = 'flex';
         $('text-modal-overlay').classList.add('open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
       };
+      /* The minimal text editor (D-0125): Editar turns the page into the plain text, editable; Cancelar and Confirmar end it, as in the image editor.
+         With changes not saved, Esc, the ✕ and a click outside make the two pulse, and nothing closes */
+      let textEditing = false, textEditOrig = '';
+      const textEditDirty = () => textEditing && $('text-modal-content').value !== textEditOrig;
+      function textEditStart() { const ta = $('text-modal-content'); textEditing = true; textEditOrig = ta.value; ta.readOnly = false; ta.style.display = ''; $('text-modal-view').hidden = true; $('text-modal-actions').style.display = 'none'; $('text-modal-edit-actions').style.display = 'flex'; ta.focus() }
+      function textEditEnd() { const ta = $('text-modal-content'); textEditing = false; ta.readOnly = true; $('text-modal-actions').style.display = 'flex'; $('text-modal-edit-actions').style.display = 'none' }
+      function textEditAlert() { ['text-edit-cancel', 'text-edit-save'].forEach(id => { const b = $(id); b.classList.remove('alert-anim'); void b.offsetWidth; b.classList.add('alert-anim') }) }
+      async function textEditSave() { const arr = textModalIsTrash ? removedDocs : docs, o = arr.find(x => x.id === textModalItemId), val = $('text-modal-content').value; if (o && val !== textEditOrig) { o.blob = new Blob([val], { type: o.type || 'text/plain' }); o.size = o.blob.size; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } const sz = document.querySelector(`.d-item[data-id="${o.id}"] .d-size`); if (sz) sz.textContent = fmtSize(o.size); isDirty = true; triggerSave(); updateStatusBar() } textEditEnd(); if (o) window.openTextModal(o.id, textModalIsTrash) }
       function closeTextModal() {
+        if (textEditDirty()) { textEditAlert(); return }
+        textEditEnd();
         $('text-modal-overlay').classList.remove('open');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         $('text-modal-content').value = '';
       }
       $('text-modal-close').onclick = closeTextModal;
+      $('text-modal-edit').onclick = textEditStart;
+      $('text-edit-cancel').onclick = () => { const o = (textModalIsTrash ? removedDocs : docs).find(x => x.id === textModalItemId); textEditEnd(); if (o) window.openTextModal(o.id, textModalIsTrash) };
+      $('text-edit-save').onclick = textEditSave;
       let _textOverlayMdOnBackdrop = false;
       $('text-modal-overlay').addEventListener('mousedown', function (e) { _textOverlayMdOnBackdrop = (e.target === this) });
       $('text-modal-overlay').onclick = function (e) { if (e.target === this && _textOverlayMdOnBackdrop) closeTextModal(); _textOverlayMdOnBackdrop = false };

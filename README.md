@@ -182,7 +182,7 @@ O Capture Engine aceita conteúdo de três formas:
 | Categoria | Formatos |
 |---|---|
 | Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens), também com uma extensão que o navegador não conhece: a imagem é reconhecida pelo conteúdo |
-| Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet |
+| Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet. «Editar» muda o texto puro, com Cancelar e Confirmar |
 | Documentos binários | PDF, DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
 **Nomeação automática sem colisões:**
