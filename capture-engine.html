@@ -3314,7 +3314,7 @@
       padding-top: calc(var(--spacing) * 6)
     }
 
-    /* Unsaved changes: the rest of the toolbar dims and ignores clicks, so only Cancelar and Confirmar stay usable */
+    /* Unsaved changes: the rest of the toolbar dims and ignores clicks, so only Descartar alterações and Aplicar alterações stay usable */
     #img-modal-ann-actions.ann-await .ann-btn:not(#ann-cancel, #ann-save),
     #img-modal-ann-actions.ann-await .ann-swatch,
     #img-modal-ann-actions.ann-await .ann-sep {
@@ -3470,7 +3470,7 @@
     }
 
     /* The unsaved-changes alert also darkens the photo with its annotations, and dims the title, the zoom and the ✕ of an annotation,
-       so Cancelar and Confirmar stand out (asked by the owner, 2026-11-09). At once, like the toolbar, and without touching the transition
+       so Descartar alterações and Aplicar alterações stand out (asked by the owner, 2026-11-09). At once, like the toolbar, and without touching the transition
        of #ann-wrap, which the zoom uses. The photo darkens by a filter and not by opacity: an opacity would show the app behind it */
     #img-modal-overlay.ann-await #ann-wrap,
     #img-modal-overlay.ann-await #ann-shape-del-btn {
@@ -4013,12 +4013,12 @@
               <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
               <polyline points="21 3 21 8 16 8" />
             </svg></button>
-          <button class="ann-btn" id="ann-cancel" title="Cancelar"
+          <button class="ann-btn" id="ann-cancel" title="Descartar alterações"
             style="background:var(--color-red-500);color:var(--color-white);border-color:var(--color-red-500)"><svg viewBox="0 0 24 24">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
-          <button class="ann-btn" id="ann-save" title="Confirmar"
+          <button class="ann-btn" id="ann-save" title="Aplicar alterações"
             style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
@@ -4083,12 +4083,12 @@
           </button>
         </div>
         <div id="text-modal-edit-actions" style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center">
-          <button class="ann-btn" id="text-edit-cancel" title="Cancelar"
+          <button class="ann-btn" id="text-edit-cancel" title="Descartar alterações"
             style="background:var(--color-red-500);color:var(--color-white);border-color:var(--color-red-500)"><svg viewBox="0 0 24 24">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
-          <button class="ann-btn" id="text-edit-save" title="Confirmar"
+          <button class="ann-btn" id="text-edit-save" title="Aplicar alterações"
             style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
@@ -4643,7 +4643,7 @@
       const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e) || annLayerKey(e));
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
       function viewerKey(e) {
-        if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Confirmar or Cancelar (F-0083)
+        if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Aplicar alterações or Descartar alterações (F-0083)
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
           window.imgModalNav(-1);
@@ -4920,7 +4920,7 @@
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
       };
-      /* The minimal text editor (D-0125): Editar turns the page into the plain text, editable; Cancelar and Confirmar end it, as in the image editor.
+      /* The minimal text editor (D-0125): Editar turns the page into the plain text, editable; Descartar alterações and Aplicar alterações end it, as in the image editor.
          With changes not saved, Esc, the ✕ and a click outside make the two pulse, and nothing closes */
       let textEditing = false, textEditOrig = '';
       const textEditDirty = () => textEditing && $('text-modal-content').value !== textEditOrig;
@@ -5058,7 +5058,7 @@
 
       function setAnnDirty(val) {
         // The ✕ of the viewer stays on every screen. With the drawing not saved, closeImgModal() does not close: Salvar
-        // and Cancelar pulse, as with Esc and a click outside the photo (D-0112)
+        // and Descartar alterações pulse, as with Esc and a click outside the photo (D-0112)
         annIsDirty = val;
       }
       function hasUnsavedAnnotations() {
@@ -5085,9 +5085,9 @@
         $('img-modal-overlay').classList.remove('ann-await');
       }
       /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
-         Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.
-         Endireitar: a round handle turns the photo over a grid (the image turns by CSS in the preview); Confirmar turns it and cuts the empty corners.
-         Both write on the photo on Confirmar, with the annotations (D-0138): a perspective does not keep a rectangle a rectangle */
+         Cantos livres: four corners, starting at the corners of the photo; Aplicar alterações undoes the perspective by a homography, pixel by pixel.
+         Endireitar: a round handle turns the photo over a grid (the image turns by CSS in the preview); Aplicar alterações turns it and cuts the empty corners.
+         Both write on the photo on Aplicar alterações, with the annotations (D-0138): a perspective does not keep a rectangle a rectangle */
       let annUseFirst = false, annSaved = false, annOpenCrop = null, annCropMode = 'rect', annQuad = null, annLevel = 0, annModeDrag = null, annLevelFrom = 0, annLevelBase = 0;
       const ANN_CROP_BTNS = { rect: 'ann-crop-rect', quad: 'ann-crop-quad', level: 'ann-crop-level' };
       function annModeReset() { const cv = $('ann-canvas'), w = cv.width, h = cv.height; annQuad = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: h }, { x: 0, y: h }]; annLevel = 0; annModeDrag = null; $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '' }
@@ -5115,7 +5115,7 @@
       /* Endireitar: the photo turns by the angle, and the largest rectangle with its proportion that has no empty corner is kept */
       function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
       function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
-      /* Confirmar with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
+      /* Aplicar alterações with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
       async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
@@ -5129,7 +5129,7 @@
       function annDrawImage(ctx, h) { const bmp = annPasteBmp.get(h.id); if (!bmp) return; const x = Math.min(h.x1, h.x2), y = Math.min(h.y1, h.y2), w = Math.abs(h.x2 - h.x1), hh = Math.abs(h.y2 - h.y1), r = h.rot || 0, sw = r % 180 ? hh : w, sh = r % 180 ? w : hh; ctx.save(); ctx.translate(x + w / 2, y + hh / 2); ctx.rotate(r * Math.PI / 180); ctx.drawImage(bmp, -sw / 2, -sh / 2, sw, sh); ctx.restore() }
       /* The corners of a pasted image keep its proportion; the anchor is the opposite corner */
       function annKeepRatio(sh, p) { const ar = (sh.rot || 0) % 180 ? 1 / sh.ar : sh.ar, dx = p.x - annResizeAnchorX, dy = p.y - annResizeAnchorY, w = Math.max(Math.abs(dx), Math.abs(dy) * ar, 4); return { x: annResizeAnchorX + Math.sign(dx || 1) * w, y: annResizeAnchorY + Math.sign(dy || 1) * w / ar } }
-      /* On Confirmar, the record keeps only the blobs that the history or the redo still use */
+      /* On Aplicar alterações, the record keeps only the blobs that the history or the redo still use */
       function annKeepBlobs(o) { const keep = {}; let n = 0; [annHistory, ...annRedoStack.map(st => st.h)].forEach(a => a.forEach(h => { if (h.type === 'image' && annPasteBlobs.has(h.id) && !keep[h.id]) { keep[h.id] = annPasteBlobs.get(h.id); n++ } })); if (n) o.annBlobs = keep; else delete o.annBlobs }
       async function annActivate() {
         annActive = true;
@@ -5149,7 +5149,7 @@
         }
         while (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift();
         /* The bottom of the undo stack is the photo as it was captured: no annotation, turn, crop, perspective or straightening (P1).
-           Ctrl+Z reaches it after the annotations, also after Confirmar and reopening; Confirmar there keeps the captured photo */
+           Ctrl+Z reaches it after the annotations, also after Aplicar alterações and reopening; Aplicar alterações there keeps the captured photo */
         annUseFirst = false; annSaved = false; annOpenCrop = o && o.cropBox ? JSON.parse(JSON.stringify(o.cropBox)) : null;
         if (o && (o.origBlob || o.firstBlob) && (annHistory.length || annCurrentRotation || o.cropBox || o.firstBlob)) annUndoStack.unshift({ h: [], rot: 0, crop: null, pcrop: null, first: true });
         const btnSave = $('ann-save');

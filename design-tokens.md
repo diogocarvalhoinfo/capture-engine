@@ -456,8 +456,8 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 |---|---|---|---|---|
 | Visualizador de imagem | **Editar** | `.btn-send`, cheio | `var(--color-primary)` + `var(--color-primary-foreground)` | Imagem ativa |
 | Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos «Removidos» |
-| Editor | **Confirmar** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
-| Editor | **Cancelar** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
+| Editor | **Aplicar alterações** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
+| Editor | **Descartar alterações** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
 | Visualizador de documento | **Restaurar**, **Copiar texto** e **Download** | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
 
 O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
