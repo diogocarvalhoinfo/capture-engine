@@ -126,7 +126,7 @@ Se suspeitar que as configurações não foram aplicadas no arquivo exportado, p
 Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
 
 ### XSS (Cross-Site Scripting)
-**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine sanitiza (limpa) todos os dados inseridos pelo usuário antes de apresentá-los, impedindo este tipo de ataque.
+**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine limpa os dados inseridos antes de mostrá-los. Na auditoria de 2026-11-09, nada executou com estas entradas: nomes de arquivo e de sessão com código HTML, um link `javascript:` num Markdown, um CSV e um .zip com nome hostil.
 
 ### EMA (Exponential Moving Average)
 **EMA** (média móvel exponencial) é o filtro que suaviza o desenho livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
@@ -205,9 +205,9 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação. O título é
 | **Pan (mover)** | Clicar e arrastar quando a imagem está ampliada |
 | **Zoom com botões** | Botões + e −, 1 % por clique; segurar o botão repete o passo e acelera. O valor (ex.: 137 %) volta a 100 % com um clique. A barra aparece quando o zoom passa de 100 % |
 | **Navegar ← →** | Botões de seta flutuantes nas laterais (visíveis quando há ≥2 imagens na sessão), ou teclas ArrowLeft / ArrowRight |
-| **Fechar** | Botão × ou clicar fora da imagem (apenas quando zoom = 100%) |
+| **Fechar** | Botão × ou clicar fora da imagem (apenas quando zoom = 100 %) |
 
-**Limites de zoom:** 20% (mínimo) a 1000% (máximo).
+**Limites de zoom:** 20 % (mínimo) a 1000 % (máximo).
 
 **Motivo:** com a imagem ampliada, um clique fora para mover a imagem não fecha o visualizador sem querer.
 
@@ -221,9 +221,16 @@ No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arra
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também «Diminuir» e «Aumentar» (a espessura do traço ou o tamanho do texto), logo depois das ferramentas no computador e depois das cores no telefone, as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar».
+  - A barra tem também as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400. O ícone do desenho livre e o da seta engrossam e afinam com a espessura de cada um.
-  - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. Um clique na ferramenta já escolhida (no telefone, um toque) abre as opções numa bandeja logo acima. O duplo clique e o botão apertado por 1 s também abrem. Apertar uma ferramenta e arrastar para cima também abre a bandeja, e soltar em cima de uma opção a escolhe; arrastar para baixo a fecha. Com uma bandeja aberta, passar por outra ferramenta (com o botão ainda apertado, ou com o mouse) abre a bandeja dela. Escolher uma opção da bandeja de outra ferramenta escolhe também essa ferramenta. As opções ficam lado a lado, sempre na mesma ordem, e a escolhida fica marcada. Cada uma mostra o nome ao passar o mouse. Com a bandeja aberta, o ponto fica na cor principal. Um clique fora, o Esc, outra ferramenta ou um novo clique na ferramenta fecham a bandeja; um clique na imagem já começa o desenho. Com o Texto, a bandeja fica aberta enquanto se digita, e o B, o I, o − e o + valem para o texto aberto. Pelo teclado, a seta para cima abre, e as setas para os lados andam entre as opções. A barra não muda de forma, e a bandeja acompanha a tela quando ela muda de tamanho.
+  - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. As opções abrem numa bandeja logo acima, lado a lado, sempre na mesma ordem, com a escolhida marcada. Cada uma mostra o nome ao passar o mouse.
+    - **Abrir:** um clique na ferramenta já escolhida (no telefone, um toque), o duplo clique ou o botão apertado por 1 s. Apertar a ferramenta e arrastar para cima também abre. Com a bandeja aberta, o ponto fica na cor principal.
+    - **Escolher:** um clique na opção. Ao abrir arrastando para cima, soltar em cima de uma opção a escolhe. Escolher uma opção da bandeja de outra ferramenta escolhe também essa ferramenta.
+    - **Passar para outra ferramenta:** com uma bandeja aberta, passar por outra ferramenta abre a bandeja dela, com o botão ainda apertado ou com o mouse.
+    - **Fechar:** um clique fora, o Esc, outra ferramenta, um novo clique na ferramenta ou arrastar para baixo. Um clique na imagem fecha a bandeja e já começa o desenho.
+    - **Texto:** a bandeja fica aberta enquanto se digita, e o B, o I, o − e o + valem para o texto aberto.
+    - **Teclado:** a seta para cima abre, e as setas para os lados andam entre as opções.
+    - A barra não muda de forma, e a bandeja acompanha a tela quando ela muda de tamanho.
     - Em todas, menos as do Selecionar e do Recortar, depois das opções: **−** e **+** soltos, sem a caixa de botão, e o tamanho atual depois deles. O tamanho é um ponto que cresce com o traço ou, no texto, o número. Fazem o mesmo que o − e o + da barra, que continuam lá. O desenho livre e a seta só têm o tamanho.
     - Retângulo e círculo: **Contorno** (o padrão) ou **Preenchido**, uma forma cheia na cor escolhida, que cobre o que está embaixo. Com «Preenchido», o botão da ferramenta mostra a forma cheia.
     - Marca-texto: uma faixa larga, de pontas retas, na cor escolhida. Ele começa no amarelo e guarda a sua cor, à parte da cor das outras ferramentas. **Translúcido** (o padrão, com o ícone de xadrez) deixa ver o que está por baixo, com 40 % de opacidade; **Sólido** cobre, para esconder uma informação. Com «Sólido», o botão da ferramenta mostra a ponta cheia.
@@ -260,9 +267,9 @@ No telefone:
 Para marcar vários itens, use «Marcar» no menu do clique direito: aparece uma caixa de marcar em cada imagem e em cada documento, até se desmarcar tudo. O clique direito abre um menu com o que serve no lugar: abrir, editar, copiar a imagem (Ctrl+C), duplicar, renomear (F2), baixar e remover (Del). Num PDF, «Diminuir o tamanho» cria uma cópia menor, em três níveis, com o tamanho de cada um à direita. Com vários marcados, o menu é o mesmo em qualquer um deles: baixa os marcados num .zip, ou num .pdf quando nenhum está em Documentos, ou os remove. Com dois ou mais PDFs marcados, «Juntar em um PDF» cria «juntado.pdf» em Documentos, com as páginas na ordem da lista. Esc, ou um clique fora dos itens, desmarca tudo.
 
 
-Todos os itens (imagens e documentos) podem ser reordenados por **drag & drop**:
+Todos os itens (imagens e documentos) podem ser reordenados ao **arrastar e soltar**:
 - Em imagens: arraste a miniatura para a posição desejada na grade
-- Em documentos: arraste o card para cima ou para baixo na lista
+- Em documentos: arraste o cartão para cima ou para baixo na lista
 
 A nova ordem é guardada automaticamente.
 
@@ -281,7 +288,7 @@ Não existe «apagar definitivamente» na barra «Removidos». Um item removido 
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
-> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Eliminar sessão») da barra de histórico é **imediato, permanente e sem pedido de confirmação** — remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
+> A rede de segurança acima vale para **itens** (imagens e documentos). Apagar uma **sessão** no ✕ («Eliminar sessão») da barra de histórico é **imediato, permanente e sem pedido de confirmação**. Isso remove a sessão e todo o seu conteúdo, incluindo os itens removidos dela. Não há como desfazer. Antes de apagar uma sessão que ainda pode ser útil, exporte-a em PDF ou ZIP.
 
 ### 6.6 Export PDF
 
@@ -298,7 +305,7 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 | **A4 Horizontal** | Força todas as páginas em formato paisagem |
 
 **Processo de geração:**
-1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92%)
+1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92 %)
 2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada. As páginas de um PDF que está em Imagens entram como estão, com o tamanho e o texto delas
 3. O arquivo é transferido automaticamente
 
@@ -313,7 +320,7 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP.
 
 **O que é incluído:**
-- Imagens **não anotadas** em PNG, byte a byte iguais ao original, sem recompressão
+- Imagens **não editadas** no formato em que foram capturadas (PNG, JPEG, GIF, WEBP), byte a byte iguais ao original, sem recompressão
 - Imagens **anotadas, giradas ou recortadas** como PNG novo, com as edições incorporadas (ver nota abaixo)
 - GIF animados **não editados** no formato original, com a animação intacta — anotar, girar ou recortar converte-os num PNG estático, tal como qualquer outra imagem (ver a nota abaixo)
 - Documentos em todos os formatos
@@ -325,7 +332,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 >
 > A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador, porque o editor o preserva para reeditar e desfazer, e desaparece quando a sessão expira. Para o ZIP voltar a levá-lo, abra a imagem no editor, desfaça tudo até a foto inicial e confirme. Se precisar conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de editá-la**.
 
-**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) ainda são removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
+**Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.jpg` numa foto JPEG e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) ainda são removidos dos nomes de imagem e de documento, porque criariam um arquivo impossível de extrair.
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
@@ -489,7 +496,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 | **Isolado, sem internet** | Funciona sem internet; nenhum dado sai do dispositivo |
 | **Sanitização de campos** | Todo o texto inserido pelo usuário é sanitizado antes de ser apresentado (proteção XSS) |
 | **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados. Diretivas ativas: `default-src 'self' blob: data:; script-src 'unsafe-inline' (necessário: todo CSS e JS está inline por contrato de arquivo único; o Quine gera novos arquivos e invalidaria nonces a cada export); style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';` |
-| **Admin Gate oculto** | O painel de admin requer 6 cliques no logo — invisível e inatingível acidentalmente |
+| **Admin Gate oculto** | O painel de admin sem botão visível: abre com 6 cliques seguidos no logotipo |
 | **Sem registro** | Nenhum dado de utilização, telemetria ou analytics |
 | **Sem cookies** | Usa IndexedDB e localStorage do navegador (sem cookies de sessão) |
 
@@ -593,19 +600,19 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - A captura que não grava continua na grade enquanto a aba estiver aberta, e a barra de estado diz «Só nesta aba». Ao fechar a aba, a captura desaparece. Por isso, exporte em PDF ou ZIP antes de fechar.
 - **Como confirmar:** abra as DevTools (F12) → aba Console → procure erros com a palavra `quota` ou `storage`.
 - **Como prevenir:** em sessões grandes, exporte com frequência (PDF ou ZIP) e apague no histórico as sessões que já não precisa. **Não existe forma de reduzir o espaço que cada captura ocupa** — as imagens são sempre gravadas no formato original. O `TOKEN_MAX_IMG_DIMENSION` do Visual Builder reduz as imagens apenas na geração do PDF, não no armazenamento, e por isso não previne este problema.
-- **Editar uma imagem duplica, mais ou menos, o espaço que ela ocupa.** Ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs: o original (`origBlob`, para poder desfazer e reeditar) e a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
+- **Editar uma imagem duplica, mais ou menos, o espaço que ela ocupa.** Ao confirmar a primeira anotação, rotação ou recorte, o registro passa a guardar **dois** blobs. Um é o original (`origBlob`), para poder desfazer e reeditar; o outro é a versão editada. É o custo de manter o original recuperável, e conta para a quota. Numa sessão em que quase tudo é anotado, conte com cerca do dobro do espaço.
 
 ### Perdi o arquivo HTML. Perdi os dados? (Disaster Recovery)
 - **Provavelmente não.** Os dados não estão dentro do arquivo HTML: ficam no IndexedDB do navegador, numa base compartilhada por **perfil de navegador**. Testado no Windows 11, com o Edge 148, o Chrome 148 e o Firefox, e no Safari do iPhone (iOS 26.5), no site publicado. O Safari do Mac não foi testado. Se apagou o `capture-engine.html`, basta abrir **qualquer** cópia da ferramenta no **mesmo perfil do mesmo navegador** e as sessões reaparecem.
-- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**, a partir da mesma série: todas usam a mesma base `CaptureEngineDB`. A exceção é uma cópia anterior à versão 29 aberta depois de uma 29, que não abre a base (ver «Limitações conhecidas»). Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
+- **O que NÃO afeta o acesso aos dados** (testado): o **nome** do arquivo, a **pasta**, o **disco**, os espaços ou caracteres especiais no caminho, e a **versão**, a partir da mesma série. Todas usam a mesma base `CaptureEngineDB`. A exceção é uma cópia anterior à versão 29 aberta depois de uma 29, que não abre a base (ver «Limitações conhecidas»). Em todos esses casos, os dados continuam acessíveis, desde que seja o mesmo perfil.
 - **O que NÃO encontra os dados** (outra origem ou outro perfil):
   - **janela anônima ou privada**;
   - **outro perfil** do navegador;
   - **outro navegador** (o Edge e o Chrome têm bases separadas);
   - no iPhone, o **atalho do site na Tela de Início**, que tem uma base própria, separada da do Safari;
   - abrir **de dentro de um ZIP**, sem extrair.
-- **A base é por origem (protocolo, host e porta), e não só por perfil.** A *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) tem **três bases independentes**. As sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam; *entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
-- **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, abrir a mesma conta/perfil **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
+- **A base é por origem (protocolo, host e porta), e não só por perfil.** A *mesma* ferramenta aberta como arquivo (`file://`), servida localmente (`http://localhost:8080`) e publicada (`https://…github.io`) tem **três bases independentes**. As sessões de uma não aparecem nas outras, mesmo no mesmo navegador e perfil. *Dentro* da mesma origem (ex.: várias cópias `file://` no mesmo perfil), o nome e a pasta do arquivo não importam. *Entre* origens diferentes, os dados nunca se misturam. Relevante ao distribuir a ferramenta hospedada **e** como arquivo local — cada modo guarda em separado.
+- **Os dados são locais a cada máquina e NÃO viajam com a conta.** Mesmo com a sincronização do Chrome ligada, a mesma conta **em outro computador não traz as sessões** (testado: aparece vazio). O Chrome sincroniza favoritos, senhas, etc., mas não o IndexedDB.
 - **Ambientes isolados, como uma VDI (área de trabalho virtual):** os dados vivem no perfil local daquela máquina. As sessões criadas dentro da VDI de um cliente ficam **isoladas** nela, e as do perfil pessoal ficam juntas nesse perfil. Num perfil com roaming, gerenciado pela TI, os dados podem seguir o usuário entre máquinas: confirme com a equipe de TI.
 - Recuperação técnica de último recurso (requer conhecimentos): aba *Application > IndexedDB* das DevTools (F12), base `CaptureEngineDB`.
 
@@ -650,7 +657,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
   - O IndexedDB do Firefox fica no perfil dele: os dados criados no Firefox não aparecem no Chrome, nem o contrário
-- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. Desde a 28.7.1, o visualizador e o editor funcionam no toque: a pinça amplia a foto, o ✕ e o «Editar» ficam à vista, e o desenho com o dedo sai onde o dedo passa
+- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. Desde a 28.7.1, o visualizador e o editor funcionam no toque. A pinça amplia a foto, o ✕ e o «Editar» ficam à vista, e o desenho com o dedo sai onde o dedo passa
   - No iPhone, use o site: o arquivo baixado abre no app Arquivos só como pré-visualização, sem funcionar
 - **Safari no Mac** — não testado. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine
 - Sem internet, sem servidor, sem instalação
@@ -774,8 +781,8 @@ capture-engine.html
     ├── escapeHTML()      → Sanitização XSS de todos os inputs
     ├── IndexedDB         → Funções de acesso à base de dados local (idbGet, idbPut, idbDel, idbAll, idbIdx)
     ├── Session Manager   → Criar, carregar, apagar e navegar entre sessões
-    ├── Capture Engine    → Receber imagens e documentos (clipboard, drag-drop, picker)
-    ├── Reorder           → Drag-and-drop para reordenar itens
+    ├── Capture Engine    → Receber imagens e documentos (clipboard, arrastar e soltar, picker)
+    ├── Reorder           → Arrastar e soltar para reordenar itens
     ├── Annotation        → Canvas transparente para anotação sobre imagens
     ├── Text Viewer       → Visualizador de documentos de texto inline
     ├── PDF Engine        → Geração de PDFs em JavaScript puro (sem bibliotecas)
@@ -842,7 +849,7 @@ init()
 flowchart TD
     subgraph MOTOR["Motor Principal"]
         SM["Session Manager<br>cria, carrega, purge"]
-        CE["Capture Engine<br>clipboard, drag-drop, picker"]
+        CE["Capture Engine<br>clipboard, arrastar e soltar, picker"]
         AN["Annotation Engine<br>canvas, undo/redo, snapshots"]
         RO["Reorder<br>FLIP + Pointer Events"]
     end
