@@ -4,6 +4,28 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [29.2.0] - 2026-11-09
+
+Minor: o menu do clique direito numa anotação do editor, a bandeja das ferramentas abrindo ao arrastar para cima (e uma aberta servindo para as outras), e o texto com fundo por padrão, com a opção «Fundo transparente». Corrige o Ctrl+Z, que agora volta à foto como foi capturada, também depois de confirmar um recorte, os Cantos livres ou o Endireitar; o Endireitar passa a girar arrastando em qualquer lugar da foto; o ✕ da anotação volta a ser vermelho cheio; e a caixa de marcar ganha uma área de clique maior.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): desta vez, as cópias Admin e User foram exportadas pelo agente, a pedido de quem mantém o projeto, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 00h09. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor, o título e o rodapé aplicados, a imagem colada (um evento de colar com a imagem, como o do Ctrl+V) entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.2.0, e ela exporta uma nova cópia User, igual byte a byte à primeira. O clique no botão de exportar feito por uma pessoa não foi testado nesta versão.
+
+### Adicionado
+
+- **O menu do clique direito numa anotação (D-0143):** no editor, um clique com o botão direito numa anotação abre um menu escuro com «Trazer para frente», «Enviar para trás», «Duplicar» e «Apagar». Arrastar com o botão direito continua movendo a anotação. Testado no Chrome nos temas claro e escuro e em 375 × 812: cada item faz o que diz, e o arraste não abre o menu.
+- **A bandeja das ferramentas abre arrastando para cima (D-0142):** apertar uma ferramenta e arrastar para cima abre a bandeja dela, e soltar sobre uma opção a escolhe; arrastar para baixo fecha a bandeja. Com uma bandeja aberta, passar por outra ferramenta abre a bandeja dela, como numa barra de menus. Escolher uma opção da bandeja de outra ferramenta escolhe também a ferramenta. O dono testou também abrir ao passar o mouse, que ficou de fora: não existe no toque e abre sem querer. Testado no Chrome com o mouse, nos temas claro e escuro e em 375 × 812; o arrastar no toque, num telefone de verdade, não foi testado. O GIF do editor foi gravado de novo, com o T do texto com fundo.
+
+### Modificado
+
+- **O texto com fundo é o padrão (D-0141):** o texto novo do editor sai sobre um retângulo na cor escolhida, e a bandeja do Texto ganhou «Fundo transparente», ao lado de «Com fundo». A escolha fica no navegador. Textos já feitos não mudam. Testado no Chrome nos temas claro e escuro e em 360 × 740: o padrão sai com fundo, o transparente sai sem, a escolha volta depois de recarregar, e a bandeja cabe na tela.
+
+### Corrigido
+
+- **O Ctrl+Z volta à foto como foi capturada (D-0140):** depois de confirmar um recorte, os Cantos livres ou o Endireitar e reabrir o editor, o Ctrl+Z não voltava a foto. Agora ele tira primeiro as anotações e depois volta à foto inicial, sem recorte, giro, perspectiva ou endireitamento; o Ctrl+Y refaz, e o Confirmar nesse ponto guarda a foto inicial. Junto, um Ctrl+Z apertado enquanto o editor ainda abria era desfeito pela abertura; agora vale o último. Testado no Chrome com um recorte, com os Cantos livres e com uma anotação sobre um recorte; sair sem confirmar deixa a foto como estava.
+- **O Endireitar gira arrastando em qualquer lugar da foto:** antes, só a bolinha de cima girava, e era preciso acertá-la. Agora qualquer ponto da foto serve, e o cursor vira a mão de arrastar. Testado no Chrome: arrastando do lado direito da foto, a foto torta de 6° ficou reta.
+- **O ✕ da anotação volta a ser vermelho cheio:** o ✕ «Apagar» da anotação selecionada era um quadrado escuro que só ficava vermelho ao apontar. Agora é o ✕ de antes, vermelho cheio e menor (18 px), com uma área de clique 10 px maior de cada lado. No ícone «Trazer para frente», o quadrado do meio ficou cheio. Testado no Chrome nos temas claro e escuro e em 375 × 812: um clique 13 px fora do ✕ ainda apaga.
+- **A caixa de marcar tem uma área de clique maior:** a caixa continua do mesmo tamanho na tela, e um clique até 10 px fora dela também marca. Testado no Chrome nos temas claro e escuro e em 375 × 812: zero pixels diferentes na tela com itens marcados, e cliques 9 px fora da caixa marcaram a imagem e o documento.
+
 ## [29.1.0] - 2026-11-08
 
 Minor: o PDF sem o pdf.js (abrir no leitor do navegador, contar as páginas, juntar, diminuir o tamanho, o PDF em Imagens e as páginas dele no .pdf), colar uma imagem por cima da foto e as camadas no editor, o Recortar com Cantos livres e Endireitar, e os Cantos livres começando no papel achado. A caixa de marcar passa a aparecer só depois de «Marcar», e o menu dos marcados é o mesmo em qualquer item.

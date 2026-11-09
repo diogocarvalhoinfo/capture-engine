@@ -1034,6 +1034,22 @@
       background: var(--color-red-500)
     }
 
+    /* The ✕ of the selected annotation (D-0137): solid red always, a small icon, and a hit area 10 px larger on each side than the icon */
+    #ann-shape-del-btn {
+      width: 18px;
+      height: 18px;
+      background: var(--color-red-500);
+      font-size: var(--text-micro);
+      font-weight: bold;
+      line-height: 1
+    }
+
+    #ann-shape-del-btn::after {
+      content: "";
+      position: absolute;
+      inset: -10px
+    }
+
     /* The trash: the icon of the Removidos header, and of every Remover */
     .trash-icon {
       width: 16px;
@@ -2310,23 +2326,33 @@
     /* ═══ MARKING (D-0128, D-0135) ═══
        A box per item; on images in the top left corner. It shows only while something is marked: «Marcar», in the menu of the right click, starts it */
     .item-check {
-      display: none;
+      display: block;
       width: 16px;
       height: 16px;
       margin: 0;
-      flex-shrink: 0;
       cursor: pointer;
       accent-color: var(--color-primary)
     }
 
-    .t-item .item-check {
-      position: absolute;
-      top: calc(var(--spacing) * 1.5);
-      left: calc(var(--spacing) * 1.5);
-      z-index: var(--z-raised)
+    /* The box sits in a label 10 px larger on each side: the same box on screen, a hit area of 36 px (P7) */
+    .item-check-hit {
+      display: none;
+      position: relative;
+      z-index: var(--z-raised);
+      flex-shrink: 0;
+      padding: calc(var(--spacing) * 2.5);
+      margin: calc(var(--spacing) * -2.5);
+      cursor: pointer
     }
 
-    .has-marked .item-check {
+    .t-item .item-check-hit {
+      position: absolute;
+      top: calc(var(--spacing) * -1);
+      left: calc(var(--spacing) * -1);
+      margin: 0
+    }
+
+    .has-marked .item-check-hit {
       display: block
     }
 
@@ -2452,6 +2478,36 @@
       height: 1px;
       margin: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
       background: var(--color-border)
+    }
+
+    /* Inside the editor the menu is dark, as the trays (decision 12) */
+    .ctx-menu.ctx-dark {
+      background: var(--color-viewer-tray);
+      border-color: var(--color-viewer-control-border)
+    }
+
+    .ctx-dark .ctx-item {
+      color: var(--color-viewer-control-foreground)
+    }
+
+    .ctx-dark .ctx-icon,
+    .ctx-dark .ctx-key {
+      color: var(--color-viewer-muted-foreground);
+      stroke: var(--color-viewer-muted-foreground)
+    }
+
+    .ctx-dark .ctx-item:hover,
+    .ctx-dark .ctx-item:focus-visible {
+      background: var(--color-viewer-control-hover)
+    }
+
+    .ctx-dark .ctx-sep {
+      background: var(--color-viewer-control-border)
+    }
+
+    .ctx-dark .ctx-danger:hover,
+    .ctx-dark .ctx-danger:focus-visible {
+      color: var(--color-red-500)
     }
 
     /* ═══ RESPONSIVE ═══ */
@@ -3149,7 +3205,8 @@
     }
 
     .ann-btn[aria-controls] {
-      position: relative
+      position: relative;
+      touch-action: none
     }
 
     .ann-btn[aria-controls]::after {
@@ -3738,6 +3795,7 @@
               <button class="ann-btn ann-opt ann-opt-letter" id="ann-bold-btn" title="Negrito (Ctrl+B)">B</button>
               <button class="ann-btn ann-opt ann-opt-italic" id="ann-italic-btn" title="Itálico (Ctrl+I)">I</button>
               <button class="ann-btn ann-opt" id="ann-text-bg" title="Com fundo"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor" fill-opacity="0.35" stroke="none" /><path d="M8 9h8M12 9v7" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-text-clear" title="Fundo transparente"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-dasharray="3 2.5" /><path d="M8 9h8M12 9v7" /></svg></button>
             </div>
           </div>
           <div class="ann-tool-wrap">
@@ -3750,7 +3808,7 @@
                 <line x1="12" y1="2" x2="12" y2="22"/>
               </svg></button>
             <div class="ann-flyout" role="group" aria-label="Camadas">
-              <button class="ann-btn ann-opt" id="ann-layer-up" title="Trazer para frente (Ctrl+])"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" /><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2" /><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" /></svg></button>
+              <button class="ann-btn ann-opt" id="ann-layer-up" title="Trazer para frente (Ctrl+])"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" /><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2" /><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2" /></svg></button>
               <button class="ann-btn ann-opt" id="ann-layer-down" title="Enviar para trás (Ctrl+[)"><svg viewBox="0 0 24 24"><rect x="14" y="14" width="8" height="8" rx="2" /><rect x="2" y="2" width="8" height="8" rx="2" /><path d="M7 14v1a2 2 0 0 0 2 2h1" /><path d="M14 7h1a2 2 0 0 1 2 2v1" /></svg></button>
             </div>
           </div>
@@ -3892,7 +3950,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (29.1.0) -->
+  <!-- VISUAL BUILDER MODAL (29.2.0) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3910,7 +3968,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.1.0</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.2.0</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -4528,7 +4586,7 @@
       const marked = new Set();
       function markSync() { document.querySelectorAll('.t-item[data-id], .d-item[data-id]').forEach(el => { const on = marked.has(el.dataset.id); el.classList.toggle('marked', on); const c = el.querySelector('.item-check'); if (c) c.checked = on }); document.body.classList.toggle('has-marked', marked.size > 0) }
       function markClear() { if (!marked.size) return; marked.clear(); markSync() }
-      function markBox(id) { const c = document.createElement('input'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); c.addEventListener('click', e => e.stopPropagation()); c.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return c }
+      function markBox(id) { const c = document.createElement('input'), l = document.createElement('label'); c.type = 'checkbox'; c.className = 'item-check'; c.setAttribute('aria-label', 'Marcar'); l.className = 'item-check-hit'; l.append(c); l.addEventListener('click', e => e.stopPropagation()); l.addEventListener('pointerdown', e => e.stopPropagation()); c.addEventListener('change', () => { if (c.checked) marked.add(id); else marked.delete(id); markSync() }); return l }
       const markedImgs = () => images.filter(o => marked.has(o.id)), markedDocs = () => docs.filter(o => marked.has(o.id));
       /* The page count of a PDF, read from the file without pdf.js: the /Count of the page tree, else the /Type /Page objects. Empty when the list is compressed */
       /* The pages of the page tree, walked by the reader below. The /Count in plain sight is only the fallback (an encrypted object stream):
@@ -4637,10 +4695,10 @@
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
-      function ctxOpen(x, y, groups) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu'; m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      function ctxOpen(x, y, groups, dark) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu' + (dark ? ' ctx-dark' : ''); m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
       /* One item of the menu; with a sixth value (a function that gives the rows), it opens a submenu instead (B6.5) */
       function ctxItem([icon, label, key, fn, danger, sub]) { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key || sub) { const k = document.createElement('span'); k.className = 'ctx-key'; if (sub) k.innerHTML = '<svg class="ctx-icon ctx-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>'; else k.textContent = key; b.append(k) } if (sub) { b.sub = sub; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => ctxSubOpen(b, sub, true); b.onmouseenter = () => ctxSubOpen(b, sub, false) } else { b.onclick = () => { ctxClose(); fn() }; b.onmouseenter = ctxSubClose } return b }
       /* The submenu: the same form as the menu, beside the item; on the left when the right has no room, below the item when neither side has */
@@ -4803,7 +4861,7 @@
       const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
       function annSyncSwatches(c = annCurrentColor) { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c)) }
       let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
-      let annTextBg = (() => { try { return localStorage.getItem('text-bg') === '1' } catch (_) { return false } })(); // Texto «Com fundo», kept in this browser (D-0121)
+      let annTextBg = (() => { try { return localStorage.getItem('text-bg') !== '0' } catch (_) { return true } })(); // Texto «Com fundo» by default, or «Fundo transparente», kept in this browser (D-0121, P8)
       /* The letter over a filled text: dark or white, whichever has more contrast, by the same YIQ rule as the buttons of the app (D-0121) */
       const annOnColor = c => { const m = /^#?([0-9a-f]{6})$/i.exec(c || ''); if (!m) return '#ffffff'; const n = parseInt(m[1], 16), y = ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000; return y >= 128 ? '#1a1917' : '#ffffff' };
       function annTextLook(inp, c = annCurrentColor) { inp.style.background = annTextBg ? c : 'transparent'; inp.style.color = annTextBg ? annOnColor(c) : c }
@@ -4868,13 +4926,13 @@
          Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.
          Endireitar: a round handle turns the photo over a grid (the image turns by CSS in the preview); Confirmar turns it and cuts the empty corners.
          Both write on the photo on Confirmar, with the annotations (D-0138): a perspective does not keep a rectangle a rectangle */
-      let annCropMode = 'rect', annQuad = null, annLevel = 0, annModeDrag = null, annLevelFrom = 0, annLevelBase = 0;
+      let annUseFirst = false, annSaved = false, annOpenCrop = null, annCropMode = 'rect', annQuad = null, annLevel = 0, annModeDrag = null, annLevelFrom = 0, annLevelBase = 0;
       const ANN_CROP_BTNS = { rect: 'ann-crop-rect', quad: 'ann-crop-quad', level: 'ann-crop-level' };
       function annModeReset() { const cv = $('ann-canvas'), w = cv.width, h = cv.height; annQuad = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: h }, { x: 0, y: h }]; annLevel = 0; annModeDrag = null; $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '' }
-      function annSetCropMode(m) { annCropMode = m; annModeReset(); if (m === 'quad') { try { const q = paperFind($('img-modal-img')); if (q) annQuad = q } catch (e) { SysLogger.warn('paperFind: ' + e.message) } } Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === m)); const cv = $('ann-canvas'); if (m !== 'rect' && annCropBox) annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height }; annRenderAll() }
+      function annSetCropMode(m) { annCropMode = m; annModeReset(); $('ann-canvas').style.cursor = m === 'level' ? 'grab' : ''; if (m === 'quad') { try { const q = paperFind($('img-modal-img')); if (q) annQuad = q } catch (e) { SysLogger.warn('paperFind: ' + e.message) } } Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === m)); const cv = $('ann-canvas'); if (m !== 'rect' && annCropBox) annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height }; annRenderAll() }
       function annModePending() { if (annCropMode === 'level') return Math.abs(annLevel) >= 0.05; if (annCropMode !== 'quad' || !annQuad) return false; const cv = $('ann-canvas'), c = [[0, 0], [cv.width, 0], [cv.width, cv.height], [0, cv.height]]; return annQuad.some((p, i) => Math.hypot(p.x - c[i][0], p.y - c[i][1]) > 1) }
       const annLevelHandle = () => { const cv = $('ann-canvas'); return { x: cv.width / 2, y: 40 * annPx() } };
-      function annDownMode(e) { const p = annCanvasXY(e), r = ANN_HIT_SIZE * annPx(); annModeDrag = null; if (annCropMode === 'quad') { let best = -1, bd = r; annQuad.forEach((q, i) => { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = i } }); if (best >= 0) annModeDrag = best } else { const hd = annLevelHandle(); if (Math.hypot(p.x - hd.x, p.y - hd.y) < r) { const cv = $('ann-canvas'); annModeDrag = 'level'; annLevelBase = annLevel; annLevelFrom = Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) } } annDraggingCrop = annModeDrag !== null }
+      function annDownMode(e) { const p = annCanvasXY(e), r = ANN_HIT_SIZE * annPx(); annModeDrag = null; if (annCropMode === 'quad') { let best = -1, bd = r; annQuad.forEach((q, i) => { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = i } }); if (best >= 0) annModeDrag = best } else { const cv = $('ann-canvas'); annModeDrag = 'level'; annLevelBase = annLevel; annLevelFrom = Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) } annDraggingCrop = annModeDrag !== null } // Endireitar: a drag anywhere on the photo turns it, around the middle (P2)
       function annMoveMode(e) { const p = annCanvasXY(e), cv = $('ann-canvas'); if (annCropMode === 'quad' && typeof annModeDrag === 'number') { annQuad[annModeDrag] = { x: Math.max(0, Math.min(cv.width, p.x)), y: Math.max(0, Math.min(cv.height, p.y)) } } else if (annModeDrag === 'level') { let a = annLevelBase + (Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) - annLevelFrom) * 180 / Math.PI; a = ((a + 540) % 360) - 180; a = Math.max(-45, Math.min(45, a)); annLevel = Math.abs(a) < 0.3 ? 0 : a; $('img-modal-img').style.transform = annLevel ? `rotate(${annLevel}deg)` : ''; $('ann-wrap').style.overflow = 'hidden' } annRenderAll() }
       function annUpMode() { annDraggingCrop = false; annModeDrag = null; annRenderAll() }
       /* The overlay of the two modes: the quadrilateral with its four dots, or the grid with the round handle and, while dragging, the angle */
@@ -4896,7 +4954,7 @@
       function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
       function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
       /* Confirmar with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
-      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
+      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
          the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
@@ -4928,6 +4986,10 @@
           });
         }
         while (annUndoStack.length > ANN_HISTORY_MAX) annUndoStack.shift();
+        /* The bottom of the undo stack is the photo as it was captured: no annotation, turn, crop, perspective or straightening (P1).
+           Ctrl+Z reaches it after the annotations, also after Confirmar and reopening; Confirmar there keeps the captured photo */
+        annUseFirst = false; annSaved = false; annOpenCrop = o && o.cropBox ? JSON.parse(JSON.stringify(o.cropBox)) : null;
+        if (o && (o.origBlob || o.firstBlob) && (annHistory.length || annCurrentRotation || o.cropBox || o.firstBlob)) annUndoStack.unshift({ h: [], rot: 0, crop: null, pcrop: null, first: true });
         const btnSave = $('ann-save');
         if (btnSave) btnSave.classList.remove('alert-anim');
         const img = $('img-modal-img');
@@ -4944,6 +5006,7 @@
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
+        { const _o = images.find(x => x.id === modalItemId); if (_o && annActive && !annSaved) { if (annOpenCrop) _o.cropBox = annOpenCrop; else delete _o.cropBox } annUseFirst = false; annOpenCrop = null }
         clearAnnAwait(); annPasteForget(); annCropMode = 'rect'; Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === 'rect')); $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '';
         annActive = false; annDrawing = false; annSelectedIdx = -1;
         // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
@@ -5026,7 +5089,7 @@
       // An option of a tray shows whether it is on: the active look and aria-pressed
       function annPress(id, on) { const b = $(id); if (b) { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)) } }
       // B and I in the Texto tray show the style in use
-      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annPress('ann-text-bg', annTextBg); annSyncTextIcon() }
+      function annShowTextStyleBtns() { annPress('ann-bold-btn', annTextBold); annPress('ann-italic-btn', annTextItalic); annPress('ann-text-bg', annTextBg); annPress('ann-text-clear', !annTextBg); annSyncTextIcon() }
       // B or I, from its button or Ctrl+B and Ctrl+I: the style of the tool, and of the text field when it is open
       function annFlipStyle(bold) {
         if (bold) annTextBold = !annTextBold; else annTextItalic = !annTextItalic;
@@ -5320,7 +5383,8 @@
           h: JSON.parse(JSON.stringify(annHistory)),
           rot: annCurrentRotation,
           crop: annCropBox ? JSON.parse(JSON.stringify(annCropBox)) : null,
-          pcrop: (_po && _po.cropBox) ? JSON.parse(JSON.stringify(_po.cropBox)) : null
+          pcrop: (_po && _po.cropBox) ? JSON.parse(JSON.stringify(_po.cropBox)) : null,
+          first: annUseFirst
         };
       }
       // annCommitUndo: saves a snapshot BEFORE a mutation; clears redoStack (a new intent of the user)
@@ -5335,12 +5399,15 @@
       function annPushUndo() { annCommitUndo(annCloneState()); }
       // Loads the clean background (origBlob without baked annotations) into img-modal-img.
       // Uses annCurrentRotation and annCropBox to find the right view.
+      /* Each reload of the background has a number: one that ends after a newer one leaves the image alone (an undo pressed while the editor still opens) */
+      let annBgSeq = 0;
       async function annLoadCleanBg() {
+        const seq = ++annBgSeq;
         const o = images.find(x => x.id === modalItemId);
         if (!o) return;
         const img = $('img-modal-img'), _cv = $('ann-canvas');
         if (!img || !_cv) return;
-        const _src = o.origBlob || o.blob; // an image never saved in the editor: its blob is still the clean original (F-0105)
+        const _src = annUseFirst ? (o.firstBlob || o.origBlob || o.blob) : (o.origBlob || o.blob); // an image never saved in the editor: its blob is still the clean original (F-0105); annUseFirst: the photo as captured (P1)
         let bgBlob = _src;
         if (annCurrentRotation > 0) bgBlob = await getRotatedBlob(_src, annCurrentRotation);
         // If NOT in crop mode but the image has a persisted cropBox,
@@ -5354,8 +5421,10 @@
           _tc.getContext('2d').drawImage(_ti, -Math.round(o.cropBox.x), -Math.round(o.cropBox.y));
           bgBlob = await new Promise(r => _tc.toBlob(r, 'image/png'));
         }
+        if (seq !== annBgSeq) return;
         const u = URL.createObjectURL(bgBlob);
         await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+        if (seq !== annBgSeq) return;
         _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
       }
       // annDoUndo / annDoRedo: no special cases, symmetric
@@ -5369,7 +5438,9 @@
         annCropBox = _prev.crop ? JSON.parse(JSON.stringify(_prev.crop)) : null;
         annCurrentRotation = _prev.rot;
         // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
+        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_prev.first;
         if ('pcrop' in _prev) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_prev.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_prev.pcrop)); else delete _ro.cropBox; } }
+        const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
@@ -5382,7 +5453,7 @@
           });
         }
         // Reload the clean background if the visual state changed (rotation or crop)
-        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
+        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox) || _bgChanged) {
           await annLoadCleanBg();
         }
         setAnnDirty(true); annRenderAll();
@@ -5397,7 +5468,9 @@
         annCropBox = _next.crop ? JSON.parse(JSON.stringify(_next.crop)) : null;
         annCurrentRotation = _next.rot;
         // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
+        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_next.first;
         if ('pcrop' in _next) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_next.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_next.pcrop)); else delete _ro.cropBox; } }
+        const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
         annSelectedIdx = -1;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
@@ -5410,7 +5483,7 @@
           });
         }
         // Reload the clean background if the visual state changed (rotation or crop)
-        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox)) {
+        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox) || _bgChanged) {
           await annLoadCleanBg();
         }
         setAnnDirty(true); annRenderAll();
@@ -5605,6 +5678,7 @@
           const blob = await annRenderSaved(img, fW, fH, cX, cY);
           const o = images.find(x => x.id === modalItemId);
           if (o && blob) {
+            if (annUseFirst && (o.firstBlob || o.origBlob)) { o.origBlob = o.firstBlob || o.origBlob; delete o.firstBlob } // back at the photo as captured (P1)
             if (!o.origBlob) o.origBlob = o.blob;
             o.blob = blob;
             if (annCropBox) annSaveCrop(o, img, cX, cY, fW, fH);
@@ -5613,7 +5687,7 @@
             annKeepBlobs(o);
             o.rotation = annCurrentRotation;
             annForgetIfUntouched(o);
-            await idbPut('images', o);
+            await idbPut('images', o); annSaved = true;
             const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`);
             if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u }
             isDirty = true; triggerSave(); SysLogger.info('Anotação guardada');
@@ -5692,7 +5766,8 @@
         });
         // Bold / Italic buttons: same handling
         ['ann-bold-btn', 'ann-italic-btn'].forEach((id, i) => { const b = $(id); annKeepTyping(b); b.onclick = () => annFlipStyle(!i) });
-        { const b = $('ann-text-bg'); annKeepTyping(b); b.onclick = () => { annTextBg = !annTextBg; try { localStorage.setItem('text-bg', annTextBg ? '1' : '0') } catch (_) { } annShowTextStyleBtns(); if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp); inp.focus() } } }
+        /* «Com fundo» (the default) or «Fundo transparente»: one of the two is on, as Contorno and Preenchido (P8) */
+        [['ann-text-bg', true], ['ann-text-clear', false]].forEach(([id, on]) => { const b = $(id); annKeepTyping(b); b.onclick = () => { annTextBg = on; try { localStorage.setItem('text-bg', on ? '1' : '0') } catch (_) { } annShowTextStyleBtns(); if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp); inp.focus() } } });
         // With the Texto tool and its field open, the − and + resize the field live
         function annTextLiveResize() { if (annTool === 'text' && annTextPlace && annTyping()) { annTextPlace(); $('ann-text-input').focus() } }
         // One step of − (dir -1) or + (dir 1), from the bar or from a tray: the selected annotation first, else the tool
@@ -5741,8 +5816,15 @@
           b.addEventListener('pointerdown', e => { _held = false; if (e.button === 0) _hold = setTimeout(() => { _held = true; open() }, 1000) });
           ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(_hold)));
           b.addEventListener('contextmenu', e => e.preventDefault()); // a long touch opens the options, not the system menu
+          /* Pressing a tool and dragging up opens its tray, on mouse and touch, and letting go on an option picks it; dragging down closes the open tray.
+             While the button is held, passing over another tool opens its tray instead; with a tray open, the mouse over another tool does the same, as a menu bar (D-0142) */
+          const fly = b.parentElement.querySelector('.ann-flyout');
+          b.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && annFlyoutOpen.closest('#ann-row-tools') && !annTyping()) { annCloseFlyout(); annOpenFlyout(b) } });
+          b.addEventListener('pointerdown', e => { if (e.button !== 0) return; const y0 = e.clientY; let up = false; const mv = ev => { const dy = ev.clientY - y0; if (!up && dy <= -12) { up = true; _held = true; clearTimeout(_hold); if (annFlyoutOpen !== fly) { annCloseFlyout(); open() } } else if (!up && dy >= 12 && annFlyoutOpen === fly) { _held = true; clearTimeout(_hold); annCloseFlyout() } if (!up) return; const over = document.elementFromPoint(ev.clientX, ev.clientY), tb = over && over.closest('.ann-tool-wrap > .ann-btn[aria-controls]'); if (tb && (!annFlyoutOpen || annFlyoutOpen.parentElement !== tb.parentElement)) { annCloseFlyout(); annOpenFlyout(tb) } }; const end = ev => { document.removeEventListener('pointermove', mv); if (!up) return; const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button'); if (opt) opt.click() }; document.addEventListener('pointermove', mv); document.addEventListener('pointerup', end, { once: true }) });
           b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
         });
+        // An option of the tray of another tool picks that tool first (a tray opened by dragging up; D-0142)
+        document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('click', e => { if (e.target.closest('button') && f.dataset.tool && annTool !== f.dataset.tool) annSetTool(f.dataset.tool) }, true));
         // Inside the tray: the left and right arrows move between its buttons, Esc closes and goes back to the tool; a click elsewhere closes
         document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('keydown', e => {
           const all = [...f.querySelectorAll('button')], k = all.indexOf(document.activeElement);
@@ -5870,16 +5952,22 @@
           clearAnnAwait(); // a click on the image means: keep editing
           if (annSpaceHeld) return;
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
-          if (e.button === 2) annDownGrab(e);
+          if (e.button === 2) { annRightAt = { x: e.clientX, y: e.clientY }; annDownGrab(e) }
           else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
           else if (annTool === 'crop') { if (annCropMode === 'rect') annDownCrop(e); else annDownMode(e) }
           else if (annTool === 'select') annDownSelect(e);
           else if (annTool === 'text') annDownText(e);
           else annDownDraw(e);
         });
+        /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
+        let annRightAt = null;
+        function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
           e.preventDefault();
+          const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5; annRightAt = null;
+          if (!still || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+          ctxOpen(e.clientX, e.clientY, [[['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
         // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
         function annTextAt(p) {
@@ -6158,7 +6246,7 @@
         _annDelBtnEl.id = 'ann-shape-del-btn';
         _annDelBtnEl.className = 't-del';
         _annDelBtnEl.title = 'Apagar';
-        _annDelBtnEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'; // the ✕: an annotation does not go to «Removidos» (D-0137)
+        _annDelBtnEl.textContent = '✕'; // the ✕ of before: solid red, small, with a larger hit area (D-0137, P6)
         // Overrides only the values that differ from the thumbnail context:
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
@@ -6998,7 +7086,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.1.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.2.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
 function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
