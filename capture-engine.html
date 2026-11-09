@@ -2326,17 +2326,18 @@
       border-radius: var(--radius-circle)
     }
 
+    /* The HEX field is quieter than the eyedropper: normal weight, small text, a little shorter than the buttons (asked by the owner, 2026-11-09) */
     .ann-hex {
-      width: 88px;
-      height: 32px;
-      padding: 0 calc(var(--spacing) * 2);
+      width: 72px;
+      height: 28px;
+      padding: 0 calc(var(--spacing) * 1.5);
       border: 1px solid var(--color-viewer-control-border);
       border-radius: var(--radius-md);
       background: transparent;
       color: var(--color-viewer-control-foreground);
       font-family: var(--font-sans);
-      font-size: var(--text-sm);
-      font-weight: 600;
+      font-size: var(--text-xs);
+      font-weight: 400;
       font-variant-numeric: tabular-nums;
       text-transform: uppercase
     }
