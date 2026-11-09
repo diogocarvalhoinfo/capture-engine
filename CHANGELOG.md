@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **Desfazer até a foto inicial e confirmar devolve o arquivo capturado (F-0128):** antes, o Confirmar gravava um PNG novo, desenhado no canvas, e o ZIP perdia o arquivo original. Medido no Chrome, por `file://`, com uma foto JPEG anotada, reaberta e desfeita até o início: o ZIP levava `imagem-1.png`, de 12.957 bytes, e agora leva `imagem-1.jpg`, de 9.293 bytes, igual byte a byte ao original. Vale também para uma foto girada 90° e para um PNG anotado. O Refazer continua disponível ao reabrir. Uma foto confirmada assim antes desta versão volta ao original quando é reaberta e confirmada de novo no início.
+- **O README não diz mais que não há como voltar à foto depois de Cantos livres ou Endireitar (F-0129):** a frase contradizia a nota do Desfazer, duas linhas abaixo. Testado no Chrome: uma foto JPEG endireitada, confirmada e reaberta volta, com o Ctrl+Z, à largura original de 900 px, e o Confirmar devolve ao ZIP o arquivo capturado, igual byte a byte.
 
 ### Modificado
 
