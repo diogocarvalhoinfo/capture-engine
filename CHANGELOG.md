@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.3.0] - 2026-11-09
+
+Minor: o menu de um PDF passa a ser o mesmo em Documentos e em Imagens, com «Renomear» e «Diminuir o tamanho» também no cartão de Imagens; os níveis do «Diminuir o tamanho» se chamam «Redução leve», «Redução equilibrada» e «Redução máxima»; e a lixeira das miniaturas fica vermelha cheia.
 
 ### Modificado
 
