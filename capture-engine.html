@@ -3188,6 +3188,13 @@
       background: var(--color-viewer-line);
     }
 
+    /* The dots of the trays sit 11 px above the tools: the bar keeps from the photo about the same space as the title above it (asked by the owner, 2026-11-09).
+       The viewer bar keeps the same space, and both share one place in the footer (imgBarShow), so the photo does not change size or place when Editar opens the tools */
+    #img-modal-default-actions,
+    #img-modal-ann-actions {
+      padding-top: calc(var(--spacing) * 6)
+    }
+
     /* Unsaved changes: the rest of the toolbar dims and ignores clicks, so only Cancelar and Confirmar stay usable */
     #img-modal-ann-actions.ann-await .ann-btn:not(#ann-cancel, #ann-save),
     #img-modal-ann-actions.ann-await .ann-swatch,
@@ -3713,10 +3720,10 @@
       </div>
       <!-- FOOTER ACTIONS -->
       <div id="img-modal-footer"
-        style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;flex-shrink:0">
+        style="display:grid;place-items:end center;flex-shrink:0">
 
         <!-- DEFAULT ACTIONS -->
-        <div id="img-modal-default-actions" style="display:flex;gap:calc(var(--spacing) * 2);justify-content:center">
+        <div id="img-modal-default-actions" style="display:flex;grid-area:1 / 1;gap:calc(var(--spacing) * 2);justify-content:center">
           <button class="btn-send btn-viewer" id="img-modal-restore" style="display:none">
             <svg viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -3741,7 +3748,7 @@
 
         <!-- ANNOTATION ACTIONS (SQUARE CTAS) -->
         <div id="img-modal-ann-actions"
-          style="display:none;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
+          style="display:flex;grid-area:1 / 1;visibility:hidden;gap:calc(var(--spacing) * 1.5);justify-content:center;flex-wrap:wrap;align-items:center">
           <!-- TOOLS -->
           <div class="ann-row" id="ann-row-tools">
           <div class="ann-tool-wrap">
@@ -4413,8 +4420,7 @@
         $('img-modal-restore').style.display = trash ? 'flex' : 'none';
         $('img-modal-dl').style.display = 'flex';
         $('ann-toggle').style.display = trash ? 'none' : '';
-        $('img-modal-default-actions').style.display = 'flex';
-        if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
+        imgBarShow(false);
 
         $('img-modal-overlay').classList.add('open');
         document.documentElement.style.overflow = 'hidden';
@@ -4917,6 +4923,12 @@
         const bar = $('img-modal-ann-actions');
         if (bar) { bar.classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
       }
+      /* The viewer bar and the editor bar share one place in the footer (grid-area 1 / 1), and the hidden one keeps its size:
+         the footer is always as tall as the taller bar, so the photo does not move when Editar opens the tools (asked by the owner, 2026-11-09) */
+      function imgBarShow(edit) {
+        $('img-modal-default-actions').style.visibility = edit ? 'hidden' : '';
+        $('img-modal-ann-actions').style.visibility = edit ? '' : 'hidden';
+      }
       function clearAnnAwait() {
         clearTimeout(annAwaitTimer); annAwaitTimer = null;
         const bar = $('img-modal-ann-actions');
@@ -4998,8 +5010,7 @@
         cv.style.display = 'block';
         // Load the clean background (origBlob without baked annotations) for editing
         await annLoadCleanBg();
-        $('img-modal-default-actions').style.display = 'none';
-        $('img-modal-ann-actions').style.display = 'flex';
+        imgBarShow(true);
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
         annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
         annRenderAll();
@@ -5029,8 +5040,7 @@
         const ov = $('ann-text-overlay'); if (ov) ov.style.display = 'none';
         const cv = $('ann-canvas'); cv.style.display = 'none';
         const _annDbEl = $('ann-shape-del-btn'); if (_annDbEl) _annDbEl.style.display = 'none';
-        if ($('img-modal-ann-actions')) $('img-modal-ann-actions').style.display = 'none';
-        if ($('img-modal-default-actions')) $('img-modal-default-actions').style.display = 'flex';
+        imgBarShow(false);
         if ($('img-modal-overlay').classList.contains('open')) { var _navArr = (modalIsTrash ? removed : images).filter(function (x) { return x.kind !== 'pdf' }); ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.remove('active'));
         const o = images.find(x => x.id === modalItemId);
