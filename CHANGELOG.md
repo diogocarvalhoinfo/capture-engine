@@ -49,7 +49,7 @@ Auditoria de 2026-11-09 (Prompt 3), sobre a 29.3.1: nenhum achado `Crítico` nem
 
 ## [29.3.1] - 2026-11-09
 
-Patch: a foto do editor de imagem ganha embaixo um espaço como o de cima, e não salta mais ao clicar em «Editar». As duas correções vieram do trabalho da versão 30, que ficou para o futuro, e não dependem do pdf.js.
+Patch: a foto do editor de imagem ganha embaixo um espaço como o de cima, e não salta mais ao clicar em «Editar». As duas correções vieram de um trabalho local com o pdf.js, cancelado depois, e não dependem dele.
 
 Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, como na 29.3.0, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 03h23. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor e o título aplicados, a imagem colada entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.3.1, e ela exporta uma nova cópia User, igual byte a byte à primeira. O clique no botão de exportar feito por uma pessoa não foi testado nesta versão.
 
