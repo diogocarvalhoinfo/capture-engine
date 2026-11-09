@@ -5332,7 +5332,7 @@
             const kc = annPx(); // crop marks in screen px: 20 px long, 4 px thick, on any image
             // Visible on any image: the dashed border alternates dark and white dashes,
             // and the white marks get a dark outline (dark image: the white shows; white image: the outline shows)
-            const CROP_DARK = 'rgba(0, 0, 0, 0.6)';
+            const CROP_DARK = 'rgb(0 0 0 / 60%)';
             ctx.lineWidth = kc;
             ctx.setLineDash([4 * kc, 4 * kc]);
             ctx.strokeStyle = CROP_DARK;

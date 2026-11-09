@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **Desfazer até a foto inicial e confirmar devolve o arquivo capturado (F-0128):** antes, o Confirmar gravava um PNG novo, desenhado no canvas, e o ZIP perdia o arquivo original. Medido no Chrome, por `file://`, com uma foto JPEG anotada, reaberta e desfeita até o início: o ZIP levava `imagem-1.png`, de 12.957 bytes, e agora leva `imagem-1.jpg`, de 9.293 bytes, igual byte a byte ao original. Vale também para uma foto girada 90° e para um PNG anotado. O Refazer continua disponível ao reabrir. Uma foto confirmada assim antes desta versão volta ao original quando é reaberta e confirmada de novo no início.
 
+### Modificado
+
+- **A cor escura do recorte em `rgb()` com alfa em porcentagem (F-0137):** a borda tracejada e o contorno das marcas do Recortar usavam `rgba(0, 0, 0, 0.6)`, e agora usam `rgb(0 0 0 / 60%)`, o formato do resto do canvas. Capturas do Recortar antes e depois, nos temas claro e escuro, no Chrome: zero pixels diferentes.
+
 ## [29.3.1] - 2026-11-09
 
 Patch: a foto do editor de imagem ganha embaixo um espaço como o de cima, e não salta mais ao clicar em «Editar». As duas correções vieram do trabalho da versão 30, que ficou para o futuro, e não dependem do pdf.js.
