@@ -244,7 +244,7 @@ Motor de anotação:
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse num lugar sem anotação. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
-  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Depois de salvar e reabrir a imagem, o Desfazer reverte primeiro as anotações e, por fim, volta à foto como foi capturada: sem recorte, giro, perspectiva ou endireitamento. Confirmar nesse ponto guarda a foto inicial; o Refazer volta ao que estava.
+  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Depois de salvar e reabrir a imagem, o Desfazer reverte primeiro as anotações e, por fim, volta à foto como foi capturada: sem recorte, giro, perspectiva ou endireitamento. Confirmar nesse ponto devolve o arquivo capturado, igual byte a byte; o Refazer volta ao que estava.
 
 No telefone:
 - O desenho por toque funciona (Pointer Events).
@@ -320,7 +320,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 > **O ZIP leva a imagem que você vê, e não a que colou.**
 > Assim que uma imagem é **anotada, girada ou recortada**, o ZIP leva a versão editada. É um PNG novo, gerado a partir do canvas, com as edições incorporadas. É o comportamento pretendido: as anotações fazem parte do trabalho e devem acompanhar a exportação.
 >
-> A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador (o motor de anotação preserva-o para permitir reeditar e desfazer), mas **não há forma de o exportar** — e desaparece quando a sessão expira. Se precisar de conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de a editar**.
+> A consequência é que **o arquivo original deixa de estar no ZIP** para essas imagens. Ele continua guardado no navegador, porque o editor o preserva para reeditar e desfazer, e desaparece quando a sessão expira. Para o ZIP voltar a levá-lo, abra a imagem no editor, desfaça tudo até a foto inicial e confirme. Se precisar conservar o original intacto de uma imagem que vai anotar, **exporte o ZIP antes de editá-la**.
 
 **Acentos e espaços nos nomes:** são preservados tal como você os escreveu — `Diagnóstico Antônio` produz `Diagnóstico Antônio.png` numa imagem e `Diagnóstico Antônio.txt` num documento, sem diferença entre os dois. O ZIP declara a codificação UTF-8 no cabeçalho (bit 11). É isso que faz o Explorer do Windows, o WinRAR, o 7-Zip e o macOS lerem os acentos. Caracteres que o Windows não aceita em nomes de arquivo (`\ / : * ? " < > |`) ainda são removidos das legendas de imagem, porque criariam um arquivo impossível de extrair.
 

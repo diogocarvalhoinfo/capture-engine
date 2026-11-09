@@ -5665,10 +5665,11 @@
           else o.cropBox = { x: cX, y: cY, w: fW, h: fH };
           annCropBox = null;
         }
-        // An image left with no annotation, rotation or crop goes back to its original blob, without editor data
+        // An image left with no annotation, rotation or crop goes back to its original blob (F-0128); without a Refazer to keep, it also loses the editor data
         function annForgetIfUntouched(o) {
-          if (annHistory.length !== 0 || annRedoStack.length !== 0 || annCurrentRotation !== 0 || o.cropBox) return;
+          if (annHistory.length !== 0 || annCurrentRotation !== 0 || o.cropBox) return;
           o.blob = o.origBlob;
+          if (annRedoStack.length !== 0) return;
           delete o.origBlob;
           delete o.annHistory;
           delete o.annRedoStack;
