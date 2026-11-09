@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.4.1] - 2026-11-09
+
+Patch: os botões dos editores chamam-se «Descartar alterações» e «Aplicar alterações»; e os documentos ficam coerentes com o app.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 10h09. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate, e a cópia User tem os nomes novos dos botões. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
 
 ### Modificado
 
