@@ -976,14 +976,22 @@
       pointer-events: none
     }
 
+    /* The PDF icon (D-0151): the page filled with the white of the annotation colours, and «PDF» small in the middle of it */
     .t-pdf-icon {
       width: 40px;
       height: 40px;
-      fill: none;
+      fill: var(--color-annotation-white);
       stroke: var(--color-file-pdf);
       stroke-width: 1.5;
       stroke-linecap: round;
       stroke-linejoin: round
+    }
+
+    .t-pdf-icon text {
+      fill: var(--color-file-pdf);
+      stroke: none;
+      font-family: var(--font-sans);
+      font-weight: 700
     }
 
     .t-pdf-info {
@@ -2295,6 +2303,81 @@
       border-color: var(--color-white);
       transform: scale(1.15);
       box-shadow: var(--shadow-swatch-active)
+    }
+
+    /* Another colour (D-0152): the rainbow circle fills the whole circle (border-box, so the gradient does not repeat under the border).
+       With a colour chosen, the circle takes it, in an inline background, like the other swatches */
+    .ann-swatch.ann-rainbow {
+      background-image: conic-gradient(var(--color-red-500), var(--color-orange-500), var(--color-yellow-500), var(--color-green-500), var(--color-blue-500), var(--color-purple-500), var(--color-red-500));
+      background-origin: border-box;
+      border-color: transparent
+    }
+
+    .ann-swatch.ann-rainbow.active {
+      border-color: var(--color-white)
+    }
+
+    .ann-hex-preview {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      border: 2px solid var(--color-white);
+      border-radius: var(--radius-circle)
+    }
+
+    .ann-hex {
+      width: 88px;
+      height: 32px;
+      padding: 0 calc(var(--spacing) * 2);
+      border: 1px solid var(--color-viewer-control-border);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-viewer-control-foreground);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      text-transform: uppercase
+    }
+
+    .ann-hex[aria-invalid="true"] {
+      border-color: var(--color-red-500)
+    }
+
+    /* The eyedropper: a crosshair on the photo, and a circle beside the pointer with the colour under it and its code */
+    #ann-viewport.ann-eye-on #ann-canvas {
+      cursor: crosshair !important
+    }
+
+    #ann-loupe {
+      position: fixed;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(var(--spacing) * 1);
+      pointer-events: none;
+      z-index: var(--z-viewer-delete)
+    }
+
+    #ann-loupe.show {
+      display: flex
+    }
+
+    #ann-loupe-dot {
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--color-white);
+      border-radius: var(--radius-circle);
+      box-shadow: var(--shadow-dragging)
+    }
+
+    #ann-loupe-hex {
+      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
+      border-radius: var(--radius-sm);
+      background: var(--color-viewer-tray);
+      color: var(--color-viewer-control-foreground);
+      font-size: var(--text-micro);
+      font-weight: 600
     }
 
     #sb-mobile-close svg {
@@ -3688,6 +3771,7 @@
 
   <!-- ═══ MODAL: IMAGE VIEWER ═══ -->
   <div class="modal-overlay" id="img-modal-overlay">
+    <div id="ann-loupe" aria-hidden="true"><span id="ann-loupe-dot"></span><span id="ann-loupe-hex"></span></div>
     <div class="modal-box">
       <div class="modal-hdr">
         <div class="modal-title-row"><span class="modal-title" id="img-modal-title">Visualizar imagem</span><span class="modal-info" id="img-modal-dims"></span></div>
@@ -3862,6 +3946,16 @@
               style="background:var(--color-annotation-black);border-color:var(--color-annotation-swatch-border)" title="Preto"></button>
             <button class="ann-swatch" data-color="#f0f0f0"
               style="background:var(--color-annotation-white);border-color:var(--color-annotation-swatch-border)" title="Branco"></button>
+            <!-- ANOTHER COLOUR (D-0152): the rainbow circle opens a tray with the eyedropper, already on, and the colour in HEX -->
+            <div class="ann-tool-wrap ann-color-wrap">
+              <button class="ann-swatch ann-rainbow" id="ann-color-custom" title="Outra cor" aria-controls="ann-fly-color" aria-expanded="false"></button>
+              <div class="ann-flyout" id="ann-fly-color" role="group" aria-label="Outra cor">
+                <button class="ann-btn ann-opt" id="ann-eyedrop" aria-pressed="false" title="Conta-gotas"><svg viewBox="0 0 24 24"><path d="m2 22 1-1h3l9-9" /><path d="M3 21v-3l9-9" /><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" /></svg></button>
+                <span class="ann-sep" aria-hidden="true"></span>
+                <span class="ann-hex-preview" id="ann-hex-preview" aria-hidden="true"></span>
+                <input class="ann-hex" id="ann-hex" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Cor em HEX" placeholder="#RRGGBB">
+              </div>
+            </div>
             <!-- THICKNESS MINUS/PLUS DIRECTLY AFTER COLORS -->
             <button class="ann-btn" id="ann-thickness-down" title="Diminuir"
               style="width:28px;height:28px;margin-left:calc(var(--spacing) * 1)"><svg viewBox="0 0 24 24">
@@ -4370,8 +4464,8 @@
       /* ═══ RENDER THUMB ═══ */
       function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); if (o.kind === 'pdf') { URL.revokeObjectURL(url); pdfFace(el, o) } else { const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url) } const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
-      /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label and «PDF · N páginas» */
-      function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
+      /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label, with «PDF» on the page (D-0151), and «PDF · N páginas» */
+      function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="12" y="16.3" text-anchor="middle" font-size="4.6">PDF</text></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
       /* ═══ RENDER DOC ═══ */
       function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot >= 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
 
@@ -4879,7 +4973,13 @@
       /* The highlighter has its own colour, yellow at first; the other tools share theirs (D-0104) */
       const annColorBy = { hl: '#eab308', line: '#ef4444' };
       const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
-      function annSyncSwatches(c = annCurrentColor) { document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === c)) }
+      /* A colour that is not one of the 8 (from the eyedropper, the HEX field or a selected annotation) goes to the circle of another colour (D-0152) */
+      const ANN_HEX = /^#[0-9a-f]{6}$/i;
+      function annSyncSwatches(c = annCurrentColor) {
+        const cu = $('ann-color-custom'), lc = String(c || '').toLowerCase();
+        if (cu && ANN_HEX.test(lc) && ![...document.querySelectorAll('.ann-swatch:not(#ann-color-custom)')].some(s => s.dataset.color.toLowerCase() === lc)) { cu.dataset.color = lc; cu.style.background = lc }
+        document.querySelectorAll('.ann-swatch').forEach(s => s.classList.toggle('active', (s.dataset.color || '').toLowerCase() === lc))
+      }
       let annTempSelectFrom = null; // the tool a right or middle click on an annotation left for Selecionar (D-0103)
       let annTextBg = (() => { try { return localStorage.getItem('text-bg') !== '0' } catch (_) { return true } })(); // Texto «Com fundo» by default, or «Fundo transparente», kept in this browser (D-0121, P8)
       /* The letter over a filled text: dark or white, whichever has more contrast, by the same YIQ rule as the buttons of the app (D-0121) */
@@ -5128,6 +5228,12 @@
       }
       // Tool options (D-0102): a tray stays open while its options are clicked, and closes with a click or the focus elsewhere, Esc or another tool
       let annFlyoutOpen = null; // the open .ann-flyout, with dataset.tool
+      // The eyedropper of another colour (D-0152): on while its tray is open, until a colour is picked
+      let annEyeOn = false, annEyeCtx = null, annEyeSkipClick = false;
+      function annEye(on) {
+        annEyeOn = !!on; annPress('ann-eyedrop', annEyeOn); $('ann-viewport').classList.toggle('ann-eye-on', annEyeOn);
+        if (!annEyeOn) $('ann-loupe').classList.remove('show');
+      }
       function annOpenFlyout(btn) {
         const f = btn.parentElement.querySelector('.ann-flyout'); if (!f) return;
         f.dataset.tool = btn.dataset.tool; f.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annSyncSizeVal(); annPlaceFlyout(f);
@@ -5141,7 +5247,7 @@
       window.addEventListener('resize', () => { if (annFlyoutOpen) annPlaceFlyout(annFlyoutOpen) });
       function annCloseFlyout(focusTool) {
         const f = annFlyoutOpen; if (!f) return;
-        f.classList.remove('open'); annFlyoutOpen = null;
+        f.classList.remove('open'); annFlyoutOpen = null; if (f.id === 'ann-fly-color') annEye(false);
         const b = f.parentElement.querySelector('[aria-controls]'); if (b) { b.setAttribute('aria-expanded', 'false'); if (focusTool) b.focus() }
       }
       // The two options of a tool, kept in this browser: [first, second, key]. annFill[t] is true with the second, and the tool icon is full
@@ -5638,7 +5744,7 @@
         // Every tray ends with − and + and the current size (D-0102). Written here, before initTips reads the titles and after BOOT_HTML,
         // so the Quine copies the HTML without them
         document.querySelectorAll('.ann-flyout').forEach(f => {
-          const b = f.parentElement.querySelector('[data-tool]'); f.id = 'ann-fly-' + b.dataset.tool; b.setAttribute('aria-controls', f.id); b.setAttribute('aria-expanded', 'false'); // F-0090
+          const b = f.parentElement.querySelector('[data-tool]'); if (!b) return; /* another colour has no tool (D-0152) */ f.id = 'ann-fly-' + b.dataset.tool; b.setAttribute('aria-controls', f.id); b.setAttribute('aria-expanded', 'false'); // F-0090
           if (b.dataset.tool === 'select' || b.dataset.tool === 'crop') return; // the trays of Selecionar (layers, B7.2) and Recortar (modes, B8) have no size
           f.insertAdjacentHTML('beforeend', (f.children.length ? '<span class="ann-sep" aria-hidden="true"></span>' : '') + '<button class="ann-btn ann-size-btn" data-step="-1" title="Diminuir"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /></svg></button><button class="ann-btn ann-size-btn" data-step="1" title="Aumentar"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button><span class="ann-size-val" role="img"></span>');
         });
@@ -5776,20 +5882,63 @@
         $('ann-undo').onclick = () => annDoUndo().catch(()=>{});
         $('ann-redo').onclick = () => annDoRedo().catch(()=>{});
         // Colour swatches: mousedown.preventDefault stops the blur of the text input
+        // A colour, from a swatch, the eyedropper or the HEX field: the selected annotation, else the tool. keepFocus: the HEX field keeps the focus
+        function annApplyColor(_color, keepFocus) {
+          const _s = annHistory[annSelectedIdx];
+          if (_s) {
+            annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
+            _s.color = _color;
+            const _k = annColorKey(_s.hl ? 'highlight' : _s.type); if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
+            setAnnDirty(true); annRenderAll();
+          } else annCurrentColor = _color; // no selection: the colour of the tool
+          annSyncSwatches(_color);
+          if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp, _color); if (!keepFocus) inp.focus() }
+        }
         document.querySelectorAll('.ann-swatch').forEach(b => {
           annKeepTyping(b);
-          b.onclick = () => {
-            const _color = b.dataset.color, _s = annHistory[annSelectedIdx];
-            if (_s) {
-              annPushUndo(); // M10: snapshot BEFORE changing the colour of the selected annotation
-              _s.color = _color;
-              const _k = annColorKey(_s.hl ? 'highlight' : _s.type); if (_k === annColorKey(annTool)) annCurrentColor = _color; else annColorBy[_k] = _color; // the colour goes to the tool of the annotation (F-0086)
-              setAnnDirty(true); annRenderAll();
-            } else annCurrentColor = _color; // no selection: the colour of the tool
-            annSyncSwatches(_color);
-            if (annTyping()) { const inp = $('ann-text-input'); annTextLook(inp, _color); inp.focus() }
-          };
+          b.onclick = () => { if (b.id === 'ann-color-custom') annColorTray(b); else annApplyColor(b.dataset.color) };
         });
+        /* Another colour (D-0152). A click on the circle takes its colour, when it has one, and opens the tray with the eyedropper on;
+           a second click closes it. The tray shows the colour in HEX, and a valid code typed there is the colour at once */
+        function annColorTray(b) {
+          if (annFlyoutOpen && annFlyoutOpen.id === 'ann-fly-color') { annCloseFlyout(); return }
+          if (b.dataset.color) annApplyColor(b.dataset.color);
+          annCloseFlyout();
+          const f = $('ann-fly-color'); f.dataset.tool = 'color'; f.classList.add('open'); b.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annPlaceFlyout(f);
+          const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show');
+          annHexShow(b.dataset.color || annCurrentColor); annEye(true);
+        }
+        function annHexShow(c) { const h = $('ann-hex'); h.value = String(c).toUpperCase(); h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = c }
+        $('ann-hex').addEventListener('input', e => {
+          let v = e.target.value.trim(); if (v && v[0] !== '#') v = '#' + v;
+          const ok = ANN_HEX.test(v); e.target.setAttribute('aria-invalid', String(!ok && v.length >= 7));
+          if (ok) { v = v.toLowerCase(); $('ann-hex-preview').style.background = v; annApplyColor(v, true) }
+        });
+        $('ann-hex').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); annCloseFlyout(true) } });
+        $('ann-eyedrop').onclick = () => annEye(!annEyeOn);
+        // The eyedropper: the colour of the pixel under the pointer, the photo and the annotations together, read from the canvas
+        function annEyeSample(e) {
+          const img = $('img-modal-img'), cv = $('ann-canvas'), p = annCanvasXY(e), x = Math.floor(p.x), y = Math.floor(p.y);
+          if (x < 0 || y < 0 || x >= cv.width || y >= cv.height) return null;
+          if (!annEyeCtx) annEyeCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+          const c = annEyeCtx; c.canvas.width = 1; c.canvas.height = 1; c.clearRect(0, 0, 1, 1);
+          c.drawImage(img, x, y, 1, 1, 0, 0, 1, 1); c.drawImage(cv, x, y, 1, 1, 0, 0, 1, 1);
+          const d = c.getImageData(0, 0, 1, 1).data; return '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join('');
+        }
+        window.addEventListener('pointermove', e => {
+          const l = $('ann-loupe'); if (!annEyeOn || e.target.id !== 'ann-canvas') { l.classList.remove('show'); return }
+          const c = annEyeSample(e); if (!c) { l.classList.remove('show'); return }
+          const z = uiZoom(); l.style.left = (e.clientX / z + 18) + 'px'; l.style.top = (e.clientY / z - 96) + 'px';
+          $('ann-loupe-dot').style.background = c; $('ann-loupe-hex').textContent = c.toUpperCase(); l.classList.add('show');
+        });
+        // A press on the photo with the eyedropper on picks the colour, and draws nothing: it runs before the canvas and the tray closers
+        window.addEventListener('pointerdown', e => {
+          if (!annEyeOn || e.target.id !== 'ann-canvas' || e.button !== 0) return;
+          e.preventDefault(); e.stopImmediatePropagation(); annEyeSkipClick = true;
+          const c = annEyeSample(e); if (c) annApplyColor(c);
+          annCloseFlyout();
+        }, true);
+        window.addEventListener('click', e => { if (annEyeSkipClick && e.target.id === 'ann-canvas') { e.stopImmediatePropagation(); e.preventDefault() } annEyeSkipClick = false }, true);
         // Bold / Italic buttons: same handling
         ['ann-bold-btn', 'ann-italic-btn'].forEach((id, i) => { const b = $(id); annKeepTyping(b); b.onclick = () => annFlipStyle(!i) });
         /* «Com fundo» (the default) or «Fundo transparente»: one of the two is on, as Contorno and Preenchido (P8) */
@@ -5853,6 +6002,7 @@
         document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('click', e => { if (e.target.closest('button') && f.dataset.tool && annTool !== f.dataset.tool) annSetTool(f.dataset.tool) }, true));
         // Inside the tray: the left and right arrows move between its buttons, Esc closes and goes back to the tool; a click elsewhere closes
         document.querySelectorAll('.ann-flyout').forEach(f => f.addEventListener('keydown', e => {
+          if (e.target.tagName === 'INPUT') return; // the HEX field keeps its caret (D-0152)
           const all = [...f.querySelectorAll('button')], k = all.indexOf(document.activeElement);
           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = all[(k + (e.key === 'ArrowRight' ? 1 : -1) + all.length) % all.length]; if (n) n.focus() }
         }));
