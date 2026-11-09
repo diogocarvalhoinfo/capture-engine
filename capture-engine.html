@@ -2318,6 +2318,39 @@
       border-color: var(--color-white)
     }
 
+    /* The circle opens options, so it has the dot of the tools (D-0102), on the row of their dots: the circle is 20 px and the tools 36 px.
+       It sits on the wrap, which does not grow with the active colour. Open, it is larger and in the primary color (asked by the owner, 2026-11-09) */
+    .ann-color-wrap::after {
+      content: "";
+      position: absolute;
+      top: -19px;
+      left: 50%;
+      width: 3px;
+      height: 3px;
+      border-radius: var(--radius-circle);
+      background: var(--color-viewer-mark);
+      transform: translateX(-50%);
+      pointer-events: none
+    }
+
+    .ann-color-wrap:has(> [aria-expanded="true"])::after {
+      top: -21px;
+      width: 4px;
+      height: 4px;
+      background: var(--color-primary)
+    }
+
+    /* On a phone the colours are a row of their own, 10 px below the tools: the dot sits in that gap */
+    @media (width <= 30rem) {
+      .ann-color-wrap::after {
+        top: -6px
+      }
+
+      .ann-color-wrap:has(> [aria-expanded="true"])::after {
+        top: -7px
+      }
+    }
+
     .ann-hex-preview {
       width: 20px;
       height: 20px;
