@@ -223,6 +223,7 @@ Motor de anotação:
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
   - **Outra cor:** o círculo com as cores do arco-íris, depois das 8 cores, abre uma bandeja com o conta-gotas, já ligado, e o código da cor em HEX.
+    - Como nas ferramentas, apertar o círculo e arrastar para cima também abre a bandeja, e arrastar para baixo a fecha.
     - Com o conta-gotas, uma lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor. O clique não desenha.
     - Um código digitado no campo, como `#3366FF`, vale na hora. O Enter fecha a bandeja.
     - A cor escolhida fica no lugar do arco-íris, como as outras 8. Um novo clique no círculo volta a ela e abre a bandeja de novo.
