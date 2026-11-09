@@ -1565,6 +1565,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0143 | **O menu do clique direito numa anotação do editor** | Um clique com o botão direito numa anotação, sem mover mais de 4 px entre apertar e soltar (`annRightAt`), abre o menu: «Trazer para frente» (Ctrl+]), «Enviar para trás» (Ctrl+[), «Duplicar» (uma cópia 16 px de tela para baixo e para a direita, marcada, com Desfazer; `annDupSelected`) e, depois de uma linha, «Apagar» (Del), com o ✕. Arrastar com o botão direito continua movendo a anotação (D-0103), sem abrir o menu. Dentro do editor, o menu é escuro (`.ctx-dark`, com os tokens `--color-viewer-*`), como pede a decisão 12. Origem: pedido do dono, 2026-11-08. |
 | D-0144 | **A lixeira das miniaturas é vermelha cheia** | O botão de remover das miniaturas (`.t-del`) é um quadrado vermelho cheio (`--color-red-500`) com a lixeira branca, e não mais o quadrado escuro que ficava vermelho ao apontar. Continua aparecendo com o mouse em cima ou com o foco. Origem: pedido do dono, 2026-11-09. |
 | D-0145 | **O menu de um PDF é o mesmo em Documentos e em Imagens** | O cartão de um PDF em Imagens tem o menu de um PDF em Documentos: Abrir, Duplicar, Renomear (F2), Marcar · Diminuir o tamanho › · Download, Remover (Del). A cópia menor do «Diminuir o tamanho» fica na mesma coluna do original, logo depois dele. **Motivo:** o arquivo é o mesmo nas duas colunas, e o menu não pode mudar com a coluna. Origem: pedido do dono, 2026-11-09. |
+| D-0150 | **Os commits anteriores a 2026-06-12 ficam como estão, fora do Conventional Commits** | São 60 de 449 commits, todos até 2026-06-11, e são histórico publicado: reescrevê-los pediria um force-push. Os commits desde 2026-06-12 seguem o padrão. Os números D-0146 a D-0149 ficaram para o branch local da versão 30, que está parada. Origem: F-0138, auditoria de 2026-11-09, com o sim do dono no mesmo dia. |
 
 ### Pendentes
 
@@ -1574,6 +1575,9 @@ O que ficou para depois, com o ID e a origem.
 |---|---|---|
 | F-0074 | Frases com mais de 30 palavras no `AGENTS.md`: cerca de 40 na contagem automática de 2026-11-06, das quais cerca de 30 vieram na 28.7.0 (as decisões D-0093 a D-0108, a §7 e a §11, Parte B). | Auditorias de 2026-11-04 e de 2026-11-06 |
 | F-0120 | Curvas e fontes escritas à mão no CSS: `cubic-bezier` em seis regras (uma igual a `--ease-in-out`), `sans-serif` e `serif` genéricos nas opções do editor e no campo de texto da anotação, e `Consolas` no modal de texto. Trocar por tokens (`--ease-*`, `--font-*`) pede captura antes e depois, sem nenhum pixel diferente. | Auditoria de 2026-11-08 |
+| F-0132 | Frases com mais de 30 palavras no `AGENTS.md` (9), no `design-tokens.md` (1) e no `CHANGELOG.md` (280, quase todas em entradas antigas), contadas por script em 2026-11-09. As do `AGENTS.md` somam-se às do F-0074. As do README foram divididas na 29.3.2. | Auditoria de 2026-11-09 |
+| F-0135 | A porcentagem sem espaço antes do símbolo no `design-tokens.md`, linhas 392 e 477. No README, já corrigida na 29.3.2. | Auditoria de 2026-11-09 |
+| F-0140 | Depois de reabrir uma foto anotada, sem recorte nem giro, o último Ctrl+Z e o primeiro Ctrl+Y não mudam nada na tela, porque o fundo da pilha (`first: true`) é igual à foto sem anotações. Medido no Chrome: com 2 setas, os Ctrl+Z dão 1.286 e 0 pixels desenhados, e os Ctrl+Y dão 0, 1.286 e 2.538. Corrigir mexe na pilha da D-0140 e pede um plano próprio. | Plano de correção da auditoria de 2026-11-09 |
 
 ### IDs
 
