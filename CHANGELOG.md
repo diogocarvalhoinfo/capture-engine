@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+Auditoria de 2026-11-09 (Prompt 3), sobre a 29.3.1: nenhum achado `Crítico` nem `Alto`; 2 `Médio` (F-0128 e F-0129) e 10 `Baixo` (F-0130 a F-0139). Cobriu os fluxos no Chrome 156, por `file://`, em telas de 1536 × 777, 1280 × 633 e 1919 × 1000. Não cobriu o Edge, o Firefox, o Safari nem um telefone real; nem o purge de 48 horas, a quota cheia, duas abas na mesma sessão ou o leitor de tela. O F-0138 virou a decisão D-0150, e o F-0132, o F-0135 e o F-0140 (achado novo) estão em «Pendentes», no `AGENTS.md`.
+
+- **Rebaixado, não reproduzido (F-0136):** as duas formas de Portugal do changelog, «ficheiro» e «secção», estão dentro de citações literais de textos antigos, que ficam como estão. Conferido em 2026-11-09, lendo as duas linhas.
+
 ### Corrigido
 
 - **Desfazer até a foto inicial e confirmar devolve o arquivo capturado (F-0128):** antes, o Confirmar gravava um PNG novo, desenhado no canvas, e o ZIP perdia o arquivo original. Medido no Chrome, por `file://`, com uma foto JPEG anotada, reaberta e desfeita até o início: o ZIP levava `imagem-1.png`, de 12.957 bytes, e agora leva `imagem-1.jpg`, de 9.293 bytes, igual byte a byte ao original. Vale também para uma foto girada 90° e para um PNG anotado. O Refazer continua disponível ao reabrir. Uma foto confirmada assim antes desta versão volta ao original quando é reaberta e confirmada de novo no início.
