@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **A lixeira das miniaturas é vermelha cheia (D-0144):** antes, era um quadrado escuro que só ficava vermelho ao apontar. Agora é vermelha cheia sempre que aparece, com o mouse em cima ou com o foco.
+- **Os níveis do «Diminuir o tamanho» têm nomes novos:** «Redução leve», «Redução equilibrada» e «Redução máxima», no lugar de Leve, Equilibrado e Máximo, para dizer que é o arquivo que diminui.
 - **O menu de um PDF é o mesmo nas duas colunas (D-0145):** o cartão de um PDF em Imagens ganhou «Renomear» e «Diminuir o tamanho», e o menu ficou igual ao de um PDF em Documentos. A cópia menor fica na mesma coluna do original. Testado no Chrome nos temas claro e escuro: os dois menus têm os mesmos itens na mesma ordem, e o «Diminuir o tamanho» de um PDF em Imagens pôs a cópia em Imagens, logo depois dele.
 
 ## [29.2.0] - 2026-11-09
