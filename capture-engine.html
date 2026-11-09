@@ -37,6 +37,7 @@
       --focus-width: 3px;
       --focus-offset: 2px;
       --opacity-dimmed: 0.3;
+      --filter-dimmed: brightness(35%);
       --font-sans: 'Segoe UI', arial, sans-serif;
       --radius-sm: 0.25rem;
       --radius-md: 0.375rem;
@@ -3350,6 +3351,19 @@
       transition: none !important
     }
 
+    /* The unsaved-changes alert also darkens the photo with its annotations, and dims the title, the zoom and the ✕ of an annotation,
+       so Cancelar and Confirmar stand out (asked by the owner, 2026-11-09). At once, like the toolbar, and without touching the transition
+       of #ann-wrap, which the zoom uses. The photo darkens by a filter and not by opacity: an opacity would show the app behind it */
+    #img-modal-overlay.ann-await #ann-wrap,
+    #img-modal-overlay.ann-await #ann-shape-del-btn {
+      filter: var(--filter-dimmed)
+    }
+
+    #img-modal-overlay.ann-await .modal-hdr,
+    #img-modal-overlay.ann-await #zoom-ui {
+      opacity: var(--opacity-dimmed)
+    }
+
     @media (width <= 30rem) {
       #top-bar {
         padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 1.5)
@@ -4919,9 +4933,9 @@
         const btnClose = $('ann-cancel'), btnSave = $('ann-save');
         if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
         if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
-        // Dim the rest of the toolbar for ANN_AWAIT_MS; a new alert restarts the time
+        // Dim the rest of the toolbar, the photo, the title and the zoom for ANN_AWAIT_MS; a new alert restarts the time
         const bar = $('img-modal-ann-actions');
-        if (bar) { bar.classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
+        if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
       }
       /* The viewer bar and the editor bar share one place in the footer (grid-area 1 / 1), and the hidden one keeps its size:
          the footer is always as tall as the taller bar, so the photo does not move when Editar opens the tools (asked by the owner, 2026-11-09) */
@@ -4933,6 +4947,7 @@
         clearTimeout(annAwaitTimer); annAwaitTimer = null;
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
+        $('img-modal-overlay').classList.remove('ann-await');
       }
       /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
          Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.

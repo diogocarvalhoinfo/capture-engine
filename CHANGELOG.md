@@ -13,6 +13,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
+- **O aviso de anotações por salvar escurece também a foto:** ao tentar fechar o editor sem salvar, além dos outros botões da barra, a foto com as anotações escurece, e o título, o zoom e o ✕ da anotação apagam, durante os mesmos 5 s. Assim o «Cancelar» e o «Confirmar» ficam em destaque. A foto escurece por um filtro (`--filter-dimmed`, token novo), porque uma opacidade deixaria ver o app por trás. Testado no Chrome nos temas claro e escuro: o filtro e as opacidades entram com o aviso e saem depois de 5 s. Pedido de quem mantém o projeto.
 - **A cor escura do recorte em `rgb()` com alfa em porcentagem (F-0137):** a borda tracejada e o contorno das marcas do Recortar usavam `rgba(0, 0, 0, 0.6)`, e agora usam `rgb(0 0 0 / 60%)`, o formato do resto do canvas. Capturas do Recortar antes e depois, nos temas claro e escuro, no Chrome: zero pixels diferentes.
 - **README, achados de escrita da auditoria de 2026-11-09 (F-0130, F-0131, F-0132, F-0133, F-0134, F-0135, F-0139):**
   - o ZIP leva as imagens não editadas no formato em que foram capturadas, e não «em PNG»;
