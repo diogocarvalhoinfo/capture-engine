@@ -4,6 +4,17 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [29.3.1] - 2026-11-09
+
+Patch: a foto do editor de imagem ganha embaixo um espaço como o de cima, e não salta mais ao clicar em «Editar». As duas correções vieram do trabalho da versão 30, que ficou para o futuro, e não dependem do pdf.js.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, como na 29.3.0, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 03h23. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor e o título aplicados, a imagem colada entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.3.1, e ela exporta uma nova cópia User, igual byte a byte à primeira. O clique no botão de exportar feito por uma pessoa não foi testado nesta versão.
+
+### Corrigido
+
+- **A foto do editor não encosta mais nos pontos das bandejas:** embaixo da foto ficou um espaço como o de cima, entre o título e a foto: 29 px numa tela de 1919 × 1000, e 25 px numa de 1536 × 777 ou de 1280 × 633. Pedido de quem mantém o projeto.
+- **A foto não salta ao abrir o «Editar»:** a barra do visualizador e a do editor passam a ocupar o mesmo lugar embaixo da foto, com a altura da maior, e a escondida não recebe clique nem Tab. A foto fica com o mesmo tamanho e no mesmo lugar ao clicar em «Editar», também no telefone, onde antes subia 38 px. Medido no Chrome em 1919, 1536, 1280 e 375 px.
+
 ## [29.3.0] - 2026-11-09
 
 Minor: o menu de um PDF passa a ser o mesmo em Documentos e em Imagens, com «Renomear» e «Diminuir o tamanho» também no cartão de Imagens; os níveis do «Diminuir o tamanho» se chamam «Redução leve», «Redução equilibrada» e «Redução máxima»; e a lixeira das miniaturas fica vermelha cheia.
