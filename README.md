@@ -126,7 +126,7 @@ Se suspeitar que as configurações não foram aplicadas no arquivo exportado, p
 Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
 
 ### XSS (Cross-Site Scripting)
-**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine limpa os dados inseridos antes de mostrá-los. Na auditoria de 2026-11-09, nada executou com estas entradas: nomes de arquivo e de sessão com código HTML, um link `javascript:` num Markdown, um CSV e um .zip com nome hostil.
+**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine limpa os dados inseridos antes de mostrá-los. A auditoria de 2026-11-09 testou nomes de arquivo e de sessão com código HTML, um link `javascript:` num Markdown, um CSV e um .zip com nome hostil. Nada executou.
 
 ### EMA (Exponential Moving Average)
 **EMA** (média móvel exponencial) é o filtro que suaviza o desenho livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
@@ -222,6 +222,11 @@ Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
+  - **Outra cor:** o círculo com as cores do arco-íris, depois das 8 cores, abre uma bandeja com o conta-gotas, já ligado, e o código da cor em HEX.
+    - Como nas ferramentas, apertar o círculo e arrastar para cima também abre a bandeja, e arrastar para baixo a fecha. Com a bandeja de uma ferramenta aberta, passar o mouse pelo círculo abre a dele.
+    - Com o conta-gotas, uma lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor. O clique não desenha.
+    - Um código digitado no campo, como `#3366FF`, vale na hora. O Enter fecha a bandeja.
+    - A cor escolhida fica no lugar do arco-íris, como as outras 8. Um novo clique no círculo volta a ela e abre a bandeja de novo.
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400. O ícone do desenho livre e o da seta engrossam e afinam com a espessura de cada um.
   - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. As opções abrem numa bandeja logo acima, lado a lado, sempre na mesma ordem, com a escolhida marcada. Cada uma mostra o nome ao passar o mouse.
     - **Abrir:** um clique na ferramenta já escolhida (no telefone, um toque), o duplo clique ou o botão apertado por 1 s. Apertar a ferramenta e arrastar para cima também abre. Com a bandeja aberta, o ponto fica na cor principal.
@@ -651,7 +656,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** 29.3.2. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.4.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
