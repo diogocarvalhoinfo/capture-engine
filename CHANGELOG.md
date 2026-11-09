@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.4.0] - 2026-11-09
+
+Minor: outra cor no editor, com o círculo arco-íris, o conta-gotas e o código HEX; e o ícone do PDF com a página branca e «PDF» pequeno.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 09h32. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Na cópia User, o círculo de outra cor abre a bandeja pelo clique, pelo arrastar para cima (mouse e toque), pela seta para cima e pela passagem do mouse a partir de uma ferramenta. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
 
 ### Adicionado
 
