@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.3.2] - 2026-11-09
+
+Patch: desfazer até a foto inicial e confirmar devolve o arquivo capturado; o aviso de anotações por salvar escurece também a foto; o ✕ de uma anotação fica centrado no canto da seleção; e o README corrige o que a auditoria de 2026-11-09 achou.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 09h02. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
 
 Auditoria de 2026-11-09 (Prompt 3), sobre a 29.3.1: nenhum achado `Crítico` nem `Alto`; 2 `Médio` (F-0128 e F-0129) e 10 `Baixo` (F-0130 a F-0139). Cobriu os fluxos no Chrome 156, por `file://`, em telas de 1536 × 777, 1280 × 633 e 1919 × 1000. Não cobriu o Edge, o Firefox, o Safari nem um telefone real; nem o purge de 48 horas, a quota cheia, duas abas na mesma sessão ou o leitor de tela. O F-0138 virou a decisão D-0150, e o F-0132, o F-0135 e o F-0140 (achado novo) estão em «Pendentes», no `AGENTS.md`.
 
