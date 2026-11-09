@@ -14,6 +14,14 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **A cor escura do recorte em `rgb()` com alfa em porcentagem (F-0137):** a borda tracejada e o contorno das marcas do Recortar usavam `rgba(0, 0, 0, 0.6)`, e agora usam `rgb(0 0 0 / 60%)`, o formato do resto do canvas. Capturas do Recortar antes e depois, nos temas claro e escuro, no Chrome: zero pixels diferentes.
+- **README, achados de escrita da auditoria de 2026-11-09 (F-0130, F-0131, F-0132, F-0133, F-0134, F-0135, F-0139):**
+  - o ZIP leva as imagens não editadas no formato em que foram capturadas, e não «em PNG»;
+  - os caracteres que o Windows não aceita saem dos nomes de imagem e também dos de documento;
+  - as opções de uma ferramenta viraram uma lista, com um gesto por linha;
+  - «cartão» e «arrastar e soltar» em todo o README, no lugar de «card» e «drag & drop»;
+  - a porcentagem com espaço antes do símbolo («92 %»);
+  - a frase sobre XSS diz o que foi testado, e a do Admin Gate diz como ele abre, sem «invisível e inatingível»;
+  - as frases com mais de 30 palavras foram divididas. O script ainda conta 3, por juntar o título em negrito de um item à frase seguinte.
 
 ## [29.3.1] - 2026-11-09
 
