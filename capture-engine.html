@@ -5313,7 +5313,7 @@
         const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
         // Top-right handle in canvas coords: (b.x + b.w + M, b.y - M)
         // Convert to ann-viewport coords and centre the button on the handle
-        const _BTN = 24; // size of the delete button (square, .t-del)
+        const _BTN = _annDbBtn.offsetWidth || 18; // the real size of the button (18 px since D-0137), so it sits centred on the corner
         const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
         const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : _sel.type === 'arrow' ? annArrowDelPoint(_sel) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text; beside the middle of an arrow
         const _z = uiZoom();
