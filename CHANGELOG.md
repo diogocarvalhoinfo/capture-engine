@@ -4,7 +4,9 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.2.0] - 2026-11-09
+
+Minor: o menu do clique direito numa anotação do editor, a bandeja das ferramentas abrindo ao arrastar para cima (e uma aberta servindo para as outras), e o texto com fundo por padrão, com a opção «Fundo transparente». Corrige o Ctrl+Z, que agora volta à foto como foi capturada, também depois de confirmar um recorte, os Cantos livres ou o Endireitar; o Endireitar passa a girar arrastando em qualquer lugar da foto; o ✕ da anotação volta a ser vermelho cheio; e a caixa de marcar ganha uma área de clique maior.
 
 ### Adicionado
 
