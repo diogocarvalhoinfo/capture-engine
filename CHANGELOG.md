@@ -4,6 +4,35 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [29.3.2] - 2026-11-09
+
+Patch: desfazer até a foto inicial e confirmar devolve o arquivo capturado; o aviso de anotações por salvar escurece também a foto; o ✕ de uma anotação fica centrado no canto da seleção; e o README corrige o que a auditoria de 2026-11-09 achou.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 09h02. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
+
+Auditoria de 2026-11-09 (Prompt 3), sobre a 29.3.1: nenhum achado `Crítico` nem `Alto`; 2 `Médio` (F-0128 e F-0129) e 10 `Baixo` (F-0130 a F-0139). Cobriu os fluxos no Chrome 156, por `file://`, em telas de 1536 × 777, 1280 × 633 e 1919 × 1000. Não cobriu o Edge, o Firefox, o Safari nem um telefone real; nem o purge de 48 horas, a quota cheia, duas abas na mesma sessão ou o leitor de tela. O F-0138 virou a decisão D-0150, e o F-0132, o F-0135 e o F-0140 (achado novo) estão em «Pendentes», no `AGENTS.md`.
+
+- **Rebaixado, não reproduzido (F-0136):** as duas formas de Portugal do changelog, «ficheiro» e «secção», estão dentro de citações literais de textos antigos, que ficam como estão. Conferido em 2026-11-09, lendo as duas linhas.
+
+### Corrigido
+
+- **Desfazer até a foto inicial e confirmar devolve o arquivo capturado (F-0128):** antes, o Confirmar gravava um PNG novo, desenhado no canvas, e o ZIP perdia o arquivo original. Medido no Chrome, por `file://`, com uma foto JPEG anotada, reaberta e desfeita até o início: o ZIP levava `imagem-1.png`, de 12.957 bytes, e agora leva `imagem-1.jpg`, de 9.293 bytes, igual byte a byte ao original. Vale também para uma foto girada 90° e para um PNG anotado. O Refazer continua disponível ao reabrir. Uma foto confirmada assim antes desta versão volta ao original quando é reaberta e confirmada de novo no início.
+- **O ✕ de uma anotação selecionada fica centrado no canto da seleção:** a posição era calculada para um botão de 24 px, mas desde a D-0137 ele tem 18 px, e ficava 3 px acima e 3 px à esquerda do canto. Agora o cálculo usa o tamanho real do botão. Medido no Chrome nos temas claro e escuro: as linhas da seleção cruzam a menos de 1 px do centro do ✕. Pedido de quem mantém o projeto.
+- **O README não diz mais que não há como voltar à foto depois de Cantos livres ou Endireitar (F-0129):** a frase contradizia a nota do Desfazer, duas linhas abaixo. Testado no Chrome: uma foto JPEG endireitada, confirmada e reaberta volta, com o Ctrl+Z, à largura original de 900 px, e o Confirmar devolve ao ZIP o arquivo capturado, igual byte a byte.
+
+### Modificado
+
+- **O aviso de anotações por salvar escurece também a foto:** ao tentar fechar o editor sem salvar, além dos outros botões da barra, a foto com as anotações escurece, e o título, o zoom e o ✕ da anotação apagam, durante os mesmos 5 s. Assim o «Cancelar» e o «Confirmar» ficam em destaque. A foto escurece por um filtro (`--filter-dimmed`, token novo), porque uma opacidade deixaria ver o app por trás. Testado no Chrome nos temas claro e escuro: o filtro e as opacidades entram com o aviso e saem depois de 5 s. Pedido de quem mantém o projeto.
+- **A cor escura do recorte em `rgb()` com alfa em porcentagem (F-0137):** a borda tracejada e o contorno das marcas do Recortar usavam `rgba(0, 0, 0, 0.6)`, e agora usam `rgb(0 0 0 / 60%)`, o formato do resto do canvas. Capturas do Recortar antes e depois, nos temas claro e escuro, no Chrome: zero pixels diferentes.
+- **README, achados de escrita da auditoria de 2026-11-09 (F-0130, F-0131, F-0132, F-0133, F-0134, F-0135, F-0139):**
+  - o ZIP leva as imagens não editadas no formato em que foram capturadas, e não «em PNG»;
+  - os caracteres que o Windows não aceita saem dos nomes de imagem e também dos de documento;
+  - as opções de uma ferramenta viraram uma lista, com um gesto por linha;
+  - «cartão» e «arrastar e soltar» em todo o README, no lugar de «card» e «drag & drop»;
+  - a porcentagem com espaço antes do símbolo («92 %»);
+  - a frase sobre XSS diz o que foi testado, e a do Admin Gate diz como ele abre, sem «invisível e inatingível»;
+  - as frases com mais de 30 palavras foram divididas. O script ainda conta 3, por juntar o título em negrito de um item à frase seguinte.
+
 ## [29.3.1] - 2026-11-09
 
 Patch: a foto do editor de imagem ganha embaixo um espaço como o de cima, e não salta mais ao clicar em «Editar». As duas correções vieram do trabalho da versão 30, que ficou para o futuro, e não dependem do pdf.js.

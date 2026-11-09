@@ -37,6 +37,7 @@
       --focus-width: 3px;
       --focus-offset: 2px;
       --opacity-dimmed: 0.3;
+      --filter-dimmed: brightness(35%);
       --font-sans: 'Segoe UI', arial, sans-serif;
       --radius-sm: 0.25rem;
       --radius-md: 0.375rem;
@@ -3350,6 +3351,19 @@
       transition: none !important
     }
 
+    /* The unsaved-changes alert also darkens the photo with its annotations, and dims the title, the zoom and the ✕ of an annotation,
+       so Cancelar and Confirmar stand out (asked by the owner, 2026-11-09). At once, like the toolbar, and without touching the transition
+       of #ann-wrap, which the zoom uses. The photo darkens by a filter and not by opacity: an opacity would show the app behind it */
+    #img-modal-overlay.ann-await #ann-wrap,
+    #img-modal-overlay.ann-await #ann-shape-del-btn {
+      filter: var(--filter-dimmed)
+    }
+
+    #img-modal-overlay.ann-await .modal-hdr,
+    #img-modal-overlay.ann-await #zoom-ui {
+      opacity: var(--opacity-dimmed)
+    }
+
     @media (width <= 30rem) {
       #top-bar {
         padding: calc(var(--spacing) * 3) calc(var(--spacing) * 3) calc(var(--spacing) * 1.5)
@@ -3957,7 +3971,7 @@
   </div>
 
 
-  <!-- VISUAL BUILDER MODAL (29.3.1) -->
+  <!-- VISUAL BUILDER MODAL (29.3.2) -->
   <!-- ADMIN_EDIT_START -->
   <div class="sb-overlay" id="vb-overlay">
     <div class="sb-modal" style="max-width:520px">
@@ -3975,7 +3989,7 @@
             </path>
           </svg>
           Visual Builder <span
-            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.3.1</span>
+            style="font-size:var(--text-caption);background:var(--color-border);padding:calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);border-radius:var(--radius-sm);margin-left:calc(var(--spacing) * 1.5)">29.3.2</span>
         </div>
         <p class="sb-subtitle">Preferências da interface</p>
       </div>
@@ -4919,9 +4933,9 @@
         const btnClose = $('ann-cancel'), btnSave = $('ann-save');
         if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
         if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
-        // Dim the rest of the toolbar for ANN_AWAIT_MS; a new alert restarts the time
+        // Dim the rest of the toolbar, the photo, the title and the zoom for ANN_AWAIT_MS; a new alert restarts the time
         const bar = $('img-modal-ann-actions');
-        if (bar) { bar.classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
+        if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
       }
       /* The viewer bar and the editor bar share one place in the footer (grid-area 1 / 1), and the hidden one keeps its size:
          the footer is always as tall as the taller bar, so the photo does not move when Editar opens the tools (asked by the owner, 2026-11-09) */
@@ -4933,6 +4947,7 @@
         clearTimeout(annAwaitTimer); annAwaitTimer = null;
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
+        $('img-modal-overlay').classList.remove('ann-await');
       }
       /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
          Cantos livres: four corners, starting at the corners of the photo; Confirmar undoes the perspective by a homography, pixel by pixel.
@@ -5298,7 +5313,7 @@
         const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
         // Top-right handle in canvas coords: (b.x + b.w + M, b.y - M)
         // Convert to ann-viewport coords and centre the button on the handle
-        const _BTN = 24; // size of the delete button (square, .t-del)
+        const _BTN = _annDbBtn.offsetWidth || 18; // the real size of the button (18 px since D-0137), so it sits centred on the corner
         const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
         const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : _sel.type === 'arrow' ? annArrowDelPoint(_sel) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text; beside the middle of an arrow
         const _z = uiZoom();
@@ -5332,7 +5347,7 @@
             const kc = annPx(); // crop marks in screen px: 20 px long, 4 px thick, on any image
             // Visible on any image: the dashed border alternates dark and white dashes,
             // and the white marks get a dark outline (dark image: the white shows; white image: the outline shows)
-            const CROP_DARK = 'rgba(0, 0, 0, 0.6)';
+            const CROP_DARK = 'rgb(0 0 0 / 60%)';
             ctx.lineWidth = kc;
             ctx.setLineDash([4 * kc, 4 * kc]);
             ctx.strokeStyle = CROP_DARK;
@@ -5665,10 +5680,11 @@
           else o.cropBox = { x: cX, y: cY, w: fW, h: fH };
           annCropBox = null;
         }
-        // An image left with no annotation, rotation or crop goes back to its original blob, without editor data
+        // An image left with no annotation, rotation or crop goes back to its original blob (F-0128); without a Refazer to keep, it also loses the editor data
         function annForgetIfUntouched(o) {
-          if (annHistory.length !== 0 || annRedoStack.length !== 0 || annCurrentRotation !== 0 || o.cropBox) return;
+          if (annHistory.length !== 0 || annCurrentRotation !== 0 || o.cropBox) return;
           o.blob = o.origBlob;
+          if (annRedoStack.length !== 0) return;
           delete o.origBlob;
           delete o.annHistory;
           delete o.annRedoStack;
@@ -7096,7 +7112,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.3.1 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) {} } try { boot(); SysLogger.info('Capture Engine 29.3.2 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
 function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();

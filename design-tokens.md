@@ -179,7 +179,8 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 |---|---|---|
 | `--focus-width` | `3px` | Espessura do contorno do foco |
 | `--focus-offset` | `2px` | Afastamento do contorno do foco |
-| `--opacity-dimmed` | `0.3` | Botões da barra do editor apagados durante o aviso de anotações por salvar |
+| `--opacity-dimmed` | `0.3` | Botões da barra do editor, título, zoom e ✕ da anotação apagados durante o aviso de anotações por salvar |
+| `--filter-dimmed` | `brightness(35%)` | Foto e anotações escurecidas durante o mesmo aviso; um filtro, e não uma opacidade, para não mostrar o app por trás |
 | `--top-bar-h` | `64px` | Altura da barra do topo |
 | `--thumb-size` | `140px` | Lado da caixa de miniatura |
 
