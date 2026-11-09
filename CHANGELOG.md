@@ -4,6 +4,16 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Adicionado
+
+- **Outra cor no editor, com conta-gotas e código HEX (D-0152):** depois das 8 cores, um círculo com as cores do arco-íris abre uma bandeja com o conta-gotas, já ligado, e o campo HEX. A lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor, sem desenhar. A cor escolhida fica no círculo, como as outras, e vale para a ferramenta ou para a anotação selecionada. Testado no Chrome nos temas claro e escuro, no computador (1536 × 777) e no telefone (390 px, com toque): o retângulo e a seta saem na cor pega e na cor digitada, e o Esc e o Enter fecham só a bandeja. Pedido de quem mantém o projeto.
+
+### Modificado
+
+- **O ícone do PDF tem a página branca e «PDF» pequeno (D-0151):** no cartão de um PDF em Imagens e nos «Removidos», o desenho de antes ganha a página em `#f0f0f0`, o branco das cores do editor, e «PDF» em vermelho no meio dela. Pedido de quem mantém o projeto.
+
 ## [29.3.2] - 2026-11-09
 
 Patch: desfazer até a foto inicial e confirmar devolve o arquivo capturado; o aviso de anotações por salvar escurece também a foto; o ✕ de uma anotação fica centrado no canto da seleção; e o README corrige o que a auditoria de 2026-11-09 achou.
