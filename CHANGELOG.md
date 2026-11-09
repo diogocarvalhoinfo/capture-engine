@@ -4,6 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **A lixeira das miniaturas é vermelha cheia (D-0144):** antes, era um quadrado escuro que só ficava vermelho ao apontar. Agora é vermelha cheia sempre que aparece, com o mouse em cima ou com o foco.
+- **O menu de um PDF é o mesmo nas duas colunas (D-0145):** o cartão de um PDF em Imagens ganhou «Renomear» e «Diminuir o tamanho», e o menu ficou igual ao de um PDF em Documentos. A cópia menor fica na mesma coluna do original. Testado no Chrome nos temas claro e escuro: os dois menus têm os mesmos itens na mesma ordem, e o «Diminuir o tamanho» de um PDF em Imagens pôs a cópia em Imagens, logo depois dele.
+
 ## [29.2.0] - 2026-11-09
 
 Minor: o menu do clique direito numa anotação do editor, a bandeja das ferramentas abrindo ao arrastar para cima (e uma aberta servindo para as outras), e o texto com fundo por padrão, com a opção «Fundo transparente». Corrige o Ctrl+Z, que agora volta à foto como foi capturada, também depois de confirmar um recorte, os Cantos livres ou o Endireitar; o Endireitar passa a girar arrastando em qualquer lugar da foto; o ✕ da anotação volta a ser vermelho cheio; e a caixa de marcar ganha uma área de clique maior.
