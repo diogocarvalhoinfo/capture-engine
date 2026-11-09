@@ -126,7 +126,7 @@ Se suspeitar que as configurações não foram aplicadas no arquivo exportado, p
 Um sistema isolado é aquele sem acesso à internet — comum em bancos, hospitais e organismos governamentais. O Capture Engine foi desenhado especificamente para funcionar nestes ambientes: zero dependências externas.
 
 ### XSS (Cross-Site Scripting)
-**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine limpa os dados inseridos antes de mostrá-los. Na auditoria de 2026-11-09, nada executou com estas entradas: nomes de arquivo e de sessão com código HTML, um link `javascript:` num Markdown, um CSV e um .zip com nome hostil.
+**XSS** é um tipo de ataque onde código malicioso é injetado numa página web. O Capture Engine limpa os dados inseridos antes de mostrá-los. A auditoria de 2026-11-09 testou nomes de arquivo e de sessão com código HTML, um link `javascript:` num Markdown, um CSV e um .zip com nome hostil. Nada executou.
 
 ### EMA (Exponential Moving Average)
 **EMA** (média móvel exponencial) é o filtro que suaviza o desenho livre. Cada ponto novo mistura-se com o anterior por um fator α = 0.35. O tremor diminui, e o traço não fica atrasado de forma visível.
