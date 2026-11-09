@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 Minor: o menu de um PDF passa a ser o mesmo em Documentos e em Imagens, com «Renomear» e «Diminuir o tamanho» também no cartão de Imagens; os níveis do «Diminuir o tamanho» se chamam «Redução leve», «Redução equilibrada» e «Redução máxima»; e a lixeira das miniaturas fica vermelha cheia.
 
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, como na 29.2.0, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 01h40. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. A cópia User: sem erros no console, sem os botões de administrador nem o Visual Builder, a cor, o título e o rodapé aplicados, a imagem colada entra na grade, a sessão volta no Histórico depois de recarregar, o banco abre na versão 3, e uma segunda aba funciona. A cópia Admin: só o par de CORS esperado por `file://`, o Visual Builder mostra 29.3.0, e ela exporta uma nova cópia User, igual byte a byte à primeira. O clique no botão de exportar feito por uma pessoa não foi testado nesta versão.
+
 ### Modificado
 
 - **A lixeira das miniaturas é vermelha cheia (D-0144):** antes, era um quadrado escuro que só ficava vermelho ao apontar. Agora é vermelha cheia sempre que aparece, com o mouse em cima ou com o foco.
