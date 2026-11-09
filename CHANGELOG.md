@@ -9,7 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Adicionado
 
 - **O menu do clique direito numa anotação (D-0143):** no editor, um clique com o botão direito numa anotação abre um menu escuro com «Trazer para frente», «Enviar para trás», «Duplicar» e «Apagar». Arrastar com o botão direito continua movendo a anotação. Testado no Chrome nos temas claro e escuro e em 375 × 812: cada item faz o que diz, e o arraste não abre o menu.
-- **A bandeja das ferramentas abre de mais dois jeitos, para testar (D-0142):** com o mouse em cima de uma ferramenta, a bandeja dela abre na hora e fecha ao tirar o mouse; e apertando uma ferramenta e arrastando para cima, a bandeja abre, e soltar sobre uma opção a escolhe. Escolher uma opção da bandeja de outra ferramenta escolhe também a ferramenta. Testado no Chrome com o mouse, nos temas claro e escuro; o arrastar no toque, num telefone de verdade, não foi testado. O GIF do editor foi gravado de novo, com esta mudança e com o T do texto com fundo.
+- **A bandeja das ferramentas abre arrastando para cima (D-0142):** apertar uma ferramenta e arrastar para cima abre a bandeja dela, e soltar sobre uma opção a escolhe; arrastar para baixo fecha a bandeja. Com uma bandeja aberta, passar por outra ferramenta abre a bandeja dela, como numa barra de menus. Escolher uma opção da bandeja de outra ferramenta escolhe também a ferramenta. O dono testou também abrir ao passar o mouse, que ficou de fora: não existe no toque e abre sem querer. Testado no Chrome com o mouse, nos temas claro e escuro e em 375 × 812; o arrastar no toque, num telefone de verdade, não foi testado. O GIF do editor foi gravado de novo, com o T do texto com fundo.
 
 ### Modificado
 
