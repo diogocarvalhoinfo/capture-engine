@@ -8,7 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Adicionado
 
-- **Outra cor no editor, com conta-gotas e código HEX (D-0152):** depois das 8 cores, um círculo com as cores do arco-íris abre uma bandeja com o conta-gotas, já ligado, e o campo HEX. A lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor, sem desenhar. A cor escolhida fica no círculo, como as outras, e vale para a ferramenta ou para a anotação selecionada. Como nas ferramentas, apertar o círculo e arrastar para cima abre a bandeja, também no toque. Testado no Chrome nos temas claro e escuro, no computador (1536 × 777) e no telefone (390 px, com toque): o retângulo e a seta saem na cor pega e na cor digitada, e o Esc e o Enter fecham só a bandeja. Pedido de quem mantém o projeto.
+- **Outra cor no editor, com conta-gotas e código HEX (D-0152):** depois das 8 cores, um círculo com as cores do arco-íris abre uma bandeja com o conta-gotas, já ligado, e o campo HEX. A lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor, sem desenhar. A cor escolhida fica no círculo, como as outras, e vale para a ferramenta ou para a anotação selecionada. Como nas ferramentas, apertar o círculo e arrastar para cima abre a bandeja, também no toque, e com outra bandeja aberta basta passar o mouse por ele. Testado no Chrome nos temas claro e escuro, no computador (1536 × 777) e no telefone (390 px, com toque): o retângulo e a seta saem na cor pega e na cor digitada, e o Esc e o Enter fecham só a bandeja. Pedido de quem mantém o projeto.
 
 ### Modificado
 

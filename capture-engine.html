@@ -5901,9 +5901,9 @@
         });
         /* Another colour (D-0152). A click on the circle takes its colour, when it has one, and opens the tray with the eyedropper on;
            a second click closes it. The tray shows the colour in HEX, and a valid code typed there is the colour at once */
-        function annColorTray(b) {
-          if (annFlyoutOpen && annFlyoutOpen.id === 'ann-fly-color') { annCloseFlyout(); return }
-          if (b.dataset.color) annApplyColor(b.dataset.color);
+        function annColorTray(b, passing) {
+          if (annFlyoutOpen && annFlyoutOpen.id === 'ann-fly-color') { if (!passing) annCloseFlyout(); return }
+          if (b.dataset.color && !passing) annApplyColor(b.dataset.color); // passing over it only opens the tray
           annCloseFlyout();
           const f = $('ann-fly-color'); f.dataset.tool = 'color'; f.classList.add('open'); b.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annPlaceFlyout(f);
           const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show');
@@ -5922,10 +5922,11 @@
         { const cu = $('ann-color-custom'), fly = $('ann-fly-color'); let dragged = false;
           cu.addEventListener('pointerdown', e => {
             if (e.button !== 0) return; dragged = false; const y0 = e.clientY;
-            const mv = ev => { const dy = ev.clientY - y0; if (dragged) return; if (dy <= -12) { dragged = true; if (annFlyoutOpen !== fly) annColorTray(cu) } else if (dy >= 12 && annFlyoutOpen === fly) { dragged = true; annCloseFlyout() } };
+            const mv = ev => { const dy = ev.clientY - y0; if (dragged) return; if (dy <= -12) { dragged = true; if (annFlyoutOpen !== fly) annColorTray(cu, true) } else if (dy >= 12 && annFlyoutOpen === fly) { dragged = true; annCloseFlyout() } };
             document.addEventListener('pointermove', mv); document.addEventListener('pointerup', () => document.removeEventListener('pointermove', mv), { once: true });
           });
           cu.addEventListener('click', e => { if (dragged) { dragged = false; e.stopImmediatePropagation() } }, true);
+          cu.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && annFlyoutOpen.closest('#ann-row-tools') && !annTyping()) annColorTray(cu, true) });
           cu.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); if (annFlyoutOpen !== fly) annColorTray(cu); $('ann-eyedrop').focus() } });
         }
         // The eyedropper: the colour of the pixel under the pointer, the photo and the annotations together, read from the canvas
@@ -6006,8 +6007,8 @@
           /* Pressing a tool and dragging up opens its tray, on mouse and touch, and letting go on an option picks it; dragging down closes the open tray.
              While the button is held, passing over another tool opens its tray instead; with a tray open, the mouse over another tool does the same, as a menu bar (D-0142) */
           const fly = b.parentElement.querySelector('.ann-flyout');
-          b.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && annFlyoutOpen.closest('#ann-row-tools') && !annTyping()) { annCloseFlyout(); annOpenFlyout(b) } });
-          b.addEventListener('pointerdown', e => { if (e.button !== 0) return; const y0 = e.clientY; let up = false; const mv = ev => { const dy = ev.clientY - y0; if (!up && dy <= -12) { up = true; _held = true; clearTimeout(_hold); if (annFlyoutOpen !== fly) { annCloseFlyout(); open() } } else if (!up && dy >= 12 && annFlyoutOpen === fly) { _held = true; clearTimeout(_hold); annCloseFlyout() } if (!up) return; const over = document.elementFromPoint(ev.clientX, ev.clientY), tb = over && over.closest('.ann-tool-wrap > .ann-btn[aria-controls]'); if (tb && (!annFlyoutOpen || annFlyoutOpen.parentElement !== tb.parentElement)) { annCloseFlyout(); annOpenFlyout(tb) } else if (over && over.id === 'ann-color-custom' && (!annFlyoutOpen || annFlyoutOpen.id !== 'ann-fly-color')) annColorTray(over) }; const end = ev => { document.removeEventListener('pointermove', mv); if (!up) return; const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button'); if (opt) opt.click() }; document.addEventListener('pointermove', mv); document.addEventListener('pointerup', end, { once: true }) });
+          b.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && (annFlyoutOpen.closest('#ann-row-tools') || annFlyoutOpen.id === 'ann-fly-color') && !annTyping()) { annCloseFlyout(); annOpenFlyout(b) } });
+          b.addEventListener('pointerdown', e => { if (e.button !== 0) return; const y0 = e.clientY; let up = false; const mv = ev => { const dy = ev.clientY - y0; if (!up && dy <= -12) { up = true; _held = true; clearTimeout(_hold); if (annFlyoutOpen !== fly) { annCloseFlyout(); open() } } else if (!up && dy >= 12 && annFlyoutOpen === fly) { _held = true; clearTimeout(_hold); annCloseFlyout() } if (!up) return; const over = document.elementFromPoint(ev.clientX, ev.clientY), tb = over && over.closest('.ann-tool-wrap > .ann-btn[aria-controls]'); if (tb && (!annFlyoutOpen || annFlyoutOpen.parentElement !== tb.parentElement)) { annCloseFlyout(); annOpenFlyout(tb) } else if (over && over.id === 'ann-color-custom' && (!annFlyoutOpen || annFlyoutOpen.id !== 'ann-fly-color')) annColorTray(over, true) }; const end = ev => { document.removeEventListener('pointermove', mv); if (!up) return; const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button'); if (opt) opt.click() }; document.addEventListener('pointermove', mv); document.addEventListener('pointerup', end, { once: true }) });
           b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
         });
         // An option of the tray of another tool picks that tool first (a tray opened by dragging up; D-0142)
