@@ -4,6 +4,14 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Os botões dos editores chamam-se «Descartar alterações» e «Aplicar alterações» (D-0153):** o ✕ vermelho e o disquete verde, no editor de imagem e no de texto, mostram esses nomes no tooltip, no lugar de «Cancelar» e «Confirmar». O README, o `AGENTS.md` e o `design-tokens.md` usam os nomes novos. Pedido de quem mantém o projeto.
+- **O README descreve o aviso de anotações por salvar como ele é desde a 29.3.2:** a foto e as anotações escurecem, e o título e o zoom ficam apagados, além dos outros botões da barra.
+- **O `AGENTS.md` não cita mais a versão 30:** o trabalho local com o pdf.js foi cancelado pelo dono em 2026-11-09, e os números D-0146 a D-0149, usados nele, não existem neste repositório.
+
 ## [29.4.0] - 2026-11-09
 
 Minor: outra cor no editor, com o círculo arco-íris, o conta-gotas e o código HEX; e o ícone do PDF com a página branca e «PDF» pequeno.

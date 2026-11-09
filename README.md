@@ -182,7 +182,7 @@ O Capture Engine aceita conteúdo de três formas:
 | Categoria | Formatos |
 |---|---|
 | Imagens | PNG, JPEG, WEBP, GIF (capturadas como imagens), também com uma extensão que o navegador não conhece: a imagem é reconhecida pelo conteúdo |
-| Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet. «Editar» muda o texto puro, com Cancelar e Confirmar |
+| Documentos de texto | TXT, CSV, XML, JSON, Markdown, HTML, e outros formatos de texto simples, que abrem no visualizador: o Markdown formatado, o CSV numa tabela, e o HTML como página, isolado, sem acesso aos dados do app nem à internet. «Editar» muda o texto puro, com «Descartar alterações» e «Aplicar alterações» |
 | PDF | Abre no visualizador, com o leitor do próprio navegador |
 | Documentos binários | DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
@@ -216,12 +216,12 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação. O título é
 <!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
 ![Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado numa captura](docs/images/annotation-arrow.gif)
 
-No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arrasto desenha a seta, e as ferramentas continuam abertas. Um clique sem arrasto também desenha uma seta, com a ponta no lugar do clique. O GIF termina antes do Confirmar, que salva as anotações na imagem.
+No visualizador, o «Editar» abre as ferramentas. Com a Seta escolhida, um arrasto desenha a seta, e as ferramentas continuam abertas. Um clique sem arrasto também desenha uma seta, com a ponta no lugar do clique. O GIF termina antes do «Aplicar alterações», que salva as anotações na imagem.
 
 Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
-  - A barra tem também as 8 cores, «Desfazer», «Refazer», «Cancelar» e «Confirmar». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
+  - A barra tem também as 8 cores, «Desfazer», «Refazer», «Descartar alterações» e «Aplicar alterações». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
   - **Outra cor:** o círculo com as cores do arco-íris, depois das 8 cores, abre uma bandeja com o conta-gotas, já ligado, e o código da cor em HEX.
     - Como nas ferramentas, apertar o círculo e arrastar para cima também abre a bandeja, e arrastar para baixo a fecha. Com a bandeja de uma ferramenta aberta, passar o mouse pelo círculo abre a dele.
     - Com o conta-gotas, uma lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor. O clique não desenha.
@@ -242,7 +242,7 @@ Motor de anotação:
     - Texto: **Negrito** e **Itálico**, que ligam e desligam cada um (também com Ctrl+B e Ctrl+I), e **Com fundo** (o padrão) ou **Fundo transparente**. Com fundo, o texto fica sobre um retângulo na cor escolhida, com a letra escura ou branca, a que der mais contraste. O T da ferramenta mostra o estilo, o do texto selecionado ou o que vai ser usado: mais grosso com «Negrito», inclinado com «Itálico». Um duplo clique num texto o reabre para editar.
     - Com um retângulo, um círculo ou um marca-texto selecionado, a opção da mesma ferramenta muda também essa anotação, e o Ctrl+Z desfaz. Escolher outra ferramenta, ou o Texto, tira a seleção, e as opções voltam a valer para a ferramenta. Para mudar o negrito ou o itálico de um texto, faça um duplo clique nele e use as opções. As escolhas do retângulo, do círculo e do marca-texto ficam guardadas no navegador. A cada abertura do editor, o texto volta a 24, com o negrito ligado e o itálico desligado.
   - Ao passar o mouse sobre um botão, o nome dele aparece logo por cima e fica enquanto o mouse estiver lá. Chegando ao botão pelo teclado, aparece também. É o mesmo tooltip de toda a aplicação, branco por cima do editor.
-  - Com anotações por salvar, fechar o editor (pelo ✕, pelo Esc ou por um clique fora) faz o Cancelar e o Confirmar crescerem duas vezes. Durante 5 s, os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
+  - Com anotações por salvar, fechar o editor (pelo ✕, pelo Esc ou por um clique fora) faz o «Descartar alterações» e o «Aplicar alterações» crescerem duas vezes. Durante 5 s, a foto e as anotações escurecem, o título e o zoom ficam apagados, e os outros botões da barra ficam meio transparentes e não respondem. Um clique na imagem volta a editar.
 - Selecionar: clique para selecionar qualquer anotação, caixa de seleção visível, apagar com Delete ou com o ✕ do canto (a anotação não vai para os «Removidos»; volta com o Desfazer). A bandeja do Selecionar tem «Trazer para frente» (Ctrl+]) e «Enviar para trás» (Ctrl+[); Ctrl+Shift+] e Ctrl+Shift+[ levam ao topo e ao fundo
 - Menu do clique direito: um clique com o botão direito numa anotação, sem arrastar, abre um menu com «Trazer para frente» (Ctrl+]), «Enviar para trás» (Ctrl+[), «Duplicar» e «Apagar» (Del). Arrastar com o botão direito continua movendo a anotação
 - Colar por cima: com o editor aberto, o Ctrl+V cola a imagem copiada por cima da foto, como uma anotação. Ela se move, muda de tamanho pelos cantos sem perder a proporção e sai com o Delete. Ao confirmar, fica gravada na foto
@@ -252,14 +252,14 @@ Motor de anotação:
 - Shift: o Retângulo desenha um quadrado, o Círculo um círculo perfeito (sem o Shift, ele desenha uma elipse), e a Seta e o Desenho livre andam em passos de 45°. Vale ao desenhar e ao redimensionar, também quando o Shift é apertado no meio do gesto
 - Girar o texto: um texto selecionado tem, acima da caixa, um botão redondo com duas setas curvas, como no Paint. Gira em qualquer ângulo e prende em 0°, 90°, 180° e 270° quando passa perto; com Shift, anda de 15° em 15°. A caixa de seleção gira com o texto. O Girar 90° da imagem gira também os textos
 - Recortar: a bandeja tem Retângulo (o padrão), Cantos livres e Endireitar.
-  - **Cantos livres:** as bolinhas já começam no papel quando ele é mais claro que o fundo. Arraste cada uma até a ponta do papel, se precisar. O Confirmar desfaz a perspectiva, e o papel vira um retângulo reto.
-  - **Endireitar:** arraste em qualquer lugar da foto para girar, olhando a grade. O ângulo aparece enquanto arrasta, e o Confirmar gira a foto e corta os cantos vazios.
+  - **Cantos livres:** as bolinhas já começam no papel quando ele é mais claro que o fundo. Arraste cada uma até a ponta do papel, se precisar. O «Aplicar alterações» desfaz a perspectiva, e o papel vira um retângulo reto.
+  - **Endireitar:** arraste em qualquer lugar da foto para girar, olhando a grade. O ângulo aparece enquanto arrasta, e o «Aplicar alterações» gira a foto e corta os cantos vazios.
   - Os dois gravam na foto, com as anotações. Para voltar à foto de antes, reabra a imagem e use o Desfazer, como diz a nota abaixo.
 - Alças do mesmo tamanho na tela em qualquer imagem: 12 px nas anotações e marcas de 20 px no recorte, com uma área de clique de 44 × 44 px. O recorte tem alças nos 4 cantos e no meio de cada lado; a do meio muda só esse lado. As marcas são brancas com contorno escuro, e a linha alterna traços pretos e brancos, para se verem em imagens claras e escuras. Sobre o recorte, o cursor mostra o que o arrasto faz: redimensionar numa alça, mover no meio da área
 - Editar: alterar cor, espessura e tamanho de anotações já inseridas sem recriar
 - Zoom: a roda do mouse, o trackpad e os botões + e − funcionam como no visualizador, para anotar um detalhe pequeno. Como arrastar desenha, para mover a imagem ampliada use a barra de espaço + arrastar, ou o botão do meio do mouse num lugar sem anotação. O duplo clique ainda edita um texto. A anotação é salva na resolução original, qualquer que seja o zoom
 - Desfazer/Refazer: até 50 passos, histórico preservado ao navegar entre imagens da sessão
-  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Depois de salvar e reabrir a imagem, o Desfazer reverte primeiro as anotações e, por fim, volta à foto como foi capturada: sem recorte, giro, perspectiva ou endireitamento. Confirmar nesse ponto devolve o arquivo capturado, igual byte a byte; o Refazer volta ao que estava.
+  - Nota: durante a edição, Desfazer/Refazer também revertem o recorte e o Girar 90°. Depois de salvar e reabrir a imagem, o Desfazer reverte primeiro as anotações e, por fim, volta à foto como foi capturada: sem recorte, giro, perspectiva ou endireitamento. «Aplicar alterações» nesse ponto devolve o arquivo capturado, igual byte a byte; o Refazer volta ao que estava.
 
 No telefone:
 - O desenho por toque funciona (Pointer Events).
@@ -595,7 +595,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 
 ### O editor não fecha com Escape
 - Com as opções de uma ferramenta abertas, o Escape fecha só as opções. Pressione de novo para fechar o editor.
-- Com anotações por salvar, o Escape não fecha: o Cancelar e o Confirmar crescem, como num clique fora. Escolha um dos dois.
+- Com anotações por salvar, o Escape não fecha: o «Descartar alterações» e o «Aplicar alterações» crescem, como num clique fora. Escolha um dos dois.
 
 ### Sessões com mais de 48 horas desapareceram
 - O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
