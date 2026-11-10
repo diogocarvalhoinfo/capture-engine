@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.8.2] - 2026-11-10
+
+Patch: no telefone, dois toques editam, a imagem não fica mais quebrada no iPhone, e selecionar uma anotação não a apaga.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 21h34. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Nas duas, um retângulo desfocado é desenhado, o seletor de cor abre, e o menu do visualizador tem os seis itens. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa. Os toques foram simulados, e não houve teste num iPhone de verdade.
 
 ### Corrigido
 
