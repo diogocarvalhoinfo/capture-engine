@@ -130,6 +130,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | Token | Valor | Uso |
 |---|---|---|
 | `--font-sans` | `'Segoe UI', arial, sans-serif` | Fonte de toda a interface: a do sistema, sem fontes externas |
+| `--font-mono` | `consolas, monaco, 'Courier New', monospace` | Texto dos documentos no modal de texto |
 | `--text-micro` | `0.625rem` | Rodapé e botão de remover da miniatura (10px) |
 | `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra «Removidos» (11px) |
 | `--text-xs` | `0.75rem` | Títulos das seções e dos blocos, chips, botões «Adicionar», nomes no histórico e tooltip (12px) |
@@ -247,6 +248,9 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 | `--duration-status-pulse` | `3s` |
 | `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` |
 | `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` |
+| `--ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1)` |
+| `--ease-out-soft` | `cubic-bezier(0.2, 0.8, 0.2, 1)` |
+| `--ease-out-expo` | `cubic-bezier(0.16, 1, 0.3, 1)` |
 
 | Animação | O que faz | Duração | Onde é usada |
 |---|---|---|---|

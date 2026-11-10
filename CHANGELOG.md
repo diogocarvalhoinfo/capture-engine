@@ -10,10 +10,11 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **A faixa de tamanho do `validate.sh` vai até 600 KB (D-0157):** a 29.6.0 chegou a 519 661 bytes, perto do limite de 520 KB. O Desfocado (P-0005) não caberia. O limite continua a avisar de um salto inesperado. O README diz que o arquivo tem cerca de 520 KB. Pedido de quem mantém o projeto, com a orientação de não criar nada desnecessário e de enxugar o código em auditorias.
 - **Frases de até 30 palavras nos documentos (D-0158):** o `AGENTS.md`, o README, o `design-tokens.md` e as entradas desde a 29.4.2 não têm mais frase longa. As entradas antigas do `CHANGELOG.md` ficam como registro datado. Fecha o F-0074, o F-0132 e o F-0135, este com o espaço antes do «%» em duas linhas do `design-tokens.md`.
+- **Curvas e fonte do modal de texto em tokens (D-0159):** três tokens novos de curva e o `--font-mono` tiram o `cubic-bezier` e o `Consolas` escritos à mão. As curvas calculadas são as mesmas, e o texto do modal não muda nenhum pixel. O texto da anotação fica com fontes genéricas, iguais às do canvas. Fecha o F-0120.
 
 ### Corrigido
 
-- **O seletor de cor usa tokens para o preto e o branco (D-0156):** o quadrado de tons tinha `#000` e `#fff` escritos no código, fora da tabela de cores literais do `design-tokens.md`. Agora usa `--color-black`, token novo, e `--color-white`. O comando de conferência da tabela volta a devolver vazio.
+- **O seletor de cor usa tokens para o preto e o branco (D-0156):** o quadrado de tons tinha `#000` e `#fff` escritos no código. Eles estavam fora da tabela de cores literais do `design-tokens.md`. Agora usa `--color-black`, token novo, e `--color-white`. O comando de conferência da tabela volta a devolver vazio.
 
 ## [29.6.0] - 2026-11-10
 
