@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Adicionado
+
+- **Desfocado, a terceira opção do Retângulo e do Círculo (D-0160):** a forma desfoca o que está embaixo, para esconder um dado antes de exportar. O desfoque é forte e igual em todos os navegadores, também no Safari. A anotação continua editável até aplicar, e a foto salva leva só a versão desfocada. Testado no Edge 157, no Chrome 156 e no WebKit: 8 verificações em cada um. Pedido de quem mantém o projeto (P-0005).
+
 ### Modificado
 
 - **A faixa de tamanho do `validate.sh` vai até 600 KB (D-0157):** a 29.6.0 chegou a 519 661 bytes, perto do limite de 520 KB. O Desfocado (P-0005) não caberia. O limite continua a avisar de um salto inesperado. O README diz que o arquivo tem cerca de 520 KB. Pedido de quem mantém o projeto, com a orientação de não criar nada desnecessário e de enxugar o código em auditorias.
