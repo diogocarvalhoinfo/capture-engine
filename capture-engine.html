@@ -6660,7 +6660,9 @@
         // opacity:1 (no :hover of the parent needed), high z-index (inside the modal)
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
         // Click on ✕: deletes the selected annotation
-        _annDelBtnEl.onclick = (e) => { e.stopPropagation(); annDeleteSelected() };
+        // Only a press that began on the ✕ deletes: on a phone, the click a tap on the canvas sends can land on the ✕ that the tap just showed (D-0169). Enter has no press
+        let _annDelDown = false; window.addEventListener('pointerdown', e => { _annDelDown = e.target === _annDelBtnEl }, true);
+        _annDelBtnEl.onclick = (e) => { e.stopPropagation(); if (_annDelDown || !e.detail) annDeleteSelected(); _annDelDown = false };
         $('ann-viewport').appendChild(_annDelBtnEl);
       }
 
