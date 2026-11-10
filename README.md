@@ -206,6 +206,7 @@ Ao clicar numa imagem, abre um visualizador com zoom e navegação. O título é
 | **Zoom com botões** | Botões + e −, 1 % por clique; segurar o botão repete o passo e acelera. O valor (ex.: 137 %) volta a 100 % com um clique. A barra aparece quando o zoom passa de 100 % |
 | **Navegar ← →** | Botões de seta flutuantes nas laterais (visíveis quando há ≥2 imagens na sessão), ou teclas ArrowLeft / ArrowRight |
 | **Fechar** | Botão × ou clicar fora da imagem (apenas quando zoom = 100 %) |
+| **Menu** | Clique direito na imagem, ou toque longo no telefone: Editar, Copiar imagem (Ctrl+C), Duplicar, Renomear (F2), Download e Remover (Del). Os atalhos valem sem abrir o menu. Renomear edita o nome no título: Enter grava, Esc desfaz. Remover fecha o visualizador. Numa imagem de «Removidos»: Restaurar e Download |
 
 **Limites de zoom:** 20 % (mínimo) a 1000 % (máximo).
 
