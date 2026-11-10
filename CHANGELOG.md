@@ -4,6 +4,17 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Adicionado
+
+- **Seletor de cor com quadrado de tons e barra de cores (D-0156):** na bandeja «Outra cor», o círculo ao lado do código HEX abre um quadrado de tons e uma barra de cores, acima do conta-gotas. Arrastar mostra a cor no círculo da bandeja, no campo HEX e no círculo da barra de ferramentas; soltar aplica a cor, com um desfazer só. As setas do teclado movem os marcadores, e com Shift andam 10 %. Testado no Edge 157 e no Chrome 156, no computador e no telefone (390 px, com toque simulado): 20 verificações. Pedido de quem mantém o projeto (P-0007).
+
+### Corrigido
+
+- **Os botões da bandeja de cor não trocam mais a ferramenta (D-0156):** desde a 29.4.0, um clique no conta-gotas trocava a ferramenta para uma que não existe, e a anotação selecionada perdia a seleção.
+- **O código HEX cabe no campo no telefone (D-0156):** no telefone, os campos usam letra de 16 px, e o «#» ficava cortado. O campo tem 80 px lá.
+
 ## [29.5.0] - 2026-11-10
 
 Minor: o visualizador de imagem ganha um menu próprio no clique direito e no toque longo.

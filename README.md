@@ -227,6 +227,7 @@ Motor de anotação:
     - Como nas ferramentas, apertar o círculo e arrastar para cima também abre a bandeja, e arrastar para baixo a fecha. Com a bandeja de uma ferramenta aberta, passar o mouse pelo círculo abre a dele.
     - Com o conta-gotas, uma lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor. O clique não desenha.
     - Um código digitado no campo, como `#3366FF`, vale na hora. O Enter fecha a bandeja.
+    - O círculo ao lado do código abre um quadrado de tons e uma barra de cores. Arrastar mostra a cor nos dois círculos, e soltar a aplica. As setas do teclado também movem os marcadores; com Shift, andam 10 %.
     - A cor escolhida fica no lugar do arco-íris, como as outras 8. Um novo clique no círculo volta a ela e abre a bandeja de novo.
   - Cada ferramenta guarda a sua espessura. O desenho livre, o retângulo, o círculo e a seta começam com 4 px; o marca-texto, com 12 px. O texto começa com 24 e vai de 12 a 400 pelo − e o +; arrastando as alças, chega a qualquer tamanho entre 8 e 400. O ícone do desenho livre e o da seta engrossam e afinam com a espessura de cada um.
   - **Opções de uma ferramenta.** As ferramentas que desenham têm um ponto discreto acima do botão. As opções abrem numa bandeja logo acima, lado a lado, sempre na mesma ordem, com a escolhida marcada. Cada uma mostra o nome ao passar o mouse.
