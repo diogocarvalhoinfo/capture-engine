@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Adicionado
+
+- **Ctrl+A seleciona todas as anotações, e o Delete apaga todas (D-0162):** no editor, cada anotação ganha a caixa de seleção, e um Ctrl+Z as devolve. Antes, o Ctrl+A selecionava o texto da interface inteira, e a seleção não saía. Testado no Edge 157, no Chrome 156 e no WebKit: 9 verificações em cada um. Pedido de quem mantém o projeto.
+
 ## [29.7.0] - 2026-11-10
 
 Minor: o Desfocado no Retângulo e no Círculo, e o clique duplo no nome da imagem; e os pendentes do `AGENTS.md` fechados.

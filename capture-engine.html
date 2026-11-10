@@ -4737,7 +4737,7 @@
       function annLayerKey(e) { if (!(e.ctrlKey || e.metaKey)) return false; const up = e.code === 'BracketRight' || e.key === ']' || e.key === '}', down = e.code === 'BracketLeft' || e.key === '[' || e.key === '{'; if (!up && !down) return false; e.preventDefault(); annLayer(up ? 1 : -1, e.shiftKey); return true }
       function annDeleteKey(e) { if (e.key !== 'Delete' || !annDeleteSelected()) return false; e.preventDefault(); return true }
       // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
-      const annEditorKey = e => annActive && !typingInField() && (annUndoKey(e) || annDeleteKey(e) || annLayerKey(e));
+      const annEditorKey = e => annActive && !typingInField() && (annAllKey(e) || annUndoKey(e) || annDeleteKey(e) || annLayerKey(e));
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
       function viewerKey(e) {
         if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Aplicar alterações or Descartar alterações (F-0083)
@@ -4756,6 +4756,7 @@
       /* The keys of the viewer menu, without opening it (D-0155): Ctrl+C, Del and F2; the menu key and Shift+F10 open it on the image */
       function viewerMenuKey(e) {
         const k = e.key, o = viewerItem(); if (!o) return;
+        if ((e.ctrlKey || e.metaKey) && k.toLowerCase() === 'a') { e.preventDefault(); return } // not the text of the page behind (D-0162)
         if (k === 'ContextMenu' || (e.shiftKey && k === 'F10')) { e.preventDefault(); const r = $('img-modal-img').getBoundingClientRect(); viewerMenu(r.left + r.width / 2, r.top + r.height / 2); return }
         if (modalIsTrash) return;
         if ((e.ctrlKey || e.metaKey) && k.toLowerCase() === 'c' && !window.getSelection().toString()) { e.preventDefault(); copyImg(o) }
@@ -5285,7 +5286,7 @@
       function annDeactivate() {
         { const _o = images.find(x => x.id === modalItemId); if (_o && annActive && !annSaved) { if (annOpenCrop) _o.cropBox = annOpenCrop; else delete _o.cropBox } annUseFirst = false; annOpenCrop = null }
         clearAnnAwait(); annPasteForget(); annCropMode = 'rect'; Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === 'rect')); $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '';
-        annActive = false; annDrawing = false; annSelectedIdx = -1;
+        annActive = false; annDrawing = false; annSelectedIdx = -1; annAllSel = false;
         // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
         annDragging = annResizing = annDraggingCrop = annDragDirty = annResizeDirty = false;
         [annDragRafId, annResizeRafId, annRafId].forEach(id => { if (id) cancelAnimationFrame(id) }); annDragRafId = annResizeRafId = annRafId = 0;
@@ -5412,7 +5413,7 @@
         return true;
       }
       async function annSetTool(t) {
-        annTempSelectFrom = null;
+        annTempSelectFrom = null; annAllSel = false;
         if (annTool in annSizeByTool) annSizeByTool[annTool] = annSizeIdx;
         if (t in annSizeByTool) annSizeIdx = annSizeByTool[t];
         const _k0 = annColorKey(annTool), _k1 = annColorKey(t);
@@ -5495,7 +5496,17 @@
       const ANN_HANDLE_SIZE = 6; // half side of the visible handle, in screen px (12 x 12)
       const ANN_HIT_SIZE = 22;   // half side of the hit area, in screen px (44 x 44)
       function annPx() { const cv = $('ann-canvas'), r = cv ? cv.getBoundingClientRect() : null; return r && r.width ? cv.width / r.width : 1 }
+      /* Ctrl+A selects every annotation (D-0162): a box around each, without handles; Delete removes them all, with one undo */
+      let annAllSel = false;
+      function annAllKey(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); if (annHistory.length) { annAllSel = true; annSelectedIdx = -1; annRenderAll() } return true }
+        if (!annAllSel) return false;
+        if (e.key === 'Delete') { e.preventDefault(); annPushUndo(); annHistory.splice(0); annAllSel = false; setAnnDirty(true); annRenderAll(); return true }
+        if (e.key === 'Escape') { e.preventDefault(); annAllSel = false; annRenderAll(); return true }
+        return false;
+      }
       function annDrawSelectionOverlay() {
+        if (annAllSel) { const k = annPx(), M = 6 * k, ctx = annGetCtx(); ctx.save(); ctx.strokeStyle = ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(); ctx.lineWidth = k; annHistory.forEach(e => { const b = annBBox(e); ctx.globalAlpha = 0.55; ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2); ctx.globalAlpha = 0.04; ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2) }); ctx.restore(); return }
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
@@ -5737,7 +5748,7 @@
         const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_prev.first;
         if ('pcrop' in _prev) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_prev.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_prev.pcrop)); else delete _ro.cropBox; } }
         const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
-        annSelectedIdx = -1;
+        annSelectedIdx = -1; annAllSel = false;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
         if (prevCrop && !annCropBox) {
@@ -5767,7 +5778,7 @@
         const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_next.first;
         if ('pcrop' in _next) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_next.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_next.pcrop)); else delete _ro.cropBox; } }
         const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
-        annSelectedIdx = -1;
+        annSelectedIdx = -1; annAllSel = false;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
         if (prevCrop && !annCropBox) {
@@ -6334,6 +6345,7 @@
         /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
         let annRightAt = null;
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
+        cv.addEventListener('pointerdown', () => { if (annAllSel) { annAllSel = false; annRenderAll() } }, true); // a click on the photo leaves the selection of all (D-0162)
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
           e.preventDefault();
