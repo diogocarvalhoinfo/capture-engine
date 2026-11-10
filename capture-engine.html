@@ -5335,6 +5335,7 @@
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
       }
       // Opening Recortar: a saved crop shows the whole image again, with the box where it was; otherwise the box starts as the whole image
+      let annCropFresh = false;
       async function annEnterCrop(o, cv) {
         if (o && o.cropBox && o.origBlob && !annCropBox) {
           let rBlob = o.origBlob;
@@ -5346,7 +5347,7 @@
           annCropBox = { x: cx, y: cy, w: o.cropBox.w, h: o.cropBox.h };
           annRenderAll();
         } else if (!annCropBox && cv && cv.width) {
-          annPushUndo();
+          annCropFresh = true; // the undo step is kept by the first drag of the box, not here: entering Recortar is not a change (F-0141)
           annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height };
           annRenderAll();
         }
@@ -5591,6 +5592,7 @@
         if (annTool === 'crop' && annCropMode !== 'rect') annDrawCropMode(annGetCtx(), $('ann-canvas'));
         else if (annTool === 'crop') {
           const cv = $('ann-canvas'), ctx = annGetCtx();
+          if (!annCropBox && cv.width) annCropBox = { x: 0, y: 0, w: cv.width, h: cv.height }; // an undo to a step without a box shows the whole photo, with its lines, not a dark photo (F-0141)
           ctx.save();
           ctx.fillStyle = 'rgb(0 0 0 / 60%)';
           if (!annCropBox) {
@@ -6276,6 +6278,7 @@
         // Recortar: a handle or the inside of the box moves it; anywhere else starts a new box
         function annDownCrop(e) {
           const p = annCanvasXY(e);
+          if (annCropFresh) { annCropFresh = false; annPushUndo() } // Ctrl+Z gives back the whole photo as the box (F-0141)
           annStart = p;
           annDraggingCrop = true;
           const _h = annCropBox ? annCropHandleAt(p, annCropBox, ANN_HIT_SIZE * annPx()) : null;

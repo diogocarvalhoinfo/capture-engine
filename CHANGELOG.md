@@ -19,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **O seletor de cor usa tokens para o preto e o branco (D-0156):** o quadrado de tons tinha `#000` e `#fff` escritos no código. Eles estavam fora da tabela de cores literais do `design-tokens.md`. Agora usa `--color-black`, token novo, e `--color-white`. O comando de conferência da tabela volta a devolver vazio.
+- **No Recortar, o Ctrl+Z não deixa mais a foto escura e sem as linhas (F-0141):** abrir a ferramenta gravava um degrau invisível. Desfazê-lo tirava a caixa de recorte, e a foto ficava toda escura. Agora o degrau é gravado no primeiro arrasto da caixa, e desfazer volta à foto inteira, com as linhas. Achado por quem mantém o projeto.
 - **Ao reabrir uma foto anotada, cada Ctrl+Z e Ctrl+Y muda a tela (F-0140):** sem giro nem recorte, o fundo da pilha era igual ao degrau sem anotações. O último Ctrl+Z e o primeiro Ctrl+Y não faziam nada. Agora esse degrau é o próprio fundo. Medido no Edge 157 com 2 setas: os Ctrl+Y refazem 1 666 e 1 706 pixels, sem passo vazio.
 
 ## [29.6.0] - 2026-11-10
