@@ -657,7 +657,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 
 ## 13. Requisitos
 
-**Versão:** 29.4.2. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.5.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 ### Requisitos mínimos
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
