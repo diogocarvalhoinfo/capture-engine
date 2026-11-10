@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **No telefone, dois toques editam o nome da imagem e o texto anotado (D-0167):** o telefone nem sempre envia o clique duplo, e dois toques não faziam nada. Com o Texto, o primeiro toque também abria um texto novo antes do segundo. Testado no Chromium e no WebKit, com toque simulado: 6 verificações. Pedido de quem mantém o projeto.
+- **No iPhone, a imagem do visualizador e do editor não fica mais quebrada (D-0168):** o app revogava o endereço da imagem logo depois de carregar. O Safari do iPhone pode carregá-la de novo, e a imagem aparecia com «Pré-visualização» e um «?». Agora a imagem guarda o endereço enquanto está na tela, e as miniaturas também. Achado por quem mantém o projeto, com fotos.
 
 ## [29.8.1] - 2026-11-10
 

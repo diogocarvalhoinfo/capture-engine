@@ -4584,7 +4584,7 @@
       function updateBtnTitles() { if (zipModeActive) return; $('btn-pdf').setAttribute('aria-description', 'Exportar: ' + buildFilename('pdf')); $('btn-zip').setAttribute('aria-description', 'Exportar: ' + buildFilename('zip')) }
 
       /* ═══ RENDER THUMB ═══ */
-      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); if (o.kind === 'pdf') { URL.revokeObjectURL(url); pdfFace(el, o) } else { const img = el.querySelector('img'); img.src = url; img.onload = () => URL.revokeObjectURL(url); img.onerror = () => URL.revokeObjectURL(url) } const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
+      function renderThumb(o) { if (images.length === 1) $('img-empty').style.display = 'none'; const url = URL.createObjectURL(o.blob), el = document.createElement('div'); el.className = 't-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`; el.prepend(markBox(o.id)); if (o.kind === 'pdf') { URL.revokeObjectURL(url); pdfFace(el, o) } else { const img = el.querySelector('img'); img.src = url } /* the thumbnail keeps its address while it shows it (D-0168) */ const lb = document.createElement('input'); lb.type = 'text'; lb.className = 't-label'; lb.value = imgName(o); lb.placeholder = 'Imagem ' + (images.indexOf(o) + 1); lb.addEventListener('click', ev => ev.stopPropagation()); /* the name shows its extension; while typing only the name changes, and the extension stays (D-0119) */ lb.addEventListener('focus', () => { lb.value = o.label || '' }); lb.addEventListener('blur', () => { lb.value = imgName(o) }); lb.addEventListener('change', () => window.setLabel(o.id, lb.value.replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), ''))); el.appendChild(lb); $('thumb-grid').appendChild(el) }
 
       /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label, with «PDF» on the page (D-0151), and «PDF · N páginas» */
       function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="12" y="16.3" text-anchor="middle" font-size="4.6">PDF</text></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
@@ -4629,6 +4629,12 @@
       let imgPanning = false, imgStartX = 0, imgStartY = 0;
       function applyImgZoom(anim = false) { const wrap = $('ann-wrap'); if (!wrap) return; if (annActive) anim = false; if (anim) { wrap.classList.remove('no-anim'); void wrap.offsetWidth; } else { wrap.classList.add('no-anim'); } wrap.style.transform = `scale(${imgScale}) translate(${imgPanX / imgScale}px,${imgPanY / imgScale}px)`; const zUI = $('zoom-ui'); if (zUI) { $('zoom-level').textContent = Math.round(imgScale * 100) + '%'; /* the bar stays while the pointer is on it, so a click on − that reaches 100 % does not take the buttons away */ if (imgScale === 1 && !zUI.matches(':hover')) { zUI.style.display = 'none'; const vp = $('ann-viewport'); if (vp) vp.style.cursor = 'default' } else { zUI.style.display = 'flex'; const vp = $('ann-viewport'); if (vp && !imgPanning) vp.style.cursor = 'grab' } } if (annActive) annFollowZoom() }
       function resetImgZoom() { imgZoomed = false; imgPanX = 0; imgPanY = 0; imgScale = 1; applyImgZoom(true) }
+      /* The viewer image keeps its blob address while it shows it: Safari on the iPhone may load a shown image again from its
+         address, and a revoked one breaks (D-0168). The address of before is revoked when a new one takes its place, or on closing */
+      let modalImgUrl = null;
+      function modalImgSrc(blob) { const img = $('img-modal-img'), old = modalImgUrl; modalImgUrl = blob ? URL.createObjectURL(blob) : null; img.src = modalImgUrl || ''; if (old) URL.revokeObjectURL(old) }
+      // Waits for the image to load, or to fail: an image Safari cannot load does not hold the editor forever
+      const modalImgLoad = blob => new Promise(r => { const img = $('img-modal-img'); img.onload = img.onerror = () => { img.onload = img.onerror = null; r() }; modalImgSrc(blob) });
       window.openImgModal = function (id, trash) {
         const arr = trash ? removed : images, o = arr.find(x => x.id === id);
         if (!o) return;
@@ -4637,15 +4643,11 @@
         modalItemId = id;
         annDeactivate();
         resetImgZoom();
-        const url = URL.createObjectURL(o.blob);
         $('img-modal-dims').textContent = '';
         const img = $('img-modal-img');
-        img.onload = function () {
-          $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size);
-          URL.revokeObjectURL(url);
-        };
-        img.onerror = function () { URL.revokeObjectURL(url); };
-        img.src = url;
+        img.onload = function () { $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) };
+        img.onerror = null;
+        modalImgSrc(o.blob);
         $('img-modal-title').textContent = imgName(o); // the name with the extension, as the Download writes it (D-0119)
         $('img-modal-restore').style.display = trash ? 'flex' : 'none';
         $('img-modal-dl').style.display = 'flex';
@@ -4668,7 +4670,7 @@
         $('img-modal-overlay').classList.remove('open');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
-        $('img-modal-img').src = '';
+        modalImgSrc(null);
       }
 
       window.imgModalNav = function (dir) {
@@ -5250,7 +5252,7 @@
       function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
       function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
       /* Aplicar alterações with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
-      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u } setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
+      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const old = th.src; th.src = URL.createObjectURL(o.blob); if (old.startsWith('blob:')) URL.revokeObjectURL(old) } /* the thumbnail keeps its address while it shows it (D-0168) */ setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
          the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
@@ -5315,10 +5317,7 @@
         // Restore the baked image as the background (for the viewer)
         const _restoreO = images.find(x => x.id === modalItemId);
         if (_restoreO) {
-          const _rimg = $('img-modal-img');
-          const _ru = URL.createObjectURL(_restoreO.blob);
-          _rimg.onload = () => URL.revokeObjectURL(_ru);
-          _rimg.src = _ru;
+          modalImgSrc(_restoreO.blob);
         }
         setAnnDirty(annIsDirty);
         if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
@@ -5334,9 +5333,8 @@
         const o = images.find(x => x.id === modalItemId);
         if (o) {
           const img = $('img-modal-img');
-          const u = URL.createObjectURL(o.blob);
-          img.onload = () => { URL.revokeObjectURL(u); $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) }; // the info follows the saved image (B8)
-          img.src = u;
+          img.onload = () => { $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) }; // the info follows the saved image (B8)
+          modalImgSrc(o.blob);
         }
       }
       // Moves every annotation, and every undo/redo state, by (dx, dy): the crop shows or hides the image around the box
@@ -5353,8 +5351,7 @@
       // Shows the blob in the editor image and gives the canvas the size of that image
       async function annShowBlob(blob, cv) {
         const img = $('img-modal-img');
-        const u = URL.createObjectURL(blob);
-        await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+        await modalImgLoad(blob);
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
       }
       // Opening Recortar: a saved crop shows the whole image again, with the box where it was; otherwise the box starts as the whole image
@@ -5750,8 +5747,7 @@
           bgBlob = await new Promise(r => _tc.toBlob(r, 'image/png'));
         }
         if (seq !== annBgSeq) return;
-        const u = URL.createObjectURL(bgBlob);
-        await new Promise(r => { img.onload = () => { URL.revokeObjectURL(u); r(); }; img.src = u; });
+        await modalImgLoad(bgBlob);
         if (seq !== annBgSeq) return;
         _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
       }
@@ -6018,7 +6014,7 @@
             annForgetIfUntouched(o);
             await idbPut('images', o); annSaved = true;
             const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`);
-            if (th) { const u = URL.createObjectURL(o.blob); th.onload = () => URL.revokeObjectURL(u); th.src = u }
+            if (th) { const old = th.src; th.src = URL.createObjectURL(o.blob); if (old.startsWith('blob:')) URL.revokeObjectURL(old) } /* the thumbnail keeps its address while it shows it (D-0168) */
             isDirty = true; triggerSave(); SysLogger.info('Anotação guardada');
           }
           annDeactivate();
@@ -6068,7 +6064,7 @@
           }
           annCurrentRotation = (annCurrentRotation + 90) % 360;
           annCommitUndo(_rotSnap);
-          await new Promise(r => { img.onload = r; img.src = newU; });
+          await new Promise(r => { img.onload = img.onerror = () => { img.onload = img.onerror = null; r() }; img.src = newU; if (modalImgUrl) { URL.revokeObjectURL(modalImgUrl); modalImgUrl = null } });
           const cv = $('ann-canvas');
           cv.width = img.naturalWidth; cv.height = img.naturalHeight;
           setAnnDirty(true);
