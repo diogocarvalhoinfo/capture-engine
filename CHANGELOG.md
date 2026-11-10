@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O Edge e o Chrome voltam a mostrar «Instalar app» na barra de endereço (D-0154):** o manifesto não tinha `start_url`, e os dois navegadores recusavam o app com o erro `start-url-not-valid`; só o menu ⋯ instalava. Agora um script no `<head>` dá ao manifesto o endereço da página como `start_url`, `id` e `scope`, em `http:` e `https:`. Medido no Edge 157 e no Chrome 156, em localhost: o erro some, também numa cópia serializada do DOM aberta em outra pasta. Por `file://`, nada muda. Pedido de quem mantém o projeto (P-0004).
+
 ## [29.4.1] - 2026-11-09
 
 Patch: os botões dos editores chamam-se «Descartar alterações» e «Aplicar alterações»; e os documentos ficam coerentes com o app.
