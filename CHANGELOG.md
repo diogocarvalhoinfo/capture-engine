@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **No telefone, dois toques editam o nome da imagem e o texto anotado (D-0167):** o telefone nem sempre envia o clique duplo, e dois toques não faziam nada. Com o Texto, o primeiro toque também abria um texto novo antes do segundo. Testado no Chromium e no WebKit, com toque simulado: 6 verificações. Pedido de quem mantém o projeto.
+
 ## [29.8.1] - 2026-11-10
 
 Patch: no telefone, o toque longo seleciona a anotação, e o texto da interface não se seleciona mais.

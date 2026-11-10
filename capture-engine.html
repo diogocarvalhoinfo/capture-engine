@@ -4718,7 +4718,9 @@
       }
       /* Before the menu closes on the pointerdown (capture on the document), a click outside it is marked here, on the window */
       let viewerMenuDismiss = false; window.addEventListener('pointerdown', e => { viewerMenuDismiss = !!ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target)) }, true);
-      $('img-modal-title').addEventListener('dblclick', viewerRename); /* a double click on the name edits it, as F2 (D-0161) */
+      /* Two taps within 350 ms and 30 px are a double click: phones do not always send dblclick (D-0167) */
+      function onDoubleTap(el, fn) { let last = null; el.addEventListener('pointerup', e => { if (e.pointerType !== 'touch') return; if (last && e.timeStamp - last.t < 350 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 30) { last = null; fn(e) } else last = { t: e.timeStamp, x: e.clientX, y: e.clientY } }) }
+      $('img-modal-title').addEventListener('dblclick', viewerRename); onDoubleTap($('img-modal-title'), viewerRename); /* a double click or a double tap on the name edits it, as F2 (D-0161) */
       $('img-modal-overlay').addEventListener('contextmenu', e => { if (annActive || e.target.closest('input, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]')) return; e.preventDefault(); if (!viewerMenuOpenNow()) viewerMenu(e.clientX, e.clientY) });
 
       // Keyboard navigation
@@ -6333,7 +6335,7 @@
           if (annTempSelectFrom && annHitTest(p.x, p.y) < 0) { annEndTempSelect(); return; } // a click off the annotations: the tool of before
           if (annGrabAt(p) >= 0) SysLogger.info('Ann drag start: idx=' + annSelectedIdx + ' x=' + p.x.toFixed(1) + ' y=' + p.y.toFixed(1));
         }
-        // Texto: a click places a new text after 220 ms, so that a double click can edit an existing one instead
+        // Texto: a click places a new text after 220 ms (350 ms with a touch), so that a double click can edit an existing one instead
         function annDownText(e) {
           if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
           const p = annCanvasXY(e);
@@ -6342,7 +6344,7 @@
             if (annCommitText) annCommitText();
             annEditingTextIdx = -1;
             annShowTextInput(p.x, p.y);
-          }, 220);
+          }, e.pointerType === 'touch' ? 350 : 220); // a touch waits for the second tap of a double tap (D-0167)
         }
         // Drawing tools (free stroke, rectangle, circle, arrow): the stroke starts here and ends on pointerup
         function annDownDraw(e) {
@@ -6400,9 +6402,11 @@
           annShowTextInput(_h.x1, _h.y1, _h.txt, _h.rot || 0);
         }
         // Double click (Texto or Selecionar): edits the text under the pointer; in Texto, a new text where there is none
-        cv.addEventListener('dblclick', e => {
+        let annTapAt = -1e9; // the double tap was handled: the dblclick the browser may send after it is ignored
+        onDoubleTap(cv, e => { annTapAt = e.timeStamp; annDblText(e) });
+        cv.addEventListener('dblclick', e => { if (!annActive || (annTool !== 'text' && annTool !== 'select')) return; e.stopPropagation(); if (e.timeStamp - annTapAt > 600) annDblText(e) }); // no zoom of the viewport; the double tap keeps its pointerup, which ends the long touch (D-0166)
+        function annDblText(e) {
           if (!annActive || (annTool !== 'text' && annTool !== 'select')) return;
-          e.stopPropagation();
           if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null; }
           if (annCommitText) { annCommitText(); annCommitText = null; }
           const p = annCanvasXY(e);
@@ -6410,7 +6414,7 @@
           if (_i >= 0) { annEditText(_i); return; }
           annEditingTextIdx = -1;
           if (annTool !== 'select') annShowTextInput(p.x, p.y);
-        });
+        }
         // Shift (D-0093): a square or a circle ('box'), steps of 45° for an arrow or a free stroke ('line'); a is the fixed point.
         // annShift is read on every pointer event and on the key itself, so it acts in the middle of a gesture
         let annShift = false;
