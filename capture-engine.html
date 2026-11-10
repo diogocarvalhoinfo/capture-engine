@@ -6342,6 +6342,8 @@
           else if (annTool === 'text') annDownText(e);
           else annDownDraw(e);
         });
+        /* While typing, a right or middle press on the text keeps it and moves the block at once, as on the canvas (D-0163) */
+        $('ann-text-input').addEventListener('pointerdown', e => { if (!annActive || (e.button !== 1 && e.button !== 2)) return; e.preventDefault(); if (e.button === 2) annRightAt = { x: e.clientX, y: e.clientY }; annDownGrab(e) });
         /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
         let annRightAt = null;
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }

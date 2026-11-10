@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Adicionado
 
 - **Ctrl+A seleciona todas as anotações, e o Delete apaga todas (D-0162):** no editor, cada anotação ganha a caixa de seleção, e um Ctrl+Z as devolve. Antes, o Ctrl+A selecionava o texto da interface inteira, e a seleção não saía. Testado no Edge 157, no Chrome 156 e no WebKit: 9 verificações em cada um. Pedido de quem mantém o projeto.
+- **O botão direito move o texto que está sendo digitado (D-0163):** apertar o botão direito sobre o bloco confirma o texto e já o arrasta, como numa anotação pronta. Testado no Edge 157 e no Chrome 156: 6 verificações. Pedido de quem mantém o projeto.
 
 ## [29.7.0] - 2026-11-10
 
