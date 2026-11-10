@@ -223,7 +223,7 @@ Motor de anotação:
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
   - Cada ferramenta fica ativa até se escolher outra. O Girar 90° gira a imagem e termina.
   - A barra tem também as 8 cores, «Desfazer», «Refazer», «Descartar alterações» e «Aplicar alterações». «Diminuir» e «Aumentar» mudam a espessura do traço ou o tamanho do texto. Eles ficam logo depois das ferramentas no computador, e depois das cores no telefone.
-  - **Outra cor:** o círculo com as cores do arco-íris, depois das 8 cores, abre uma bandeja com o conta-gotas, já ligado, e o código da cor em HEX.
+  - **Outra cor:** o círculo com as cores do arco-íris, depois das 8 cores, abre uma bandeja com o conta-gotas e o código da cor em HEX. O conta-gotas começa desligado: um clique o liga, e ele fica ligado até pegar uma cor.
     - Como nas ferramentas, apertar o círculo e arrastar para cima também abre a bandeja, e arrastar para baixo a fecha. Com a bandeja de uma ferramenta aberta, passar o mouse pelo círculo abre a dele.
     - Com o conta-gotas, uma lupa mostra a cor e o código sob o ponteiro, e um clique ou um toque na foto pega a cor. O clique não desenha.
     - Um código digitado no campo, como `#3366FF`, vale na hora. O Enter fecha a bandeja.

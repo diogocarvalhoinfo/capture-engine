@@ -11,6 +11,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Ctrl+A seleciona todas as anotações, e o Delete apaga todas (D-0162):** no editor, cada anotação ganha a caixa de seleção, e um Ctrl+Z as devolve. Antes, o Ctrl+A selecionava o texto da interface inteira, e a seleção não saía. Testado no Edge 157, no Chrome 156 e no WebKit: 9 verificações em cada um. Pedido de quem mantém o projeto.
 - **O botão direito move o texto que está sendo digitado (D-0163):** apertar o botão direito sobre o bloco confirma o texto e já o arrasta, como numa anotação pronta. Testado no Edge 157 e no Chrome 156: 6 verificações. Pedido de quem mantém o projeto.
 
+### Modificado
+
+- **O conta-gotas começa desligado (D-0164):** ao abrir «Outra cor», um clique liga o conta-gotas, e ele fica ligado até pegar uma cor. Antes, ele já abria ligado. Testado no Edge 157 e no Chrome 156: 7 verificações. Pedido de quem mantém o projeto.
+
 ## [29.7.0] - 2026-11-10
 
 Minor: o Desfocado no Retângulo e no Círculo, e o clique duplo no nome da imagem; e os pendentes do `AGENTS.md` fechados.
