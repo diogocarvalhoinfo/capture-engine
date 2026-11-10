@@ -3241,6 +3241,21 @@
       color: var(--color-white);
     }
 
+    /* The long touch on the image opens the viewer menu, not the menu of Safari on the iPhone (D-0155) */
+    #img-modal-img {
+      -webkit-touch-callout: none;
+    }
+
+    /* Renomear in the viewer menu: the name is edited on the title line, whole and with the focus ring (D-0155) */
+    #img-modal-title:is([contenteditable="true"], [contenteditable="plaintext-only"]) {
+      text-overflow: clip;
+      cursor: text;
+      padding: 0 var(--spacing);
+      outline: var(--focus-width) solid var(--color-ring);
+      outline-offset: var(--focus-offset);
+      border-radius: var(--radius-sm);
+    }
+
     #img-modal-overlay .modal-close,
     #text-modal-overlay .modal-close {
       background: var(--color-viewer-surface);
@@ -4602,6 +4617,7 @@
       let _imgOverlayMdOnBackdrop = false;
       $('img-modal-overlay').addEventListener('mousedown', function (e) { _imgOverlayMdOnBackdrop = (e.target === this || e.target === $('ann-viewport')) });
       $('img-modal-overlay').onclick = function (e) {
+        if (viewerMenuDismiss) { viewerMenuDismiss = false; _imgOverlayMdOnBackdrop = false; return } // the click that closes a menu closes only the menu (D-0155)
         const isInteractive = e.target.closest('button') || e.target.closest('input') || e.target === $('img-modal-img') || e.target === $('ann-canvas');
         if (!isInteractive && !imgZoomed && _imgOverlayMdOnBackdrop) {
           if (annActive) {
@@ -4614,6 +4630,24 @@
       };
       $('img-modal-restore').onclick = function () { if (modalItemId) window.restoreImg(modalItemId) };
       $('img-modal-dl').onclick = function () { const arr = modalIsTrash ? removed : images, o = arr.find(x => x.id === modalItemId); if (o) { const ext = imgExt(o.blob.type), name = o.label ? o.label + '.' + ext : 'imagem.' + ext, url = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000) } };
+      /* The menu of the right click in the viewer, as the menu of the card without Abrir and Marcar; in «Removidos», Restaurar
+         and Download. The browser menu does not work there: the blob address of the image is revoked after it loads (D-0155) */
+      function viewerItem() { return (modalIsTrash ? removed : images).find(x => x.id === modalItemId) }
+      function viewerRemove() { const id = modalItemId; closeImgModal(); window.delImg(id) }
+      function viewerGroups() { const o = viewerItem(); if (!o) return null; if (modalIsTrash) return [[['restore', 'Restaurar', '', () => window.restoreImg(o.id)], ['dl', 'Download', '', () => dlImg(o)]]]; return [[['edit', 'Editar', '', () => $('ann-toggle').click()], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', viewerRename]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', viewerRemove, 1]]] }
+      let viewerMenuAt = 0; const viewerMenuOpenNow = () => !!ctxMenu && Date.now() - viewerMenuAt < 1000; /* the long touch and the contextmenu of Android open it once */
+      function viewerMenu(x, y) { const g = viewerGroups(); if (g) { ctxOpen(x, y, g, true); viewerMenuAt = Date.now() } }
+      /* Renomear edits the name on the title line: the name without the extension, Enter or a click outside keeps it, Esc gives it back */
+      function viewerRename() {
+        const o = viewerItem(), t = $('img-modal-title'); if (!o || modalIsTrash || t.isContentEditable) return;
+        let cancel = false; t.textContent = o.label; try { t.contentEditable = 'plaintext-only' } catch (_) { } if (!t.isContentEditable) t.contentEditable = 'true';
+        const key = e => { if (e.key === 'Enter') { e.preventDefault(); t.blur() } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cancel = true; t.blur() } };
+        const end = async () => { t.removeEventListener('keydown', key); t.removeEventListener('blur', end); t.contentEditable = 'false'; window.getSelection().removeAllRanges(); if (!cancel) await window.setLabel(o.id, t.textContent.replace(/\s+/g, ' ').replace(new RegExp('\\.' + imgExt(o.blob.type) + '$', 'i'), '')); if (modalItemId === o.id) t.textContent = imgName(o) };
+        t.addEventListener('keydown', key); t.addEventListener('blur', end); t.focus(); const r = document.createRange(); r.selectNodeContents(t); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      }
+      /* Before the menu closes on the pointerdown (capture on the document), a click outside it is marked here, on the window */
+      let viewerMenuDismiss = false; window.addEventListener('pointerdown', e => { viewerMenuDismiss = !!ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target)) }, true);
+      $('img-modal-overlay').addEventListener('contextmenu', e => { if (annActive || e.target.closest('input, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]')) return; e.preventDefault(); if (!viewerMenuOpenNow()) viewerMenu(e.clientX, e.clientY) });
 
       // Keyboard navigation
       // A focused text field (e.g. the annotation text editor) keeps its own keys: its native Ctrl+Z/Ctrl+Y
@@ -4655,7 +4689,16 @@
           e.preventDefault();
           if (annActive) { if (hasUnsavedAnnotations()) triggerUnsavedAlert(); else annDeactivate() } // unsaved annotations: the warning, as a click outside (F-0088)
           else closeImgModal();
-        }
+        } else if (!annActive) viewerMenuKey(e);
+      }
+      /* The keys of the viewer menu, without opening it (D-0155): Ctrl+C, Del and F2; the menu key and Shift+F10 open it on the image */
+      function viewerMenuKey(e) {
+        const k = e.key, o = viewerItem(); if (!o) return;
+        if (k === 'ContextMenu' || (e.shiftKey && k === 'F10')) { e.preventDefault(); const r = $('img-modal-img').getBoundingClientRect(); viewerMenu(r.left + r.width / 2, r.top + r.height / 2); return }
+        if (modalIsTrash) return;
+        if ((e.ctrlKey || e.metaKey) && k.toLowerCase() === 'c' && !window.getSelection().toString()) { e.preventDefault(); copyImg(o) }
+        else if (k === 'Delete') { e.preventDefault(); viewerRemove() }
+        else if (k === 'F2') { e.preventDefault(); viewerRename() }
       }
       window.addEventListener('keydown', function (e) {
         if (annEditorKey(e)) return;
@@ -4707,6 +4750,12 @@
         imgOv.addEventListener('touchstart', function (e) { if (e.touches.length !== 2) return; e.preventDefault(); imgPanning = false; if (annActive) { pinch = null; return } const rect = vp.getBoundingClientRect(); const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2, my = (e.touches[0].clientY + e.touches[1].clientY) / 2; pinch = { d: pinchDist(e.touches), s: imgScale, px: (mx - rect.left - rect.width / 2) / uiZoom(), py: (my - rect.top - rect.height / 2) / uiZoom() }; $('ann-wrap').classList.add('no-anim') }, { passive: false });
         imgOv.addEventListener('touchmove', function (e) { if (e.touches.length < 2) return; e.preventDefault(); if (!pinch) return; const target = Math.min(10, Math.max(0.2, pinch.s * pinchDist(e.touches) / pinch.d)); if (Math.abs(target - imgScale) >= 0.01) doImgZoom(target - imgScale, pinch.px, pinch.py, false) }, { passive: false });
         imgOv.addEventListener('touchend', function (e) { if (pinch && e.touches.length < 2) { pinch = null; $('ann-wrap').classList.remove('no-anim') } });
+        /* A long touch on the image opens the viewer menu: Safari on the iPhone has no contextmenu event. Chrome on Android has
+           one too, and the menu opens once (D-0155). A move of more than 10 px, a second finger or the editor cancel it */
+        let hold = null; const holdEnd = () => { if (hold) { clearTimeout(hold.t); hold = null } };
+        imgOv.addEventListener('touchstart', e => { holdEnd(); if (annActive || e.touches.length !== 1 || e.target !== $('img-modal-img')) return; const x = e.touches[0].clientX, y = e.touches[0].clientY; hold = { x, y, t: setTimeout(() => { hold = null; if (!viewerMenuOpenNow()) viewerMenu(x, y) }, 500) } }, { passive: true });
+        imgOv.addEventListener('touchmove', e => { if (hold && (e.touches.length !== 1 || Math.hypot(e.touches[0].clientX - hold.x, e.touches[0].clientY - hold.y) > 10)) holdEnd() }, { passive: true });
+        imgOv.addEventListener('touchend', holdEnd); imgOv.addEventListener('touchcancel', holdEnd);
         // The gesture events of Safari zoom the page too: cancelled while the viewer is open
         ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => { if (imgOv.classList.contains('open')) e.preventDefault() }, { passive: false }));
       }
@@ -4845,7 +4894,7 @@
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { restore: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>', front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7-5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 5h14M12 5v14M9 19h6"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
       function ctxOpen(x, y, groups, dark) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu' + (dark ? ' ctx-dark' : ''); m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
@@ -4869,7 +4918,7 @@
         document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target))) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
         window.addEventListener('blur', ctxClose); window.addEventListener('resize', ctxClose); document.addEventListener('scroll', ctxClose, true);
         document.addEventListener('keydown', e => {
-          if (ctxMenu) { ctxKey(e); return }
+          if (ctxMenu) { ctxKey(e); e.stopPropagation(); return } /* an open menu keeps its keys: Esc and the arrows do not reach the viewer behind it (D-0155) */
           if (document.querySelector('.modal-overlay.open, .sb-overlay.open') || typingInField()) return;
           const el = document.activeElement && document.activeElement.closest && document.activeElement.closest('#thumb-grid .t-item, #doc-list .d-item');
           if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }

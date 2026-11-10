@@ -4,6 +4,16 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Adicionado
+
+- **Menu do clique direito no visualizador de imagem (D-0155):** Editar, Copiar imagem (Ctrl+C), Duplicar, Renomear (F2), Download e Remover (Del), no estilo escuro do menu do editor. Os atalhos valem sem abrir o menu. Renomear edita o nome no título, e Remover fecha o visualizador. Nos «Removidos», o menu tem Restaurar e Download. No telefone, um toque longo na imagem abre o menu, também no iPhone. Antes abria o menu do navegador, cujas opções falhavam, porque o endereço `blob:` da imagem é revogado depois de carregar. Testado no Edge 157 e no Chrome 156, no computador (1536 × 864) e no telefone (390 px, com toque simulado): 24 verificações. Pedido de quem mantém o projeto (P-0006).
+
+### Corrigido
+
+- **Com um menu do clique direito aberto, o Esc e as setas ficam no menu (D-0155):** antes, o Esc fechava o menu e também o visualizador, ou saía do editor no menu de uma anotação; e as setas trocavam a imagem por trás. Um clique fora do menu fecha só o menu.
+
 ## [29.4.2] - 2026-11-10
 
 Patch: o Edge e o Chrome voltam a mostrar «Instalar app» na barra de endereço.
