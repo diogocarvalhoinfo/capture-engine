@@ -14,6 +14,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **O conta-gotas começa desligado (D-0164):** ao abrir «Outra cor», um clique liga o conta-gotas, e ele fica ligado até pegar uma cor. Antes, ele já abria ligado. Testado no Edge 157 e no Chrome 156: 7 verificações. Pedido de quem mantém o projeto.
+- **O aviso de anotações por salvar diz o que fazer (D-0165):** ao fechar o editor com alterações, um balão acima dos dois botões diz «Aplique ou descarte as alterações». Testado no Edge 157, nos dois temas, no computador e no telefone: 12 verificações. Pedido de quem mantém o projeto.
 
 ## [29.7.0] - 2026-11-10
 
