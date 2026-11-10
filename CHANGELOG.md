@@ -8,21 +8,26 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
-- **A faixa de tamanho do `validate.sh` vai até 600 KB (D-0157):** a 29.6.0 chegou a 519 661 bytes, perto do limite de 520 KB, e o Desfocado (P-0005) não caberia. O limite continua a avisar de um salto inesperado. O README diz que o arquivo tem cerca de 520 KB. Pedido de quem mantém o projeto, com a orientação de não criar nada desnecessário e de enxugar o código em auditorias.
+- **A faixa de tamanho do `validate.sh` vai até 600 KB (D-0157):** a 29.6.0 chegou a 519 661 bytes, perto do limite de 520 KB. O Desfocado (P-0005) não caberia. O limite continua a avisar de um salto inesperado. O README diz que o arquivo tem cerca de 520 KB. Pedido de quem mantém o projeto, com a orientação de não criar nada desnecessário e de enxugar o código em auditorias.
+- **Frases de até 30 palavras nos documentos (D-0158):** o `AGENTS.md`, o README, o `design-tokens.md` e as entradas desde a 29.4.2 não têm mais frase longa. As entradas antigas do `CHANGELOG.md` ficam como registro datado. Fecha o F-0074, o F-0132 e o F-0135, este com o espaço antes do «%» em duas linhas do `design-tokens.md`.
+
+### Corrigido
+
+- **O seletor de cor usa tokens para o preto e o branco (D-0156):** o quadrado de tons tinha `#000` e `#fff` escritos no código, fora da tabela de cores literais do `design-tokens.md`. Agora usa `--color-black`, token novo, e `--color-white`. O comando de conferência da tabela volta a devolver vazio.
 
 ## [29.6.0] - 2026-11-10
 
 Minor: o seletor de cor com quadrado de tons e barra de cores, na bandeja «Outra cor» do editor.
 
-Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 08h46. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Nas duas, o círculo da bandeja «Outra cor» abre o seletor, e um clique na barra de cores muda o código HEX; o clique direito no visualizador abre o menu com os seis itens. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 08h46. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Nas duas, o círculo da bandeja «Outra cor» abre o seletor, e um clique na barra de cores muda o código HEX. O clique direito no visualizador abre o menu com os seis itens. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
 
 ### Adicionado
 
-- **Seletor de cor com quadrado de tons e barra de cores (D-0156):** na bandeja «Outra cor», o círculo ao lado do código HEX abre um quadrado de tons e uma barra de cores, acima do conta-gotas. Arrastar mostra a cor no círculo da bandeja, no campo HEX e no círculo da barra de ferramentas; soltar aplica a cor, com um desfazer só. As setas do teclado movem os marcadores, e com Shift andam 10 %. Testado no Edge 157 e no Chrome 156, no computador e no telefone (390 px, com toque simulado): 20 verificações. Pedido de quem mantém o projeto (P-0007).
+- **Seletor de cor com quadrado de tons e barra de cores (D-0156):** na bandeja «Outra cor», o círculo ao lado do código HEX abre o seletor. Ele fica acima do conta-gotas. Arrastar mostra a cor no círculo da bandeja, no campo HEX e no círculo da barra de ferramentas; soltar aplica a cor, com um desfazer só. As setas do teclado movem os marcadores, e com Shift andam 10 %. Testado no Edge 157 e no Chrome 156, no computador e no telefone (390 px, com toque simulado): 20 verificações. Pedido de quem mantém o projeto (P-0007).
 
 ### Corrigido
 
-- **Os botões da bandeja de cor não trocam mais a ferramenta (D-0156):** desde a 29.4.0, um clique no conta-gotas trocava a ferramenta para uma que não existe, e a anotação selecionada perdia a seleção.
+- **Os botões da bandeja de cor não trocam mais a ferramenta (D-0156):** desde a 29.4.0, um clique no conta-gotas trocava a ferramenta por uma inexistente. A anotação selecionada também perdia a seleção.
 - **O código HEX cabe no campo no telefone (D-0156):** no telefone, os campos usam letra de 16 px, e o «#» ficava cortado. O campo tem 80 px lá.
 
 ## [29.5.0] - 2026-11-10
@@ -37,17 +42,17 @@ Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram 
 
 ### Corrigido
 
-- **Com um menu do clique direito aberto, o Esc e as setas ficam no menu (D-0155):** antes, o Esc fechava o menu e também o visualizador, ou saía do editor no menu de uma anotação; e as setas trocavam a imagem por trás. Um clique fora do menu fecha só o menu.
+- **Com um menu aberto, o Esc e as setas ficam no menu (D-0155):** antes, o Esc também fechava o visualizador, ou saía do editor no menu de uma anotação. As setas trocavam a imagem por trás. Um clique fora do menu fecha só o menu.
 
 ## [29.4.2] - 2026-11-10
 
 Patch: o Edge e o Chrome voltam a mostrar «Instalar app» na barra de endereço.
 
-Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 07h44. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. As duas levam o `#app-manifest` e o script da D-0154. Servida por http em localhost, a cópia User não tem erro de instalação no Edge 157 nem no Chrome 156. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin, o clique feito por uma pessoa e a instalação a partir do GitHub Pages.
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 07h44. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. As duas levam o `#app-manifest` e o script da D-0154. Servida por http em localhost, a cópia User não tem erro de instalação no Edge 157 nem no Chrome 156. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa. A instalação a partir do GitHub Pages foi confirmada depois da publicação, por quem mantém o projeto, no Edge e no Chrome.
 
 ### Corrigido
 
-- **O Edge e o Chrome voltam a mostrar «Instalar app» na barra de endereço (D-0154):** o manifesto não tinha `start_url`, e os dois navegadores recusavam o app com o erro `start-url-not-valid`; só o menu ⋯ instalava. Agora um script no `<head>` dá ao manifesto o endereço da página como `start_url`, `id` e `scope`, em `http:` e `https:`. Medido no Edge 157 e no Chrome 156, em localhost: o erro some, também numa cópia serializada do DOM aberta em outra pasta. Por `file://`, nada muda. Pedido de quem mantém o projeto (P-0004).
+- **O Edge e o Chrome voltam a mostrar «Instalar app» na barra de endereço (D-0154):** o manifesto não tinha `start_url`, e os dois navegadores recusavam o app. O erro era `start-url-not-valid`, e só o menu ⋯ instalava. Agora um script no `<head>` dá ao manifesto o endereço da página como `start_url`, `id` e `scope`, em `http:` e `https:`. Medido no Edge 157 e no Chrome 156, em localhost: o erro some, também numa cópia serializada do DOM aberta em outra pasta. Por `file://`, nada muda. Pedido de quem mantém o projeto (P-0004).
 
 ## [29.4.1] - 2026-11-09
 

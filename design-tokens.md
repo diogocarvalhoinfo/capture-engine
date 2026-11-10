@@ -34,6 +34,7 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
 | `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos «Removidos», spinner, botões verdes e vermelhos, avisos de armazenamento) |
+| `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja «Outra cor» (D-0156) |
 | `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
 | `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
@@ -100,14 +101,14 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
 
 > **Como verificar que esta tabela continua completa.** Uma versão anterior listava 5 categorias, e o código tinha 9. A lacuna sobreviveu a duas auditorias, porque ninguém comparou as duas listas com um comando. O comando abaixo faz essa comparação e deve devolver vazio:
->
-> ```bash
-> CODIGO=$(grep -hvE '^[[:space:]]*--[a-z0-9-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
-> DOC=$(sed -n '/^## 2\. Cores literais/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
-> echo "no codigo e nao declaradas:"; comm -23 <(echo "$CODIGO") <(echo "$DOC")
-> echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
-> ```
->
+
+```bash
+CODIGO=$(grep -hvE '^[[:space:]]*--[a-z0-9-]+[[:space:]]*:' capture-engine.html index.html | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+DOC=$(sed -n '/^## 2\. Cores literais/,/^## 3\./p' design-tokens.md | grep -oE '#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b' | tr 'A-F' 'a-f' | sort -u)
+echo "no codigo e nao declaradas:"; comm -23 <(echo "$CODIGO") <(echo "$DOC")
+echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
+```
+
 > **As duas direções importam.** A primeira detecta cor nova não declarada; a segunda detecta entradas que ficaram para
 > trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
 > O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
@@ -390,7 +391,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 
 *A barra `#zoom-ui` usa um fundo translúcido: `--color-viewer-floating` e `backdrop-filter: blur(10px)`. Flutua sobre a imagem com texto sempre a `#fff` independentemente do conteúdo por baixo.*
 
-*O fechamento por clique no backdrop está bloqueado quando zoom > 100% — evita fechamentos acidentais durante o panning.*
+*O fechamento por clique no backdrop está bloqueado quando zoom > 100 % — evita fechamentos acidentais durante o panning.*
 
 ### Modal de documento (`#text-modal-overlay`)
 
@@ -475,7 +476,7 @@ O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone pass
 - Layout muda de horizontal para vertical (painéis empilhados)
 - A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
 - O botão de histórico fica na barra de topo
-- `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
+- `pointer-events: auto` e `touch-action: manipulation` garantem que 100 % da superfície de cada card responde a toque
 
 ### `width <= 30rem` (480px) — telefones na vertical
 
