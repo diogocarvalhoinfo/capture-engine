@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.6.0] - 2026-11-10
+
+Minor: o seletor de cor com quadrado de tons e barra de cores, na bandeja «Outra cor» do editor.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 08h46. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: sem erros no console, uma foto entra na grade, e uma seta é desenhada e salva no editor. Só a cópia Admin tem o Admin Gate. Nas duas, o círculo da bandeja «Outra cor» abre o seletor, e um clique na barra de cores muda o código HEX; o clique direito no visualizador abre o menu com os seis itens. Não foram testados nesta versão: a sessão no Histórico depois de recarregar, uma segunda aba, uma nova exportação a partir da cópia Admin e o clique feito por uma pessoa.
 
 ### Adicionado
 
