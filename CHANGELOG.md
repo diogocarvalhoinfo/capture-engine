@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Adicionado
 
 - **Desfocado, a terceira opção do Retângulo e do Círculo (D-0160):** a forma desfoca o que está embaixo, para esconder um dado antes de exportar. O desfoque é forte e igual em todos os navegadores, também no Safari. A anotação continua editável até aplicar, e a foto salva leva só a versão desfocada. Testado no Edge 157, no Chrome 156 e no WebKit: 8 verificações em cada um. Pedido de quem mantém o projeto (P-0005).
+- **Clique duplo no nome da imagem para renomear (D-0161):** no visualizador, o clique duplo no título edita o nome, como o F2. Apagar o nome devolve o nome que a imagem tinha ao entrar, como «imagem-2», no título e no cartão. Antes, um nome apagado mantinha o nome modificado. Pedido de quem mantém o projeto.
 
 ### Modificado
 
