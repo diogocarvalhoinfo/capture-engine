@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **A faixa de tamanho do `validate.sh` vai até 600 KB (D-0157):** a 29.6.0 chegou a 519 661 bytes, perto do limite de 520 KB, e o Desfocado (P-0005) não caberia. O limite continua a avisar de um salto inesperado. O README diz que o arquivo tem cerca de 520 KB. Pedido de quem mantém o projeto, com a orientação de não criar nada desnecessário e de enxugar o código em auditorias.
+
 ## [29.6.0] - 2026-11-10
 
 Minor: o seletor de cor com quadrado de tons e barra de cores, na bandeja «Outra cor» do editor.
