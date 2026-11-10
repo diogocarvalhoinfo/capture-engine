@@ -6074,7 +6074,7 @@
           annKeepTyping(b);
           b.onclick = () => { if (b.id === 'ann-color-custom') annColorTray(b); else annApplyColor(b.dataset.color) };
         });
-        /* Another colour (D-0152). A click on the circle takes its colour, when it has one, and opens the tray with the eyedropper on;
+        /* Another colour (D-0152). A click on the circle takes its colour, when it has one, and opens the tray, the eyedropper off (D-0164);
            a second click closes it. The tray shows the colour in HEX, and a valid code typed there is the colour at once */
         function annColorTray(b, passing) {
           if (annFlyoutOpen && annFlyoutOpen.id === 'ann-fly-color') { if (!passing) annCloseFlyout(); return }
@@ -6082,7 +6082,7 @@
           annCloseFlyout();
           const f = $('ann-fly-color'); f.dataset.tool = 'color'; f.classList.add('open'); b.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annPlaceFlyout(f);
           const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show');
-          annHexShow(b.dataset.color || annCurrentColor); annEye(true);
+          annHexShow(b.dataset.color || annCurrentColor); // the eyedropper starts off: a click turns it on until a colour is picked (D-0164)
         }
         function annHexShow(c, fromPk) { const h = $('ann-hex'); h.value = String(c).toUpperCase(); h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = c; if (!fromPk) annPkFrom(c) }
         $('ann-hex').addEventListener('input', e => {
