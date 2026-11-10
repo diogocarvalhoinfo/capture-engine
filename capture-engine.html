@@ -326,7 +326,10 @@
       background: var(--color-background);
       color: var(--color-foreground);
       display: flex;
-      flex-direction: column
+      flex-direction: column;
+      /* stylelint-disable-next-line property-no-vendor-prefix -- Safari on the iPhone reads only the prefixed form (D-0166) */
+      -webkit-user-select: none;
+      user-select: none
     }
 
     button {
@@ -355,6 +358,13 @@
     * {
       scrollbar-width: thin;
       scrollbar-color: var(--color-border-strong) transparent
+    }
+
+    /* A long touch never selects the text of the interface, as a Ctrl+A would; the fields keep their text (D-0166) */
+    :is(input, textarea, [contenteditable]) {
+      /* stylelint-disable-next-line property-no-vendor-prefix -- as in body */
+      -webkit-user-select: text;
+      user-select: text
     }
 
     *:focus-visible {
@@ -6353,6 +6363,10 @@
         });
         /* While typing, a right or middle press on the text keeps it and moves the block at once, as on the canvas (D-0163) */
         $('ann-text-input').addEventListener('pointerdown', e => { if (!annActive || (e.button !== 1 && e.button !== 2)) return; e.preventDefault(); if (e.button === 2) annRightAt = { x: e.clientX, y: e.clientY }; annDownGrab(e) });
+        /* A long touch on an annotation, 500 ms still, selects it and grabs it, as the right button: the stroke or the text begun by the tool is dropped (D-0166) */
+        let annHold = null; const annHoldEnd = () => { if (annHold) { clearTimeout(annHold.t); annHold = null } };
+        cv.addEventListener('pointerdown', e => { annHoldEnd(); if (e.pointerType !== 'touch' || !annActive || annTool === 'crop' || annTool === 'select' || annEyeOn) return; const p = annCanvasXY(e); if (annHitTest(p.x, p.y) < 0) return; annHold = { x: e.clientX, y: e.clientY, t: setTimeout(() => { annHold = null; if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null } annDrawing = false; annPath = []; annDownGrab(e); annRenderAll() }, 500) } }, true);
+        window.addEventListener('pointermove', e => { if (annHold && Math.hypot(e.clientX - annHold.x, e.clientY - annHold.y) > 10) annHoldEnd() }); ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, annHoldEnd));
         /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
         let annRightAt = null;
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }

@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **No telefone, o toque longo seleciona a anotação (D-0166):** meio segundo parado sobre uma anotação a seleciona e já a arrasta, como o botão direito no computador. Antes, o toque longo selecionava o texto da interface inteira, como um Ctrl+A. Agora o texto da interface não se seleciona, e os campos continuam a aceitar seleção. Testado no Chromium e no WebKit, com toque simulado: 8 verificações em cada um. Pedido de quem mantém o projeto.
+
 ## [29.8.0] - 2026-11-10
 
 Minor: o Ctrl+A no editor, o botão direito no texto em edição, o conta-gotas desligado ao abrir e o balão do aviso de anotações por salvar.
