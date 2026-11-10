@@ -5184,6 +5184,15 @@
         // Dim the rest of the toolbar, the photo, the title and the zoom for ANN_AWAIT_MS; a new alert restarts the time
         const bar = $('img-modal-ann-actions');
         if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
+        annAwaitTip(true);
+      }
+      /* The alert says what to do: a bubble, in the look of the tooltip, centred above Descartar and Aplicar alterações (D-0165) */
+      function annAwaitTip(on) {
+        let t = $('ann-await-tip'); if (!on) { if (t) t.classList.remove('show'); return }
+        if (!t) { t = document.createElement('div'); t.className = 'ce-tip on-dark'; t.id = 'ann-await-tip'; t.setAttribute('role', 'status'); t.textContent = 'Aplique ou descarte as alterações'; document.body.appendChild(t) }
+        const tip = $('ce-tip'); if (tip) tip.classList.remove('show'); t.classList.add('show');
+        const z = uiZoom(), a = $('ann-cancel').getBoundingClientRect(), b = $('ann-save').getBoundingClientRect(), w = t.offsetWidth * z, h = t.offsetHeight * z, cx = (Math.min(a.left, b.left) + Math.max(a.right, b.right)) / 2;
+        t.style.left = Math.min(Math.max(4, cx - w / 2), innerWidth - w - 4) / z + 'px'; t.style.top = (Math.min(a.top, b.top) - h - 8 * z) / z + 'px';
       }
       /* The viewer bar and the editor bar share one place in the footer (grid-area 1 / 1), and the hidden one keeps its size:
          the footer is always as tall as the taller bar, so the photo does not move when Editar opens the tools (asked by the owner, 2026-11-09) */
@@ -5195,7 +5204,7 @@
         clearTimeout(annAwaitTimer); annAwaitTimer = null;
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
-        $('img-modal-overlay').classList.remove('ann-await');
+        $('img-modal-overlay').classList.remove('ann-await'); annAwaitTip(false);
       }
       /* ═══ CROP MODES ═══ (B8) The tray of Recortar: Retângulo (the crop of today), Cantos livres and Endireitar.
          Cantos livres: four corners, starting at the corners of the photo; Aplicar alterações undoes the perspective by a homography, pixel by pixel.
@@ -5888,7 +5897,7 @@
         };
         document.querySelectorAll('[title]').forEach(prep);
         const show = el => {
-          prep(el); const t = el.dataset.tip; if (!t || (el.textContent.match(/\p{L}/gu) || []).length > 1 || el.getAttribute('aria-expanded') === 'true') { hide(); return } // a tool with its options open shows them, not its name
+          prep(el); const t = el.dataset.tip; if (!t || (el.textContent.match(/\p{L}/gu) || []).length > 1 || el.getAttribute('aria-expanded') === 'true' || $('img-modal-overlay').classList.contains('ann-await')) { hide(); return } // a tool with its options open shows them, not its name
           cur = el; tip.textContent = t; tip.classList.toggle('on-dark', !!el.closest('#img-modal-overlay')); tip.classList.add('show');
           const z = uiZoom(), r = el.getBoundingClientRect(), w = tip.offsetWidth * z, h = tip.offsetHeight * z, gap = 6 * z;
           let top = r.top - h - gap; if (top < 4) top = r.bottom + gap;
