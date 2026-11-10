@@ -1581,6 +1581,10 @@ O que ficou para depois, com o ID e a origem.
 | F-0132 | Frases com mais de 30 palavras no `AGENTS.md` (9), no `design-tokens.md` (1) e no `CHANGELOG.md` (280, quase todas em entradas antigas), contadas por script em 2026-11-09. As do `AGENTS.md` somam-se às do F-0074. As do README foram divididas na 29.3.2. | Auditoria de 2026-11-09 |
 | F-0135 | A porcentagem sem espaço antes do símbolo no `design-tokens.md`, linhas 392 e 477. No README, já corrigida na 29.3.2. | Auditoria de 2026-11-09 |
 | F-0140 | Depois de reabrir uma foto anotada, sem recorte nem giro, o último Ctrl+Z e o primeiro Ctrl+Y não mudam nada na tela, porque o fundo da pilha (`first: true`) é igual à foto sem anotações. Medido no Chrome: com 2 setas, os Ctrl+Z dão 1.286 e 0 pixels desenhados, e os Ctrl+Y dão 0, 1.286 e 2.538. Corrigir mexe na pilha da D-0140 e pede um plano próprio. | Plano de correção da auditoria de 2026-11-09 |
+| P-0004 | **O botão «Instalar app» na barra de endereço do Edge e do Chrome.** Os dois recusam o app com o erro `start-url-not-valid`, porque o manifesto em `data:` não tem `start_url`. Correção testada em 2026-11-09 no Edge 157 e no Chrome, numa cópia em localhost: um script no `<head>` põe no manifesto o endereço da página como `start_url`, `id` e `scope`. Falta conferir que o Export User leva o manifesto original. | Pedido do dono, 2026-11-09 |
+| P-0005 | **Desfocado, a terceira opção da bandeja do Retângulo e do Círculo,** depois de Contorno e Preenchido, para esconder informação antes de exportar. Escolha do dono: a opção na bandeja, não uma cor nem uma ferramenta nova. Falta medir o desfoque do canvas no Safari do iPhone e definir uma força que não se reverta. | Pedido do dono, 2026-11-10 |
+| P-0006 | **Menu próprio no clique direito do visualizador de imagem.** Hoje abre o menu do navegador, e as opções falham porque o endereço `blob:` da foto é revogado depois de carregar. Proposta, com fotos de exemplo: Editar, Copiar imagem, Duplicar, Renomear, Download e Remover, no estilo escuro do menu do editor. Nos «Removidos»: Restaurar e Download. | Pedido do dono, 2026-11-09 |
+| P-0007 | **Seletor de cor na bandeja «Outra cor» (D-0152).** O clique no círculo da cor abre um quadrado de tons e uma barra de cores, como no Chrome e no Figma. Escolha do dono entre três esboços: quadrado e barra, em vez do círculo de cores ou de só barras. | Pedido do dono, 2026-11-10 |
 
 ### IDs
 
@@ -1599,7 +1603,7 @@ Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a deci
 
 Os números `D-0146` a `D-0149` não existem neste repositório. Foram usados num trabalho local com o pdf.js, cancelado pelo dono em 2026-11-09, e não se reutilizam: depois da `D-0145` vem a `D-0150`.
 
-O `P-0003` (extrair as imagens de um PDF pelo clique direito) foi descartado pelo dono em 2026-11-09. Muitos PDFs são de texto, e mostrá-los como imagem pede um renderizador como o pdf.js. O número não se reutiliza: a próxima pendente é a `P-0004`.
+O `P-0003` (extrair as imagens de um PDF pelo clique direito) foi descartado pelo dono em 2026-11-09. Muitos PDFs são de texto, e mostrá-los como imagem pede um renderizador como o pdf.js. O número não se reutiliza: a pendente seguinte foi a `P-0004`.
 
 ---
 
