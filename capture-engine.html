@@ -59,6 +59,7 @@
       --text-lg: 1.125rem;
       --text-xl: 1.25rem;
       --color-white: #fff;
+      --color-black: #000;
       --color-banner-critical: #b91c1c;
       --color-banner-close: rgb(255 255 255 / 25%);
       --color-green-600: #16a34a;
@@ -6060,7 +6061,7 @@
         const annPk = { h: 0, s: 1, v: 1 };
         const annPkHex = () => { const { h, s, v } = annPk, f = n => { const k = (n + h / 60) % 6; return Math.round(255 * (v - v * s * Math.max(0, Math.min(k, 4 - k, 1)))) }; return '#' + [5, 3, 1].map(n => f(n).toString(16).padStart(2, '0')).join('') };
         function annPkFrom(x) { if (!ANN_HEX.test(x)) return; const n = parseInt(x.slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(k => k / 255), [r, g, b] = c, mx = Math.max(...c), d = mx - Math.min(...c); if (d) annPk.h = 60 * (mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4); annPk.s = mx ? d / mx : 0; annPk.v = mx; annPkPaint() } // a grey keeps the hue of before
-        function annPkPaint() { const hue = `hsl(${annPk.h} 100% 50%)`, sv = $('ann-sv'); sv.style.background = `linear-gradient(transparent, #000), linear-gradient(90deg, #fff, ${hue})`; const at = k => `calc(7px + ${k} * (100% - 14px))`; Object.assign(sv.firstChild.style, { left: at(annPk.s), top: at(1 - annPk.v), background: annPkHex() }); Object.assign($('ann-hue').firstChild.style, { left: at(annPk.h / 360), background: hue }) }
+        function annPkPaint() { const hue = `hsl(${annPk.h} 100% 50%)`, sv = $('ann-sv'); sv.style.background = `linear-gradient(transparent, var(--color-black)), linear-gradient(90deg, var(--color-white), ${hue})`; const at = k => `calc(7px + ${k} * (100% - 14px))`; Object.assign(sv.firstChild.style, { left: at(annPk.s), top: at(1 - annPk.v), background: annPkHex() }); Object.assign($('ann-hue').firstChild.style, { left: at(annPk.h / 360), background: hue }) }
         function annPkShow(open) { const f = $('ann-fly-color'); f.style.width = open ? f.offsetWidth + 'px' : ''; $('ann-picker').hidden = !open; $('ann-hex-preview').setAttribute('aria-expanded', String(open)); if (open) annPlaceFlyout($('ann-fly-color')) }
         $('ann-hue').style.background = `linear-gradient(90deg, ${[0, 60, 120, 180, 240, 300, 360].map(h => `hsl(${h} 100% 50%)`)})`;
         $('ann-hex-preview').onclick = () => annPkShow($('ann-picker').hidden);
