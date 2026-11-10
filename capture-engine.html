@@ -5260,7 +5260,11 @@
         /* The bottom of the undo stack is the photo as it was captured: no annotation, turn, crop, perspective or straightening (P1).
            Ctrl+Z reaches it after the annotations, also after Aplicar alterações and reopening; Aplicar alterações there keeps the captured photo */
         annUseFirst = false; annSaved = false; annOpenCrop = o && o.cropBox ? JSON.parse(JSON.stringify(o.cropBox)) : null;
-        if (o && (o.origBlob || o.firstBlob) && (annHistory.length || annCurrentRotation || o.cropBox || o.firstBlob)) annUndoStack.unshift({ h: [], rot: 0, crop: null, pcrop: null, first: true });
+        if (o && (o.origBlob || o.firstBlob) && (annHistory.length || annCurrentRotation || o.cropBox || o.firstBlob)) {
+          /* Without a turn, a crop or a first blob, the step without annotations is already the captured photo: it becomes the bottom, so no Ctrl+Z or Ctrl+Y does nothing (F-0140) */
+          if (annUndoStack.length && !annUndoStack[0].h.length && !annCurrentRotation && !o.cropBox && !o.firstBlob) Object.assign(annUndoStack[0], { pcrop: null, first: true });
+          else annUndoStack.unshift({ h: [], rot: 0, crop: null, pcrop: null, first: true });
+        }
         const btnSave = $('ann-save');
         if (btnSave) btnSave.classList.remove('alert-anim');
         const img = $('img-modal-img');
