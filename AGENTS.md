@@ -71,7 +71,7 @@ O `capture-engine.html` não é uma página que carrega recursos externos. É a 
 - **Sem CDN.** Se colocar um `<script src="https://...">` qualquer, o arquivo deixa de funcionar em ambientes sem internet (bancos, hospitais, governo). O usuário final não terá internet.
 - **Sem npm, sem bundler.** O arquivo precisa abrir com duplo clique num Windows sem internet e funcionar. Toda a lógica está inline.
 
-*Consequência de violar:* A aplicação falha silenciosamente em qualquer ambiente sem internet. O usuário nunca saberá porquê.
+*Consequência de violar:* A aplicação falha silenciosamente em qualquer ambiente sem internet. O usuário nunca saberá por quê.
 
 ### Contrato 2: O arquivo consegue copiar-se a si próprio
 
@@ -98,7 +98,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 <link rel="stylesheet" href="https://fonts.googleapis.com/...">
 ```
 
-**Motivo:** O Capture Engine destina-se a ambientes totalmente isolados (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a app não carrega.
+**Motivo:** O Capture Engine destina-se a ambientes totalmente isolados (sem internet). Um CDN externo é um ponto único de falha: se não houver rede, a ferramenta não carrega.
 
 **Regra:** Toda a lógica, todo o CSS, todos os ícones SVG, devem estar inline dentro do `capture-engine.html`. Sem exceções.
 
@@ -131,7 +131,7 @@ Qualquer texto que o usuário escreva (nome de sessão, legenda de imagem, nome 
 
 **Tokens de título — três partes:**
 
-O título da app é composto por 3 spans independentes:
+O título do app é composto por 3 spans independentes:
 ```
 [TOKEN_TITLE_START][TOKEN_TITLE_ACCENT][TOKEN_TITLE_END]
      cor normal         opacity 0.5         cor normal
@@ -157,7 +157,7 @@ const TOKEN_MAIN_COLOR = '#e86b2e';
 
 **O problema:** O navegador interpreta HTML dentro de strings. Se um usuário escrever `<img src=x onerror=alert(1)>` como legenda e esse texto for inserido via `innerHTML`, o JavaScript executa.
 
-> **Modelo de ameaça:** A app é local e de um só usuário, mas o conteúdo capturado pode vir de terceiros. Um exemplo é o texto de um ticket de cliente, colado por um técnico de Service Desk. Esse texto, ao ser renderizado sem sanitização, executaria no contexto do arquivo. Em ambientes que processam dados de clientes (setor bancário, seguros), isto é um risco real — daí a sanitização ser obrigatória.
+> **Modelo de ameaça:** O app é local e de um só usuário, mas o conteúdo capturado pode vir de terceiros. Um exemplo é o texto de um ticket de cliente, colado por um técnico de Service Desk. Esse texto, ao ser renderizado sem sanitização, executaria no contexto do arquivo. Em ambientes que processam dados de clientes (setor bancário, seguros), isto é um risco real — daí a sanitização ser obrigatória.
 
 **A solução:** Usar sempre `escapeHTML()` antes de qualquer `innerHTML` com dados do usuário:
 ```js
@@ -256,7 +256,7 @@ Cada zona tem a sua regra.
 
 **Tema escuro pela classe `dark` no `<html>`, nunca por media query no CSS**
 
-Motivo: O usuário pode ter o sistema em dark mode mas querer a app em light mode. A classe `dark` do `<html>` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
+Motivo: O usuário pode ter o sistema em dark mode mas querer o app em light mode. A classe `dark` do `<html>` é controlada por JavaScript e persiste em `localStorage`. A media query `prefers-color-scheme` no CSS não permite override manual.
 
 ```css
 /* CORRETO — controlável pelo usuário */
@@ -763,7 +763,7 @@ Esta seção documenta as funções mais importantes. Consultar antes de editar 
 | `exportFile(isUser)` | Gera e faz download do arquivo exportado | No botão Export Admin (`false`) ou Export User (`true`) |
 | `sanitizeForQuine(str)` | Substitui marcadores Quine com zero-width space para proteger tokens | Antes de injetar valores de tokens no HTML exportado |
 
-**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título da app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`, seguido do perfil (`ADMIN` ou `USER`). O resultado é um nome como `CAPTURE-ENGINE-ADMIN-14h22m-11-jun-2026.html`, e não um nome derivado da sessão. O perfil no nome evita distribuir a cópia do administrador por engano (F-0069).
+**`buildFilename(ext, baseName?)`** — O parâmetro opcional `baseName` permite sobrepor o nome base. Quando não fornecido, usa `$('session-name').value` (comportamento original para PDF/ZIP). O export Admin/User (Quine) passa o título do app (`TOKEN_TITLE_START + TOKEN_TITLE_ACCENT + TOKEN_TITLE_END`) como `baseName`, seguido do perfil (`ADMIN` ou `USER`). O resultado é um nome como `CAPTURE-ENGINE-ADMIN-14h22m-11-jun-2026.html`, e não um nome derivado da sessão. O perfil no nome evita distribuir a cópia do administrador por engano (F-0069).
 
 ### Funções dos motores PDF e ZIP
 
@@ -1414,7 +1414,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 **Export (testar o ciclo real):**
 - [ ] PDF gera com imagens; fica **desativado** quando há documentos na sessão
 - [ ] ZIP empacota imagens + documentos
-- [ ] **Export Admin** → a cópia mantém o painel de administração e a capacidade de re-exportar
+- [ ] **Export Admin** → a cópia mantém o painel de administração e a capacidade de reexportar
 
 ---
 
