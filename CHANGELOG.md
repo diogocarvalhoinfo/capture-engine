@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **Remover uma imagem no visualizador mostra a seguinte (D-0172):** o Del e o «Remover» do clique direito deixam o visualizador aberto, na próxima imagem, ou na anterior quando era a última. Com a última imagem removida, ele fecha. Antes, cada remoção voltava à tela inicial. Testado no Chromium e no WebKit do Playwright. Pedido de quem mantém o projeto.
+
 ### Corrigido
 
 - **No iPhone, a imagem não fica mais quebrada ao reabrir o editor depois de aplicar alterações (D-0170):** o Safari perde o acesso a uma foto lida do banco quando o app grava essa imagem de novo. O editor reaberto mostrava «Pré-visualização» e um «?». Agora o app copia as fotos da sessão para a memória ao abri-la. A mesma causa fazia o ZIP dar «Erro» depois de renomear uma imagem, e a imagem removida aparecer quebrada (F-0149). Testado no WebKit e no Chromium do Playwright, com toque simulado, e não num iPhone de verdade. Achado por quem mantém o projeto, com foto.
