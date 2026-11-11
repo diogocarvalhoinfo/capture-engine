@@ -108,7 +108,7 @@ O **Visual Builder** é o painel de configuração do administrador. É ativado 
 
 ### Export Admin / Export User
 As duas opções do botão de exportar, que na interface se chamam «Administrador» e «User»:
-- **Export Admin** — gera uma cópia com todas as capacidades de administração. Outros admins podem reconfigurar e re-exportar.
+- **Export Admin** — gera uma cópia com todas as capacidades de administração. Outros admins podem reconfigurar e reexportar.
 - **Export User** — gera uma cópia limpa, sem painel de administração. Usuários finais recebem uma ferramenta focada apenas em capturar e exportar.
 
 > [!CAUTION]
@@ -173,7 +173,7 @@ O Capture Engine aceita conteúdo de três formas:
 
 | Método | Como usar | O que captura |
 |---|---|---|
-| **Ctrl+V** | Pressione Ctrl+V com a app em foco | Imagem da área de transferência, arquivo copiado, ou texto |
+| **Ctrl+V** | Clique na ferramenta e pressione Ctrl+V | Imagem da área de transferência, arquivo copiado, ou texto |
 | **Arrastar e soltar** | Arraste o arquivo para a área de destino | Qualquer arquivo |
 | **Seletor** | Clique em "Adicionar imagem" ou "Adicionar documento" | Qualquer arquivo pelo seletor do sistema |
 
@@ -187,7 +187,7 @@ O Capture Engine aceita conteúdo de três formas:
 | Documentos binários | DOCX, XLSX, e qualquer outro formato (guardados mas não visualizáveis inline — disponíveis para download) |
 
 **Nomeação automática sem colisões:**
-Ao colar a segunda imagem, a app não sobrescreve a primeira — atribui automaticamente `imagem-2`, `imagem-3`, etc. Renomeações manuais seguem a mesma lógica — nunca geram nomes duplicados.
+Ao colar a segunda imagem, a ferramenta não sobrescreve a primeira — atribui automaticamente `imagem-2`, `imagem-3`, etc. Renomeações manuais seguem a mesma lógica — nunca geram nomes duplicados.
 
 **Comportamento do Ctrl+V por tipo de conteúdo:**
 1. Se a área de transferência contiver uma **imagem** → captura como imagem
@@ -293,7 +293,7 @@ Um item removido não é apagado na hora: vai para a barra «Removidos», no fun
 
 Cada sessão guarda os seus itens removidos. Eles ficam lá até serem restaurados ou até a sessão expirar.
 
-Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (o purge apaga a sessão e tudo o que lhe pertence, incluindo os removidos).
+Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (a limpeza automática apaga a sessão e tudo o que lhe pertence, incluindo os removidos).
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
@@ -316,7 +316,7 @@ Depois de gerar o PDF ou o ZIP, o botão fica verde, com «Concluído», até a 
 **Processo de geração:**
 1. As imagens são convertidas para JPEG em memória (qualidade configurável, padrão 92 %)
 2. O PDF é construído com uma imagem por página, escalada para preencher o máximo da página A4 mantendo a proporção, centrada. As páginas de um PDF que está em Imagens entram como estão, com o tamanho e o texto delas
-3. O arquivo é transferido automaticamente
+3. O arquivo é baixado automaticamente
 
 **Quando o botão PDF fica desativado:** Quando há documentos na sessão. O .pdf leva só o que está em Imagens. Para sessões com documentos, use o ZIP, ou arraste o PDF para Imagens.
 
@@ -367,7 +367,7 @@ A sessão nova só aparece no histórico após a primeira interação real (cola
 - **Campo «O que»:** o que foi registrado, por exemplo o computador ou o equipamento (rótulo configurável)
 - Se não for preenchido nenhum nome, a sessão recebe um identificador automático (`#0001`, `#0002`, etc.)
 
-**Purge automático:**
+**Limpeza automática:**
 Sessões sem atividade há mais de 48 horas (configurável) são apagadas automaticamente ao abrir a aplicação. O critério é a data de **última atividade**, não a data de criação.
 
 **Navegar entre sessões:**
@@ -423,12 +423,12 @@ O botão Export abre o painel de exportação com duas opções:
 
 **Export Admin:**
 - Gera uma cópia do arquivo com as configurações atuais
-- Mantém o painel de administração e a capacidade de re-exportar
+- Mantém o painel de administração e a capacidade de reexportar
 - Use para distribuir a outros administradores ou como backup da configuração
 
 **Export User:**
 - Gera uma cópia limpa do arquivo com as configurações atuais
-- Remove o painel de administração, o Visual Builder e a capacidade de re-exportar
+- Remove o painel de administração, o Visual Builder e a capacidade de reexportar
 - Ativa automaticamente o modo de produção (logs desativados)
 - Use para distribuir aos usuários finais
 
@@ -496,7 +496,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 - Configurações personalizadas (cores, nome, tokens) **não viajam** com os dados — são parte do arquivo HTML e precisam ser reaplicadas manualmente ou via Export Admin
 - Se a nova versão mudar a versão do schema do IndexedDB, consultar o `AGENTS.md` §6, sobre a migração do schema, antes de distribuir
 
-**Aviso sobre `TOKEN_AUTO_PURGE_HOURS`:** se a nova versão tiver um valor de purge menor do que o anterior, sessões que ainda estariam vivas são purgadas na primeira abertura. Ver §7.4.
+**Aviso sobre `TOKEN_AUTO_PURGE_HOURS`:** se a nova versão tiver um prazo de limpeza menor do que o anterior, sessões que ainda estariam vivas são apagadas na primeira abertura. Ver §7.4.
 
 ## 8. Segurança e privacidade
 
@@ -507,7 +507,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 | **Sanitização de campos** | Todo o texto inserido pelo usuário é sanitizado antes de ser apresentado (proteção XSS) |
 | **Content Security Policy** | Metatag CSP no cabeçalho HTML restringe scripts e recursos que podem ser carregados. Diretivas ativas: `default-src 'self' blob: data:; script-src 'unsafe-inline' (necessário: todo CSS e JS está inline por contrato de arquivo único; o Quine gera novos arquivos e invalidaria nonces a cada export); style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self';` |
 | **Admin Gate oculto** | O painel de admin sem botão visível: abre com 6 cliques seguidos no logotipo |
-| **Sem registro** | Nenhum dado de utilização, telemetria ou analytics |
+| **Sem registro** | Nenhum dado de uso, telemetria ou analytics |
 | **Sem cookies** | Usa IndexedDB e localStorage do navegador (sem cookies de sessão) |
 
 ### Content Security Policy — nota sobre `unsafe-inline`
@@ -570,7 +570,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Aba privada no iPhone** | Numa aba privada, as capturas não são gravadas. Se o Safari recarregar ou fechar a aba, elas se perdem: exporte antes de sair do Safari. |
 | **Sem limite fixo de itens** | A ferramenta não impõe um número máximo de imagens ou documentos; o limite prático é o espaço de armazenamento do navegador (ver linha acima). Em sessões muito grandes, o export de PDF/ZIP fica mais lento, porque tudo é processado na memória do navegador. |
 | **Limites do motor ZIP (sem ZIP64)** | O ZIP é escrito à mão em JavaScript puro, no formato clássico: a contagem de entradas ocupa 16 bits e os tamanhos e deslocamentos 32 bits. Na prática isso significa **no máximo 65.535 arquivos por ZIP** e **cerca de 4 GB** por arquivo e no total do pacote. Acima desses limites os valores truncam **sem gerar erro** — o ZIP seria produzido e baixado, mas sairia corrompido. Não há aviso na interface. Estes números estão muito acima do que a memória do navegador aguenta ao montar o pacote, e o navegador falha primeiro. O cenário é improvável; fica declarado porque a falha é silenciosa. |
-| **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz porquê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
+| **Formatos que o navegador não abre** | Uma foto HEIC, TIFF ou RAW vai para «Documentos», com o nome e os bytes originais, e um aviso diz por quê. O PDF só leva as imagens que o navegador desenha; o ZIP leva o arquivo original. No Safari, que abre HEIC, a foto fica em «Imagens». |
 | **PNG com transparência no PDF** | Imagens com fundo transparente exportadas para PDF recebem fundo branco (o formato JPEG interno do PDF não suporta transparência). **O export ZIP preserva a transparência** — inclusive em imagens anotadas, porque o canvas de anotação mantém o canal alfa. Se a imagem não tiver sido editada, o PNG sai byte a byte igual ao capturado; se tiver, sai um PNG novo mas ainda transparente. |
 | **GIF animados — comportamento por export** | **Enquanto não for editada:** o export **ZIP** inclui o GIF original, com a animação intacta. **Depois de anotar, girar ou recortar:** o `ann-save` regenera a imagem em PNG, a partir do canvas, e a animação perde-se também no ZIP. O arquivo sai com a extensão `.png`, e não como um `.gif` parado. O export **PDF** converte cada frame para JPEG e renderiza apenas a primeira, editada ou não. Para preservar a animação: use o ZIP **e não edite a imagem**. |
 
@@ -589,7 +589,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - Certifique-se de exportar os dados importantes antes de limpar o navegador.
 
 ### O Ctrl+V não cola nada
-- Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a app tem foco
+- Clique primeiro dentro da área da aplicação (fora de qualquer campo de texto) para garantir que a ferramenta tem o foco
 - No telefone, use «Adicionar imagem» e «Adicionar documento». O Ctrl+V funciona com um teclado ligado ao telefone
 - Verifique se o navegador tem permissão para acessar a área de transferência (aparece uma notificação)
 - Ctrl+V suporta múltiplos arquivos copiados do Explorer em simultâneo (Ctrl+C nos arquivos → Ctrl+V na aplicação).
@@ -603,9 +603,9 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - Com anotações por salvar, o Escape não fecha: o «Descartar alterações» e o «Aplicar alterações» crescem, como num clique fora. Escolha um dos dois.
 
 ### Sessões com mais de 48 horas desapareceram
-- O purge automático apaga sessões sem atividade há mais de 48 horas (configurável). Este comportamento é intencional e pode ser ajustado pelo administrador via `TOKEN_AUTO_PURGE_HOURS`.
+- A limpeza automática apaga as sessões sem atividade há mais de 48 horas, o prazo padrão. É intencional, e o administrador muda o prazo no Visual Builder, em «Limpeza automática» (`TOKEN_AUTO_PURGE_HOURS`).
 
-### As minhas capturas desapareceram depois de fechar o navegador
+### As capturas desapareceram depois de fechar o navegador
 - O mais provável é que o navegador não tenha deixado gravar: a quota de armazenamento esgotou, ou a aba era de navegação privada. Nos dois casos, um aviso vermelho aparece no topo da aplicação.
 - A captura que não grava continua na grade enquanto a aba estiver aberta, e a barra de estado diz «Só nesta aba». Ao fechar a aba, a captura desaparece. Por isso, exporte em PDF ou ZIP antes de fechar.
 - **Como confirmar:** abra as DevTools (F12) → aba Console → procure erros com a palavra `quota` ou `storage`.
@@ -635,7 +635,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 **O arquivo HTML tem mais de 500 KB. É normal?**
 Sim. O arquivo contém a aplicação inteira: o CSS, o JavaScript e os ícones. A versão de administrador tem pouco mais de 500 KB, e a do Export User fica menor, sem o Visual Builder.
 
-**Os meus dados ficam guardados para sempre?**
+**Os dados ficam guardados para sempre?**
 Não. Sessões inativas há mais de 48 horas (por padrão) são apagadas automaticamente. Além disso, limpar os dados do navegador apaga tudo. Exporte os dados importantes.
 
 **Posso usar o Capture Engine em Mac ou Linux?**
