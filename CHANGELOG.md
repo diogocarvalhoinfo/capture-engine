@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O arrasto em diagonal também rola a lista (F-0151):** a lista só rolava com o ponteiro na faixa dela. Puxar a imagem para cima ou para baixo e para o lado, sobre «Documentos» ou «Removidos», não rolava. Agora rola com o ponteiro acima ou abaixo da lista, em qualquer lugar da tela. Testado no Chromium e no WebKit do Playwright. Achado por quem mantém o projeto, com fotos.
+
 ## [29.9.0] - 2026-11-11
 
 Minor: remover ou restaurar no visualizador mostra a imagem seguinte; no iPhone, o editor reaberto não quebra a imagem; e o arrasto rola a lista.

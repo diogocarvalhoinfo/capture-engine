@@ -6795,7 +6795,7 @@
           function edgeScroll() {
             scrollRaf = 0; if (!dragEl || !active) return;
             const r = container.getBoundingClientRect(), before = container.scrollTop, pageBefore = window.scrollY;
-            if (lastX >= r.left && lastX <= r.right) container.scrollTop += edgeSpeed(lastY, r.top, r.bottom);
+            if (!phx) container.scrollTop += edgeSpeed(lastY, r.top, r.bottom); // also with the pointer beside the list; a PDF over the other list does not scroll this one
             if (container.scrollTop === before) window.scrollBy(0, edgeSpeed(lastY, 0, window.innerHeight));
             if (container.scrollTop !== before || window.scrollY !== pageBefore) placeAt(lastX, lastY);
             scrollRaf = requestAnimationFrame(edgeScroll);
