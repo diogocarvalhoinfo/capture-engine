@@ -10,6 +10,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O README não diz mais que o schema do IndexedDB está na versão 2 (F-0142):** o código usa a versão 3 desde a 29.0.0. O README deixa de citar o número e aponta para o `AGENTS.md` §6, o dono. A nota de migração do `AGENTS.md` §6 também falava da versão 2. Achado na análise da documentação de 2026-11-10.
 - **«Uso como prova» não diz mais que o original de uma imagem editada não volta (F-0143):** o README dizia que nenhuma via exportava o original. Desde a D-0140, desfazer tudo e aplicar devolve a foto capturada. Testado no Edge 157 e no Chromium do Playwright, por `file://`: um PNG anotado com uma seta, salvo, reaberto e desfeito sai no ZIP igual ao capturado, pelo SHA-256. Achado por uma análise externa da documentação, em 2026-11-11.
+- **O tamanho do arquivo nas perguntas frequentes (F-0144):** o README dizia «cerca de 520 KB», e a 29.8.2 tem 530 364 bytes. Passa a «pouco mais de 500 KB», que continua certo até o limite de 600 KB do check 25 (D-0157). O `AGENTS.md` §10 e o comentário do check no `validate.sh` citavam o mesmo número. Achado na análise da documentação de 2026-11-10.
 
 ## [29.8.2] - 2026-11-10
 
