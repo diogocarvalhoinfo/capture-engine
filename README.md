@@ -578,7 +578,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 ## 11. Resolução de problemas
 
 ### A aplicação não abre ou mostra página em branco
-- Verifique se usa Chrome 90+, Edge 90+, ou Firefox 151.0.4
+- Use uma versão recente do Chrome, do Edge ou do Firefox. As versões testadas estão em «Requisitos»
 - Experimente abrir diretamente com duplo clique no `capture-engine.html`
 - Em alguns sistemas, arquivos HTML locais precisam de permissão — verifique as configurações de segurança do navegador
 
@@ -672,7 +672,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 - Sem internet, sem servidor, sem instalação
 - Qualquer sistema operacional com navegador moderno
 
-Para uso em produção com requisitos de recuperação de dados, recomenda-se Chrome ou Edge (Chromium) ou Firefox 151.0.4.
+Para uso em produção com requisitos de recuperação de dados, use o Chrome, o Edge ou o Firefox: são os três em que a recuperação foi testada.
 
 ### Matriz de compatibilidade
 
