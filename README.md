@@ -544,11 +544,11 @@ O Capture Engine é adequado para **coleta organizada e documentação** de evid
 - Imutabilidade — os dados no IndexedDB são editáveis pelo usuário e pelo próprio navegador
 - Rastreabilidade de cadeia de custódia — não há registro de acessos ou modificações
 - **Exportação PDF:** as imagens são recomprimidas como JPEG em memória, com perda. Não serve como prova primária quando se exige a integridade pixel a pixel; para isso, use o ZIP de imagens não editadas
-- **Exportação ZIP de imagens editadas:** anotar, girar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** e não é exportável por nenhuma via — fica apenas no navegador, até a sessão expirar. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
+- **Exportação ZIP de imagens editadas:** anotar, girar ou recortar substitui o arquivo exportado por um PNG gerado a partir do canvas. O original **não vai no ZIP** enquanto a edição existir, e fica guardado no navegador até a sessão expirar. Ele só volta ao ZIP se a imagem for reaberta no editor e tudo for desfeito, até a foto inicial. Para conservar o original de uma imagem que vai editar, **exporte antes de a editar**
 
 > [!CAUTION]
-> **O original de uma imagem editada não se recupera depois.**
-> Esta é a limitação mais relevante para uso probatório. Não existe caminho na interface que exporte o arquivo tal como foi capturado depois de ele ser anotado. Se a integridade pixel-a-pixel do material original for exigida, **exporte o ZIP imediatamente após a captura**, antes de qualquer edição, e guarde esse arquivo como referência.
+> **O original de uma imagem editada só volta pelo Desfazer.**
+> Esta é a limitação mais relevante para uso probatório. Depois de uma edição, o ZIP só volta a levar o arquivo capturado se tudo for desfeito no editor, e só enquanto a sessão existir. Se a integridade pixel-a-pixel do material original for exigida, **exporte o ZIP imediatamente após a captura**, antes de qualquer edição, e guarde esse arquivo como referência.
 
 Para uso em processos judiciais ou auditorias reguladas, complementar com procedimentos de custódia externos (hash independente dos arquivos exportados, registro de acesso, etc.).
 
