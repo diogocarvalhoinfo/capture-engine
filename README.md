@@ -58,7 +58,7 @@ Tudo o que você captura (capturas de tela, documentos, textos) fica guardado lo
 
 > [!CAUTION]
 > **Os dados não ficam guardados para sempre, e isto é de propósito.**
-> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, e **não guarda cópias de segurança automáticas**. Para guardar um trabalho, exporte-o em **PDF** ou **ZIP** e guarde o arquivo. Só o que foi exportado fica garantido.
+> Por privacidade, o Capture Engine **apaga sozinho** qualquer sessão que fique mais de 48 horas sem ser usada, o prazo padrão. Ele também **não guarda cópias de segurança automáticas**. Para guardar um trabalho, exporte-o em **PDF** ou **ZIP** e guarde o arquivo. Só o que foi exportado fica garantido.
 
 ## 2. Para quem é
 
@@ -478,8 +478,9 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 1. Antes de atualizar — fazer Export Admin da versão atual
    (preserva as configurações personalizadas — cores, nome, campos, rodapé)
          ↓
-2. Abrir o novo capture-engine.html num editor de texto
-   Aplicar manualmente as configurações guardadas (ou re-configurar no Visual Builder)
+2. Abrir o novo capture-engine.html e ativar o modo administrador
+   Refazer a configuração no Visual Builder, com a cópia do passo 1 como referência
+   (quem edita código pode copiar os valores TOKEN_* da cópia antiga num editor de texto)
          ↓
 3. Fazer Export User → distribuir o novo arquivo aos usuários
          ↓
@@ -559,7 +560,7 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 | **Sem sincronização** | Os dados só existem no navegador do computador onde foram criados. Não há sincronização entre dispositivos. |
 | **Dependente do navegador** | Limpar dados do navegador apaga todos os dados. |
 | **Múltiplas abas compartilham a base** | Pode abrir em várias abas, mas todas usam a mesma base de dados local. Editar a mesma sessão em duas abas ao mesmo tempo pode fazer uma sobrepor a outra (prevalece a última gravação). |
-| **PDF sem documentos** | O export PDF leva só o que está em Imagens: as fotos e os PDFs arrastados para lá. Os documentos (DOCX, XLSX, etc.) requerem o export ZIP. Um PDF protegido por senha, em Imagens, para o export PDF. |
+| **PDF sem documentos** | O export PDF leva só o que está em Imagens: as fotos e os PDFs arrastados para lá. Os documentos (DOCX, XLSX, etc.) requerem o export ZIP. Um PDF protegido por senha, em Imagens, interrompe o export PDF. |
 | **Sem pré-visualização de binários** | Os documentos do Word, do Excel e do PowerPoint não têm pré-visualização, só o Download. O PDF abre no leitor do próprio navegador. |
 | **PDF no iPhone** | O PDF abre no leitor do próprio navegador. No iPhone, o Safari pode mostrar só a primeira página; isso ainda não foi testado num iPhone. |
 | **Cópias anteriores à 29** | Depois de abrir a versão 29 num navegador, uma cópia mais antiga, no mesmo navegador, não abre mais as sessões: mostra «Armazenamento indisponível», e as capturas ficam só na aba. Nada se perde; a 29 mostra tudo. Use sempre a versão mais nova. |
@@ -594,8 +595,8 @@ Para uso em processos judiciais ou auditorias reguladas, complementar com proced
 - Ctrl+V suporta múltiplos arquivos copiados do Explorer em simultâneo (Ctrl+C nos arquivos → Ctrl+V na aplicação).
 
 ### O botão PDF está desativado
-- O export PDF só funciona com imagens. Se há documentos (PDF, DOCX, etc.) na sessão, o botão desativa automaticamente.
-- Use o export ZIP para sessões com imagens e documentos juntos.
+- O export PDF leva só o que está em Imagens. Se há documentos na sessão, mesmo um PDF em Documentos, o botão fica desativado.
+- Use o export ZIP para sessões com imagens e documentos juntos, ou arraste o PDF de Documentos para Imagens.
 
 ### O editor não fecha com Escape
 - Com as opções de uma ferramenta abertas, o Escape fecha só as opções. Pressione de novo para fechar o editor.
