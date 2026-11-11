@@ -8,7 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
-- **Remover uma imagem no visualizador mostra a seguinte (D-0172):** o Del e o «Remover» do clique direito deixam o visualizador aberto, na próxima imagem, ou na anterior quando era a última. Com a última imagem removida, ele fecha. Antes, cada remoção voltava à tela inicial. Testado no Chromium e no WebKit do Playwright. Pedido de quem mantém o projeto.
+- **Remover ou restaurar uma imagem no visualizador mostra a seguinte (D-0172):** o Del e o «Remover» do clique direito deixam o visualizador aberto, na próxima imagem, ou na anterior quando era a última. Nos «Removidos», o botão «Restaurar» e o do menu fazem o mesmo. Sem imagem na lista, o visualizador fecha. Antes, cada remoção ou restauração voltava à tela inicial. Testado no Chromium e no WebKit do Playwright. Pedido de quem mantém o projeto.
 
 ### Corrigido
 
