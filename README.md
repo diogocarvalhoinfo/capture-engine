@@ -293,7 +293,7 @@ Um item removido não é apagado na hora: vai para a barra «Removidos», no fun
 
 Cada sessão guarda os seus itens removidos. Eles ficam lá até serem restaurados ou até a sessão expirar.
 
-Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão** (a limpeza automática apaga a sessão e tudo o que lhe pertence, incluindo os removidos).
+Não existe «apagar definitivamente» na barra «Removidos». Um item removido sai de lá por uma de duas vias: **restauração**, ou **expiração da sessão**. A limpeza automática apaga a sessão e tudo o que lhe pertence, incluindo os removidos.
 
 > [!CAUTION]
 > **A barra «Removidos» não guarda sessões inteiras.**
