@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O README não diz mais que o schema do IndexedDB está na versão 2 (F-0142):** o código usa a versão 3 desde a 29.0.0. O README deixa de citar o número e aponta para o `AGENTS.md` §6, o dono. A nota de migração do `AGENTS.md` §6 também falava da versão 2. Achado na análise da documentação de 2026-11-10.
+
 ## [29.8.2] - 2026-11-10
 
 Patch: no telefone, dois toques editam, a imagem não fica mais quebrada no iPhone, e selecionar uma anotação não a apaga.

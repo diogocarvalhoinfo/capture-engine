@@ -493,7 +493,7 @@ Quando existe uma nova versão do `capture-engine.html` e há usuários com sess
 
 **O que requer atenção:**
 - Configurações personalizadas (cores, nome, tokens) **não viajam** com os dados — são parte do arquivo HTML e precisam ser reaplicadas manualmente ou via Export Admin
-- Se a nova versão incrementar a versão do schema IndexedDB (atualmente `2`), consultar `AGENTS.md` §6 sobre migração de schema antes de distribuir
+- Se a nova versão mudar a versão do schema do IndexedDB, consultar o `AGENTS.md` §6, sobre a migração do schema, antes de distribuir
 
 **Aviso sobre `TOKEN_AUTO_PURGE_HOURS`:** se a nova versão tiver um valor de purge menor do que o anterior, sessões que ainda estariam vivas são purgadas na primeira abertura. Ver §7.4.
 
@@ -835,7 +835,7 @@ init()
 
 ### Base de dados local (IndexedDB)
 
-**Nome da base de dados:** `CaptureEngineDB` (versão 2)
+**Nome da base de dados:** `CaptureEngineDB`. A versão do schema e a migração estão no `AGENTS.md` §6.
 
 | Tabela | Chave primária | Campos principais | Índices |
 |---|---|---|---|
