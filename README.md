@@ -345,7 +345,7 @@ Empacota todos os itens da sessão (imagens e documentos) num único arquivo ZIP
 
 > [!NOTE]
 > **Nomes de ZIPs antigos.**
-> Nas versões antigas, os nomes eram gravados em UTF-8 sem essa declaração no cabeçalho, e os acentos apareciam trocados (`Diagn+¦stico`) ao abrir o ZIP. A legenda de imagem também convertia espaços em hífens, ao contrário do nome de documento. ZIPs gerados antes da correção mantêm os nomes antigos — o conteúdo dos arquivos nunca foi afetado. Basta reexportar para obter os nomes corretos.
+> Um ZIP gerado por uma versão antiga pode mostrar os acentos trocados (`Diagn+¦stico`) e hífens no lugar dos espaços. O conteúdo dos arquivos não foi afetado: basta reexportar para obter os nomes corretos.
 
 **Opções de ZIP (quando há imagens na sessão):**
 - **Imagens em PDF** — inclui as imagens como PDF + documentos separados
@@ -529,7 +529,7 @@ Os dados do Capture Engine estão guardados no IndexedDB do navegador. **Se limp
 
 ### Comportamento com múltiplas abas
 
-O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** todas as abas gravam na mesma base. Se a mesma sessão for editada em duas abas ao mesmo tempo, a última gravação apaga as alterações da outra. Para evitar confusão, trabalhe numa sessão de cada vez. Em versões anteriores, abrir uma segunda aba mostrava uma tela de erro que bloqueava o uso; esse bloqueio foi removido.
+O Capture Engine pode ser aberto em várias abas do mesmo navegador — todas compartilham a mesma base de dados local. **Atenção:** todas as abas gravam na mesma base. Se a mesma sessão for editada em duas abas ao mesmo tempo, a última gravação apaga as alterações da outra. Para evitar confusão, trabalhe numa sessão de cada vez.
 
 ## 9. Uso como prova
 
@@ -667,7 +667,7 @@ Não. Edge e Chrome têm bases IndexedDB separadas — cada navegador mantém o 
 - **Chrome 90+ / Edge 90+** — testado no Chrome 148 e no Edge 148; compatibilidade com versões abaixo de 148 estimada mas não verificada
 - **Firefox 151.0.4** — testado manualmente; versão mínima abaixo de 151.0.4 não verificada
   - O IndexedDB do Firefox fica no perfil dele: os dados criados no Firefox não aparecem no Chrome, nem o contrário
-- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. Desde a 28.7.1, o visualizador e o editor funcionam no toque. A pinça amplia a foto, o ✕ e o «Editar» ficam à vista, e o desenho com o dedo sai onde o dedo passa
+- **Safari no iPhone** — testado à mão no iOS 26.5, num iPhone 14 Pro, no site publicado. A captura, o PDF, o ZIP, a gravação e as cópias do Export Admin e do Export User funcionam. O visualizador e o editor funcionam no toque. A pinça amplia a foto, o ✕ e o «Editar» ficam à vista, e o desenho com o dedo sai onde o dedo passa
   - No iPhone, use o site: o arquivo baixado abre no app Arquivos só como pré-visualização, sem funcionar
 - **Safari no Mac** — não testado. Pode apresentar falhas de CORS ao abrir arquivos locais `file://`, mitigadas pelo fallback `BOOT_HTML` do Quine
 - Sem internet, sem servidor, sem instalação
