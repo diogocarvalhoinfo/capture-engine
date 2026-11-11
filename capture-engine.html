@@ -4710,7 +4710,8 @@
       /* The menu of the right click in the viewer, as the menu of the card without Abrir and Marcar; in «Removidos», Restaurar
          and Download. The browser menu does not work there: the blob address of the image is revoked after it loads (D-0155) */
       function viewerItem() { return (modalIsTrash ? removed : images).find(x => x.id === modalItemId) }
-      function viewerRemove() { const id = modalItemId; closeImgModal(); window.delImg(id) }
+      /* Removing in the viewer shows the next image of the grid, or the one before when it was the last; with none left, the viewer closes (D-0172) */
+      function viewerRemove() { const id = modalItemId, arr = images.filter(x => x.kind !== 'pdf'), i = arr.findIndex(x => x.id === id), next = arr[i + 1] || arr[i - 1]; window.delImg(id); if (next) window.openImgModal(next.id, false); else closeImgModal() }
       function viewerGroups() { const o = viewerItem(); if (!o) return null; if (modalIsTrash) return [[['restore', 'Restaurar', '', () => window.restoreImg(o.id)], ['dl', 'Download', '', () => dlImg(o)]]]; return [[['edit', 'Editar', '', () => $('ann-toggle').click()], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', viewerRename]], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', viewerRemove, 1]]] }
       let viewerMenuAt = 0; const viewerMenuOpenNow = () => !!ctxMenu && Date.now() - viewerMenuAt < 1000; /* the long touch and the contextmenu of Android open it once */
       function viewerMenu(x, y) { const g = viewerGroups(); if (g) { ctxOpen(x, y, g, true); viewerMenuAt = Date.now() } }
