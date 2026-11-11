@@ -6784,6 +6784,21 @@
             dragEl.style.top = (cy - grabDY) / uiZoom() + 'px';
           }
 
+          /* Near the top or bottom edge, the list scrolls while the item is held, and the page too, when the list cannot (D-0171).
+             The loop runs while the drag lasts, so a pointer held still at the edge keeps scrolling */
+          const EDGE = 48, STEP = 16;
+          let lastX = 0, lastY = 0, scrollRaf = 0;
+          const edgeSpeed = (p, lo, hi) => p < lo + EDGE ? -STEP * Math.min(1, (lo + EDGE - p) / EDGE) : p > hi - EDGE ? STEP * Math.min(1, (p - hi + EDGE) / EDGE) : 0;
+          function edgeScroll() {
+            scrollRaf = 0; if (!dragEl || !active) return;
+            const r = container.getBoundingClientRect(), before = container.scrollTop, pageBefore = window.scrollY;
+            if (lastX >= r.left && lastX <= r.right) container.scrollTop += edgeSpeed(lastY, r.top, r.bottom);
+            if (container.scrollTop === before) window.scrollBy(0, edgeSpeed(lastY, 0, window.innerHeight));
+            if (container.scrollTop !== before || window.scrollY !== pageBefore) placeAt(lastX, lastY);
+            scrollRaf = requestAnimationFrame(edgeScroll);
+          }
+          function startEdgeScroll(cx, cy) { lastX = cx; lastY = cy; if (!scrollRaf) scrollRaf = requestAnimationFrame(edgeScroll) }
+
           function onMove(e) {
             if (!dragEl) return;
             const cx = e.clientX, cy = e.clientY;
@@ -6801,9 +6816,16 @@
               dragEl.classList.add('dragging');
               positionFloat(cx, cy);
               try { dragEl.setPointerCapture(pointerId) } catch (_) {}
+              startEdgeScroll(cx, cy);
               return;
             }
             e.preventDefault();
+            lastX = cx; lastY = cy;
+            placeAt(cx, cy);
+          }
+
+          // Follows the pointer: the floating item, and the placeholder at the place under it
+          function placeAt(cx, cy) {
             positionFloat(cx, cy);
             if (crossOver(cx, cy)) return;
             // moves the placeholder to the target position (the siblings slide via FLIP)
@@ -6879,6 +6901,7 @@
             const movedEl = dragEl;
             const placeholder = ph;
             dragEl = null; ph = null; active = false; pointerId = null;
+            if (scrollRaf) { cancelAnimationFrame(scrollRaf); scrollRaf = 0; }
             if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
             if (movedEl) movedEl.style.touchAction = '';
             if (!wasActive) { if (movedEl) clearFloat(movedEl); return; } // it was only a click
@@ -6893,6 +6916,9 @@
             el.style.left = ''; el.style.top = ''; el.style.width = ''; el.style.height = '';
           }
 
+          /* After the long press, the finger moves the item and not the page: the touch-action set on the item comes too late
+             for a touch already begun, and the browser would scroll and cancel the drag (pointercancel) at the first move (F-0150) */
+          container.addEventListener('touchmove', e => { if (active) e.preventDefault() }, { passive: false });
           container.addEventListener('pointerdown', e => {
             if (e.button != null && e.button !== 0) return; // main button only
             const item = e.target.closest(itemSel);
@@ -6930,6 +6956,7 @@
                   dragEl.classList.add('dragging');
                   positionFloat(startX, startY);
                   try { dragEl.setPointerCapture(pointerId) } catch (_) {}
+                  startEdgeScroll(startX, startY);
                 }
                 container.addEventListener('pointermove', onMove);
               }, LONG_PRESS_DELAY);

@@ -801,8 +801,10 @@ O arrastar e soltar da reordenação foi reescrito na V23 com Pointer Events e a
 | Escala do item em arrasto | `0.75` | O card encolhe para 75% durante o arrasto — indica visualmente que é movido. |
 | Histerese de reposicionamento | ~18% do tamanho do item | O placeholder só muda de posição quando o centro do item arrastado ultrapassa 18% do tamanho do item em relação ao centro do slot seguinte. Evita trocas involuntárias por movimentos mínimos. |
 | Transição FLIP | `transform var(--duration-moderate-02) cubic-bezier(0.2, 0, 0, 1)` (240 ms) | Duração e easing da animação que move os cards vizinhos para abrir/fechar espaço. |
+| `EDGE` | `48` px | Faixa junto à borda de cima e à de baixo em que o arrasto rola a lista, ou a página quando a lista não rola mais (D-0171). |
+| `STEP` | `16` px por quadro | Rolagem máxima por quadro, com o ponteiro na borda ou fora dela; no começo da faixa, a rolagem é mais lenta. |
 
-**Comportamento touch vs mouse:** Em dispositivos touch, `.t-item` e `.d-item` usam `touch-action: pan-y` (permite scroll vertical nativo). O arrasto só ativa após `LONG_PRESS_DELAY` ms sem movimento > `DRAG_THRESHOLD`. Movimento acima do threshold durante a espera cancela o timer e entrega o gesto ao navegador (scroll). Em mouse, `touch-action` não interfere e o drag ativa imediatamente ao ultrapassar `DRAG_THRESHOLD`.
+**Comportamento touch vs mouse:** Em dispositivos touch, `.t-item` e `.d-item` usam `touch-action: pan-y` (permite scroll vertical nativo). O arrasto só ativa após `LONG_PRESS_DELAY` ms sem movimento > `DRAG_THRESHOLD`. Movimento acima do threshold durante a espera cancela o timer e entrega o gesto ao navegador (scroll). Com o arrasto ativo, um `touchmove` não passivo chama `preventDefault()`: o `touch-action: none` posto no item chega tarde para o toque já começado. Sem ele, o primeiro movimento do dedo rolava a página e cancelava o arrasto (F-0150). Em mouse, `touch-action` não interfere e o drag ativa imediatamente ao ultrapassar `DRAG_THRESHOLD`.
 
 **O que é o placeholder:** Um elemento DOM vazio (`.reorder-placeholder`) com fundo e borda muito sutis (configuráveis via `--color-drop-placeholder` / `--color-drop-placeholder-border`) que ocupa o espaço-alvo durante o arrasto. A sua posição atualiza com base na histerese descrita acima.
 
@@ -826,6 +828,10 @@ ativar arrasto:
   - mover item via transform (sem alterar o DOM)
   - recalcular posição-alvo com histerese
   - mover placeholder suavemente (FLIP)
+   │
+   ▼ a cada quadro, enquanto o arrasto dura (edgeScroll)
+  - perto da borda (EDGE), rolar a lista, ou a página se a lista não rolar
+  - se rolou, recalcular a posição-alvo (placeAt)
    │
    ▼ pointerup / pointercancel
   - remover placeholder
@@ -1405,6 +1411,7 @@ Esta é a lista **única e completa** de testes que exigem abrir a aplicação. 
 - [ ] Se possível, testar também em **tela de toque**
 - [ ] Um **clique simples** ainda abre o item (não confunde clique com arrasto)
 - [ ] Arrastar documentos na lista também reordena
+- [ ] Segurar uma imagem perto da borda de baixo ou de cima rola a lista, ou a página no telefone, e ela chega a um lugar que estava fora da tela (D-0171)
 
 **Visual e tema:**
 - [ ] Imagens com cantos retos; botões e cards de texto com cantos arredondados
@@ -1590,6 +1597,7 @@ Estas decisões foram explicitamente confirmadas pelo proprietário do projeto e
 | D-0168 | **A imagem mostrada guarda o seu endereço `blob:`** | O visualizador, o editor e as miniaturas revogavam o endereço da imagem assim que ela carregava. O Safari do iPhone pode carregar de novo uma imagem que está na tela, e com o endereço revogado ela aparecia quebrada, com «Pré-visualização» e o «?». Agora o `modalImgSrc` dá o endereço à imagem do visualizador e revoga o anterior só quando um novo toma o lugar dele, ou ao fechar. As miniaturas fazem o mesmo. As esperas de carregamento do editor (`modalImgLoad`, o giro) terminam também no erro, e não prendem mais o editor. **Medido** no WebKit e no Edge: antes, uma nova leitura do endereço da imagem na tela falhava no visualizador, no editor e na miniatura; agora funciona. Origem: fotos do dono no iPhone, 2026-11-10. |
 | D-0169 | **O ✕ de uma anotação só apaga com um toque que começa nele** | No telefone, um toque numa anotação a seleciona, e o ✕ aparece no canto dela. O clique que o navegador gera desse toque podia cair no ✕, que acabava de surgir sob o dedo, e apagava a anotação. Agora o ✕ só apaga se o `pointerdown` foi nele (`_annDelDown`); o Enter do teclado, sem toque, continua a apagar. Numa anotação muito pequena na tela do telefone, o ✕ ainda cobre parte dela, e um toque ali apaga. Origem: achado no teste do pedido D-0167, 2026-11-10. |
 | D-0170 | **Os blobs da sessão aberta ficam em memória** | O Safari (WebKit) liga um blob lido do IndexedDB ao registro gravado. Quando esse registro é gravado de novo ou apagado, o blob não se lê mais (`NotFoundError`). Ao reabrir o editor de uma imagem já editada, o fundo limpo vem do `origBlob`, lido do banco ao carregar a sessão. O «Aplicar alterações» anterior regravou o registro, e o fundo aparecia quebrado, com «Pré-visualização» e o «?». O endereço não estava revogado, e a D-0168 não cobria este caminho. Agora o `loadSession` copia para a memória, uma vez, cada blob da sessão (`blob`, `origBlob`, `firstBlob` e `annBlobs`), com o `blobsInMemory`. A mesma causa fazia o ZIP dar «Erro» depois de renomear uma imagem, e a imagem removida ficar quebrada nos «Removidos» (F-0149). **Custo:** as fotos da sessão aberta ocupam memória do navegador, e abrir a sessão lê cada uma uma vez. **Medido** no WebKit e no Chromium do Playwright, com o banco em disco e toque simulado. Antes, no WebKit, o editor reaberto mostrava 0 × 0 e o ZIP dava «Erro»; agora, 800 × 800, e o ZIP sai. Não foi testado num iPhone de verdade. Origem: foto do dono no iPhone, 2026-11-11. |
+| D-0171 | **O arrasto rola a lista perto da borda** | Ao arrastar uma imagem ou um documento, a lista não rolava, e era preciso soltar, rolar e pegar de novo. Agora, com o item preso a até 48 px da borda de cima ou de baixo da lista, ou além dela, a lista rola até 16 px por quadro. Quando a lista não rola mais, como no telefone, rola a página, junto à borda da tela. A rolagem continua com o ponteiro parado, e o lugar do item é recalculado a cada passo. No toque, o arrasto depois do toque longo também não rolava a página nem andava, porque o navegador cancelava o gesto (F-0150). **Medido** no Chromium e no WebKit do Playwright, com 16 imagens. Antes, a grade ficava parada em 0 de 610 px, e a imagem caía no meio. Agora, ela rola até o fim e volta ao alto, e a imagem vai para a última posição. O toque foi simulado pelo CDP do Chromium, e não num telefone de verdade. Origem: pedido do dono, com foto, 2026-11-11. |
 
 ### Pendentes
 
