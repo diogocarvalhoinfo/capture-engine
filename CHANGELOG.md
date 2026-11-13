@@ -8,6 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **No iPhone, o desenho não sai mais achatado numa imagem vertical (F-0152):** no WebKit, a área de desenho ficava mais larga que a imagem (374 px sobre 184 px, num iPhone 13). O traço esticava na tela e saía achatado ao salvar; ao reabrir o editor, voltava a parecer certo. Agora a área de desenho cobre só a imagem: um quadrado desenhado sai com proporção 0,99, e não 0,70. Testado no WebKit e no Edge do Playwright, e não num iPhone de verdade. Achado por quem mantém o projeto.
 - **O título do visualizador não treme mais ao trocar de imagem (F-0153):** o tamanho era apagado na troca e voltava depois de a imagem carregar, e a linha centrada do título se movia duas vezes. Agora o nome e o tamanho mudam juntos, uma vez. Testado no Edge e no WebKit do Playwright. Achado por quem mantém o projeto.
 
 ## [29.9.1] - 2026-11-11

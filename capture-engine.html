@@ -5276,6 +5276,10 @@
       function annKeepRatio(sh, p) { const ar = (sh.rot || 0) % 180 ? 1 / sh.ar : sh.ar, dx = p.x - annResizeAnchorX, dy = p.y - annResizeAnchorY, w = Math.max(Math.abs(dx), Math.abs(dy) * ar, 4); return { x: annResizeAnchorX + Math.sign(dx || 1) * w, y: annResizeAnchorY + Math.sign(dy || 1) * w / ar } }
       /* On Aplicar alterações, the record keeps only the blobs that the history or the redo still use */
       function annKeepBlobs(o) { const keep = {}; let n = 0; [annHistory, ...annRedoStack.map(st => st.h)].forEach(a => a.forEach(h => { if (h.type === 'image' && annPasteBlobs.has(h.id) && !keep[h.id]) { keep[h.id] = annPasteBlobs.get(h.id); n++ } })); if (n) o.annBlobs = keep; else delete o.annBlobs }
+      /* The canvas covers the image itself, and not the box around it: in WebKit, a tall image left the box wider than the image,
+         so a drawing stretched sideways on the screen and came out flattened in the saved image */
+      function annFitCanvas() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }) }
+      if (window.ResizeObserver) new ResizeObserver(annFitCanvas).observe($('img-modal-img'));
       async function annActivate() {
         annActive = true;
         const o = images.find(x => x.id === modalItemId);
@@ -5309,6 +5313,7 @@
         cv.style.display = 'block';
         // Load the clean background (origBlob without baked annotations) for editing
         await annLoadCleanBg();
+        annFitCanvas();
         imgBarShow(true);
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
         annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
