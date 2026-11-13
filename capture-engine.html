@@ -5182,7 +5182,13 @@
       const ANN_TEXT_LINE_RATIO = 1.3; // line-height ratio, used in the textarea AND in the canvas (multi-line WYSIWYG)
       /* The highlighter has its own, wider scale on the same six steps of Diminuir and Aumentar */
       const ANN_HL_SIZES = [8, 12, 18, 26, 36, 48];
-      function annLineW() { return (annTool === 'highlight' ? ANN_HL_SIZES : ANN_SIZES)[annSizeIdx] }
+      /* The steps grow with the image: up to 1080 px on the short side they stay as they are; a 3024 x 4032 photo draws them 2.8 times thicker,
+         so the same step looks the same on the screen. Saved annotations keep their own width */
+      let annScaleF = 1;
+      function annSetScale(w, h) { annScaleF = Math.max(1, Math.min(w, h) / 1080) }
+      function annStepOf(lw, L) { return L.reduce((b, x, i) => Math.abs(x * annScaleF - lw) < Math.abs(L[b] * annScaleF - lw) ? i : b, 0) }
+      function annTextNear(v) { return ANN_TEXT_SIZES.reduce((b, x) => Math.abs(x - v) < Math.abs(b - v) ? x : b) }
+      function annLineW() { return Math.max(1, Math.round((annTool === 'highlight' ? ANN_HL_SIZES : ANN_SIZES)[annSizeIdx] * annScaleF)) }
       const annIsStroke = () => annTool === 'free' || annTool === 'highlight';
       const annHlMode = () => annFill.highlight ? 'solid' : 'soft';
       /* A highlighter stroke is a free stroke with hl ('soft' or 'solid'): flat ends, 40 % opacity when soft, one path so it does not darken itself */
@@ -5313,10 +5319,10 @@
         cv.style.display = 'block';
         // Load the clean background (origBlob without baked annotations) for editing
         await annLoadCleanBg();
-        annFitCanvas();
+        annFitCanvas(); annSetScale(cv.width, cv.height);
         imgBarShow(true);
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = 'none'; });
-        annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annEditingTextIdx = -1; annTextSize = 24; annSmoothLast = null;
+        annTextBold = true; annTextItalic = false; annSetTool(annHistory.length > 0 ? 'select' : 'free'); annEditingTextIdx = -1; annTextSize = annTextNear(24 * annScaleF); annSmoothLast = null;
         annRenderAll();
         SysLogger.info('Annotation mode ON');
       }
@@ -5703,7 +5709,7 @@
         const s = annHistory[annSelectedIdx];
         let txt = null, idx, px;
         if (s && s.type === 'text') { txt = s.fontSize || 24 }
-        else if (s) { const L = s.hl ? ANN_HL_SIZES : ANN_SIZES; idx = Math.max(0, L.indexOf(s.lw)); px = s.lw }
+        else if (s) { const L = s.hl ? ANN_HL_SIZES : ANN_SIZES; idx = annStepOf(s.lw, L); px = s.lw }
         else if (annTool === 'text') { txt = annTextSize }
         else { idx = annSizeIdx; px = annLineW() }
         const DOT = [3, 4, 6, 8, 11, 14]; // diameter of the dot by step, parallel to ANN_SIZES and ANN_HL_SIZES
@@ -6185,7 +6191,7 @@
         function annSizeStep(dir) {
           if (annSelectedIdx >= 0 && annSelectedIdx < annHistory.length) {
             const _s = annHistory[annSelectedIdx], _t = _s.type === 'text', _o = _t ? _s.fontSize || 24 : _s.lw, _L = _s.hl ? ANN_HL_SIZES : ANN_SIZES;
-            const _v = _t ? annTextStep(_o, dir) : _L[Math.max(0, Math.min(_L.length - 1, _L.indexOf(_o) + dir))];
+            const _v = _t ? annTextStep(_o, dir) : Math.max(1, Math.round(_L[Math.max(0, Math.min(_L.length - 1, annStepOf(_o, _L) + dir))] * annScaleF));
             if (_v === _o) return; // at the end of the scale: no empty undo step (F-0097)
             annPushUndo(); // M11/M12: snapshot BEFORE changing the thickness or the fontSize
             if (_t) _s.fontSize = annTextSize = _v; else _s.lw = _v; // the Texto tool takes the size too
