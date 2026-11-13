@@ -1727,7 +1727,8 @@
       flex-shrink: 0;
       font-size: var(--text-caption);
       color: var(--color-muted-foreground);
-      white-space: nowrap
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums
     }
 
     .modal-close {
@@ -4647,12 +4648,13 @@
         modalItemId = id;
         annDeactivate();
         resetImgZoom();
-        $('img-modal-dims').textContent = '';
         const img = $('img-modal-img');
-        img.onload = function () { $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) };
-        img.onerror = null;
+        /* The name and the size change together, when the new image loads: changing the name first and the size later moved the centered title row twice per image */
+        const setHead = dims => { $('img-modal-title').textContent = imgName(o); $('img-modal-dims').textContent = dims }; // the name with the extension, as the Download writes it (D-0119)
+        if (!$('img-modal-overlay').classList.contains('open')) setHead('');
+        img.onload = function () { setHead(img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size)) };
+        img.onerror = function () { setHead('') };
         modalImgSrc(o.blob);
-        $('img-modal-title').textContent = imgName(o); // the name with the extension, as the Download writes it (D-0119)
         $('img-modal-restore').style.display = trash ? 'flex' : 'none';
         $('img-modal-dl').style.display = 'flex';
         $('ann-toggle').style.display = trash ? 'none' : '';

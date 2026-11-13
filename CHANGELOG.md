@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O título do visualizador não treme mais ao trocar de imagem (F-0153):** o tamanho era apagado na troca e voltava depois de a imagem carregar, e a linha centrada do título se movia duas vezes. Agora o nome e o tamanho mudam juntos, uma vez. Testado no Edge e no WebKit do Playwright. Achado por quem mantém o projeto.
+
 ## [29.9.1] - 2026-11-11
 
 Patch: o arrasto em diagonal também rola a lista.
