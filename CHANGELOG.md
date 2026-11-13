@@ -4,7 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.10.0] - 2026-11-13
+
+Minor: a espessura do traço e o tamanho do texto crescem com a imagem; no iPhone, o desenho não sai mais achatado; o título do visualizador não treme; e o ícone mostra o Desfocado.
+
+Teste do Export User (`AGENTS.md` §11, Parte B): as cópias Admin e User foram exportadas pelo agente, chamando a exportação do Visual Builder no Edge 157, por `file://`, às 22h17. Abertas por `file://` no mesmo Edge com um perfil limpo, pelo Playwright. As duas: uma foto colada entra na grade, a área de desenho cobre a imagem, e uma seta é desenhada e salva no editor. Depois de escrever no campo «Quem» e recarregar, a sessão aparece no Histórico. Só a cópia Admin tem o Admin Gate. Na cópia User, nenhum erro no console; na Admin, só o aviso do `fetch` do Quine por `file://`, que já aparecia na 29.9.1 (§1.2). Não foram testados nesta versão: uma segunda aba, uma nova exportação a partir da cópia Admin e um iPhone de verdade.
 
 ### Modificado
 
