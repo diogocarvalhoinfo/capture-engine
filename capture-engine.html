@@ -3519,6 +3519,15 @@
       fill: currentcolor
     }
 
+    /* Retângulo or Círculo in «Desfocado»: the tool shows the two squares of the option */
+    .ann-btn .ann-blur-dots {
+      display: none
+    }
+
+    .ann-btn.ann-blurred .ann-blur-dots {
+      display: inline
+    }
+
     @keyframes ann-alert {
       0%,
       100% {
@@ -3978,7 +3987,7 @@
           </div>
           <div class="ann-tool-wrap">
             <button class="ann-btn" data-tool="rect" title="Retângulo"><svg viewBox="0 0 24 24">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <rect x="3" y="3" width="18" height="18" rx="2" /><path class="ann-blur-dots" d="M8 8h3v3H8zM13 13h3v3h-3z" fill="currentColor" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do retângulo">
               <button class="ann-btn ann-opt" id="ann-rect-outline" title="Contorno"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg></button>
@@ -3988,7 +3997,7 @@
           </div>
           <div class="ann-tool-wrap">
             <button class="ann-btn" data-tool="circle" title="Círculo"><svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="9" /><path class="ann-blur-dots" d="M8 8h3v3H8zM13 13h3v3h-3z" fill="currentColor" />
             </svg></button>
             <div class="ann-flyout" role="group" aria-label="Opções do círculo">
               <button class="ann-btn ann-opt" id="ann-circle-outline" title="Contorno"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg></button>
@@ -6207,7 +6216,7 @@
           b.onclick = () => annSizeStep(b.id === 'ann-thickness-up' || b.dataset.step === '1' ? 1 : -1);
         });
         // A selected annotation of the same kind changes too, with undo
-        function annSyncFillBtns() { for (const t in ANN_OPT2) { annPress(ANN_OPT2[t][0], !annFill[t]); annPress(ANN_OPT2[t][1], annFill[t] === true); if (ANN_OPT2[t][3]) annPress(ANN_OPT2[t][3], annFill[t] === 'blur'); document.querySelector(`.ann-btn[data-tool="${t}"]`).classList.toggle('ann-filled', annFill[t] === true) } }
+        function annSyncFillBtns() { for (const t in ANN_OPT2) { annPress(ANN_OPT2[t][0], !annFill[t]); annPress(ANN_OPT2[t][1], annFill[t] === true); if (ANN_OPT2[t][3]) annPress(ANN_OPT2[t][3], annFill[t] === 'blur'); const _b = document.querySelector(`.ann-btn[data-tool="${t}"]`); _b.classList.toggle('ann-filled', annFill[t] === true); _b.classList.toggle('ann-blurred', annFill[t] === 'blur') } }
         for (const t in ANN_OPT2) [ANN_OPT2[t][0], ANN_OPT2[t][1], ANN_OPT2[t][3]].forEach((id, k) => {
           if (!id) return; const on = [false, true, 'blur'][k];
           $(id).onclick = () => {
