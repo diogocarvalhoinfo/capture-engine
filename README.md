@@ -423,18 +423,18 @@ Medido só com o teclado, com o Playwright, no Edge, no Firefox e no WebKit, o m
 
 ```text
 capture-engine/
-├── capture-engine.html   # a aplicação inteira; é o arquivo que se distribui
-├── index.html            # entrada do GitHub Pages, que abre o capture-engine.html
-├── README.md             # este guia
-├── AGENTS.md             # regras para quem edita o projeto, pessoa ou IA
-├── CHANGELOG.md          # as versões, da mais nova para a mais antiga
-├── design-tokens.md      # o nome e o valor de cada token visual
-├── validate.sh           # verificações; execute antes de cada commit
-├── .stylelintrc.json     # configuração do stylelint, cópia do modelo
-├── .gitattributes        # fim de linha LF em qualquer computador
-├── .gitignore            # pastas locais de ferramentas de IA fora do git
-├── docs/images/          # as imagens, o GIF, os cartões e os diagramas deste README
-└── LICENSE               # licença MIT
+├── capture-engine.html   ← a aplicação inteira; é o arquivo que se distribui
+├── index.html            ← entrada do GitHub Pages, que abre o capture-engine.html
+├── README.md             ← este guia
+├── AGENTS.md             ← regras para quem edita o projeto, pessoa ou IA
+├── CHANGELOG.md          ← as versões, da mais nova para a mais antiga
+├── design-tokens.md      ← o nome e o valor de cada token visual
+├── validate.sh           ← verificações; execute antes de cada commit
+├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
+├── .gitattributes        ← fim de linha LF em qualquer computador
+├── .gitignore            ← pastas locais de ferramentas de IA fora do git
+├── docs/images/          ← as imagens, o GIF, os cartões e os diagramas deste README
+└── LICENSE               ← licença MIT
 ```
 
 Para quem usa, basta o `capture-engine.html`. Os outros arquivos são a documentação e as ferramentas do projeto.
@@ -443,18 +443,52 @@ Para quem usa, basta o `capture-engine.html`. Os outros arquivos são a document
 
 Esta seção é para quem edita o código.
 
+### O arquivo único
+
 ```text
 capture-engine.html
-├── <head>      CSP, ícones, manifest e o script que aplica o tema antes de a página aparecer
-├── <style>     tokens dos temas claro e escuro, layout, componentes e responsividade
-├── <body>      barra do topo, barra lateral, Imagens, Documentos, Histórico, Removidos e as janelas
-└── <script>    uma IIFE com 'use strict'
-    ├── SysLogger, TOKEN_* e escapeHTML()
-    ├── IndexedDB: idbGet, idbPut, idbDel, idbAll e idbIdx
-    ├── Sessões, Captura, Reordenação, Anotação e Visualizador de texto
-    ├── PDF e ZIP, escritos sem bibliotecas
-    ├── Visual Builder, Admin Gate e Quine (só na cópia "Administrador")
-    └── init() → openDB(), purgeExpired() e boot()
+│
+├── <head>
+│   └── Content Security Policy (metatag)
+│
+├── <style>
+│   ├── Design tokens (variáveis CSS)
+│   ├── Light mode (:root)
+│   ├── Dark mode (html.dark)
+│   ├── Layout principal
+│   ├── Componentes (botões, modais, sidebar, cards)
+│   ├── Responsividade (56.25rem, 30rem; escala gradual de 100rem a 140rem)
+│   └── Animações
+│
+├── <body>
+│   ├── Script anti-FOUC (aplica dark mode antes de pintar — logo após <body>)
+│   ├── Barra de topo (logo, nome, botões de ação)
+│   ├── Layout principal
+│   │   ├── Sidebar esquerda (campos de sessão, controles de export)
+│   │   ├── Painel de imagens (zona de drop + grade de thumbnails)
+│   │   └── Painel de documentos (zona de drop + lista)
+│   ├── Sidebar direita (histórico de sessões)
+│   ├── Barra "Removidos" (#trash-bar)
+│   ├── Rodapé
+│   └── Modais (imagem, documento, anotação, Visual Builder, export)
+│
+└── <script> — IIFE com 'use strict'
+    │
+    ├── SysLogger         → Logs no console (respeitam TOKEN_DEBUG_MODE)
+    ├── TOKENS            → Variáveis de configuração (TOKEN_*)
+    ├── escapeHTML()      → Sanitização XSS de todos os inputs
+    ├── IndexedDB         → Funções de acesso à base de dados local (idbGet, idbPut, idbDel, idbAll, idbIdx)
+    ├── Session Manager   → Criar, carregar, apagar e navegar entre sessões
+    ├── Capture Engine    → Receber imagens e documentos (clipboard, arrastar e soltar, picker)
+    ├── Reorder           → Arrastar e soltar para reordenar itens
+    ├── Annotation        → Canvas transparente para anotação sobre imagens
+    ├── Text Viewer       → Visualizador de documentos de texto inline
+    ├── PDF Engine        → Geração de PDFs em JavaScript puro (sem bibliotecas)
+    ├── ZIP Engine        → Geração de ZIPs em JavaScript puro (sem bibliotecas)
+    ├── Visual Builder    → Painel de configuração do administrador
+    ├── Quine Engine      → Auto-exportação do arquivo com configurações
+    ├── Admin Gate        → Ativa o modo administrador (6 cliques no logo)
+    └── boot()            → Chamada por init() após openDB() e purgeExpired(). Inicializa todos os subsistemas da interface.
 ```
 
 ### Componentes

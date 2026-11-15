@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **As árvores do README voltam ao formato que o dono preferia:** em "Estrutura de arquivos", a nota de cada arquivo vem depois de uma seta (←), e não de um #. Em "Arquitetura", volta a árvore detalhada do arquivo único, com cada parte do script e a sua função.
+
 ### Corrigido
 
 - **No Safari, o desenho não sai mais do lugar de vez em quando (F-0165, reabre a F-0155):** o WebKit encolhia a área da imagem. Ela voltava ao tamanho no mesmo quadro. O canvas, medido nesse meio, ia para `left: 0`, e o `ResizeObserver` não via mudança. Agora cada encaixe se repete no quadro seguinte.
