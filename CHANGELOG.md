@@ -24,6 +24,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - Saem a referência das funções, os fluxos e as variáveis globais, que o código mostra, e os exemplos passo a passo, que viram a lista "O que muda junto".
   - As regras ganham o ID da decisão. As "Regras absolutas" viram a D-0176, e quem lê o README fica na D-0175.
   - O schema do IndexedDB, as chaves do armazenamento local, com a `text-bg` que faltava, e a recuperação de dados ficam em "Armazenamento do navegador". O teste no navegador fica em "Fechar uma versão".
+- **O `design-tokens.md` segue a escrita dos prompts 8.0.1 (F-0156):** aspas retas, "sim" e "não" no lugar dos emojis e os avisos na caixa do GitHub. Os nomes e os valores dos tokens não mudam.
 
 ### Corrigido
 

@@ -16,7 +16,7 @@ Este documento é uma cópia verificada. O `validate.sh` (check 29) compara cada
 
 ## 1. Cores
 
-A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); «—» quer dizer que o valor não muda. O visualizador de imagem é escuro nos dois temas, por isso as suas cores não mudam.
+A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "—" quer dizer que o valor não muda. O visualizador de imagem é escuro nos dois temas, por isso as suas cores não mudam.
 
 | Token | Claro | Escuro | Uso |
 |---|---|---|---|
@@ -30,11 +30,11 @@ A coluna «Escuro» mostra o valor no tema escuro (classe `dark` no `<html>`); �
 | `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal (botões, chips, contadores de bloco); calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
 | `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
 | `--color-ring` | `color-mix(in srgb, var(--color-primary) 85%, var(--color-foreground))` | `var(--color-primary)` | Contorno do foco do teclado. No tema claro, a cor principal escurecida dá 3,67:1 sobre o fundo; no escuro, a cor principal dá 5,86:1 (D-0174) |
-| `--color-green-500` | `#22c55e` | — | Sucesso, estado «Gravado», confirmar a anotação |
+| `--color-green-500` | `#22c55e` | — | Sucesso, estado "Gravado", confirmar a anotação |
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
-| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos «Removidos», spinner, botões verdes e vermelhos, avisos de armazenamento) |
-| `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja «Outra cor» (D-0156) |
+| `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos "Removidos", spinner, botões verdes e vermelhos, avisos de armazenamento) |
+| `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja "Outra cor" (D-0156) |
 | `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
 | `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
@@ -92,7 +92,7 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 | `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, `let annCurrentColor` e `annColorBy` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
 | `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
 | `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
-| `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script rodar. |
+| `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script executar. |
 | `#e86b2e` | O `TOKEN_MAIN_COLOR`, os `value=` de `#cfg-cor-hex` e `#cfg-cor-principal`, e o valor de reserva do `getComputedStyle` | É o valor padrão do próprio token (§6): um `var()` aqui seria circular. |
 | `#35a800` `#ffd82b` | `stop-color` do gradiente `#ce_accent`, no logotipo SVG | Um `stop-color` com custom property não funciona da mesma forma em todos os navegadores. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | O navegador lê as metatags antes de o CSS existir. |
@@ -115,7 +115,7 @@ echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
 >
 > O `grep -v` precisa filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--color-background: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
 >
-> ⚠️ **Não escrever cores literais nesta seção fora da tabela** (D70). O comando abaixo lê a seção inteira: um hex citado numa nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
+> **Não escrever cores literais nesta seção fora da tabela** (D70). O comando abaixo lê a seção inteira: um hex citado em uma nota explicativa passa a contar como exceção declarada. Foi assim que uma cor do modo escuro — que só existia no texto a explicar o comando, e nunca no código — ficou declarada como exceção. **Esta própria nota já reincidiu uma vez**: escrevê-la citando o hex voltava a poluir o comando. Se precisar de referir uma cor aqui, descreva-a; não a escreva.
 >
 > Qualquer linha devolvida é uma cor no código que esta seção não declara.
 
@@ -132,8 +132,8 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--font-sans` | `'Segoe UI', arial, sans-serif` | Fonte de toda a interface: a do sistema, sem fontes externas |
 | `--font-mono` | `consolas, monaco, 'Courier New', monospace` | Texto dos documentos no modal de texto |
 | `--text-micro` | `0.625rem` | Rodapé e botão de remover da miniatura (10px) |
-| `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra «Removidos» (11px) |
-| `--text-xs` | `0.75rem` | Títulos das seções e dos blocos, chips, botões «Adicionar», nomes no histórico e tooltip (12px) |
+| `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra "Removidos" (11px) |
+| `--text-xs` | `0.75rem` | Títulos das seções e dos blocos, chips, botões "Adicionar", nomes no histórico e tooltip (12px) |
 | `--text-code` | `calc(12.5rem / 16)` | Visualizador de texto, em fonte monoespaçada (12.5px) |
 | `--text-control` | `0.8125rem` | Botões principais e campos; chips no telefone (13px) |
 | `--text-sm` | `0.875rem` | Texto geral (14px) |
@@ -164,7 +164,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | Token | Valor | Uso |
 |---|---|---|
 | `--shadow-card` | `0 2px 8px rgb(0 0 0 / 2%)` | Painéis e barras |
-| `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno («Adicionar imagem» e «Adicionar documento», as duas escolhas do modo ZIP), no tema claro |
+| `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno ("Adicionar imagem" e "Adicionar documento", as duas escolhas do modo ZIP), no tema claro |
 | `--shadow-control` | `0 2px 4px rgb(0 0 0 / 20%)` | Botões pequenos sobre a miniatura e o interruptor |
 | `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
 | `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
@@ -194,7 +194,7 @@ Um componente novo usa uma destas superfícies, com o seu fundo, borda, raio e s
 
 | Superfície | Seletor | Fundo | Borda | Raio | Sombra |
 |---|---|---|---|---|---|
-| Painel (Imagens, Documentos, barra lateral, Histórico, «Removidos») | `.ev-block`, `#left-sidebar`, `#sidebar`, `#trash-bar` | `--color-card` | 1 px `--color-border` | `--radius-lg` | `--shadow-card` |
+| Painel (Imagens, Documentos, barra lateral, Histórico, "Removidos") | `.ev-block`, `#left-sidebar`, `#sidebar`, `#trash-bar` | `--color-card` | 1 px `--color-border` | `--radius-lg` | `--shadow-card` |
 | Linha de documento | `.d-item` | `--color-card`; no hover, `--color-background` | 1 px transparente | `--radius-lg` | nenhuma |
 | Linha do Histórico | `.sb-sess-item` | no hover e ativa, `--color-background` | nenhuma | `--radius-sm` | nenhuma |
 | Página do visualizador de documentos | `.doc-page`, dentro do visualizador | `--color-card` | nenhuma | `--radius-lg` | nenhuma |
@@ -267,24 +267,24 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 
 | Token | Tipo | Valor padrão | Alterável no VB | Aba VB |
 |---|---|---|---|---|
-| `TOKEN_TITLE_START` | `string` | `'Capture '` | ✅ | Interface → «Texto inicial» |
-| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | ✅ | Interface → «Texto em destaque» |
-| `TOKEN_TITLE_END` | `string` | `''` | ✅ | Interface → «Texto final» (terceira parte do título; espaços manuais) |
-| `TOKEN_TITLE_START_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto inicial» (vazio = herda cor do texto) |
-| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto em destaque» (vazio = herda a cor principal) |
-| `TOKEN_TITLE_END_COLOR` | `string` | `''` | ✅ | Interface → amostra de cor do «Texto final» (vazio = herda cor do texto) |
-| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | ✅ | Interface → seletor da «Cor principal» |
-| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | ✅ | Interface → seletor da «Cor do texto sobre destaque» |
-| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | ✅ | Interface → «Texto do rodapé» |
-| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | ✅ | Histórico → «Primeiro campo», interruptor |
-| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | ✅ | Histórico → «Segundo campo», interruptor |
-| `TOKEN_USER_LABEL` | `string` | `''` | ✅ | Histórico → «Primeiro campo», rótulo |
-| `TOKEN_EQUIP_LABEL` | `string` | `''` | ✅ | Histórico → «Segundo campo», rótulo |
-| `TOKEN_ID_UPPERCASE` | `bool` | `true` | ✅ | Histórico → «Maiúsculas», interruptor |
-| `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
-| `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
-| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Manutenção → «Limpeza automática» (8h, 24h, 48h, Nunca). O valor 0 desliga a limpeza; ver "Distribuir uma versão nova", na seção 9 do README |
-| `TOKEN_DEBUG_MODE` | `bool` | `true` | ❌ | Sem UI — desativado automaticamente em Export User |
+| `TOKEN_TITLE_START` | `string` | `'Capture '` | sim | Interface → "Texto inicial" |
+| `TOKEN_TITLE_ACCENT` | `string` | `'Engine'` | sim | Interface → "Texto em destaque" |
+| `TOKEN_TITLE_END` | `string` | `''` | sim | Interface → "Texto final" (terceira parte do título; espaços manuais) |
+| `TOKEN_TITLE_START_COLOR` | `string` | `''` | sim | Interface → amostra de cor do "Texto inicial" (vazio = herda cor do texto) |
+| `TOKEN_TITLE_ACCENT_COLOR` | `string` | `''` | sim | Interface → amostra de cor do "Texto em destaque" (vazio = herda a cor principal) |
+| `TOKEN_TITLE_END_COLOR` | `string` | `''` | sim | Interface → amostra de cor do "Texto final" (vazio = herda cor do texto) |
+| `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | sim | Interface → seletor da "Cor principal" |
+| `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | sim | Interface → seletor da "Cor do texto sobre destaque" |
+| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | sim | Interface → "Texto do rodapé" |
+| `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | sim | Histórico → "Primeiro campo", interruptor |
+| `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | sim | Histórico → "Segundo campo", interruptor |
+| `TOKEN_USER_LABEL` | `string` | `''` | sim | Histórico → "Primeiro campo", rótulo |
+| `TOKEN_EQUIP_LABEL` | `string` | `''` | sim | Histórico → "Segundo campo", rótulo |
+| `TOKEN_ID_UPPERCASE` | `bool` | `true` | sim | Histórico → "Maiúsculas", interruptor |
+| `TOKEN_JPEG_QUALITY` | `float` | `0.92` | sim | Captura → "Qualidade do PDF" |
+| `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | sim | Captura → dimensão máxima |
+| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | sim | Manutenção → "Limpeza automática" (8h, 24h, 48h, Nunca). O valor 0 desliga a limpeza; ver "Distribuir uma versão nova", na seção 9 do README |
+| `TOKEN_DEBUG_MODE` | `bool` | `true` | não | Sem UI — desativado automaticamente em Export User |
 
 ### Notas sobre tokens específicos
 
@@ -311,11 +311,13 @@ Afeta apenas a geração do PDF — os originais ficam na sessão no formato em 
 > **Clamp automático no Visual Builder:** O VB aplica `Math.min(0.95, Math.max(0.70, rawJq / 100))` ao valor digitado — valores fora do intervalo são silenciosamente corrigidos para o limite mais próximo. A edição manual direta do token no código-fonte não tem este guard. Comportamento com valores fora de `[0.70, 0.95]` editados diretamente: o valor é passado sem clamp para `canvas.toBlob(type, quality)`. Pelo padrão HTML, um valor fora de `[0, 1]` faz o navegador usar a qualidade padrão (em geral ~0.92). Um valor em `[0, 1]`, mas fora de `[0.70, 0.95]`, é aceito sem erro e produz os artefatos ou o desperdício de espaço descritos acima.
 
 **`TOKEN_MAX_IMG_DIMENSION` (0 = sem limite):**
-Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido (ex: `1920`), qualquer imagem com dimensão superior é reduzida ao gerar o PDF, preservando a proporção. É lido num único ponto do código — `imgToJPEG()`, chamada exclusivamente por `generatePDF()`.
+Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido (ex: `1920`), qualquer imagem com dimensão superior é reduzida ao gerar o PDF, preservando a proporção. É lido em um único ponto do código — `imgToJPEG()`, chamada exclusivamente por `generatePDF()`.
 
-> ⚠️ **Importante — não reduz o armazenamento:** `captureImg()` grava sempre o blob **original**, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
+> [!IMPORTANT]
+> **Este token não reduz o armazenamento.**
+> O `captureImg()` grava sempre o blob original, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
 >
-> Até a V26, esta seção afirmava que a imagem era «redimensionada antes de ser armazenada», e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e numa ferramenta de coleta de provas isso é perda de evidência.
+> Até a V26, esta seção afirmava que a imagem era "redimensionada antes de ser armazenada", e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e em uma ferramenta de coleta de provas isso é perda de evidência.
 
 > **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem entra no PDF tal como está.
 
@@ -348,7 +350,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 └────────────────────────────────────────────────────────────────┘
   height: 64px (--top-bar-h)
   [⚙] [💾]: ADMIN_BUTTONS, removidos em exports User
-  [↻] «Atualizar»; [🕒] «Histórico», só até 900 px de largura; [🌙] tema
+  [↻] "Atualizar"; [🕒] "Histórico", só até 900 px de largura; [🌙] tema
 ```
 
 ### Layout principal
@@ -389,13 +391,13 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
 │        [Restaurar]  [Editar]  [Download]                 │
-│         ↑ só nos «Removidos», no lugar do Editar         │
+│         ↑ só nos "Removidos", no lugar do Editar         │
 └──────────────────────────────────────────────────────────┘
 ```
 
 *A barra `#zoom-ui` usa um fundo translúcido: `--color-viewer-floating` e `backdrop-filter: blur(10px)`. Flutua sobre a imagem com texto sempre a `#fff` independentemente do conteúdo por baixo.*
 
-*O fechamento por clique no backdrop está bloqueado quando zoom > 100 % — evita fechamentos acidentais durante o panning.*
+*O fechamento por clique no backdrop está bloqueado quando zoom > 100% — evita fechamentos acidentais durante o panning.*
 
 ### Modal de documento (`#text-modal-overlay`)
 
@@ -422,14 +424,14 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 │  └────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────┤
 │  [Restaurar]  [Copiar texto]  [Download]                  │
-│   ↑ só nos «Removidos»  ↑ oculto em modo binário         │
+│   ↑ só nos "Removidos"  ↑ oculto em modo binário         │
 └──────────────────────────────────────────────────────────┘
 ```
 
 **Como o motor decide entre modo texto e modo binário:**
 - MIME type começa com `text/` → modo texto (visualizável inline)
 - MIME type é `application/json`, `application/xml`, etc. → modo texto
-- Extensão `.pdf` ou MIME `application/pdf` → modo binário, com o PDF num `iframe` de endereço `blob:` (D-0130)
+- Extensão `.pdf` ou MIME `application/pdf` → modo binário, com o PDF em um `iframe` de endereço `blob:` (D-0130)
 - Qualquer outro MIME type → modo binário (download apenas)
 
 ---
@@ -460,10 +462,10 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 | Onde | Ação | Estilo | Cor | Quando aparece |
 |---|---|---|---|---|
 | Visualizador de imagem | **Editar** | `.btn-send`, cheio | `var(--color-primary)` + `var(--color-primary-foreground)` | Imagem ativa |
-| Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos «Removidos» |
+| Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos "Removidos" |
 | Editor | **Aplicar alterações** | Cheio | `var(--color-green-500)` + branco | No modo de anotação |
 | Editor | **Descartar alterações** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
-| Visualizador de documento | **Restaurar**, **Copiar texto** e **Download** | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos «Removidos»; Copiar texto só em documentos de texto; Download sempre |
+| Visualizador de documento | "Restaurar", "Copiar texto" e "Download" | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos "Removidos"; Copiar texto só em documentos de texto; Download sempre |
 
 O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
 
@@ -471,7 +473,7 @@ O Editar, o Download e o Restaurar do visualizador têm a mesma largura, 120 px.
 
 ## 10. Responsividade
 
-A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Numa tela de 1920 × 1080, o Windows a 125 % deixa cerca de 1536 × 777, e a barra fica no tamanho normal. A 150 % (cerca de 1280 × 633), ela comprime: cerca de 14px entre as seções e textos de 12px.
+A interface tem dois cortes principais de largura, em `rem` (D-0082). Há ainda `width <= 48rem` (768px) e `(height <= 43.75rem) and (width >= 56.3125rem)`, para telas baixas: um modo compacto da barra lateral, só abaixo de 700px de altura. Em uma tela de 1920 × 1080, o Windows a 125% deixa cerca de 1536 × 777, e a barra fica no tamanho normal. A 150% (cerca de 1280 × 633), ela comprime: cerca de 14px entre as seções e textos de 12px.
 
 O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone passa de 48px a 40px e o texto de `--text-sm` a `--text-control`. Não é um modo compacto: não muda nada da barra lateral.
 
@@ -480,7 +482,7 @@ O corte `height <= 50rem` (800px) diminui a dica das zonas vazias: o ícone pass
 - Layout muda de horizontal para vertical (painéis empilhados)
 - A sidebar de histórico (desktop: coluna lateral direita) transforma-se em um **modal centralizado** em vez de drawer lateral — aumenta a área de toque e facilita uso com o polegar
 - O botão de histórico fica na barra de topo
-- `pointer-events: auto` e `touch-action: manipulation` garantem que 100 % da superfície de cada card responde a toque
+- `pointer-events: auto` e `touch-action: manipulation` garantem que 100% da superfície de cada card responde a toque
 
 ### `width <= 30rem` (480px) — telefones na vertical
 
@@ -503,24 +505,24 @@ Nas telas grandes, a interface inteira cresce junto, com o `zoom` do `html`: os 
 
 Uma das decisões de design mais impactantes foi padronizar *quando* as bordas aparecem e desaparecem. Bordas que surgem apenas no hover criam layout shift (o elemento "salta" 1px quando o cursor passa).
 
-### Botões «Adicionar imagem», «Adicionar documento» e as duas escolhas do modo ZIP (`.btn-capture`, `.btn-zip-cta`)
+### Botões "Adicionar imagem", "Adicionar documento" e as duas escolhas do modo ZIP (`.btn-capture`, `.btn-zip-cta`)
 
 | Estado | Visual |
 |---|---|
 | **Repouso, tema claro** | Sem borda; fundo `--color-card` e sombra `--shadow-button` |
-| **Repouso, tema escuro** | Sem borda nem sombra; fundo `--color-hover-overlay-dark`, 6 % mais claro que o painel |
+| **Repouso, tema escuro** | Sem borda nem sombra; fundo `--color-hover-overlay-dark`, 6% mais claro que o painel |
 | **Hover** | Contorno fino na cor principal (`--shadow-input-focus`) e texto `--color-foreground` |
 
 A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanho no hover.
 
-### Chips do «Layout PDF» (Auto, Horizontal, Vertical)
+### Chips do "Layout PDF" (Auto, Horizontal, Vertical)
 
 | Estado | Visual |
 |---|---|
 | **Escolhido** | Fundo `--color-primary`, texto `--color-primary-foreground`, peso 600 |
 | **Não escolhido** | Sem borda nem fundo; texto `--color-muted-foreground`, e `--color-foreground` no hover |
 
-«Horizontal» e «Vertical» são ícones de página, com o nome no tooltip; «Auto» é escrito.
+"Horizontal" e "Vertical" são ícones de página, com o nome no tooltip; "Auto" é escrito.
 
 
 ---
@@ -545,7 +547,7 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 | `annSizeIdx` | `2` (4px) | Índice em `ANN_SIZES` (ou `ANN_HL_SIZES` no marca-texto) da ferramenta atual |
 | `annSizeByTool` | `{ free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 }` | O passo guardado de cada ferramenta (4 px nas linhas, 12 px no marca-texto) |
 | `annColorBy` | `{ hl: '#eab308', line: '#ef4444' }` | A cor do marca-texto e a das outras ferramentas |
-| `annFill` | `{ rect: false, circle: false, highlight: false }` | A segunda opção de cada ferramenta, «Preenchido» ou «Sólido»; chaves `fill-rect`, `fill-circle` e `hl-solid` (`ANN_OPT2`) |
+| `annFill` | `{ rect: false, circle: false, highlight: false }` | A segunda opção de cada ferramenta, "Preenchido" ou "Sólido"; chaves `fill-rect`, `fill-circle` e `hl-solid` (`ANN_OPT2`) |
 | `annTextSize` | `24` | Tamanho do texto (px), reposto a 24 a cada abertura do editor |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |
@@ -568,8 +570,8 @@ Cada entrada é um objeto com pelo menos `{type, color, lw}` e campos adicionais
 
 | `type` | Campos obrigatórios | Notas |
 |---|---|---|
-| `rect` | `x1, y1, x2, y2`; `fill: true` quando «Preenchido» | Coordenadas dos dois cantos opostos |
-| `circle` | `x1, y1, x2, y2`; `fill: true` quando «Preenchido» | Bounding box da elipse |
+| `rect` | `x1, y1, x2, y2`; `fill: true` quando "Preenchido" | Coordenadas dos dois cantos opostos |
+| `circle` | `x1, y1, x2, y2`; `fill: true` quando "Preenchido" | Bounding box da elipse |
 | `arrow` | `x1, y1, x2, y2` | Origem → destino da seta |
-| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23); no marca-texto, `hl`: `'soft'` (Translúcido, 40 %) ou `'solid'` | Salvo com **os mesmos pontos da pré-visualização** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
+| `free` | `pts: [{x,y}]`, `closed` (sempre `false` desde a V23); no marca-texto, `hl`: `'soft'` (Translúcido, 40%) ou `'solid'` | Salvo com **os mesmos pontos da pré-visualização** (`annPath`) — sem simplificação RDP e sem fechamento automático do contorno. Ver changelog V23. |
 | `text` | `x1, y1, txt, bold, italic, fontSize`; `rot` (graus) quando girado | `txt` pode conter `\n` (multilinha) — `annDrawShape` desenha linha a linha com `lineH = fontSize × ANN_TEXT_LINE_RATIO`. `textBaseline='top'`; `x1/y1` = canto superior esquerdo da 1.ª linha |
