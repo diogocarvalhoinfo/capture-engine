@@ -4,6 +4,14 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **No Safari, o desenho não sai mais do lugar de vez em quando (F-0165, reabre a F-0155):** o WebKit encolhia a área da imagem. Ela voltava ao tamanho no mesmo quadro. O canvas, medido nesse meio, ia para `left: 0`, e o `ResizeObserver` não via mudança. Agora cada encaixe se repete no quadro seguinte.
+  - Medido com o Playwright no WebKit, em 390 × 844, com o arquivo em que a falha aparecia. Antes, 5 de 6 execuções saíam erradas; depois, 8 de 8 certas.
+  - No arquivo atual: 5 execuções certas no WebKit, e o Edge e o Firefox sem falha.
+
 ## [29.11.0] - 2026-11-15
 
 No Safari, o desenho cai onde o dedo passa. Os ícones seguem a lista dos prompts. O rodapé e o foco do teclado têm o contraste da WCAG 2.2 AA, e o README e o `AGENTS.md` seguem os prompts 8.0.1.
