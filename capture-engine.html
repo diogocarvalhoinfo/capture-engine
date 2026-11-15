@@ -34,7 +34,7 @@
       --color-primary: #e86b2e;
       --color-primary-foreground: #fff;
       --color-brand: var(--color-primary);
-      --color-ring: var(--color-primary);
+      --color-ring: color-mix(in srgb, var(--color-primary) 85%, var(--color-foreground));
       --focus-width: 3px;
       --focus-offset: 2px;
       --opacity-dimmed: 0.3;
@@ -150,6 +150,7 @@
 
     /* ═══ DARK MODE ═══ */
     html.dark {
+      --color-ring: var(--color-primary);
       --color-background: #121212;
       --color-card: #1e1e1e;
       --color-border: rgb(51 51 51 / 50.2%);
@@ -1516,7 +1517,6 @@
       letter-spacing: 0.8px;
       text-transform: uppercase;
       flex-shrink: 0;
-      opacity: 0.5;
       height: 58px;
       display: flex;
       align-items: center;
@@ -2923,8 +2923,7 @@
       #footer-credits {
         margin-top: calc(var(--spacing) * 4);
         height: auto;
-        padding-bottom: calc(var(--spacing) * 8);
-        opacity: 0.4
+        padding-bottom: calc(var(--spacing) * 8)
       }
 
       /* Chips wrap naturally on small screens */
