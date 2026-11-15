@@ -3555,6 +3555,27 @@
       background: var(--color-viewer-surface-hover) !important;
     }
 
+    /* The zoom value returns to 100% with a click: a target as tall as the zoom buttons, wider than the number */
+    #zoom-level {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      height: 28px;
+      padding: 0 calc(var(--spacing) * 2);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--duration-moderate-01)
+    }
+
+    #zoom-level:hover {
+      background: var(--color-hover-overlay-dark)
+    }
+
     /* Zoom & Pan Styles */
     #ann-wrap {
       transition: transform var(--duration-slow-02) var(--ease-out-expo);
@@ -4059,9 +4080,7 @@
               <line x1="21" x2="16.65" y1="21" y2="16.65" />
               <line x1="8" x2="14" y1="11" y2="11" />
             </svg></button>
-          <span id="zoom-level"
-            style="color:var(--color-white);font-size:var(--text-xs);font-weight:600;min-width:44px;text-align:center;cursor:pointer;user-select:none"
-            title="Voltar a 100 %">100%</span>
+          <span id="zoom-level" role="button" tabindex="0" title="Voltar a 100%">100%</span>
           <button class="action-btn" id="zoom-in" title="Aumentar zoom" style="width:28px;height:28px;color:var(--color-white)"><svg
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" style="width:16px;height:16px">
