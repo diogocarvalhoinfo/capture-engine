@@ -5294,7 +5294,9 @@
       /* The canvas covers the image itself, and not the box around it: in WebKit, a tall image left the box wider than the image,
          so a drawing stretched sideways on the screen and came out flattened in the saved image */
       function annFitCanvas() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }) }
-      if (window.ResizeObserver) new ResizeObserver(annFitCanvas).observe($('img-modal-img'));
+      /* The box is watched too: WebKit widens it after the image has loaded, which moves the image inside it without resizing it,
+         and a canvas left at the old place recorded the drawing away from the pointer (F-0155) */
+      if (window.ResizeObserver) { const annFitRo = new ResizeObserver(annFitCanvas); annFitRo.observe($('img-modal-img')); annFitRo.observe($('ann-wrap')) }
       async function annActivate() {
         annActive = true;
         const o = images.find(x => x.id === modalItemId);

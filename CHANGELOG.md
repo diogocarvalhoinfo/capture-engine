@@ -4,6 +4,15 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **No Safari, o desenho cai onde o dedo ou o mouse passa (F-0155, reabre a F-0152):** o WebKit alarga a área da imagem depois do carregamento. A imagem muda de lugar sem mudar de tamanho. O canvas acompanhava só o tamanho da imagem e ficava no lugar antigo. A anotação era gravada fora do lugar, sem aviso. Agora o canvas acompanha também a área em volta. Medido com o Playwright, antes e depois:
+  - WebKit, iPhone 13, imagem de 1080 × 1920: o traço de x = 324 a 756 era gravado de 680 a 1058; agora vai de 320 a 710;
+  - WebKit em 1280 × 633: com uma imagem vertical, o traço não caía na imagem, e com uma horizontal saía 218 px à direita; agora os dois saem no lugar;
+  - o Edge saía certo e continua igual. Com zoom, com o Girar 90° e em 360 × 800, o canvas fica sobre a imagem, com até 0,5 px de diferença.
+
 ## [29.10.0] - 2026-11-13
 
 Minor: a espessura do traço e o tamanho do texto crescem com a imagem; no iPhone, o desenho não sai mais achatado; o título do visualizador não treme; e o ícone mostra o Desfocado.
