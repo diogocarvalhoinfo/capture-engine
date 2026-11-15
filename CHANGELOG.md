@@ -20,6 +20,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - As duas imagens anotadas ganham a versão escura, e a de visão geral mostra a primeira tela em uso. O GIF foi refeito.
   - A escrita segue a 8.0.1: aspas retas, "em um", "executar" e "guardar", sem emoji e sem frases com mais de 30 palavras.
   - Saem do README a tabela do IndexedDB, a nota da CSP, o XSS e o EMA, que já estão no `AGENTS.md`, e as versões testadas, que ficam nesta linha. Testado à mão: Chrome 148 e Edge 148 no Windows 11, Firefox 151.0.4, e Safari no iPhone 14 Pro com o iOS 26.5, no site. O teclado foi medido com o Playwright no Edge 156, no Firefox 150 e no WebKit 26.4.
+- **O `AGENTS.md` segue as 8 seções fixas dos prompts 8.0.1 (F-0156):** passa de 208 KB a 109 KB. As decisões passam de tabela a lista, com o texto antigo igual.
+  - Saem a referência das funções, os fluxos e as variáveis globais, que o código mostra, e os exemplos passo a passo, que viram a lista "O que muda junto".
+  - As regras ganham o ID da decisão. As "Regras absolutas" viram a D-0176, e quem lê o README fica na D-0175.
+  - O schema do IndexedDB, as chaves do armazenamento local, com a `text-bg` que faltava, e a recuperação de dados ficam em "Armazenamento do navegador". O teste no navegador fica em "Fechar uma versão".
 
 ### Corrigido
 
