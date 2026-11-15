@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.3] - 2026-11-15
+
+As cores da barra do editor voltam a crescer, a pedido do dono. A D-0112 e o CSS dos botões ficam de acordo com o aviso da 29.11.2.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a F-0185 e a F-0186 vieram da revisão do que ficou aberto na 29.11.2, e as duas foram corrigidas. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
 
 ### Modificado
 
