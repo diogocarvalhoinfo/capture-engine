@@ -4544,11 +4544,22 @@
       function idbDelBatch(store, ids) { return new Promise((res, rej) => { if (!ids.length) { res(); return; } const tx = _db.transaction(store, 'readwrite'), st = tx.objectStore(store); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; tx.oncomplete = () => res(); tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Batch delete error')) }; try { ids.forEach(id => st.delete(id)) } catch (e) { _chkQ(e); throw e } }) }
       let _uiUpdateTimer = null; function scheduleUIUpdate() { if (_uiUpdateTimer) return; _uiUpdateTimer = setTimeout(() => { _uiUpdateTimer = null; renderTrash(); updateCounters(); updateBtns(); if (isDirty) triggerSave(); }, 50) }
       function idbIdx(store, idx, val) { return new Promise((res, rej) => { const tx = _db.transaction(store, 'readonly'); tx.onabort = () => rej(tx.error || new Error('Transaction aborted')); tx.onerror = () => rej(tx.error || new Error('Transaction error')); const r = tx.objectStore(store).index(idx).getAll(val); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
+      /* Each tab holds a shared lock named after its open session, so the cleanup of another tab skips it (F-0206) */
+      let sessLockId = null, sessLockRelease = null;
+      function sessLock(id) {
+        if (id === sessLockId) return;
+        if (sessLockRelease) sessLockRelease();
+        sessLockRelease = null; sessLockId = id;
+        if (!id || !navigator.locks) return;
+        navigator.locks.request('ce-sess-' + id, { mode: 'shared' }, () => new Promise(res => { if (sessLockId === id) sessLockRelease = res; else res() })).catch(() => { });
+      }
       async function purgeExpired() {
         if (!TOKEN_AUTO_PURGE_HOURS) return;
         const cut = Date.now() - TOKEN_AUTO_PURGE_HOURS * 3600 * 1000, all = await idbAll('sessions');
+        let open = new Set();
+        try { if (navigator.locks) { const q = await navigator.locks.query(); open = new Set([...(q.held || []), ...(q.pending || [])].map(l => l.name)) } } catch (_) { }
         for (const s of all) {
-          if (s.updatedAt < cut) {
+          if (s.updatedAt < cut && !open.has('ce-sess-' + s.id)) {
             try {
               const imgIds = (await idbIdx('images', 'sessionId', s.id)).map(x => x.id);
               await idbDelBatch('images', imgIds);
@@ -4585,13 +4596,13 @@
       const touchScreen = () => !!window.matchMedia && window.matchMedia('(hover: none)').matches;
       function lastSessionKeep(id) { try { if (id) localStorage.setItem(LAST_SESSION_KEY, id); else localStorage.removeItem(LAST_SESSION_KEY) } catch (e) { } }
       async function reopenLastSession() { if (!touchScreen()) return; let id = null; try { id = localStorage.getItem(LAST_SESSION_KEY) } catch (e) { } if (!id) return; let s = null; try { s = await idbGet('sessions', id) } catch (e) { } if (!s) return; await loadSession(id); renderSbSessions(); SysLogger.info('Última sessão reaberta: ' + id) }
-      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; lastSessionKeep(sessId); SysLogger.info('Sessão criada: ' + sessId) }
+      async function createSession() { const s = { id: genId('sess'), name: '', createdAt: Date.now(), updatedAt: Date.now() }; try { await idbPut('sessions', s) } catch (e) { keepInTab(s, e) } /* the capture stays in this tab (F-0098) */ sessId = s.id; sessObj = s; lastSessionKeep(sessId); sessLock(sessId); SysLogger.info('Sessão criada: ' + sessId) }
       async function saveSession() { if (!sessId || !sessObj) return; sessObj.updatedAt = Date.now(); sessObj.name = $('session-name').value.trim(); sessObj.user = $('session-user').value.trim(); sessObj.pc = $('session-pc').value.trim(); await idbPut('sessions', sessObj) }
       /* Safari (WebKit) ties a blob read from IndexedDB to the stored record: once that record is written again or deleted, the blob
          can no longer be read, and an image shown from it breaks (D-0170). On loading, each blob of the session is copied into memory */
       const memBlob = b => b instanceof Blob ? b.arrayBuffer().then(a => new Blob([a], { type: b.type }), () => b) : b;
       async function blobsInMemory(r) { for (const k of ['blob', 'origBlob', 'firstBlob']) if (r[k]) r[k] = await memBlob(r[k]); if (r.annBlobs) for (const k in r.annBlobs) r.annBlobs[k] = await memBlob(r.annBlobs[k]) }
-      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); for (const r of [...images, ...docs, ...removed, ...removedDocs]) await blobsInMemory(r); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
+      async function loadSession(id) { const s = await idbGet('sessions', id); if (!s) return; sessId = s.id; sessObj = s; lastSessionKeep(sessId); sessLock(sessId); $('session-name').value = s.name || ''; $('session-user').value = idCase(s.user || ''); $('session-pc').value = idCase(s.pc || ''); const imgs = await idbIdx('images', 'sessionId', id), dcs = await idbIdx('documents', 'sessionId', id), rems = await idbIdx('removed_images', 'sessionId', id); let remDocs = []; try { remDocs = await idbIdx('removed_documents', 'sessionId', id) } catch (e) { } images = [...imgs].filter(i => i.blob instanceof Blob && i.blob.size > 0).sort((a, b) => a.order - b.order); docs = [...dcs].filter(d => d.blob instanceof Blob && d.blob.size > 0).sort((a, b) => a.order - b.order); removed = [...rems].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); removedDocs = [...remDocs].filter(r => r.blob instanceof Blob && r.blob.size > 0).sort((a, b) => (a.removedAt || 0) - (b.removedAt || 0)); for (const r of [...images, ...docs, ...removed, ...removedDocs]) await blobsInMemory(r); $('thumb-grid').innerHTML = ''; $('doc-list').innerHTML = ''; marked.clear(); markSync(); $('img-empty').style.display = images.length ? 'none' : ''; $('doc-empty').style.display = docs.length ? 'none' : ''; for (const i of images) renderThumb(i); for (const d of docs) renderDoc(d); renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave(); SysLogger.info('Sessão carregada: ' + id) }
 
       /* ═══ COUNTERS & BUTTONS ═══ */
       function updateCounters() { $('img-title').textContent = images.some(x => x.kind === 'pdf') ? 'Imagens e PDF' : 'Imagens'; const ib = $('img-badge'); ib.textContent = images.length; ib.className = 'count-badge' + (images.length ? '' : ' zero'); const db = $('doc-badge'); db.textContent = docs.length; db.className = 'count-badge' + (docs.length ? '' : ' zero'); updateStatusBar() }
@@ -7030,7 +7041,7 @@
             renderSbSessions();
           } else {
             /* No sessions left — pristine empty state */
-            sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = [];
+            sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = []; sessLock(null);
             const tg = $('thumb-grid'); if (tg) tg.innerHTML = '';
             const dl = $('doc-list'); if (dl) dl.innerHTML = '';
             const ie = $('img-empty'); if (ie) ie.style.display = '';

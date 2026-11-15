@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **A limpeza não apaga a sessão aberta em outra aba (F-0206):** uma aba aberta por dias perdia as capturas quando o app abria em outra. A segunda aba apagava a sessão da primeira, que continuava a mostrar as miniaturas até recarregar. Agora cada aba segura uma trava do navegador com o nome da sua sessão, e a limpeza pula as sessões travadas. Medido no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4: com a primeira aba aberta, a sessão fica; fechada, sai como antes. Uma sessão que a aba deixou ao começar outra também sai. A trava funciona por `http` e por `file://`.
+
 ## [29.11.4] - 2026-11-15
 
 Todos os campos de texto mostram o contorno do foco do teclado, e uma página HTML aberta no visualizador perde a permissão de escrever na área de transferência. O `index.html` ganha título e um link para o app, e os documentos para quem mantém o código conferem com ele.
