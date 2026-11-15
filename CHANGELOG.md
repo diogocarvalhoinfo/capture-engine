@@ -11,6 +11,12 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O `validate.sh` testa os fluxos críticos no Edge, no Chrome, no Firefox e no WebKit (F-0157):** a captura, a anotação, o PDF e o ZIP. Os testes ficam no repositório dos prompts, em `fluxos/capture-engine.py`, e o check 30 os chama pelo clone; o `--rapido` os pula. Nenhum arquivo de teste entra neste repositório. (D-0177)
   - Cobertura: 28 testes, todos certos. Sem a correção F-0155, falham 3 dos 4 casos de anotação no WebKit.
   - O WebKit do Playwright no Windows não grava um Blob no IndexedDB, nem fora do app. Nele, o teste da captura confere o aviso "Só nesta aba".
+- **O `validate.sh` tem os checks mínimos dos prompts 8.0.1 (F-0156):** são 5 checks novos.
+  - O índice e as seções fixas do README, a escrita pelo `verificar-escrita.py` e o `.gitattributes` igual ao modelo.
+  - O `--verificar` dos 4 geradores do README e o fecho igual ao aviso do HTML.
+  - São 35 checks; o `--rapido` pula a imagem, o GIF e os fluxos.
+  - O check da escrita deixa de fora o que fica como está: as decisões até a D-0173, as entradas antigas do changelog e a linha dos cartões do topo. Ele achou a D-0174 com mais de 100 palavras, que foi encurtada.
+  - Testado ao contrário, em uma cópia: com um item a menos no índice, um "num", o `.gitattributes` mudado e outro ano no fecho, os 4 checks falham.
 
 ### Modificado
 

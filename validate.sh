@@ -16,10 +16,10 @@
 #
 # WHAT IT DOES NOT COVER (needs the app open in a browser):
 #   - Visual behaviour, dark mode, annotation, session life cycle,
-#     real PDF/ZIP export. See the manual checklist in AGENTS.md, section 11.
+#     real PDF/ZIP export. See the browser test in AGENTS.md, section 5, "Fechar uma versao".
 #
 # USAGE:  ./validate.sh [--rapido] [html-path]   (default: capture-engine.html)
-#         --rapido skips the flow tests in the browsers (check 30), about 2 minutes
+#         --rapido skips the flow tests (check 30) and the image and GIF checks (check 34), about 3 minutes
 # OUTPUT: a list of [PASS]/[FAIL] and a summary. Exit code 0 = all OK.
 # =============================================================================
 
@@ -59,7 +59,7 @@ echo
 
 # 1) Quine comment markers: grep must return exactly 11 lines.
 #    (8 unique strings on 11 lines: 8 structural + boot() +
-#     sanitizeForQuine + exportFile. See AGENTS.md section 5.)
+#     sanitizeForQuine + exportFile. See AGENTS.md section 3, "Quine".)
 M=$(grep -c "ADMIN_BUTTONS_START\|ADMIN_BUTTONS_END\|ADMIN_EDIT_START\|ADMIN_EDIT_END\|ADMIN_JS_START\|ADMIN_JS_END\|EXPORT MODAL\|FIM EXPORT MODAL" "$FILE")
 check_eq "Comment markers (linhas grep)" 11 "$M"
 
@@ -76,7 +76,7 @@ check_eq "Comment markers (linhas grep)" 11 "$M"
 #    literals with quotes inside, which break any naive scanner (that is how
 #    D54 corrupted the complexity count). This check proves the definition
 #    did NOT disappear; that it RUNS is covered by the proof of life in
-#    section 11 Part B and by check 27.
+#    the browser test of AGENTS.md section 5 and by check 27.
 #
 #    Escaping the dot and counting are done in Python: the sed equivalent is
 #    a no-op here, and grep -c counts LINES, not occurrences -- with the JS
@@ -270,7 +270,7 @@ fi
 
 # 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
 # Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
-CHECKS_NUMERADOS=30
+CHECKS_NUMERADOS=35
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -379,7 +379,7 @@ fi
 
 # 23) z-index inventory: every z-index uses a --z-* token, and the set of
 #     token values must be exactly the documented one (design-tokens.md
-#     section 4 / AGENTS.md section 2.2). Fails on a new value, a missing one,
+#     section 4 / AGENTS.md section 3, "CSS e tema"). Fails on a new value, a missing one,
 #     or a literal z-index anywhere in the file.
 ZEXPECTED="1 2 3 4 5 1040 1045 1055 1070 1090"
 ZLIT=$(grep -oE "z-index: *[0-9]+" "$FILE" | wc -l | tr -d ' ')
@@ -545,6 +545,138 @@ else
 ' "stylelint (modelo dos prompts)"
 fi
 
+# 31) README: the index lists every level 2 section in order, the "sempre" sections exist,
+#     the last one is "Licença e autor", and there is no Mermaid (prompts 8.0.1, "README: corpo").
+RD_OUT=$("$PY_BIN" - <<'PY'
+import re, sys
+t = open("README.md", encoding="utf-8").read()
+heads = re.findall(r"^## (\d+)\. (.+)$", t, re.M)
+index = re.findall(r"^\d+\. \[(.+?)\]\(#", t.split("\n## 1.")[0], re.M)
+errors = []
+if [h[1] for h in heads] != index:
+    errors.append("o indice nao lista as secoes na ordem")
+if [int(h[0]) for h in heads] != list(range(1, len(heads) + 1)):
+    errors.append("as secoes de nivel 2 nao estao numeradas em sequencia")
+for name in ("O que é", "Para quem é", "Stack", "Início rápido", "Privacidade", "Limitações conhecidas", "Requisitos", "Estrutura de arquivos", "Licença e autor"):
+    if name not in [h[1] for h in heads]:
+        errors.append("falta a secao " + name)
+if not heads or heads[0][1] != "O que é" or heads[-1][1] != "Licença e autor":
+    errors.append("a primeira secao e O que e, e a ultima e Licenca e autor")
+if "```mermaid" in t:
+    errors.append("o README tem Mermaid; use o diagramas.py")
+print("; ".join(errors) if errors else "OK")
+PY
+)
+if [ "$RD_OUT" = "OK" ]; then
+  printf '[PASS] %-52s\n' "README: indice, secoes fixas e sem Mermaid"; PASS=$((PASS+1))
+else
+  printf '[FAIL] %-52s (%s)\n' "README: indice ou secoes fixas" "$RD_OUT"; FAIL=$((FAIL+1))
+fi
+
+# 32) Writing rules that a script measures: verificar-escrita.py of the prompts repository.
+#     Ignored, because they stay as they are (D-0026 of the prompts): the old decisions (up to D-0173),
+#     the changelog entries below the newest one, and the line of the top cards, which cartoes.py writes.
+if [ ! -f "$REF_REPO/verificar-escrita.py" ]; then
+  printf '[SKIP] %-52s (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"
+else
+  WR_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 REF_REPO="$REF_REPO" "$PY_BIN" - <<'PY'
+import importlib.util, os, re
+from pathlib import Path
+spec = importlib.util.spec_from_file_location("ve", Path(os.environ["REF_REPO"]) / "verificar-escrita.py")
+ve = importlib.util.module_from_spec(spec); spec.loader.exec_module(ve)
+root, text, left = Path("."), {}, []
+def line(f, n):
+    if f not in text:
+        text[f] = (root / f).read_text(encoding="utf-8").split("\n")
+    return text[f][n - 1]
+line("CHANGELOG.md", 1)
+heads = [n + 1 for n, l in enumerate(text["CHANGELOG.md"]) if l.startswith("## [")]
+first_end = heads[1] if len(heads) > 1 else 10 ** 9
+for rule, items in ve.check(root).items():
+    for it in items:
+        f, n = it.split(":")[0], int(it.split(":")[1])
+        raw = line(f, n)
+        m = re.match(r"^- \*\*(D-?)(\d+):\*\*", raw)
+        if f == "AGENTS.md" and m and (m.group(1) == "D" or int(m.group(2)) <= 173):
+            continue
+        if f == "README.md" and raw.startswith("<a href="):
+            continue
+        if f == "CHANGELOG.md" and n >= first_end:
+            continue
+        left.append(rule + " | " + it[:120])
+print("\n".join(left[:10]) if left else "OK")
+PY
+)
+  if [ "$WR_OUT" = "OK" ]; then
+    printf '[PASS] %-52s\n' "Escrita (verificar-escrita.py)"; PASS=$((PASS+1))
+  else
+    printf '[FAIL] %-52s\n' "Escrita (verificar-escrita.py)"; FAIL=$((FAIL+1))
+    printf '%s\n' "$WR_OUT" | sed 's/^/       /'
+  fi
+fi
+
+# 33) .gitattributes is an exact copy of the model at the root of the prompts repository.
+if [ ! -f "$REF_REPO/.gitattributes" ]; then
+  printf '[SKIP] %-52s (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"
+elif cmp -s .gitattributes "$REF_REPO/.gitattributes"; then
+  printf '[PASS] %-52s\n' ".gitattributes = modelo"; PASS=$((PASS+1))
+else
+  printf '[FAIL] %-52s\n' ".gitattributes diferente do modelo"; FAIL=$((FAIL+1))
+fi
+
+# 34) The README generators: cartoes.py, diagramas.py, gerar.py and gif.py, with --verificar.
+#     The image and the GIF open the app at http://127.0.0.1:8765; the script serves this folder
+#     there and stops the server at the end. --rapido checks only the cards and the diagrams.
+if [ ! -d "$REF_REPO/anotacoes" ]; then
+  printf '[SKIP] %-52s (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"
+else
+  GEN_LIST="cartoes diagramas"
+  [ "$RAPIDO" -eq 0 ] && GEN_LIST="$GEN_LIST gerar gif"
+  SRV_PID=""
+  if [ "$RAPIDO" -eq 0 ] && ! "$PY_BIN" -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/capture-engine.html', timeout=2)" 2>/dev/null; then
+    "$PY_BIN" -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &
+    SRV_PID=$!
+    sleep 1
+  fi
+  GEN_BAD=""
+  for G in $GEN_LIST; do
+    G_OUT=$(cd "$REF_REPO/anotacoes" && PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 "$PY_BIN" "$G.py" "$OLDPWD/README.md" --verificar 2>&1)
+    G_RC=$?
+    if [ "$G_RC" -ne 0 ]; then
+      GEN_BAD="$GEN_BAD $G"
+      printf '%s\n' "$G_OUT" | grep -v '^OK' | head -5 | sed 's/^/       /'
+    fi
+  done
+  [ -n "$SRV_PID" ] && kill "$SRV_PID" 2>/dev/null
+  if [ -z "$GEN_BAD" ]; then
+    printf '[PASS] %-52s (%s)\n' "Geradores do README (--verificar)" "$GEN_LIST"; PASS=$((PASS+1))
+  else
+    printf '[FAIL] %-52s (%s)\n' "Geradores do README desatualizados:" "$GEN_BAD"; FAIL=$((FAIL+1))
+  fi
+fi
+
+# 35) The closing section of the README and the authorship notice at the top of the HTML have the same
+#     data: the product, the year, the author, the two addresses and the licence.
+FC_OUT=$("$PY_BIN" - "$FILE" <<'PY'
+import re, sys
+html = open(sys.argv[1], encoding="utf-8").read(4000)
+readme = open("README.md", encoding="utf-8").read()
+top = re.search(r"<!--\s*\n\s*(.+?)\n\s*Copyright \(c\) (\d{4}) (.+?)\n\s*Author:\s*(\S+)\n\s*GitHub:\s*(\S+)\n\s*Licensed under the (\S+) License", html)
+end = readme.split("## ")[-1]
+if not top:
+    print("aviso de autoria do HTML fora do formato"); sys.exit()
+name, year, who, site, gh, lic = top.groups()
+need = [f"**{name.strip()}**", f"Direitos autorais (c) {year} {who.strip()}", f"({site})", f"({gh})", f"Licença {lic}"]
+miss = [n for n in need if n not in end]
+print("OK" if not miss else "falta no fecho: " + "; ".join(miss))
+PY
+)
+if [ "$FC_OUT" = "OK" ]; then
+  printf '[PASS] %-52s\n' "Fecho do README = aviso do HTML"; PASS=$((PASS+1))
+else
+  printf '[FAIL] %-52s (%s)\n' "Fecho do README diferente do aviso" "$FC_OUT"; FAIL=$((FAIL+1))
+fi
+
 # 30) Critical flows in Edge, Chrome, Firefox and WebKit: capture, annotation, PDF and ZIP (D-0177).
 #     The tests live in the prompts repository, fluxos/capture-engine.py, and run from its clone.
 #     Without the clone or Playwright, or with --rapido: not run, and not a FAIL.
@@ -569,7 +701,7 @@ fi
 echo
 echo "== Resumo: $PASS PASS / $FAIL FAIL =="
 if [ "$FAIL" -eq 0 ]; then
-  echo "Integridade estatica OK. Falta o teste no navegador (AGENTS.md, secao 11)."
+  echo "Integridade estatica OK. Falta o teste no navegador (AGENTS.md, secao 5)."
   exit 0
 else
   echo "Ha falhas. NAO considerar a tarefa concluida ate todas passarem."
