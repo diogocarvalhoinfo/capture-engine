@@ -28,6 +28,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O armazenamento e os testes do `AGENTS.md` seguem a escrita atual (F-0179):** a seção 4 e a lista de testes da seção 5 ainda tinham formas como "perdem-se" e "Âmbito". Tinham também palavras em inglês como "store" e "purge". A parte da gravação e da limpeza contava o caminho pelas funções e virou regras e fatos. A regra de atualizar o comentário `// CaptureEngineDB versão 3` saiu: esse comentário não existe, e a versão é o `DB_VERSION`. As tabelas dos campos, as chaves e os scripts de recuperação ficam.
 - **O projeto não cita mais o nome do repositório de referência (D-0181):** ele é privado, e o nome mostrava que existe. O `AGENTS.md` diz "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto. Quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`.
 - **O `index.html`, a entrada do site, tem a CSP (F-0180):** era o único HTML do projeto sem ela. Agora só carrega o próprio script, o próprio estilo e o ícone embutido. Testado no Edge, no Chrome, no Firefox e no WebKit, nos dois temas: o fundo, o tema escuro, o ícone e o redirecionamento continuam iguais, sem erro de CSP.
+- **A D-0182 registra o `index.html`, o `LICENSE` e o `.gitignore` na raiz (F-0180):** a D-0177 lista o que fica na raiz e não os citava.
 
 ## [29.11.1] - 2026-11-15
 

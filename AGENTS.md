@@ -636,6 +636,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0179:** o capture-engine não tem ícones animados nem a opção "Ícones animados", uma exceção às decisões D-0034 e D-0028 do repositório de referência. O dono testou os gestos em 15 de novembro de 2026: crescer desfocava o traço, subir não ficou bom, e a animação não foi aprovada. Ao passar o mouse, os ícones só mudam de cor. Custo: o projeto diverge dos prompts nesse ponto. Origem: o dono, na correção da F-0160; a D-0178, que descrevia a animação, foi desfeita. Os prompts 9.0.0 adotaram a mesma regra.
 - **D-0180:** o marca-texto começa em 18 px, um passo acima dos 12 px da D-0104. Com 12 px, o dono clicava no + toda vez que escolhia a ferramenta. Origem: o dono, em 15 de novembro de 2026.
 - **D-0181:** o nome do repositório de referência não aparece no projeto. O repositório é privado, e o nome, em um projeto público, mostrava que ele existe. Os arquivos e as mensagens de commit dizem "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto, ou no `REF_REPO`. Custo: quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. Origem: o dono, em 15 de novembro de 2026.
+- **D-0182:** a raiz guarda também o `index.html`, o `LICENSE` e o `.gitignore`, que a D-0177 não listava. O `index.html` é a entrada do GitHub Pages: sem ele, o endereço do site não abre o app. O `LICENSE` e o `.gitignore` são exigidos pelos prompts. Custo: nenhum. Origem: a auditoria de 15 de novembro de 2026 (F-0180).
 
 ## 7. Pendentes
 
