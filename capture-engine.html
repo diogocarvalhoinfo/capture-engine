@@ -3634,6 +3634,133 @@
         pointer-events: auto;
       }
     }
+
+    /* Animated icons (D-0178): on hover and on keyboard focus, each icon makes its own gesture, in --duration-moderate-02.
+       The individual rotate, translate and scale properties add to a transform the icon already has (the chevrons, the italic T).
+       With reduced motion, or with the option off in the Visual Builder, only the colour changes */
+    @media (prefers-reduced-motion: no-preference) {
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]) svg {
+        transition: rotate var(--duration-moderate-02) var(--ease-out), translate var(--duration-moderate-02) var(--ease-out), scale var(--duration-moderate-02) var(--ease-out)
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]) svg :is(path[d="M3 6h18"], path[d^="M8 6V4"]) {
+        transform-box: fill-box;
+        transform-origin: 0% 100%;
+        transition: rotate var(--duration-moderate-02) var(--ease-out), translate var(--duration-moderate-02) var(--ease-out)
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg {
+        scale: 1.1
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg :is(path[d="M3 6h18"], path[d^="M8 6V4"]) {
+        rotate: -14deg;
+        translate: 0 -1px
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg:has(path[d="M3 6h18"]) {
+        scale: none
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M19.4 15a1.65"]) {
+        scale: none;
+        rotate: 90deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(polyline[points="23 4 23 10 17 10"]) {
+        scale: none;
+        rotate: 180deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M3 12a9 9 0 1 0 9-9"]) {
+        scale: none;
+        rotate: -90deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M21.174"]) {
+        scale: none;
+        rotate: -12deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M9 14 4 9"]) {
+        scale: none;
+        rotate: -20deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="m15 14 5-5"]) {
+        scale: none;
+        rotate: 20deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(polyline[points="7 10 12 15 17 10"]) {
+        scale: none;
+        translate: 0 2px
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M19 21H5"]) {
+        scale: none;
+        translate: 0 2px
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(line[x1="18"]) {
+        scale: none;
+        rotate: 90deg
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M18 6 6 18"]) {
+        scale: none;
+        rotate: 90deg
+      }
+
+      .icons-animated :is(button, [role="button"]):is(:hover, :focus-visible) svg:has(polyline[points="15 18 9 12 15 6"]) {
+        scale: none;
+        translate: -2px 0
+      }
+
+      .icons-animated :is(button, [role="button"]):is(:hover, :focus-visible) svg:has(polyline[points="9 18 15 12 9 6"]) {
+        scale: none;
+        translate: 2px 0
+      }
+
+      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M2 12s5-7"]) {
+        scale: 1 0.7
+      }
+
+      .icons-animated #theme-btn:is(:hover, :focus-visible) #icon-moon {
+        scale: none;
+        rotate: -20deg
+      }
+
+      .icons-animated #theme-btn:is(:hover, :focus-visible) #icon-sun {
+        scale: none;
+        rotate: 45deg
+      }
+
+      .icons-animated #sb-chevron,
+      .icons-animated #trash-chevron {
+        transition: transform var(--duration-moderate-02), color var(--duration-moderate-01), translate var(--duration-moderate-02) var(--ease-out)
+      }
+
+      .icons-animated #sb-btn-toggle:is(:hover, :focus-visible) #sb-chevron {
+        scale: none;
+        translate: -2px 0
+      }
+
+      .icons-animated #sidebar.expanded #sb-btn-toggle:is(:hover, :focus-visible) #sb-chevron {
+        translate: 2px 0
+      }
+
+      .icons-animated #trash-chevron:focus-visible,
+      .icons-animated #trash-hdr:hover #trash-chevron {
+        scale: none;
+        translate: 0 -2px
+      }
+
+      .icons-animated #trash-bar.expanded #trash-chevron:focus-visible,
+      .icons-animated #trash-bar.expanded #trash-hdr:hover #trash-chevron {
+        translate: 0 2px
+      }
+    }
   </style>
 </head>
 
@@ -4306,6 +4433,14 @@
             <div class="sb-row-desc">Créditos exibidos no fundo da página</div>
           </div><input type="text" id="cfg-footer-text" class="text-input-sm" style="max-width:200px">
         </div>
+        <div class="sb-row">
+          <div class="sb-info">
+            <div class="sb-row-title">Ícones animados</div>
+            <div class="sb-row-desc">Cada ícone faz um gesto curto ao passar o mouse ou com o foco do teclado</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="cfg-anim-icons" checked aria-label="Animar os ícones"><span
+              class="toggle-slider"></span></label>
+        </div>
       </div>
 
       <!-- TAB 1: HISTÓRICO -->
@@ -4457,6 +4592,7 @@
       let trashUrls = [];
       const TOKEN_USER_LABEL = '';
       const TOKEN_EQUIP_LABEL = '';
+      const TOKEN_ANIMATED_ICONS = true; // icons make their own gesture on hover and keyboard focus (D-0178)
       const TOKEN_ID_UPPERCASE = true; // the two identification fields turn what is typed into capitals (D-0096)
       const TOKEN_FOOTER_TEXT = '© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO';
       const TOKEN_JPEG_QUALITY = 0.92;
@@ -7314,6 +7450,7 @@
           $('session-pc').placeholder = e.target.value;
           isDirty = true;
         });
+        $('cfg-anim-icons').addEventListener('change', (e) => { animIcons = e.target.checked; document.documentElement.classList.toggle('icons-animated', animIcons); isDirty = true });
         $('cfg-id-upper').addEventListener('change', (e) => {
           idUpper = e.target.checked;
           if (idUpper) ['session-user', 'session-pc'].forEach(id => { const f = $(id); f.value = f.value.toLocaleUpperCase('pt'); f.dispatchEvent(new Event('input')) });
@@ -7362,6 +7499,7 @@
         $('cfg-equip-label').value = TOKEN_EQUIP_LABEL || 'O que';
         $('cfg-equip-label').placeholder = '';
         $('cfg-id-upper').checked = TOKEN_ID_UPPERCASE;
+        $('cfg-anim-icons').checked = TOKEN_ANIMATED_ICONS;
         $('cfg-footer-text').value = TOKEN_FOOTER_TEXT || '';
 
         $('cfg-jpeg-quality').value = Math.round(TOKEN_JPEG_QUALITY * 100);
@@ -7457,6 +7595,7 @@
       /* ═══ SESSION INPUT SYNC ═══ */
       /* Capitals mode (D-0096): the value turns into capitals as it is typed, the cursor stays (measured on the converted text,
          as ß becomes SS), and nothing changes in the middle of a composition (accents, IME) */
+      let animIcons = TOKEN_ANIMATED_ICONS; document.documentElement.classList.toggle('icons-animated', animIcons);
       let idUpper = TOKEN_ID_UPPERCASE; const idCase = v => idUpper ? v.toLocaleUpperCase('pt') : v;
       function upperKeepCaret(f) { const v = f.value, up = v.toLocaleUpperCase('pt'); if (up === v) return; const a = v.slice(0, f.selectionStart).toLocaleUpperCase('pt').length, z = v.slice(0, f.selectionEnd).toLocaleUpperCase('pt').length; f.value = up; f.setSelectionRange(a, z) }
       function initSessionSync() { async function up(e) { if (idUpper && e && e.target && !e.isComposing) upperKeepCaret(e.target); await ensureSession(); const u = idCase($('session-user').value.trim()), p = idCase($('session-pc').value.trim()); const parts = [u, p].filter(Boolean); const name = parts.join('-'); $('session-name').value = name; updateBtnTitles(); isDirty = true; triggerSave(); const ae = document.querySelector('.sb-sess-item.active .sb-sess-name'); if (ae) ae.textContent = name || ae.dataset.fallback || ae.textContent } $('session-user').oninput = up; $('session-pc').oninput = up; $('session-user').addEventListener('compositionend', up); $('session-pc').addEventListener('compositionend', up) }
@@ -7556,7 +7695,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
         html = html.replace(/const TOKEN_TITLE_END\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END = '" + te + "'");
           html = html.replace(/const TOKEN_TITLE_START_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_START_COLOR = '" + sanitizeForQuine(sysColors.tStart || '') + "'");
           html = html.replace(/const TOKEN_TITLE_ACCENT_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_ACCENT_COLOR = '" + sanitizeForQuine(sysColors.tAccent || '') + "'");
-          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_ID_UPPERCASE\s*=\s*[^;]+/, 'const TOKEN_ID_UPPERCASE = ' + idUpper); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
+          html = html.replace(/const TOKEN_TITLE_END_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_TITLE_END_COLOR = '" + sanitizeForQuine(sysColors.tEnd || '') + "'"); html = html.replace(/const TOKEN_SHOW_SESSION_USER\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_USER = ' + showU); html = html.replace(/const TOKEN_SHOW_SESSION_PC\s*=\s*[^;]+/, 'const TOKEN_SHOW_SESSION_PC = ' + showP); html = html.replace(/const TOKEN_ID_UPPERCASE\s*=\s*[^;]+/, 'const TOKEN_ID_UPPERCASE = ' + idUpper); html = html.replace(/const TOKEN_ANIMATED_ICONS\s*=\s*[^;]+/, 'const TOKEN_ANIMATED_ICONS = ' + animIcons); html = html.replace(/const TOKEN_USER_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_USER_LABEL = '" + uLbl + "'"); html = html.replace(/const TOKEN_EQUIP_LABEL\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_EQUIP_LABEL = '" + eLbl + "'"); html = html.replace(/const TOKEN_FOOTER_TEXT\s*=\s*'(?:[^'\\]|\\.)*'/, () => "const TOKEN_FOOTER_TEXT = '" + fText + "'"); html = html.replace(/const TOKEN_JPEG_QUALITY\s*=\s*[^;]+/, 'const TOKEN_JPEG_QUALITY = ' + jq); html = html.replace(/const TOKEN_MAX_IMG_DIMENSION\s*=\s*[^;]+/, 'const TOKEN_MAX_IMG_DIMENSION = ' + maxD); html = html.replace(/const TOKEN_AUTO_PURGE_HOURS\s*=\s*[^;]+/, 'const TOKEN_AUTO_PURGE_HOURS = ' + purge); html = html.replace(/const TOKEN_DEBUG_MODE\s*=\s*[^;]+/, () => 'const TOKEN_DEBUG_MODE = ' + (isUser ? 'false' : 'true')); if (isUser) {
           html = html.replace(/<!-- ADMIN_BUTTONS_START -->[\s\S]*?<!-- ADMIN_BUTTONS_END -->/g,'');html=html.replace(/<!-- ADMIN_EDIT_START -->[\s\S]*?<!-- ADMIN_EDIT_END -->/g,'');html=html.replace(/\/\* ADMIN_JS_START \*\/[\s\S]*?\/\* ADMIN_JS_END \*\//g,'');html=html.replace(/<!-- EXPORT MODAL -->[\s\S]*?<!-- FIM EXPORT MODAL -->/g,'')}const blob=new Blob([html],{type:'text/html;charset=utf-8'});dlBlob(blob,buildFilename('html',(ts+' '+ta+(te?' '+te:''))+(isUser?' USER':' ADMIN')));/* the name says the profile (F-0069) */SysLogger.info('Export '+(isUser?'User':'Admin')+' concluído')};
             /* ADMIN_JS_END */
 
