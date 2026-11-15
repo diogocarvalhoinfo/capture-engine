@@ -36,7 +36,7 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 - **Uma ferramenta de anotação nova:** o botão fora dos blocos `ADMIN_*`, o registro em `annSizeByTool`, `annColorKey`, `annShiftKind` e `annDrawShape`, e a linha das ferramentas no README.
 - **Uma parte nova do código ou uma gravação nova no IndexedDB:** a árvore e o diagrama de componentes da seção "Arquitetura" do README, gerado pelo `diagramas.py`.
 - **Uma tela que muda:** a imagem anotada que a mostra, gerada de novo pelo `gerar.py`.
-- **Um check numerado novo no `validate.sh`:** o `CHECKS_NUMERADOS` do script e a contagem na seção 3, "Validação", deste arquivo.
+- **Um check novo no `validate.sh`:** a contagem na seção 3, "Validação", deste arquivo. O check 15 compara essa contagem com os resultados e avisa quando ela diverge.
 - **A versão:** os 4 lugares da seção 5, "Fechar uma versão".
 
 ## 3. Regras
@@ -145,7 +145,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
   - o Node.js 22.12 ou mais novo, com o `npx`, para a sintaxe, o Export User e o stylelint;
   - o clone do repositório de referência na pasta `referencia`.
 - Um `[SKIP]` não é um PASS: o check não executou. Antes de um commit, só o check 30 pode sair como SKIP, e só com `--rapido`.
-- O `validate.sh` executa 35 verificações mecânicas: 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo nos navegadores. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
+- O `validate.sh` executa 35 verificações mecânicas, em 30 blocos numerados. São 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo. Cada uma dá uma linha PASS, FAIL ou SKIP; os WARN e a heurística de complexidade não contam. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
 - Chame o repositório dos prompts de "repositório de referência", nos arquivos e nos commits, e nunca pelo nome dele no GitHub. O clone fica na pasta `referencia`, ao lado do projeto. (D-0181)
 - Leia o `[WARN]` de complexidade como o mapa de onde uma edição quebra mais fácil, e não como defeito. Antes de editar uma dessas funções, leia a regra do motor dela. (D-0092)
 - Teste no navegador o que a mudança toca, com o Playwright ou à mão. (D-0084)

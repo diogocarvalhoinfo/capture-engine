@@ -35,6 +35,7 @@ PY_BIN="python"
 command -v python3 >/dev/null 2>&1 && PY_BIN="python3"
 PASS=0
 FAIL=0
+SKIP=0
 
 if [ ! -f "$FILE" ]; then
   echo "ERRO: arquivo nao encontrado: $FILE"
@@ -185,7 +186,7 @@ if command -v node >/dev/null 2>&1; then
     printf '[FAIL] %-52s\n' "Erro de sintaxe JavaScript (node)"; FAIL=$((FAIL+1));
   fi
 else
-  printf '[SKIP] %-52s (node nao instalado)\n' "Sintaxe JavaScript"
+  printf '[SKIP] %-52s (node nao instalado)\n' "Sintaxe JavaScript"; SKIP=$((SKIP+1))
 fi
 
 # 11) Cross-check: TOKEN_MAIN_COLOR matches (HTML vs design-tokens.md)
@@ -267,14 +268,12 @@ else
   PASS=$((PASS+1))
 fi
 
-# 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
-# Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
-CHECKS_NUMERADOS=35
+# 15) Self-consistency: the count written in AGENTS.md matches the results of this run.
+#     Every counted check adds one PASS, FAIL or SKIP; a WARN does not count, and neither
+#     does the complexity heuristic (10), which prints its own PASS. The comparison runs
+#     at the end, before the summary.
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
-if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
-  printf "[WARN] %-52s %s\n" "Contagem de checks em AGENTS.md diferente" "(doc=$DOC_COUNT, real=$CHECKS_NUMERADOS)"
-fi
 
 # 16) ZT1: each token replaced by exportFile has exactly 1 real declaration
 # (String.replace without /g takes only the 1st match -- >1 declaration = silently wrong replacement)
@@ -467,10 +466,10 @@ if command -v node >/dev/null 2>&1; then
     OK)    printf '[PASS] %-52s (%s)\n' "Export User inicializa" "${EU#*|}"; PASS=$((PASS+1));;
     FALHA) printf '[FAIL] %-52s %s\n' "Export User NAO inicializa" "${EU#*|}"; FAIL=$((FAIL+1));;
     SHIM)  printf '[WARN] %-52s %s\n' "Export User: shim reprovou tambem no Admin" "${EU#*|}";;
-    *)     printf '[SKIP] %-52s (node nao produziu resultado)\n' "Export User inicializa";;
+    *)     printf '[SKIP] %-52s (node nao produziu resultado)\n' "Export User inicializa"; SKIP=$((SKIP+1));;
   esac
 else
-  printf '[SKIP] %-52s (node nao instalado)\n' "Export User inicializa"
+  printf '[SKIP] %-52s (node nao instalado)\n' "Export User inicializa"; SKIP=$((SKIP+1))
 fi
 
 # 29) design-tokens.md is a verified copy: every table row "| `--name` | `value` |"
@@ -566,7 +565,7 @@ if command -v npx >/dev/null 2>&1; then
   fi
 else
   printf '[SKIP] %-52s (npx nao instalado)
-' "stylelint (modelo dos prompts)"
+' "stylelint (modelo dos prompts)"; SKIP=$((SKIP+1))
 fi
 
 # 31) README: the index lists every level 2 section in order, the "sempre" sections exist,
@@ -601,7 +600,7 @@ fi
 #     Ignored, because they stay as they are (D-0026 of the prompts): the old decisions (up to D-0173),
 #     the changelog entries below the newest one, and the line of the top cards, which cartoes.py writes.
 if [ ! -f "$REF_REPO/verificar-escrita.py" ]; then
-  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"; SKIP=$((SKIP+1))
 else
   WR_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 REF_REPO="$REF_REPO" "$PY_BIN" - <<'PY'
 import importlib.util, os, re
@@ -641,7 +640,7 @@ fi
 
 # 33) .gitattributes is an exact copy of the model at the root of the prompts repository.
 if [ ! -f "$REF_REPO/.gitattributes" ]; then
-  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"; SKIP=$((SKIP+1))
 elif cmp -s .gitattributes "$REF_REPO/.gitattributes"; then
   printf '[PASS] %-52s\n' ".gitattributes = modelo"; PASS=$((PASS+1))
 else
@@ -652,7 +651,7 @@ fi
 #     The image and the GIF open the app at http://127.0.0.1:8765; the script serves this folder
 #     there and stops the server at the end. --rapido checks only the cards and the diagrams.
 if [ ! -d "$REF_REPO/anotacoes" ]; then
-  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"; SKIP=$((SKIP+1))
 else
   # Only the generators whose data comment is in the README; --rapido leaves out the two that open the browser
   GEN_LIST=""
@@ -715,9 +714,9 @@ fi
 #     The tests live in the prompts repository, fluxos/capture-engine.py, and run from its clone.
 #     Without the clone or Playwright, or with --rapido: not run, and not a FAIL.
 if [ "$RAPIDO" -eq 1 ]; then
-  printf '[SKIP] %-52s (--rapido)\n' "Fluxos criticos nos 4 navegadores"
+  printf '[SKIP] %-52s (--rapido)\n' "Fluxos criticos nos 4 navegadores"; SKIP=$((SKIP+1))
 elif [ ! -f "$REF_REPO/fluxos/capture-engine.py" ]; then
-  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Fluxos criticos nos 4 navegadores" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Fluxos criticos nos 4 navegadores" "$REF_REPO"; SKIP=$((SKIP+1))
 else
   FX_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 "$PY_BIN" "$REF_REPO/fluxos/capture-engine.py" "$(dirname "$FILE")" 2>&1)
   FX_EXIT=$?
@@ -725,11 +724,17 @@ else
     printf '[PASS] %-52s (%s)\n' "Fluxos criticos nos 4 navegadores" "$(printf '%s\n' "$FX_OUT" | grep -c '^\[PASS\]') testes"; PASS=$((PASS+1))
     printf '%s\n' "$FX_OUT" | grep '^\[----\]'
   elif printf '%s' "$FX_OUT" | grep -q 'falta o playwright'; then
-    printf '[SKIP] %-52s (falta o playwright para Python)\n' "Fluxos criticos nos 4 navegadores"
+    printf '[SKIP] %-52s (falta o playwright para Python)\n' "Fluxos criticos nos 4 navegadores"; SKIP=$((SKIP+1))
   else
     printf '[FAIL] %-52s (codigo %s)\n' "Fluxos criticos nos 4 navegadores" "$FX_EXIT"; FAIL=$((FAIL+1))
     printf '%s\n' "$FX_OUT" | grep -E '^\[FAIL\]' | head -20
   fi
+fi
+
+# 15) (end) The count in AGENTS.md against PASS + FAIL + SKIP
+TOTAL=$((PASS + FAIL + SKIP))
+if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$TOTAL" ]; then
+  printf "[WARN] %-52s %s\n" "Contagem de checks em AGENTS.md diferente" "(doc=$DOC_COUNT, real=$TOTAL)"
 fi
 
 echo
