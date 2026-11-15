@@ -116,6 +116,11 @@
       --color-annotation-selection: rgb(232 107 46 / 32%);
       --color-hover-overlay-dark: rgb(255 255 255 / 6%);
       --color-hover-overlay: rgb(0 0 0 / 5%);
+      --color-action-hover: var(--color-hover-overlay);
+      --color-capture-background: var(--color-card);
+      --shadow-capture: var(--shadow-button);
+      --display-icon-moon: block;
+      --display-icon-sun: none;
       --color-spinner-track: rgb(255 255 255 / 30%);
       --color-thumb-overlay: rgb(0 0 0 / 40%);
       --color-modal-backdrop: rgb(0 0 0 / 72%);
@@ -151,6 +156,11 @@
     /* ═══ DARK MODE ═══ */
     html.dark {
       --color-ring: var(--color-primary);
+      --color-action-hover: var(--color-hover-overlay-dark);
+      --color-capture-background: var(--color-hover-overlay-dark);
+      --shadow-capture: none;
+      --display-icon-moon: none;
+      --display-icon-sun: block;
       --color-background: #121212;
       --color-card: #1e1e1e;
       --color-border: rgb(51 51 51 / 50.2%);
@@ -413,13 +423,13 @@
       }
     }
 
-    /* ═══ DARK MODE ICONS ═══ */
-    html.dark #icon-moon {
-      display: none
+    /* ═══ THEME ICONS ═══ */
+    #icon-moon {
+      display: var(--display-icon-moon)
     }
 
-    html.dark #icon-sun {
-      display: block !important
+    #icon-sun {
+      display: var(--display-icon-sun)
     }
 
     /* ═══ BUTTONS ═══ */
@@ -604,15 +614,11 @@
 
     .action-btn:hover {
       color: var(--color-foreground);
-      background: var(--color-hover-overlay)
+      background: var(--color-action-hover)
     }
 
     .action-btn:active {
       transform: scale(0.92)
-    }
-
-    html.dark .action-btn:hover {
-      background: var(--color-hover-overlay-dark)
     }
 
     .action-btn svg {
@@ -2122,10 +2128,10 @@
     .btn-capture {
       width: 100%;
       justify-content: flex-start;
-      background: var(--color-card);
+      background: var(--color-capture-background);
       color: var(--color-muted-foreground);
       border: none;
-      box-shadow: var(--shadow-button);
+      box-shadow: var(--shadow-capture);
       font-weight: 600;
       font-size: var(--text-xs);
       height: 32px;
@@ -2136,17 +2142,11 @@
 
     /* ZIP mode choices: the same look as the Adicionar buttons */
     .btn-send.btn-zip-cta {
-      background: var(--color-card) !important;
+      background: var(--color-capture-background) !important;
       border: none !important;
-      box-shadow: var(--shadow-button);
+      box-shadow: var(--shadow-capture);
       color: var(--color-muted-foreground) !important;
       transition: color var(--duration-moderate-01), box-shadow var(--duration-moderate-01), transform var(--duration-fast-02)
-    }
-
-    html.dark .btn-capture,
-    html.dark .btn-send.btn-zip-cta {
-      background: var(--color-hover-overlay-dark) !important;
-      box-shadow: none
     }
 
     .btn-capture:hover:not(:disabled) {
@@ -2159,11 +2159,6 @@
       color: var(--color-foreground) !important;
       box-shadow: var(--shadow-input-focus);
       opacity: 1
-    }
-
-    html.dark .btn-capture:hover:not(:disabled),
-    html.dark .btn-send.btn-zip-cta:hover:not(:disabled) {
-      box-shadow: var(--shadow-input-focus)
     }
 
     /* ═══ SWATCH ═══ */
@@ -3693,7 +3688,7 @@
         <svg id="icon-moon" viewBox="0 0 24 24">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
-        <svg id="icon-sun" viewBox="0 0 24 24" style="display:none">
+        <svg id="icon-sun" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="5" />
           <line x1="12" y1="1" x2="12" y2="3" />
           <line x1="12" y1="21" x2="12" y2="23" />

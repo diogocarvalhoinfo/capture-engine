@@ -83,6 +83,18 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 > **Tema escuro e anti-FOUC.**
 > O tema escuro liga-se só pela classe `dark` no `<html>`. Sem escolha guardada, o `initTheme` segue o sistema (`prefers-color-scheme`). Um script logo no início do `<body>` põe a classe antes da primeira pintura, para não haver um flash branco.
 
+### Valores de componente que mudam com o tema
+
+O bloco `html.dark` só redefine tokens. Um valor de componente que muda com o tema, como um fundo ou um `display`, vira um token desta tabela. O prefixo `--display-*` é deste projeto: um `display` que muda com o tema. (D-0176)
+
+| Token | Claro | Escuro | Uso |
+|---|---|---|---|
+| `--color-action-hover` | `var(--color-hover-overlay)` | `var(--color-hover-overlay-dark)` | Fundo de hover dos botões de ação |
+| `--color-capture-background` | `var(--color-card)` | `var(--color-hover-overlay-dark)` | Fundo de "Adicionar imagem", de "Adicionar documento" e das duas escolhas do ZIP |
+| `--shadow-capture` | `var(--shadow-button)` | `none` | Sombra desses botões; no escuro, sem sombra |
+| `--display-icon-moon` | `block` | `none` | A lua do botão do tema, à vista no tema claro |
+| `--display-icon-sun` | `none` | `block` | O sol do botão do tema, à vista no tema escuro |
+
 ## 2. Cores literais, fora dos tokens
 
 Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.html`, porque um token não pode ser usado ali. Esta tabela lista todas, para uma auditoria não as tratar como descuido.
