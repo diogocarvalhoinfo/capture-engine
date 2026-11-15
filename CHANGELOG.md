@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.0] - 2026-11-15
+
+No Safari, o desenho cai onde o dedo passa. Os ícones seguem a lista dos prompts. O rodapé e o foco do teclado têm o contraste da WCAG 2.2 AA, e o README e o `AGENTS.md` seguem os prompts 8.0.1.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `file://`, e abertas em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a auditoria de 15 de novembro de 2026, com os prompts 8.0.1, achou de F-0155 a F-0161. Todos foram corrigidos, menos a animação dos ícones da F-0160, que o dono recusou (D-0179). F-0162 a F-0164 vieram do dono durante a correção. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
 
 ### Adicionado
 
