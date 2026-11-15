@@ -548,7 +548,7 @@ else
 fi
 
 # 28) CSS standard: stylelint with the reference config (.stylelintrc.json,
-#     an exact copy of stylelint/.stylelintrc.json in the prompts repository).
+#     an exact copy of stylelint/.stylelintrc.json in the reference repository).
 #     Versions and command come from that folder's README. Needs npx (Node);
 #     the first run downloads the packages. Without npx: [SKIP].
 if command -v npx >/dev/null 2>&1; then
@@ -556,20 +556,20 @@ if command -v npx >/dev/null 2>&1; then
   SL_EXIT=$?
   if [ "$SL_EXIT" -eq 0 ]; then
     printf '[PASS] %-52s
-' "stylelint (modelo dos prompts)"; PASS=$((PASS+1));
+' "stylelint (modelo de referencia)"; PASS=$((PASS+1));
   else
     printf '[FAIL] %-52s (codigo %s)
-' "stylelint (modelo dos prompts)" "$SL_EXIT"; FAIL=$((FAIL+1));
+' "stylelint (modelo de referencia)" "$SL_EXIT"; FAIL=$((FAIL+1));
     printf '%s
 ' "$SL_OUT" | grep -E "✖|problem" | head -20
   fi
 else
   printf '[SKIP] %-52s (npx nao instalado)
-' "stylelint (modelo dos prompts)"; SKIP=$((SKIP+1))
+' "stylelint (modelo de referencia)"; SKIP=$((SKIP+1))
 fi
 
 # 31) README: the index lists every level 2 section in order, the "sempre" sections exist,
-#     the last one is "Licença e autor", and there is no Mermaid (prompts 8.0.1, "README: corpo").
+#     the last one is "Licença e autor", and there is no Mermaid (reference repository 8.0.1, "README: corpo").
 RD_OUT=$("$PY_BIN" - <<'PY'
 import re, sys
 t = open("README.md", encoding="utf-8").read()
@@ -596,8 +596,8 @@ else
   printf '[FAIL] %-52s (%s)\n' "README: indice ou secoes fixas" "$RD_OUT"; FAIL=$((FAIL+1))
 fi
 
-# 32) Writing rules that a script measures: verificar-escrita.py of the prompts repository.
-#     Ignored, because they stay as they are (D-0026 of the prompts): the old decisions (up to D-0173),
+# 32) Writing rules that a script measures: verificar-escrita.py of the reference repository.
+#     Ignored, because they stay as they are (D-0026 of the reference repository): the old decisions (up to D-0173),
 #     the changelog entries below the newest one, and the line of the top cards, which cartoes.py writes.
 if [ ! -f "$REF_REPO/verificar-escrita.py" ]; then
   printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"; SKIP=$((SKIP+1))
@@ -638,7 +638,7 @@ PY
   fi
 fi
 
-# 33) .gitattributes is an exact copy of the model at the root of the prompts repository.
+# 33) .gitattributes is an exact copy of the model at the root of the reference repository.
 if [ ! -f "$REF_REPO/.gitattributes" ]; then
   printf '[SKIP] %-52s não executado (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"; SKIP=$((SKIP+1))
 elif cmp -s .gitattributes "$REF_REPO/.gitattributes"; then
@@ -711,7 +711,7 @@ else
 fi
 
 # 30) Critical flows in Edge, Chrome, Firefox and WebKit: capture, annotation, PDF and ZIP (D-0177).
-#     The tests live in the prompts repository, fluxos/capture-engine.py, and run from its clone.
+#     The tests live in the reference repository, fluxos/capture-engine.py, and run from its clone.
 #     Without the clone or Playwright, or with --rapido: not run, and not a FAIL.
 if [ "$RAPIDO" -eq 1 ]; then
   printf '[SKIP] %-52s (--rapido)\n' "Fluxos criticos nos 4 navegadores"; SKIP=$((SKIP+1))
