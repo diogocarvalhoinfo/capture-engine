@@ -18,7 +18,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - O check da escrita deixa de fora o que fica como está: as decisões até a D-0173, as entradas antigas do changelog e a linha dos cartões do topo. Ele achou a D-0174 com mais de 100 palavras, que foi encurtada.
   - Testado ao contrário, em uma cópia: com um item a menos no índice, um "num", o `.gitattributes` mudado e outro ano no fecho, os 4 checks falham.
 - **Os ícones dos botões se mexem com o mouse ou com o foco (F-0160):** a engrenagem gira, a seta do download desce, a tampa da lixeira abre. O Visual Builder ganha "Ícones animados", na aba Interface, ligado por padrão (`TOKEN_ANIMATED_ICONS`). (D-0178)
-  - Os outros ícones sobem 2 px. Crescer 10% desfocava o traço, e o dono pediu a troca.
+  - Os outros ícones não se mexem, só mudam de cor. Crescer desfocava o traço, e subir também não ficou bom, nas palavras do dono.
   - Com "reduzir movimento" no sistema, ou com a opção desligada, só a cor muda.
   - Testado no Edge, no Firefox e no WebKit, com e sem "reduzir movimento"; a cópia exportada com a opção desligada guarda `TOKEN_ANIMATED_ICONS = false`. O arquivo passa a 543 KB.
 

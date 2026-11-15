@@ -130,7 +130,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 | Lixeira | a tampa abre: gira −14° pelo canto de baixo |
 | Anterior e próximo, setas do Histórico e dos "Removidos" | anda 2 px para onde aponta |
 | Lua e sol | giram −20° e 45° |
-| Os outros | sobe 2 px |
+| Os outros | não se mexem; só a cor muda |
 
 ### Idioma
 
@@ -659,7 +659,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0175:** o README fala com quem usa e com quem administra a ferramenta, e não com quem edita o código. A palavra em português vem primeiro, e os nomes do código ficam nas seções "Estrutura de arquivos" e "Arquitetura". Custo: os termos técnicos em inglês da lista dos prompts não entram no texto para quem usa. Origem: a migração para os prompts 8.0.1, 15 de novembro de 2026 (F-0156).
 - **D-0176:** as regras do arquivo único, do Quine e da sanitização vêm dos três contratos do motor. O arquivo é a aplicação inteira e funciona sem internet; o arquivo copia a si mesmo com a configuração; um dado do usuário nunca chega ao DOM sem `escapeHTML()`. Quebrar o primeiro deixa a ferramenta morta sem internet; o segundo, a cópia exportada corrompida; o terceiro abre um XSS com dados de clientes. Custo: nenhum recurso de fora, e cada edição conferida pelo `validate.sh`. Origem: as "Regras absolutas" do projeto, registradas como decisão em 15 de novembro de 2026 (F-0156).
 - **D-0177:** Na raiz, só o produto, a documentação e as ferramentas que o padrão exige. Quem clona o capture-engine recebia arquivos sem contexto. A raiz guarda o produto, a documentação, o `validate.sh`, o `.stylelintrc.json` e o `.gitattributes`; um arquivo novo na raiz precisa de uma decisão própria. Os testes dos fluxos críticos ficam no repositório dos prompts, em `fluxos/capture-engine.py` (repositório de referência, D-0037), e o check 30 do `validate.sh` os chama pelo clone. Custo: sem o clone, os testes não executam. Origem: o dono, 15 de novembro de 2026.
-- **D-0178:** os ícones dos botões fazem o próprio gesto, ligados por padrão, com a opção "Ícones animados" no Visual Builder (`TOKEN_ANIMATED_ICONS`). Os prompts 8.0.1 pedem a animação e a opção em um projeto com painel de administração. O gesto usa as propriedades `rotate` e `translate`, que se somam ao `transform` das setas; crescer com o `scale` desfocava o traço. Custo: cerca de 7 KB de CSS. Medido no Edge, no Firefox e no WebKit, com e sem "reduzir movimento". Origem: F-0160, 15 de novembro de 2026.
+- **D-0178:** os ícones dos botões fazem o próprio gesto, ligados por padrão, com a opção "Ícones animados" no Visual Builder (`TOKEN_ANIMATED_ICONS`). Os prompts 8.0.1 pedem a animação e a opção. O gesto usa as propriedades `rotate` e `translate`, que se somam ao `transform` das setas. Crescer desfocava o traço, e subir não ficou bom: os outros ícones só mudam de cor. Custo: cerca de 7 KB de CSS. Medido no Edge, no Firefox e no WebKit, com e sem "reduzir movimento". Origem: F-0160, 15 de novembro de 2026.
 
 ## 7. Pendentes
 
