@@ -31,6 +31,11 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - As regras ganham o ID da decisão. As "Regras absolutas" viram a D-0176, e quem lê o README fica na D-0175.
   - O schema do IndexedDB, as chaves do armazenamento local, com a `text-bg` que faltava, e a recuperação de dados ficam em "Armazenamento do navegador". O teste no navegador fica em "Fechar uma versão".
 - **O `design-tokens.md` segue a escrita dos prompts 8.0.1 (F-0156):** aspas retas, "sim" e "não" no lugar dos emojis e os avisos na caixa do GitHub. Os nomes e os valores dos tokens não mudam.
+- **Os ícones seguem o `icones.md` dos prompts (F-0159):** "Exportar" passa a `upload`, "Remover" a `trash-2`, "Desfazer" e "Refazer" a `undo-2` e `redo-2`, e o zoom do visualizador a `zoom-out` e `zoom-in`.
+  - "Renomear" passa a `text-cursor-input`, a cópia "Administrador" a `shield-check`, o "Editar" do menu a `pencil`, e o layout do PDF a `rectangle-horizontal` e `rectangle-vertical`.
+  - As setas do Histórico e dos "Removidos" passam a `chevron-down`, girado pelo estado.
+  - "Com fundo" e "Fundo transparente" passam a usar o mesmo T da ferramenta Texto, em um quadrado do mesmo tamanho, a pedido do dono.
+  - "Eliminar sessão" fica com o `x`, e o .pdf com o `file`, como o `icones.md` passou a dizer. Os SVGs vêm do `lucide-static` 0.468.0.
 
 ### Corrigido
 
