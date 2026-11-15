@@ -3657,11 +3657,11 @@
     }
 
     /* Animated icons (D-0178): on hover and on keyboard focus, each icon makes its own gesture, in --duration-moderate-02.
-       The individual rotate, translate and scale properties add to a transform the icon already has (the chevrons, the italic T).
+       The individual rotate and translate properties add to a transform the icon already has (the chevrons, the italic T).
        With reduced motion, or with the option off in the Visual Builder, only the colour changes */
     @media (prefers-reduced-motion: no-preference) {
       .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]) svg {
-        transition: rotate var(--duration-moderate-02) var(--ease-out), translate var(--duration-moderate-02) var(--ease-out), scale var(--duration-moderate-02) var(--ease-out)
+        transition: rotate var(--duration-moderate-02) var(--ease-out), translate var(--duration-moderate-02) var(--ease-out)
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]) svg :is(path[d="M3 6h18"], path[d^="M8 6V4"]) {
@@ -3671,7 +3671,7 @@
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg {
-        scale: 1.1
+        translate: 0 -2px
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .chip-label, .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg :is(path[d="M3 6h18"], path[d^="M8 6V4"]) {
@@ -3680,80 +3680,73 @@
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item, [id="trash-hdr"]):is(:hover, :focus-visible) svg:has(path[d="M3 6h18"]) {
-        scale: none
+        translate: none
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M19.4 15a1.65"]) {
-        scale: none;
+        translate: none;
         rotate: 90deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(polyline[points="23 4 23 10 17 10"]) {
-        scale: none;
+        translate: none;
         rotate: 180deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M3 12a9 9 0 1 0 9-9"]) {
-        scale: none;
+        translate: none;
         rotate: -90deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M21.174"]) {
-        scale: none;
+        translate: none;
         rotate: -12deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M9 14 4 9"]) {
-        scale: none;
+        translate: none;
         rotate: -20deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="m15 14 5-5"]) {
-        scale: none;
+        translate: none;
         rotate: 20deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(polyline[points="7 10 12 15 17 10"]) {
-        scale: none;
         translate: 0 2px
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M19 21H5"]) {
-        scale: none;
         translate: 0 2px
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(line[x1="18"]) {
-        scale: none;
+        translate: none;
         rotate: 90deg
       }
 
       .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M18 6 6 18"]) {
-        scale: none;
+        translate: none;
         rotate: 90deg
       }
 
       .icons-animated :is(button, [role="button"]):is(:hover, :focus-visible) svg:has(polyline[points="15 18 9 12 15 6"]) {
-        scale: none;
         translate: -2px 0
       }
 
       .icons-animated :is(button, [role="button"]):is(:hover, :focus-visible) svg:has(polyline[points="9 18 15 12 9 6"]) {
-        scale: none;
         translate: 2px 0
       }
 
-      .icons-animated :is(button, [role="button"], [role="menuitem"], .ctx-item):is(:hover, :focus-visible) svg:has(path[d^="M2 12s5-7"]) {
-        scale: 1 0.7
-      }
 
       .icons-animated #theme-btn:is(:hover, :focus-visible) #icon-moon {
-        scale: none;
+        translate: none;
         rotate: -20deg
       }
 
       .icons-animated #theme-btn:is(:hover, :focus-visible) #icon-sun {
-        scale: none;
+        translate: none;
         rotate: 45deg
       }
 
@@ -3763,7 +3756,6 @@
       }
 
       .icons-animated #sb-btn-toggle:is(:hover, :focus-visible) #sb-chevron {
-        scale: none;
         translate: -2px 0
       }
 
@@ -3773,7 +3765,6 @@
 
       .icons-animated #trash-chevron:focus-visible,
       .icons-animated #trash-hdr:hover #trash-chevron {
-        scale: none;
         translate: 0 -2px
       }
 
