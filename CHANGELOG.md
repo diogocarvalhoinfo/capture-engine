@@ -6,6 +6,14 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+## [29.11.1] - 2026-11-15
+
+As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, e o `LICENSE` tem o mesmo copyright do HTML.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `file://`, e abertas em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a F-0165 apareceu nos testes depois da 29.11.0, e a F-0166 veio do pedido do dono; as duas foram corrigidas. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
+
 ### Modificado
 
 - **As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0:** o fundo é o da página do GitHub, sem a caixa em volta. A borda da captura ficou mais leve, e o texto das anotações fica sempre à esquerda.
