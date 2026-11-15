@@ -424,7 +424,7 @@ Medido só com o teclado, com o Playwright, no Edge, no Firefox e no WebKit, o m
 ```text
 capture-engine/
 ├── capture-engine.html   ← a aplicação inteira; é o arquivo que se distribui
-├── index.html            ← entrada do GitHub Pages, que abre o capture-engine.html
+├── index.html            ← entrada do GitHub Pages; abre o capture-engine.html
 ├── README.md             ← este guia
 ├── AGENTS.md             ← regras para quem edita o projeto, pessoa ou IA
 ├── CHANGELOG.md          ← as versões, da mais nova para a mais antiga
@@ -433,7 +433,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← as imagens, o GIF, os cartões e os diagramas deste README
+├── docs/images/          ← imagens, GIF, cartões e diagramas deste README
 └── LICENSE               ← licença MIT
 ```
 
@@ -477,52 +477,18 @@ capture-engine.html
     ├── SysLogger         → Logs no console (respeitam TOKEN_DEBUG_MODE)
     ├── TOKENS            → Variáveis de configuração (TOKEN_*)
     ├── escapeHTML()      → Sanitização XSS de todos os inputs
-    ├── IndexedDB         → Funções de acesso à base de dados local (idbGet, idbPut, idbDel, idbAll, idbIdx)
+    ├── IndexedDB         → Acesso à base local (idbGet, idbPut, idbDel…)
     ├── Session Manager   → Criar, carregar, apagar e navegar entre sessões
-    ├── Capture Engine    → Receber imagens e documentos (clipboard, arrastar e soltar, picker)
+    ├── Capture Engine    → Receber imagens e documentos (colar, arrastar)
     ├── Reorder           → Arrastar e soltar para reordenar itens
     ├── Annotation        → Canvas transparente para anotação sobre imagens
     ├── Text Viewer       → Visualizador de documentos de texto inline
-    ├── PDF Engine        → Geração de PDFs em JavaScript puro (sem bibliotecas)
-    ├── ZIP Engine        → Geração de ZIPs em JavaScript puro (sem bibliotecas)
+    ├── PDF Engine        → Geração de PDFs em JavaScript puro
+    ├── ZIP Engine        → Geração de ZIPs em JavaScript puro
     ├── Visual Builder    → Painel de configuração do administrador
     ├── Quine Engine      → Auto-exportação do arquivo com configurações
     ├── Admin Gate        → Ativa o modo administrador (6 cliques no logo)
-    └── boot()            → Chamada por init() após openDB() e purgeExpired(). Inicializa todos os subsistemas da interface.
-```
-
-### Como os componentes se ligam
-
-```text
-init()
-  ├── openDB()
-  ├── purgeExpired()
-  ├── boot()
-  │     ├── setInterval(triggerSave, 5000)
-  │     ├── initClipboard()
-  │     ├── initDragDrop()
-  │     ├── initReorder()
-  │     ├── initMenus()
-  │     ├── initSidebar()
-  │     ├── initPickers()
-  │     ├── initTheme()
-  │     ├── initTrashBar()
-  │     ├── initCollapsedBars()
-  │     ├── initModalLayers()
-  │     ├── initKeyClick()
-  │     ├── initPdfModal()
-  │     ├── initVbSync()
-  │     ├── initAdminGate()
-  │     ├── initSessionSync()
-  │     ├── initAnnotation()
-  │     ├── applyTokens()
-  │     ├── initChips()
-  │     ├── updateCounters()
-  │     ├── updateBtns()
-  │     ├── updateBtnTitles()
-  │     ├── updateStatusBar()
-  │     └── [ADMIN_JS] capturePristine()
-  └── reopenLastSession()   → só na tela de toque
+    └── boot()            → Chamada por init(); liga todas as partes da tela
 ```
 
 ### Componentes

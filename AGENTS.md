@@ -35,7 +35,6 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 - **Um `TOKEN_*` novo:** a declaração `const TOKEN_X = 'valor'`, o campo do Visual Builder, a sincronização em `initVbSync()` e `applyTokens()`, a linha da seção 6 do `design-tokens.md` e, se quem administra o vê, a aba no README.
 - **Uma ferramenta de anotação nova:** o botão fora dos blocos `ADMIN_*`, o registro em `annSizeByTool`, `annColorKey`, `annShiftKind` e `annDrawShape`, e a linha das ferramentas no README.
 - **Uma parte nova do código ou uma gravação nova no IndexedDB:** a árvore e o diagrama de componentes da seção "Arquitetura" do README, gerado pelo `diagramas.py`.
-- **Uma função nova chamada pelo `init()` ou pelo `boot()`:** a árvore "Como os componentes se ligam", na seção "Arquitetura" do README.
 - **Uma tela que muda:** a imagem anotada que a mostra, gerada de novo pelo `gerar.py`.
 - **Um check numerado novo no `validate.sh`:** o `CHECKS_NUMERADOS` do script e a contagem na seção 3, "Validação", deste arquivo.
 - **A versão:** os 4 lugares da seção 5, "Fechar uma versão".

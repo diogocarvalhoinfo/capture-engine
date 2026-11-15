@@ -9,6 +9,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **O fluxo do Quine, na Arquitetura do README, deixa mais espaço vazio embaixo:** o texto seguinte parecia colado no diagrama. Segue a D-0047 dos prompts 9.0.1. Pedido do dono.
+- **As árvores do README não rolam mais para o lado:** cada linha tem até 80 caracteres, como pede a D-0048 dos prompts 9.0.1. O PDF e o ZIP perderam o "(sem bibliotecas)", que repetia o "JavaScript puro". Pedido do dono.
+- **Sai do README a árvore "Como os componentes se ligam":** a lista do que o `init()` e o `boot()` chamam é detalhe do código, e a Arquitetura já tem a árvore do arquivo e os diagramas. Pedido do dono.
 
 ## [29.11.1] - 2026-11-15
 
