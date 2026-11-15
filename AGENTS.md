@@ -134,6 +134,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 - Execute `bash validate.sh` antes de cada commit; precisa dar 0 FAIL. No Windows, use o Git Bash ou o WSL. O `--rapido` pula os testes de fluxo. (D-0084)
 - O `validate.sh` executa 35 verificações mecânicas: 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo nos navegadores. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
+- Chame o repositório dos prompts de "repositório de referência", nos arquivos e nos commits, e nunca pelo nome dele no GitHub. O clone fica na pasta `referencia`, ao lado do projeto. (D-0181)
 - Leia o `[WARN]` de complexidade como o mapa de onde uma edição quebra mais fácil, e não como defeito. Antes de editar uma dessas funções, leia a regra do motor dela. (D-0092)
 - Teste no navegador o que a mudança toca, com o Playwright ou à mão. (D-0084)
 - O check do Export User (o `validate.sh` simula a cópia "User") só cobre o código síncrono; não substitui o teste da seção 5. (D25)
@@ -634,6 +635,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0177:** Na raiz, só o produto, a documentação e as ferramentas que o padrão exige. Quem clona o capture-engine recebia arquivos sem contexto. A raiz guarda o produto, a documentação, o `validate.sh`, o `.stylelintrc.json` e o `.gitattributes`; um arquivo novo na raiz precisa de uma decisão própria. Os testes dos fluxos críticos ficam no repositório dos prompts, em `fluxos/capture-engine.py` (repositório de referência, D-0037), e o check 30 do `validate.sh` os chama pelo clone. Custo: sem o clone, os testes não executam. Origem: o dono, 15 de novembro de 2026.
 - **D-0179:** o capture-engine não tem ícones animados nem a opção "Ícones animados", uma exceção às decisões D-0034 e D-0028 do repositório de referência. O dono testou os gestos em 15 de novembro de 2026: crescer desfocava o traço, subir não ficou bom, e a animação não foi aprovada. Ao passar o mouse, os ícones só mudam de cor. Custo: o projeto diverge dos prompts nesse ponto. Origem: o dono, na correção da F-0160; a D-0178, que descrevia a animação, foi desfeita. Os prompts 9.0.0 adotaram a mesma regra.
 - **D-0180:** o marca-texto começa em 18 px, um passo acima dos 12 px da D-0104. Com 12 px, o dono clicava no + toda vez que escolhia a ferramenta. Origem: o dono, em 15 de novembro de 2026.
+- **D-0181:** o nome do repositório de referência não aparece no projeto. O repositório é privado, e o nome, em um projeto público, mostrava que ele existe. Os arquivos e as mensagens de commit dizem "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto, ou no `REF_REPO`. Custo: quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. Origem: o dono, em 15 de novembro de 2026.
 
 ## 7. Pendentes
 

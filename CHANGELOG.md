@@ -26,6 +26,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A D-0179 diz que os prompts adotaram a mesma regra (F-0177):** ela ainda dizia que o projeto diverge dos prompts nos ícones parados. Desde a 9.0.0, os prompts pedem o mesmo. Uma nota no fim registra isso, e o texto da decisão fica.
 - **As decisões de outro repositório são citadas como "do repositório de referência" (F-0178):** "a D-0047 dos prompts 9.0.1" podia ser confundida com uma decisão deste projeto. Três citações mudaram: a D-0179 e duas linhas desta versão.
 - **O armazenamento e os testes do `AGENTS.md` seguem a escrita atual (F-0179):** a seção 4 e a lista de testes da seção 5 ainda tinham formas como "perdem-se" e "Âmbito". Tinham também palavras em inglês como "store" e "purge". A parte da gravação e da limpeza contava o caminho pelas funções e virou regras e fatos. A regra de atualizar o comentário `// CaptureEngineDB versão 3` saiu: esse comentário não existe, e a versão é o `DB_VERSION`. As tabelas dos campos, as chaves e os scripts de recuperação ficam.
+- **O projeto não cita mais o nome do repositório de referência (D-0181):** ele é privado, e o nome mostrava que existe. O `AGENTS.md` diz "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto. Quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`.
 
 ## [29.11.1] - 2026-11-15
 
