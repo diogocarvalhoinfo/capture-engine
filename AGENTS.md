@@ -164,12 +164,12 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 ### Como migrar o schema em segurança
 
-**Caso A — Adicionar uma nova object store (seguro, sem migração destrutiva)**
+**Caso A: acrescentar uma tabela (seguro, sem migração)**
 
-Incrementar a versão e adicionar a store com `contains` guard — usuários existentes passam pelo `onupgradeneeded` e recebem a nova store; stores existentes e dados não são tocados:
+Suba o `DB_VERSION` e crie a tabela dentro do guarda `contains`. Quem já usa o app passa pelo `onupgradeneeded` e recebe a tabela nova; as tabelas e os dados que existem não mudam:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+// Change: const DB_VERSION = 3  →  const DB_VERSION = 4
 const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
@@ -185,12 +185,12 @@ r.onupgradeneeded = e => {
 };
 ```
 
-**Caso B — Alterar campos de uma store existente (requer migração de dados)**
+**Caso B: mudar os campos de uma tabela que já existe (pede migração)**
 
-Por exemplo, adicionar o campo `tags` à store `images`. Os registros existentes não têm `tags` — é necessário iterar e reescrever:
+Por exemplo, acrescentar o campo `tags` à tabela `images`. Os registros que existem não têm `tags`, e a migração os reescreve:
 
 ```js
-// Alterar: indexedDB.open('CaptureEngineDB', 3)  →  indexedDB.open('CaptureEngineDB', 4)
+// Change: const DB_VERSION = 3  →  const DB_VERSION = 4
 const r = indexedDB.open('CaptureEngineDB', 4);
 r.onupgradeneeded = e => {
   const db = e.target.result;
@@ -215,11 +215,10 @@ r.onupgradeneeded = e => {
 };
 ```
 
-> **Regras críticas de migração:**
-> - Usar **sempre** `e.target.transaction` (a transação de upgrade) — não abrir transações novas dentro de `onupgradeneeded`
-> - O `onupgradeneeded` é **atômico**: se alguma operação falhar, a base reverte para a versão anterior
-> - Após a migração, incrementar também o comentário de versão no código: `// CaptureEngineDB versão 3`
-> - **Testar com uma cópia de segurança dos dados** antes de distribuir — uma migração errada que seja distribuída aos usuários é irreversível
+**Regras da migração:**
+- Use a transação do upgrade, `e.target.transaction`, e não abra outra dentro do `onupgradeneeded`.
+- O `onupgradeneeded` é atômico: se uma operação falha, a base volta à versão anterior.
+- Teste com uma cópia de segurança dos dados antes de distribuir. Uma migração errada que chega a quem usa não tem volta.
 
 ### Tabela: `sessions`
 
@@ -279,38 +278,30 @@ Mesmos campos das tabelas ativas, com adição de:
 |---|---|---|
 | `removedAt` | number | Timestamp Unix (ms) de quando foi movido para os "Removidos" |
 
-**Nota:** a barra "Removidos" **ordena por `removedAt`**, não por `order`. O campo `order` continua presente nos registros movidos para os "Removidos" — `delImg`/`delDoc` fazem `splice` do array e acrescentam `removedAt`, sem apagar o `order` anterior. Até a V26 esta nota dizia que os itens "não têm" o campo; têm, apenas não é usado para os ordenar. O valor antigo é ignorado na restauração, que atribui uma ordem nova.
+A barra "Removidos" ordena por `removedAt`, e não por `order`. O `order` antigo fica no registro e não é usado: a restauração dá uma ordem nova.
 
 ### Chaves do localStorage
 
-O sistema utiliza localStorage para preferências que devem sobreviver a diferentes abas ou arquivos na mesma origem:
+O app usa o localStorage para as preferências que valem entre abas e arquivos da mesma origem:
 - `theme`: Controla o modo visual. Valores possíveis: `'dark'`, `'light'` ou `null` (neste caso cai para a preferência do OS).
 - `hl-solid`: a escolha do marca-texto. `'1'` é "Sólido"; `'0'` ou `null` é "Translúcido", o padrão (D-0095).
 - `fill-rect` e `fill-circle`: a escolha do retângulo e do círculo. `'1'` é "Preenchido", `'b'` é "Desfocado"; `'0'` ou `null` é "Contorno", o padrão (D-0102).
 - `text-bg`: a escolha do texto. `'1'` é "Com fundo"; `'0'` é "Fundo transparente".
-- *Histórico:* A chave `ec_pending_session` foi utilizada em versões antigas e removida na V17.
+- `ec_pending_session`: usada até a V16 e removida na V17. Não reuse o nome.
 - `ce-last-session`: o id da última sessão aberta. Em uma tela de toque, a ferramenta volta a ela ao abrir; o botão "Atualizar" apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
-Limpar o localStorage apenas reseta preferências visuais. Limpar o IndexedDB apaga os dados reais das sessões.
+Limpar o localStorage só volta as preferências ao padrão. Limpar o IndexedDB apaga as sessões.
 
-### Auto-save e purge
+### Gravação automática e limpeza
 
-**Auto-save e Falhas Assíncronas:** `setInterval` de 5 segundos no `boot()` chama `saveSession()` se `isDirty === true`. A função `triggerSave()` é chamada na digitação. Se o navegador for fechado durante a janela de latência ou a transação falhar, as últimas mutações perdem-se.
-
-**Esgotamento de Quota:** Se o limite de disco do navegador for atingido, a gravação de novos blobs falha nativamente. `idbTx` e `idbDelBatch` inspecionam o erro da transação e também o erro que o `put` ou o `delete` lança na hora. Em um `QuotaExceededError`, e só nele, chamam `showQuotaBanner()`, que injeta um aviso vermelho fixo no topo (`id="ce-quota-banner"`, camada `--z-toast`). O aviso é criado em runtime e **não** está no HTML estático. Diz que as capturas deixaram de ser gravadas e recomenda exportar já. Tem um botão ✕, e volta na falha seguinte, porque a guarda testa se o elemento existe. `SysLogger.error` registra a exceção no console em qualquer caso. A sessão já salva e os itens antigos permanecem íntegros no DB.
-
-> **Correção histórica:** até a V26 esta seção afirmava que "a aplicação falha silenciosamente na interface para não causar pânico de UX". Era falso e contradizia o README. O banner existe desde a correção D9 (commit `a5656f5`).
-
-**Purge:** `purgeExpired()` é chamada uma vez por `init()` (carregamento da página). Sessões fora do prazo de 48h (ou o valor de `TOKEN_AUTO_PURGE_HOURS`) só são removidas na próxima inicialização. Abas mantidas abertas por dias sem recarregar não ativam o purge — a quota do IndexedDB pode esgotar antes da próxima inicialização. Apaga também todos os itens associados (imagens, documentos, removidos das duas categorias).
-
-> **Risco de redistribuição:** Se redistribuir com um valor de `TOKEN_AUTO_PURGE_HOURS` menor do que o anterior (ex: de 48h para 24h), sessões que antes sobreviveriam são purgadas na próxima abertura. O comportamento é correto (o código usa sempre o valor atual do token), mas pode surpreender usuários com sessões em curso. Comunicar a mudança antes de redistribuir.
-
-**Múltiplas instâncias (multi-aba permitido):** O `onblocked` apenas registra um aviso no console — **não** bloqueia a interface. Em versões anteriores mostrava uma tela de erro vermelha que substituía o `body`; esse bloqueio foi removido na V23 (a pedido do proprietário). Várias abas compartilham a mesma base `CaptureEngineDB`; a ressalva conhecida é a gravação concorrente na mesma sessão (a última gravação prevalece). Ver o README, "Limitações conhecidas".
+- **Gravação:** a cada 5 segundos, o app grava a sessão que mudou, e a digitação em "Quem" e "O que" grava na hora (D3). Se o navegador fecha antes da gravação, ou se ela falha, as últimas mudanças se perdem.
+- **Sem espaço no navegador:** um aviso vermelho fica fixo no topo (`#ce-quota-banner`, criado em runtime, na camada `--z-toast`) e volta a cada falha. Ele diz que as capturas deixaram de ser gravadas e manda exportar. Não esconda esse aviso: é o único sinal da falha. Só o `QuotaExceededError` o mostra; as outras falhas vão para o console. O que já estava gravado fica intacto.
+- **Limpeza:** as sessões sem uso há mais tempo que o `TOKEN_AUTO_PURGE_HOURS` (48 horas, por padrão) saem uma vez, ao abrir o app, com as imagens, os documentos e os removidos. Uma aba aberta por dias não limpa nada, e o espaço pode acabar antes da próxima abertura.
+- **Prazo menor em uma versão nova:** na primeira abertura, apaga as sessões que antes ficariam. Avise quem usa antes de distribuir.
+- **Várias abas:** não bloqueie a tela no `onblocked`; ele só registra no console, e a faixa "Feche as outras abas" aparece só durante uma atualização da base. A tela de erro que bloqueava a segunda aba saiu na V23, a pedido do dono. As abas dividem a mesma base, e a última gravação da mesma sessão vence. Veja o README, "Limitações conhecidas".
 
 ### Recuperar os dados
 
-**Modelo de armazenamento (confirmado por bateria de testes — Windows 11 25H2, Edge 148, Chrome 148):**
-
-A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 3)` — **sem nome de arquivo nem caminho**. No Windows com Edge/Chrome, todos os arquivos `file://` compartilham a mesma *origin*, por isso a base é, na prática, **compartilhada por perfil de navegador**. Consequências confirmadas:
+O app abre a base com `indexedDB.open('CaptureEngineDB', DB_VERSION)`, sem nome de arquivo nem caminho. No Windows, com o Edge e o Chrome, todos os arquivos `file://` têm a mesma origem, e a base é, na prática, uma por perfil do navegador. Testado no Windows 11 25H2, com o Edge 148 e o Chrome 148:
 
 | Condição | Encontra os dados? |
 | --- | --- |
@@ -323,27 +314,26 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 3)` — **sem n
 | Janela anônima/privada | **NÃO** |
 | Outro perfil do navegador | **NÃO** |
 | Outro navegador (Edge ↔ Chrome) | **NÃO** |
-| Mesma conta/perfil **em outra máquina** (sync ligado) | **NÃO** — IndexedDB não é sincronizado |
+| Mesma conta/perfil **em outra máquina** (sincronização ligada) | **NÃO** — o IndexedDB não é sincronizado |
 
-> **Âmbito dos testes:** esta matriz foi confirmada no Windows 11, com o Edge 148 e o Chrome 148. O Firefox 151.0.4 foi testado à mão, com o mesmo resultado na recuperação. No Safari do iPhone (iOS 26.5), no site publicado, as sessões voltaram depois de fechar o Safari; o atalho na Tela de Início tem uma base própria. O Safari do Mac não foi testado. As versões testadas estão no changelog.
+Testado também à mão no Firefox 151.0.4, com o mesmo resultado na recuperação. No Safari do iPhone (iOS 26.5), no site publicado, as sessões voltaram depois de fechar o Safari; o atalho na Tela de Início tem uma base própria. O Safari do Mac não foi testado. As versões testadas estão no changelog.
 
-**Pontos-chave:**
-- O que decide o acesso é o **perfil de navegador**, não o nome/pasta/versão do arquivo.
-- Os dados são **locais à máquina**. O sync do Chrome leva favoritos/senhas, mas **não** o IndexedDB (confirmado por teste: conta sincronizada em outro PC → histórico vazio).
-- **Isolamento por ambiente:** dentro de uma VDI (perfil próprio e isolado), as sessões ficam contidas nessa VDI. Fora das VDIs, no perfil local pessoal, todas as sessões compartilham a mesma base. *Ambientes com roaming de perfil gerenciados pela TI poderiam alterar isto (os dados seguiriam o usuário) — não confirmado, depende da infraestrutura.*
+- O que decide o acesso é o perfil do navegador, e não o nome, a pasta ou a versão do arquivo.
+- Os dados ficam no computador. A sincronização do Chrome leva os favoritos e as senhas, mas não o IndexedDB: a mesma conta em outro computador mostrou o Histórico vazio.
+- Em uma VDI com perfil próprio, as sessões ficam nela. Um perfil com roaming, gerenciado pela TI, pode levar os dados junto; isso não foi testado.
 
 **Recuperação prática:** se o `capture-engine.html` for apagado, abra qualquer cópia da ferramenta no mesmo perfil do mesmo navegador, e as sessões reaparecem. O nome e a pasta não importam.
 
-**Extração de Emergência (DevTools):** se a lógica do HTML estiver inoperável e for preciso extrair os dados puros:
+**Extrair os dados pelas ferramentas do navegador (F12),** quando o app não abre:
 
-1. Abra qualquer cópia da ferramenta no perfil correto e pressione **F12** (DevTools).
-2. Navegue até Application (Chrome e Edge) ou Storage (Firefox), depois IndexedDB e `CaptureEngineDB`.
-3. Clique em **`images`** ou **`documents`** para ver os registros. Cada linha é um item.
-4. Para exportar um arquivo individual:
-   - Clique no registro pretendido para o expandir.
-   - Localize o campo **`blob`** — aparece como `Blob {size: XXXXX, type: "image/png"}`.
-   - Clique com o botão direito no valor do blob → **"Save as..."** (Chrome/Edge) ou copie via console (ver abaixo).
-5. Se a opção "Save as" não estiver disponível, use o console (tab **Console**):
+1. Abra qualquer cópia da ferramenta no perfil certo e aperte F12.
+2. Abra Application (Chrome e Edge) ou Storage (Firefox), depois IndexedDB e `CaptureEngineDB`.
+3. Clique em `images` ou em `documents`. Cada linha é um item.
+4. Para guardar um arquivo:
+   - Clique no registro para abri-lo.
+   - Ache o campo `blob`, que aparece como `Blob {size: XXXXX, type: "image/png"}`.
+   - Clique com o botão direito no valor e escolha "Save as..." no Chrome e no Edge, ou use o console (passo 5).
+5. Sem o "Save as...", use a aba Console:
    ```js
    // Substituir 'images' pelo nome da store e o ID pelo valor real
    const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
@@ -372,9 +362,9 @@ A base de dados é aberta com `indexedDB.open('CaptureEngineDB', 3)` — **sem n
      };
    };
    ```
-   Este script faz download de todas as imagens da store, cada uma com a extensão do seu formato. Para documentos, troque `'images'` por `'documents'` nas duas linhas da transação: o nome sai como foi gravado (ex.: `relatorio.pdf`).
+   O script faz o download de todas as imagens da tabela, cada uma com a extensão do seu formato. Para os documentos, troque `'images'` por `'documents'` nas duas linhas da transação: o nome sai como foi gravado (ex.: `relatorio.pdf`).
 
-**Diagnosticar quota esgotada** (confirmar o uso real quando o banner vermelho de armazenamento aparece — ver "Auto-save e purge", acima; a interface **avisa**, ao contrário do que esta seção afirmava até a V26):
+**Medir o espaço usado,** quando o aviso vermelho aparece:
 ```js
 // No console (F12 -> Console):
 navigator.storage.estimate().then(e =>
@@ -385,9 +375,9 @@ navigator.storage.estimate().then(e =>
   )
 );
 ```
-Acima de 80% de uso, a quota pode causar falhas na gravação. **Solução:** exporte (PDF ou ZIP) e apague as sessões antigas no histórico.
+Acima de 80%, a gravação pode falhar. Exporte em PDF ou ZIP e apague no Histórico as sessões antigas.
 
-**Listar sessões com nome, usuário e data** (para saber qual sessão extrair com o script abaixo):
+**Listar as sessões,** com o nome, o "Quem" e a data, para escolher qual extrair:
 ```js
 const req = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
 req.onsuccess = e => {
@@ -407,7 +397,7 @@ req.onsuccess = e => {
 };
 ```
 
-**Extrair imagens de uma sessão específica** (com o ID obtido no script acima):
+**Extrair as imagens de uma sessão,** com o id do script anterior:
 ```js
 const SESSION_ID = 'COLE_O_ID_AQUI'; // ID do console.log acima
 const req2 = indexedDB.open('CaptureEngineDB'); // sem número: abre a versão que existir
@@ -457,28 +447,27 @@ A única proteção é exportar em PDF ou ZIP o que importa: não há cópia de 
 A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o Playwright (D-0084).
 
 **Ciclo de vida da sessão:**
-- [ ] Abrir o arquivo → interface limpa, campos vazios, histórico vazio
-- [ ] Digitar no campo "Quem" → estado "Gravado" aparece **sem aguardar 5 segundos**
-- [ ] Capturar uma imagem (Ctrl+V) → sessão aparece no histórico
-- [ ] Apagar sessão ativa **com** histórico existente → navegação automática para a sessão adjacente
-- [ ] Apagar a **última** sessão ativa → interface volta ao estado limpo inicial (sem sessão nova no histórico)
+- [ ] Abrir o arquivo: a tela limpa, os campos e o Histórico vazios
+- [ ] Digitar em "Quem": "Gravado" aparece sem esperar 5 segundos
+- [ ] Colar uma imagem (Ctrl+V): a sessão aparece no Histórico
+- [ ] Apagar a sessão aberta, com outras no Histórico: abre a vizinha
+- [ ] Apagar a última sessão: a tela volta ao início, sem sessão nova no Histórico
 
-**Visualizador de imagem — navegação:**
-- [ ] Com ≥2 imagens na sessão, botões ← → aparecem nas laterais do modal
-- [ ] Com apenas 1 imagem, botões ← → estão ocultos
-- [ ] Clicar ← / → navega para a imagem anterior / seguinte
-- [ ] ArrowLeft / ArrowRight funcionam da mesma forma
-- [ ] Cliques **rápidos** nas setas não ativam zoom (guard dblclick funciona)
-- [ ] Abrir modo de anotação → setas desaparecem; cancelar → setas reaparecem
+**Visualizador de imagem:**
+- [ ] Com 2 imagens ou mais, as setas ← → aparecem nas laterais
+- [ ] Com 1 imagem, as setas ficam escondidas
+- [ ] As setas e as teclas ← → mostram a imagem anterior e a seguinte
+- [ ] Cliques rápidos nas setas não ligam o zoom
+- [ ] Ao abrir o editor, as setas somem; ao cancelar, voltam
 - [ ] Del ou "Remover" no visualizador mostram a imagem seguinte, ou a anterior se era a última; com a última imagem removida, o visualizador fecha (D-0172)
 - [ ] Nos "Removidos", o botão "Restaurar" e o do menu fazem o mesmo, com os itens que restam nos "Removidos" (D-0172)
 
-**Anotação — comportamento (motor reescrito na V23, testar com atenção):**
-- [ ] Desenho à mão livre **não pisca** durante o desenho
+**Editor de anotação:**
+- [ ] O desenho livre não pisca durante o traço
 - [ ] O traço salvo é igual ao que se viu na tela — sem arredondar, sem alisar e sem fechar o contorno sozinho
 - [ ] Curvas mantêm as quinas suaves depois de soltar (não ficam pontudas)
 - [ ] Retângulo, círculo e seta desenham por arrasto
-- [ ] Texto: colocar (Enter insere uma linha nova; clicar fora ou "Aplicar alterações" grava; Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
+- [ ] Texto: o Enter abre uma linha nova; um clique fora ou "Aplicar alterações" grava; o Esc cancela. O clique duplo reabre o texto, e a cor, o negrito e o itálico mudam
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Aplicar alterações" funde a anotação na imagem; "Descartar alterações" descarta
 - [ ] Tentar fechar o modal com anotações por salvar → o balão "Aplique ou descarte as alterações" aparece acima dos dois botões, que ficam parados, e a foto escurece. O resto da barra fica meio transparente até o próximo clique
@@ -498,41 +487,41 @@ A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o
 - [ ] Zoom no editor (rolagem do mouse e botões + e −): um traço feito a 200% cai debaixo do cursor
 - [ ] Zoom no editor: Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
 
-**Reordenação (reescrita com Pointer Events / FLIP na V23):**
-- [ ] Arrastar imagens para reordenar é **estável** (não salta nem pisca), com mouse
-- [ ] Se possível, testar também em **tela de toque**
-- [ ] Um **clique simples** ainda abre o item (não confunde clique com arrasto)
+**Reordenação:**
+- [ ] Arrastar uma imagem com o mouse muda a ordem sem saltos nem piscadas
+- [ ] O mesmo em uma tela de toque, quando houver uma
+- [ ] Um clique simples ainda abre o item
 - [ ] Arrastar documentos na lista também reordena
 - [ ] Segurar uma imagem perto da borda de baixo ou de cima rola a lista, ou a página no telefone. A imagem chega a um lugar que estava fora da tela (D-0171)
 
 **Visual e tema:**
-- [ ] Imagens com cantos retos; botões e cards de texto com cantos arredondados
-- [ ] O arquivo abre **sem erros no console** (F12)
-- [ ] Dark mode funciona **sem flash branco** ao abrir (anti-FOUC)
+- [ ] As imagens com cantos retos; os botões e os cartões de texto com cantos arredondados
+- [ ] O arquivo abre sem erro no console (F12)
+- [ ] O tema escuro abre sem piscar em branco
 
-**Export (testar o ciclo real):**
-- [ ] PDF gera com imagens; fica **desativado** quando há documentos na sessão
-- [ ] ZIP empacota imagens + documentos
-- [ ] **Export Admin** → a cópia mantém o painel de administração e a capacidade de reexportar
+**Exportação:**
+- [ ] O .pdf sai com as imagens e fica desativado quando há documentos
+- [ ] O .zip leva as imagens e os documentos
+- [ ] A cópia "Administrador" mantém o painel de administração e exporta de novo
 
-#### Teste do Export User — obrigatório em toda a release
+#### Teste do Export User, em toda versão
 
-Executar **sempre**, com o arquivo realmente gerado pelo botão Export — nunca com o `capture-engine.html` de desenvolvimento:
+Faça o teste com o arquivo gerado pelo botão de exportar, e nunca com o `capture-engine.html` de trabalho:
 
-1. [ ] Fazer **Export User** pela aplicação e guardar o arquivo
-2. [ ] Abrir esse arquivo no navegador e pressionar **F12 → Console**
-3. [ ] **Zero erros no console, sem exceção.** Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25. Ele mostra que o IIFE abortou: a aplicação está morta por baixo de uma interface que parece normal.
+1. [ ] Exporte a cópia "User" e guarde o arquivo.
+2. [ ] Abra esse arquivo no navegador e aperte F12, na aba Console.
+3. [ ] Nenhum erro no console. Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25. Ele mostra que o IIFE abortou: a aplicação está morta por baixo de uma interface que parece normal.
    - O Export User não tem o bloco `ADMIN_JS`, por isso não chama o `capturePristine()` nem faz o `fetch(location.href)`. Aberto por `file://` ou servido por `http(s)`, o console fica sem erro nenhum.
    - O par `Access to fetch at 'file:///…' … CORS` e `[CE] Quine fallback: BOOT_HTML` é normal só no `capture-engine.html` principal e no Export Admin abertos por `file://` (seção 3, "Quine"). **Em um Export User, esse par reprova o passo:** quer dizer que o bloco `ADMIN_JS` não foi removido.
-4. [ ] **A aplicação responde:** colar uma imagem (Ctrl+V) e confirmar que ela aparece na grade
-5. [ ] **A sessão persiste:** escrever no campo "Quem", recarregar a página, e confirmar que a sessão está no histórico
-6. [ ] Confirmar que as configurações (cor, nome, rodapé) foram aplicadas
-7. [ ] Confirmar que **não** há botões de admin nem Visual Builder
+4. [ ] Cole uma imagem (Ctrl+V) e confira que ela aparece na grade.
+5. [ ] Escreva em "Quem", recarregue a página e confira que a sessão está no Histórico.
+6. [ ] Confira que a cor, o nome e o rodapé configurados aparecem.
+7. [ ] Confira que não há o botão de administração nem o Visual Builder.
 
-> **Por que os passos 4 e 5 não são dispensáveis:** no defeito D25, a interface aparecia inteira, com "Pronto" na barra de estado, porque isso é HTML estático. Só a interação revela que nada está ligado. Uma inspeção visual passa; colar uma imagem não.
+Os passos 4 e 5 não se pulam: no defeito D25, a tela aparecia inteira, com "Pronto" na barra de estado, porque é HTML estático. Só colar uma imagem mostra que nada está ligado.
 
-**Multi-aba:**
-- [ ] Abrir o arquivo em uma segunda aba do mesmo navegador → **carrega normalmente** (sem tela de erro vermelha); ambas as abas funcionam e compartilham a mesma base de dados
+**Várias abas:**
+- [ ] O arquivo aberto em uma segunda aba do mesmo navegador carrega sem tela de erro, e as duas abas usam a mesma base
 
 ## 6. Decisões
 
