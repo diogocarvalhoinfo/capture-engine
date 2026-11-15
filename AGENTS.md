@@ -482,8 +482,8 @@ A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o
 - [ ] Texto: colocar (Enter insere uma linha nova; clicar fora ou "Aplicar alterações" grava; Escape cancela), reeditar com duplo-clique, mudar cor / negrito / itálico
 - [ ] Desfazer / Refazer (Ctrl+Z / Ctrl+Y)
 - [ ] "Aplicar alterações" funde a anotação na imagem; "Descartar alterações" descarta
-- [ ] Tentar fechar o modal com anotações por salvar → "Aplicar alterações" e "Descartar alterações" pulsam, e a foto escurece. O resto da barra fica meio transparente e sem clique por 5 s
-- [ ] Durante esse aviso, um clique na imagem desfaz o estado antes dos 5 s
+- [ ] Tentar fechar o modal com anotações por salvar → "Aplicar alterações" e "Descartar alterações" pulsam, e a foto escurece. O resto da barra fica meio transparente até o próximo clique
+- [ ] Durante esse aviso, um clique na imagem, no título ou na barra volta à edição; "Descartar alterações" e "Aplicar alterações" fazem a ação deles
 - [ ] Texto: o "Girar 90°" gira também o texto
 - [ ] Texto: o botão de duas setas acima do texto selecionado gira o texto e prende em 90° quando passa perto; o texto girado redimensiona e reedita girado
 - [ ] Botão direito ou do meio em uma anotação, em uma ferramenta de desenho: fica selecionada, com o ✕, e o Selecionar aceso. Um clique fora, o ✕ ou o Delete voltam à ferramenta de antes sem desenhar

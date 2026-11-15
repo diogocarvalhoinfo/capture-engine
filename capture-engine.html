@@ -5157,8 +5157,6 @@
       // Undo/Redo stacks of full-state snapshots
       let annUndoStack = [], annRedoStack = [];
       const ANN_HISTORY_MAX = 50;
-      const ANN_AWAIT_MS = 5000; // unsaved changes: how long the rest of the toolbar stays dimmed
-      let annAwaitTimer = null;
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
       let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
@@ -5235,9 +5233,10 @@
         const btnClose = $('ann-cancel'), btnSave = $('ann-save');
         if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
         if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
-        // Dim the rest of the toolbar, the photo, the title and the zoom for ANN_AWAIT_MS; a new alert restarts the time
+        // Dim the rest of the toolbar, the photo, the title and the zoom until the next click: Descartar or Aplicar alterações
+        // do their own job, and a click anywhere else goes back to editing (asked by the owner, 2026-11-15)
         const bar = $('img-modal-ann-actions');
-        if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); clearTimeout(annAwaitTimer); annAwaitTimer = setTimeout(clearAnnAwait, ANN_AWAIT_MS); }
+        if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); document.addEventListener('pointerdown', annAwaitOut, true) }
         annAwaitTip(true);
       }
       /* The alert says what to do: a bubble, in the look of the tooltip, centred above Descartar and Aplicar alterações (D-0165) */
@@ -5254,8 +5253,9 @@
         $('img-modal-default-actions').style.visibility = edit ? 'hidden' : '';
         $('img-modal-ann-actions').style.visibility = edit ? '' : 'hidden';
       }
+      function annAwaitOut(e) { if (!e.target.closest('#ann-cancel, #ann-save')) clearAnnAwait() }
       function clearAnnAwait() {
-        clearTimeout(annAwaitTimer); annAwaitTimer = null;
+        document.removeEventListener('pointerdown', annAwaitOut, true);
         const bar = $('img-modal-ann-actions');
         if (bar) bar.classList.remove('ann-await');
         $('img-modal-overlay').classList.remove('ann-await'); annAwaitTip(false);
