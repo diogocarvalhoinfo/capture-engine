@@ -576,7 +576,7 @@ fi
 #     Ignored, because they stay as they are (D-0026 of the prompts): the old decisions (up to D-0173),
 #     the changelog entries below the newest one, and the line of the top cards, which cartoes.py writes.
 if [ ! -f "$REF_REPO/verificar-escrita.py" ]; then
-  printf '[SKIP] %-52s (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Escrita (verificar-escrita.py)" "$REF_REPO"
 else
   WR_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 REF_REPO="$REF_REPO" "$PY_BIN" - <<'PY'
 import importlib.util, os, re
@@ -616,7 +616,7 @@ fi
 
 # 33) .gitattributes is an exact copy of the model at the root of the prompts repository.
 if [ ! -f "$REF_REPO/.gitattributes" ]; then
-  printf '[SKIP] %-52s (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' ".gitattributes = modelo" "$REF_REPO"
 elif cmp -s .gitattributes "$REF_REPO/.gitattributes"; then
   printf '[PASS] %-52s\n' ".gitattributes = modelo"; PASS=$((PASS+1))
 else
@@ -627,7 +627,7 @@ fi
 #     The image and the GIF open the app at http://127.0.0.1:8765; the script serves this folder
 #     there and stops the server at the end. --rapido checks only the cards and the diagrams.
 if [ ! -d "$REF_REPO/anotacoes" ]; then
-  printf '[SKIP] %-52s (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"
 else
   # Only the generators whose data comment is in the README; --rapido leaves out the two that open the browser
   GEN_LIST=""
@@ -692,7 +692,7 @@ fi
 if [ "$RAPIDO" -eq 1 ]; then
   printf '[SKIP] %-52s (--rapido)\n' "Fluxos criticos nos 4 navegadores"
 elif [ ! -f "$REF_REPO/fluxos/capture-engine.py" ]; then
-  printf '[SKIP] %-52s (sem o clone em %s)\n' "Fluxos criticos nos 4 navegadores" "$REF_REPO"
+  printf '[SKIP] %-52s não executado (sem o clone em %s)\n' "Fluxos criticos nos 4 navegadores" "$REF_REPO"
 else
   FX_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 "$PY_BIN" "$REF_REPO/fluxos/capture-engine.py" "$(dirname "$FILE")" 2>&1)
   FX_EXIT=$?

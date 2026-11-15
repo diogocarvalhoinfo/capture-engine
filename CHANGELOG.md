@@ -22,6 +22,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A árvore do arquivo único tem a função de cada parte depois de uma seta, em português (F-0173):** o `<style>` e o `<body>` explicavam entre parênteses e com termos como "Sidebar", "drop", "thumbnails" e "inputs". O detalhe é o mesmo, e cada linha tem até 80 caracteres.
 - **O `AGENTS.md` diz que o check 30 também precisa do repositório de referência (F-0174):** citava só os checks 32 a 34. Os testes de fluxo estão nesse repositório desde a 29.11.0.
 - **Os comentários do `validate.sh` dizem o que os checks 30 e 34 testam (F-0175):** o cabeçalho dizia que o script não abre o navegador. Desde a 29.11.0, o check 30 testa a anotação, o PDF e o ZIP nos navegadores. O comentário do check 25 citava a seção 12 do README, e o tamanho está na 13.
+- **Sem o repositório de referência, o `validate.sh` diz "não executado" (F-0176):** os 4 itens que dependem dele diziam só "sem o clone". É o texto que os prompts fixam. O resumo continua sem FAIL.
 
 ## [29.11.1] - 2026-11-15
 
