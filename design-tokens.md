@@ -141,7 +141,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--font-sans` | `'Segoe UI', arial, sans-serif` | Fonte de toda a interface: a do sistema, sem fontes externas |
+| `--font-sans` | `-apple-system, blinkmacsystemfont, 'Segoe UI', 'Noto Sans', helvetica, arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'` | Fonte de toda a interface: a pilha de fontes do sistema, a mesma do GitHub, sem fontes externas |
 | `--font-mono` | `consolas, monaco, 'Courier New', monospace` | Texto dos documentos no modal de texto |
 | `--text-micro` | `0.625rem` | Rodapé e botão de remover da miniatura (10px) |
 | `--text-caption` | `0.6875rem` | Contadores, datas, legendas e o título da barra "Removidos" (11px) |

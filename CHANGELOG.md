@@ -37,6 +37,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - "Com fundo" e "Fundo transparente" passam a usar o mesmo T da ferramenta Texto, em um quadrado do mesmo tamanho, a pedido do dono.
   - "Eliminar sessão" fica com o `x`, e o .pdf com o `file`, como o `icones.md` passou a dizer. Os SVGs vêm do `lucide-static` 0.468.0.
 - **O bloco do tema escuro só redefine tokens (F-0160):** as 7 regras de componente do `html.dark` viram 5 tokens, documentados no `design-tokens.md`. Nada muda na tela: capturas antes e depois, nos dois temas, com o hover e o modo ZIP, deram 0 pixels diferentes.
+- **A interface usa a pilha de fontes do sistema, a mesma do GitHub (F-0160):** no Mac e no iPhone, o texto sai na fonte do sistema, e não mais na Arial. No Windows nada muda: capturas antes e depois, no Edge, nos dois temas, deram 0 pixels diferentes. O texto desenhado nas anotações continua com a fonte de antes.
 
 ### Corrigido
 
