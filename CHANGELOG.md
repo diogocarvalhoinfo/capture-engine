@@ -4,7 +4,19 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.4] - 2026-11-15
+
+Todos os campos de texto mostram o contorno do foco do teclado, e uma página HTML aberta no visualizador perde a permissão de escrever na área de transferência. O `index.html` ganha título e um link para o app, e os documentos para quem mantém o código conferem com ele.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a auditoria do Fable 5.2, de 15 de novembro de 2026, com os prompts 10.1.0, achou de F-0187 a F-0204. Os achados foram conferidos no código antes do plano, e a F-0205 veio dessa conferência. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores.
+
+Achados que não mudam o código (F-0189, F-0200, F-0202, F-0203 e F-0204):
+- F-0189 foi rebaixada: a legenda dos IDs antigos já existe na seção 8 do `AGENTS.md`.
+- F-0200 e F-0202 ficam no texto antigo, que não se reescreve (D-0026 do repositório de referência). Os prompts permitem um aparte com travessão por frase. A parte viva foi corrigida na F-0193.
+- F-0203: "ferramenta" também nomeia as 7 ferramentas do editor, e o README a usa 21 vezes, e não 32. Só "logs" mudou, na F-0205.
+- F-0204: as 4 camadas locais estão no `design-tokens.md` como locais. O Prompt 1 só prevê o `--z-raised`, e a lacuna é dos prompts.
 
 ### Segurança
 
