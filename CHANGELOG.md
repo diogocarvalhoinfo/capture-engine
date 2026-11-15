@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O HTML aberto no visualizador não usa mais a permissão da área de transferência (F-0192):** o `iframe` tinha `allow="clipboard-write"`, que nenhuma decisão registrava. Um clique dentro de um documento trocava o que se tinha copiado. Medido no Edge 157 e no Chrome 157: com a permissão, o `navigator.clipboard.writeText` do documento gravava; sem ela, a área de transferência fica como estava. O `execCommand('copy')` ainda funciona depois de um clique, porque os scripts do documento são executados. O dono manteve os scripts, porque sem eles o gerador de senha do `password-reset-ex.html` não aparece; o README diz isso em "Limitações conhecidas". O "Copiar texto" do app, o Ctrl+C e o "Copiar" do gerador ainda funcionam.
 
+### Corrigido
+
+- **Os campos de texto mostram o contorno de foco (F-0191):** com o teclado, o nome da imagem só mudava o fundo, com 1,11:1. Os outros campos ganhavam uma borda de 1 px, com 2,88:1. Agora os 6 tipos de campo têm o contorno de 3 px dos botões, com 4,08:1 no tema claro e 5,22:1 no escuro. São o nome da imagem, o nome do documento, "Quem" e "O que", os campos do Visual Builder e o texto de um documento aberto. Os 3 últimos ficaram fora do relatório, com a mesma causa: um `outline: none`. O nome da imagem ganha `position: relative`, porque a miniatura cobria a linha de cima do contorno. Medido no Edge 157, no Firefox e no WebKit, nos dois temas, em 1536 × 777, 1280 × 633, 390 × 844 e 360 × 800, sem corte. O texto digitado no editor de imagem fica sem contorno, porque o cursor e a caixa da anotação mostram onde se escreve.
+
 ## [29.11.3] - 2026-11-15
 
 As cores da barra do editor voltam a crescer, a pedido do dono. A D-0112 e o CSS dos botões ficam de acordo com o aviso da 29.11.2.

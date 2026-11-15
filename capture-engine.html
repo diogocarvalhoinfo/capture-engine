@@ -717,7 +717,6 @@
       padding: 0 calc(var(--spacing) * 3);
       font-size: var(--text-control);
       color: var(--color-foreground);
-      outline: none;
       transition: border-color var(--duration-moderate-01), box-shadow var(--duration-moderate-01)
     }
 
@@ -1144,6 +1143,7 @@
     }
 
     .t-label {
+      position: relative;
       width: 100%;
       border: none;
       background: var(--color-card);
@@ -1152,7 +1152,6 @@
       font-weight: normal;
       padding: calc(var(--spacing) * 1) calc(var(--spacing) * 1.5);
       height: 24px;
-      outline: none;
       text-align: center;
       font-family: var(--font-sans);
       overflow: hidden;
@@ -1218,7 +1217,6 @@
       font-weight: normal;
       padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
       border-radius: var(--radius-sm);
-      outline: none;
       width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -2202,14 +2200,12 @@
       font-family: monospace;
       color: var(--color-foreground);
       background: var(--color-background);
-      outline: none;
       transition: border-color var(--duration-moderate-01), background var(--duration-moderate-01)
     }
 
     .hex-input:focus {
       border-color: var(--color-primary) !important;
       background: var(--color-card) !important;
-      outline: none !important;
       box-shadow: var(--shadow-input-focus) !important
     }
 
@@ -2223,7 +2219,6 @@
       font-family: var(--font-sans);
       color: var(--color-foreground);
       background: var(--color-background);
-      outline: none;
       transition: border-color var(--duration-moderate-01), background var(--duration-moderate-01);
       padding: 0 calc(var(--spacing) * 3);
       text-align: right
@@ -2232,7 +2227,6 @@
     .text-input-sm:focus {
       border-color: var(--color-primary) !important;
       background: var(--color-card) !important;
-      outline: none !important;
       box-shadow: var(--shadow-input-focus) !important
     }
 
@@ -4148,7 +4142,7 @@
       </div>
       <div class="doc-page">
         <textarea id="text-modal-content" readonly
-          style="width:100%; flex:1; resize:none; border:none; background:transparent; color:var(--color-foreground); font-family:var(--font-mono); font-size:var(--text-code); line-height:1.6; outline:none; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
+          style="width:100%; flex:1; resize:none; border:none; background:transparent; color:var(--color-foreground); font-family:var(--font-mono); font-size:var(--text-code); line-height:1.6; white-space:pre-wrap; padding:calc(var(--spacing) * 2); border-radius:var(--radius-md)"></textarea>
         <div id="text-modal-view" hidden></div>
         <div id="text-modal-binary-msg"
           style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--color-muted-foreground); font-size:var(--text-control); padding:calc(var(--spacing) * 6); line-height:1.6; gap:calc(var(--spacing) * 3)">
