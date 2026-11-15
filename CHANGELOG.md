@@ -4,13 +4,20 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.2] - 2026-11-15
+
+Nada mais cresce nem gira na tela: os botões do aviso, as setas das barras e as cores do editor ficam parados. Os textos de exemplo dos campos ficam legíveis, o editor de texto ganha o balão do aviso, e o projeto deixa de citar o nome do repositório de referência.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a auditoria de 15 de novembro de 2026, com os prompts 9.0.1, achou de F-0170 a F-0182. A F-0183 e a F-0184 vieram da revisão e da correção, decididas pelo dono. Todos foram corrigidos, menos a F-0182, rebaixada. Na lista de documentos, o selo do tipo tem 40 × 18 px, e o campo do nome, 21 px de altura. Os dois passam pela exceção de espaçamento da WCAG 2.5.8. O círculo de 24 px de cada um não toca outro alvo, medido no Edge 157 nos dois temas. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
 
 ### Modificado
 
 - **O fluxo do Quine, na Arquitetura do README, deixa mais espaço vazio embaixo:** o texto seguinte parecia colado no diagrama. Segue a decisão D-0047 do repositório de referência. Pedido do dono.
 - **As árvores do README não rolam mais para o lado:** cada linha tem até 80 caracteres, como pede a decisão D-0048 do repositório de referência. O PDF e o ZIP perderam o "(sem bibliotecas)", que repetia o "JavaScript puro". Pedido do dono.
 - **Sai do README a árvore "Como os componentes se ligam":** a lista do que o `init()` e o `boot()` chamam é detalhe do código, e a Arquitetura já tem a árvore do arquivo e os diagramas. Pedido do dono.
+- **O projeto não cita mais o nome do repositório de referência (D-0181):** ele é privado, e o nome mostrava que existe. O `AGENTS.md` diz "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto. Quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. O histórico do git foi reescrito para tirar o nome dos commits antigos, com as datas e os autores de cada commit iguais.
 
 ### Corrigido
 
@@ -27,7 +34,6 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A D-0179 diz que os prompts adotaram a mesma regra (F-0177):** ela ainda dizia que o projeto diverge dos prompts nos ícones parados. Desde a 9.0.0, os prompts pedem o mesmo. Uma nota no fim registra isso, e o texto da decisão fica.
 - **As decisões de outro repositório são citadas como "do repositório de referência" (F-0178):** "a D-0047 dos prompts 9.0.1" podia ser confundida com uma decisão deste projeto. Três citações mudaram: a D-0179 e duas linhas desta versão.
 - **O armazenamento e os testes do `AGENTS.md` seguem a escrita atual (F-0179):** a seção 4 e a lista de testes da seção 5 ainda tinham formas como "perdem-se" e "Âmbito". Tinham também palavras em inglês como "store" e "purge". A parte da gravação e da limpeza contava o caminho pelas funções e virou regras e fatos. A regra de atualizar o comentário `// CaptureEngineDB versão 3` saiu: esse comentário não existe, e a versão é o `DB_VERSION`. As tabelas dos campos, as chaves e os scripts de recuperação ficam.
-- **O projeto não cita mais o nome do repositório de referência (D-0181):** ele é privado, e o nome mostrava que existe. O `AGENTS.md` diz "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto. Quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`.
 - **O `index.html`, a entrada do site, tem a CSP (F-0180):** era o único HTML do projeto sem ela. Agora só carrega o próprio script, o próprio estilo e o ícone embutido. Testado no Edge, no Chrome, no Firefox e no WebKit, nos dois temas: o fundo, o tema escuro, o ícone e o redirecionamento continuam iguais, sem erro de CSP.
 - **A D-0182 registra o `index.html`, o `LICENSE` e o `.gitignore` na raiz (F-0180):** a D-0177 lista o que fica na raiz e não os citava.
 
