@@ -329,7 +329,7 @@ O Quine substitui valores por regex no código-fonte:
 html.replace(/const TOKEN_MAIN_COLOR\s*=\s*'(?:[^'\\]|\\.)*'/, "const TOKEN_MAIN_COLOR = '#ff6600'")
 ```
 
-O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apóstrofo funciona na primeira exportação e corrompe a seguinte (ver `AGENTS.md` §1.3).
+O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apóstrofo funciona na primeira exportação e corrompe a seguinte (ver `AGENTS.md`, seção 3, "Quine").
 
 **Por isso, o formato exato deve seguir a sintaxe:**
 - `const` (não `let` ou `var`)
