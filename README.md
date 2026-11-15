@@ -54,7 +54,7 @@ Funciona como uma pasta que vive dentro de um arquivo: você abre, cola ou arras
 
 | Situação | Como o Capture Engine ajuda |
 |---|---|
-| Suporte técnico | Junta capturas de erros, logs e configurações em um único PDF para o chamado |
+| Suporte técnico | Junta capturas de erros, registros e configurações em um único PDF para o chamado |
 | Área jurídica | Reúne e exporta provas e documentos para processos ou audiências |
 | Uso pessoal | Agrupa capturas para enviar em um portal ou formulário |
 | Ambientes restritos (banco, governo, saúde) | Funciona sem internet e sem nenhum recurso de fora |
@@ -508,7 +508,7 @@ cadeia: Administração
   Visual Builder | edita os tokens | ícone=settings
   `TOKEN_*` | configuração
 fila: Exportação
-  PDF | em JS puro | ícone=pdf
+  PDF | em JS puro | ícone=file
   ZIP | em JS puro | ícone=file-archive
   Quine | autocópia | ícone=copy-plus | destaque
 liga: TOKEN_* -> Quine
