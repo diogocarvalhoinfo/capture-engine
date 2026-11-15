@@ -138,6 +138,13 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 ### Validação
 
 - Execute `bash validate.sh` antes de cada commit; precisa dar 0 FAIL. No Windows, use o Git Bash ou o WSL. O `--rapido` pula os testes de fluxo. (D-0084)
+- O `validate.sh` completo precisa destes programas (D-0084):
+  - o Bash: no Windows, o Git Bash ou o WSL;
+  - o Python 3 com `playwright`, `pillow`, `fonttools` e `brotli`, os navegadores do `python -m playwright install` e o Edge e o Chrome instalados;
+  - o `ffmpeg`, para o `gif.py`;
+  - o Node.js 22.12 ou mais novo, com o `npx`, para a sintaxe, o Export User e o stylelint;
+  - o clone do repositório de referência na pasta `referencia`.
+- Um `[SKIP]` não é um PASS: o check não executou. Antes de um commit, só o check 30 pode sair como SKIP, e só com `--rapido`.
 - O `validate.sh` executa 35 verificações mecânicas: 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo nos navegadores. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
 - Chame o repositório dos prompts de "repositório de referência", nos arquivos e nos commits, e nunca pelo nome dele no GitHub. O clone fica na pasta `referencia`, ao lado do projeto. (D-0181)
 - Leia o `[WARN]` de complexidade como o mapa de onde uma edição quebra mais fácil, e não como defeito. Antes de editar uma dessas funções, leia a regra do motor dela. (D-0092)
