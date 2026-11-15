@@ -133,7 +133,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 ### Validação
 
 - Execute `bash validate.sh` antes de cada commit; precisa dar 0 FAIL. No Windows, use o Git Bash ou o WSL. O `--rapido` pula os testes de fluxo. (D-0084)
-- O `validate.sh` executa 35 verificações mecânicas: 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo nos navegadores. Os checks 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
+- O `validate.sh` executa 35 verificações mecânicas: 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo nos navegadores. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
 - Leia o `[WARN]` de complexidade como o mapa de onde uma edição quebra mais fácil, e não como defeito. Antes de editar uma dessas funções, leia a regra do motor dela. (D-0092)
 - Teste no navegador o que a mudança toca, com o Playwright ou à mão. (D-0084)
 - O check do Export User (o `validate.sh` simula a cópia "User") só cobre o código síncrono; não substitui o teste da seção 5. (D25)
