@@ -164,6 +164,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 > [!NOTE]
 > **A base é por origem.**
 > O IndexedDB é separado por origem: protocolo, host e porta. A mesma `CaptureEngineDB` aberta por `file://`, `http://localhost:8080` e `https://<user>.github.io` são três bases isoladas, mesmo no mesmo perfil. Dentro de `file://`, o caminho do arquivo não muda a origem. Por isso, a ferramenta publicada e o arquivo local têm históricos separados.
+
 **Versão do schema:** `3` (`DB_VERSION`), desde a 29.0.0 (D-0127).
 
 - **O que a versão 3 muda:** nenhum dado guardado. Ela marca que um registro de `images` pode ter um PDF (`kind`) e imagens coladas no editor (`annBlobs`), que uma 28.x leria errado. Por isso uma cópia 28.x não abre mais a base.
@@ -673,5 +674,7 @@ Os IDs novos seguem o formato `D-0001` (decisão), `P-0001` (pendente que não v
 Os IDs antigos contam para a numeração da mesma letra: depois do `D76`, a decisão seguinte foi a `D-0077`.
 
 Os números `D-0146` a `D-0149` não existem neste repositório. Foram usados em um trabalho local com o pdf.js, cancelado pelo dono em 2026-11-09, e não se reutilizam: depois da `D-0145` vem a `D-0150`.
+
+O número `D-0178` também não se reutiliza. Ele descrevia os ícones animados, desfeitos pela D-0179 antes de a 29.11.0 sair.
 
 O `P-0003` (extrair as imagens de um PDF pelo clique direito) foi descartado pelo dono em 2026-11-09. Muitos PDFs são de texto, e mostrá-los como imagem pede um renderizador como o pdf.js. O número não se reutiliza: a pendente seguinte foi a `P-0004`.
