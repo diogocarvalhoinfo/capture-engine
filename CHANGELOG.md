@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **O fluxo do Quine, na Arquitetura do README, deixa mais espaço vazio embaixo:** o texto seguinte parecia colado no diagrama. Segue a D-0047 dos prompts 9.0.1. Pedido do dono.
+
 ## [29.11.1] - 2026-11-15
 
 As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, o marca-texto começa um passo acima, e nada mais pisca: nem o título e o texto sobre a cor principal ao carregar, nem as ferramentas ao cancelar.
