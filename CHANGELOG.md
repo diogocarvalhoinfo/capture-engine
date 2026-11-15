@@ -41,6 +41,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **A seta dos "Removidos" acende ao passar o mouse na barra, como a do Histórico (F-0162):** a cor estava escrita no próprio SVG, e nenhuma regra de hover a mudava. Agora fica no CSS: cinza em repouso, a cor do texto com o mouse ou com o foco do teclado. Achado pelo dono durante a correção.
 - **O rodapé e o contorno do foco têm o contraste da WCAG 2.2 AA (F-0161):** o rodapé tinha 1,99:1 no tema claro. Agora tem 4,88:1. No escuro, passa de 2,55:1 a 6,66:1. Ele era a cor do texto secundário com 50% de opacidade, e 40% no telefone. O contorno do foco tinha 2,88:1 sobre o fundo claro, e agora tem 3,67:1, com a cor principal escurecida. (D-0174)
 - **No Safari, o desenho cai onde o dedo ou o mouse passa (F-0155, reabre a F-0152):** o WebKit alarga a área da imagem depois do carregamento. A imagem muda de lugar sem mudar de tamanho. O canvas acompanhava só o tamanho da imagem e ficava no lugar antigo. A anotação era gravada fora do lugar, sem aviso. Agora o canvas acompanha também a área em volta. Medido com o Playwright, antes e depois:
   - WebKit, iPhone 13, imagem de 1080 × 1920: o traço de x = 324 a 756 era gravado de 680 a 1058; agora vai de 320 a 710;
