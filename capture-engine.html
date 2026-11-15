@@ -727,7 +727,8 @@
       box-shadow: var(--shadow-input-focus)
     }
 
-    .sess-input::placeholder {
+    /* Every placeholder is text and keeps 4.5:1 in both themes (F-0171); the editor, always dark, has its own rule in .ann-hex */
+    ::placeholder {
       color: var(--color-muted-foreground)
     }
 
@@ -1160,10 +1161,6 @@
       white-space: nowrap;
       transition: color var(--duration-fast-02), background var(--duration-fast-02);
       border-radius: 0
-    }
-
-    .t-label::placeholder {
-      color: var(--color-border-strong)
     }
 
     .t-label:focus {
@@ -2432,6 +2429,10 @@
       font-weight: 400;
       font-variant-numeric: tabular-nums;
       text-transform: uppercase
+    }
+
+    .ann-hex::placeholder {
+      color: var(--color-viewer-muted-foreground)
     }
 
     /* On a phone the inputs have 16 px text, so focusing them does not zoom: the code needs a wider field (D-0156) */
