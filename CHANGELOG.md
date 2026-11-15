@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **As árvores do README voltam ao formato que o dono preferia:** em "Estrutura de arquivos", a nota de cada arquivo vem depois de uma seta (←), e não de um #. Em "Arquitetura", volta a árvore detalhada do arquivo único, com cada parte do script e a sua função.
+- **Volta a árvore "Como os componentes se ligam", com o que o `init()` e o `boot()` chamam:** montada do código atual, ela traz o `initMenus()`, que faltava na antiga. A tabela do IndexedDB fica só no `AGENTS.md`, e o README aponta para ela.
 
 ### Corrigido
 

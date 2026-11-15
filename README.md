@@ -491,6 +491,40 @@ capture-engine.html
     └── boot()            → Chamada por init() após openDB() e purgeExpired(). Inicializa todos os subsistemas da interface.
 ```
 
+### Como os componentes se ligam
+
+```text
+init()
+  ├── openDB()
+  ├── purgeExpired()
+  ├── boot()
+  │     ├── setInterval(triggerSave, 5000)
+  │     ├── initClipboard()
+  │     ├── initDragDrop()
+  │     ├── initReorder()
+  │     ├── initMenus()
+  │     ├── initSidebar()
+  │     ├── initPickers()
+  │     ├── initTheme()
+  │     ├── initTrashBar()
+  │     ├── initCollapsedBars()
+  │     ├── initModalLayers()
+  │     ├── initKeyClick()
+  │     ├── initPdfModal()
+  │     ├── initVbSync()
+  │     ├── initAdminGate()
+  │     ├── initSessionSync()
+  │     ├── initAnnotation()
+  │     ├── applyTokens()
+  │     ├── initChips()
+  │     ├── updateCounters()
+  │     ├── updateBtns()
+  │     ├── updateBtnTitles()
+  │     ├── updateStatusBar()
+  │     └── [ADMIN_JS] capturePristine()
+  └── reopenLastSession()   → só na tela de toque
+```
+
 ### Componentes
 
 <!-- diagrama: forma=componentes; saida=docs/images/architecture-components.svg; cor=#e86b2e
@@ -547,6 +581,8 @@ decisão: `export` | qual cópia?
 fim: Download | `capture-engine.html` | ícone=download
 -->
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/architecture-quine-dark.svg"><img src="docs/images/architecture-quine.svg" alt="Fluxo do Quine: lê o próprio arquivo, troca os TOKEN_* e grava a cópia Admin, com o Visual Builder, ou a User, sem ele."></picture>
+
+As tabelas do IndexedDB, com cada campo, estão no `AGENTS.md`, em "Armazenamento do navegador".
 
 Veja também: [`AGENTS.md`](AGENTS.md), seções "Regras" e "Armazenamento do navegador".
 
