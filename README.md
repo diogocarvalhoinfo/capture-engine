@@ -309,7 +309,7 @@ Uma versão nova com um prazo de limpeza menor apaga, na primeira abertura, as s
 ## 10. Privacidade
 
 - **O que vai para a rede:** nada. O arquivo não carrega nada de fora, não envia dados e não tem telemetria. A única leitura é do próprio arquivo, ao exportar uma cópia configurada.
-- **O que fica gravado:** no banco de dados do navegador, as sessões, as imagens, os documentos e os removidos. Ficam até a limpeza automática ou até alguém limpar os dados do navegador. No armazenamento local do navegador, o tema escolhido, as opções das ferramentas do editor e, no telefone, a última sessão aberta.
+- **O que fica gravado:** no banco de dados do navegador, as sessões, as imagens, os documentos e os removidos. Ficam até a limpeza automática ou até alguém limpar os dados do navegador. No armazenamento local do navegador, o tema escolhido, as opções das ferramentas do editor e o código da última sessão aberta, que só o telefone e o tablet usam.
 
 Os dados ficam no navegador e no perfil onde foram criados, e cada endereço tem a sua base: o arquivo aberto do computador e o site publicado não se veem.
 

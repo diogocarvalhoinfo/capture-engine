@@ -12,6 +12,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **As árvores do README não rolam mais para o lado:** cada linha tem até 80 caracteres, como pede a D-0048 dos prompts 9.0.1. O PDF e o ZIP perderam o "(sem bibliotecas)", que repetia o "JavaScript puro". Pedido do dono.
 - **Sai do README a árvore "Como os componentes se ligam":** a lista do que o `init()` e o `boot()` chamam é detalhe do código, e a Arquitetura já tem a árvore do arquivo e os diagramas. Pedido do dono.
 
+### Corrigido
+
+- **A "Privacidade" do README diz que o código da última sessão fica gravado em qualquer aparelho (F-0170):** dizia "no telefone". O app grava a chave `ce-last-session` também no computador, e só o telefone e o tablet a usam. Medido no Edge 157, sem tela de toque. Nada muda no app.
+
 ## [29.11.1] - 2026-11-15
 
 As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, o marca-texto começa um passo acima, e nada mais pisca: nem o título e o texto sobre a cor principal ao carregar, nem as ferramentas ao cancelar.
