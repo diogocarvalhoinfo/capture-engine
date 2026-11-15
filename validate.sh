@@ -18,13 +18,18 @@
 #   - Visual behaviour, dark mode, annotation, session life cycle,
 #     real PDF/ZIP export. See the manual checklist in AGENTS.md, section 11.
 #
-# USAGE:  ./validate.sh [html-path]   (default: capture-engine.html)
+# USAGE:  ./validate.sh [--rapido] [html-path]   (default: capture-engine.html)
+#         --rapido skips the flow tests in the browsers (check 30), about 2 minutes
 # OUTPUT: a list of [PASS]/[FAIL] and a summary. Exit code 0 = all OK.
 # =============================================================================
 
 set -u
 export LC_ALL=C.UTF-8
+RAPIDO=0
+if [ "${1:-}" = "--rapido" ]; then RAPIDO=1; shift; fi
 FILE="${1:-capture-engine.html}"
+# The clone of the prompts repository, beside this folder (or in REF_REPO): it has the flow tests and the writing checker
+REF_REPO="${REF_REPO:-$(cd "$(dirname "$0")/.." && pwd)/referencia}"
 
 # Python interpreter used by several checks (set early: check 2 needs it).
 PY_BIN="python"
@@ -265,7 +270,7 @@ fi
 
 # 15) Self-consistency: the check count written in AGENTS.md matches the numbered checks
 # Compare with a fixed constant, NOT with $PASS (which changes with SKIP/FAIL)
-CHECKS_NUMERADOS=29
+CHECKS_NUMERADOS=30
 DOC_COUNT=$(grep -oP "executa \K\d+(?= verifica)" AGENTS.md 2>/dev/null | head -1 | tr -d '\r')
 DOC_COUNT=${DOC_COUNT:-0}
 if [ "$DOC_COUNT" != "0" ] && [ "$DOC_COUNT" != "$CHECKS_NUMERADOS" ]; then
@@ -538,6 +543,27 @@ if command -v npx >/dev/null 2>&1; then
 else
   printf '[SKIP] %-52s (npx nao instalado)
 ' "stylelint (modelo dos prompts)"
+fi
+
+# 30) Critical flows in Edge, Chrome, Firefox and WebKit: capture, annotation, PDF and ZIP (D-0177).
+#     The tests live in the prompts repository, fluxos/capture-engine.py, and run from its clone.
+#     Without the clone or Playwright, or with --rapido: not run, and not a FAIL.
+if [ "$RAPIDO" -eq 1 ]; then
+  printf '[SKIP] %-52s (--rapido)\n' "Fluxos criticos nos 4 navegadores"
+elif [ ! -f "$REF_REPO/fluxos/capture-engine.py" ]; then
+  printf '[SKIP] %-52s (sem o clone em %s)\n' "Fluxos criticos nos 4 navegadores" "$REF_REPO"
+else
+  FX_OUT=$(PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8 "$PY_BIN" "$REF_REPO/fluxos/capture-engine.py" "$(dirname "$FILE")" 2>&1)
+  FX_EXIT=$?
+  if [ "$FX_EXIT" -eq 0 ] && printf '%s' "$FX_OUT" | grep -q '^fluxos: nenhuma falha'; then
+    printf '[PASS] %-52s (%s)\n' "Fluxos criticos nos 4 navegadores" "$(printf '%s\n' "$FX_OUT" | grep -c '^\[PASS\]') testes"; PASS=$((PASS+1))
+    printf '%s\n' "$FX_OUT" | grep '^\[----\]'
+  elif printf '%s' "$FX_OUT" | grep -q 'falta o playwright'; then
+    printf '[SKIP] %-52s (falta o playwright para Python)\n' "Fluxos criticos nos 4 navegadores"
+  else
+    printf '[FAIL] %-52s (codigo %s)\n' "Fluxos criticos nos 4 navegadores" "$FX_EXIT"; FAIL=$((FAIL+1))
+    printf '%s\n' "$FX_OUT" | grep -E '^\[FAIL\]' | head -20
+  fi
 fi
 
 echo

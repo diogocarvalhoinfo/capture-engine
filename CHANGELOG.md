@@ -6,6 +6,12 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Adicionado
+
+- **O `validate.sh` testa os fluxos críticos no Edge, no Chrome, no Firefox e no WebKit (F-0157):** a captura, a anotação, o PDF e o ZIP. Os testes ficam no repositório dos prompts, em `fluxos/capture-engine.py`, e o check 30 os chama pelo clone; o `--rapido` os pula. Nenhum arquivo de teste entra neste repositório. (D-0177)
+  - Cobertura: 28 testes, todos certos. Sem a correção F-0155, falham 3 dos 4 casos de anotação no WebKit.
+  - O WebKit do Playwright no Windows não grava um Blob no IndexedDB, nem fora do app. Nele, o teste da captura confere o aviso "Só nesta aba".
+
 ### Corrigido
 
 - **No Safari, o desenho cai onde o dedo ou o mouse passa (F-0155, reabre a F-0152):** o WebKit alarga a área da imagem depois do carregamento. A imagem muda de lugar sem mudar de tamanho. O canvas acompanhava só o tamanho da imagem e ficava no lugar antigo. A anotação era gravada fora do lugar, sem aviso. Agora o canvas acompanha também a área em volta. Medido com o Playwright, antes e depois:
