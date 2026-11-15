@@ -115,23 +115,6 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 - Ligue o tema escuro pela classe `dark` no `<html>`, e não por `@media (prefers-color-scheme)` no CSS. Só o JavaScript lê a preferência do sistema, na primeira abertura. O bloco `html.dark` só redefine tokens. (D-0176)
 - Use um token `--z-*`, na escala do Bootstrap, em cada `z-index`. (D-0176)
 
-### Ícones
-
-- Use o ícone que o `icones.md` do repositório de referência dá ao conceito, com o SVG do Lucide copiado igual. Um conceito novo entra no `icones.md` antes de ser usado. (D-0028 dos prompts)
-- Dê a um ícone de botão o gesto da tabela abaixo, pelas propriedades `rotate` e `translate` do CSS, e não pelo `transform` nem pelo `scale`, que desfoca o traço,, que algumas setas e o T do itálico já usam. O gesto acontece ao passar o mouse e com o foco do teclado, em `--duration-moderate-02`, só com a classe `icons-animated` no `<html>` e sem "reduzir movimento". (D-0178)
-
-| Ícone | Gesto |
-|---|---|
-| Engrenagem, Atualizar, Restaurar | gira 90°, 180° e −90° |
-| Desfazer e Refazer | gira −20° e 20° |
-| Fechar (`x`) | gira 90° |
-| Editar (`pencil`) | inclina −12° |
-| Fazer o download, Guardar | desce 2 px |
-| Lixeira | a tampa abre: gira −14° pelo canto de baixo |
-| Anterior e próximo, setas do Histórico e dos "Removidos" | anda 2 px para onde aponta |
-| Lua e sol | giram −20° e 45° |
-| Os outros | não se mexem; só a cor muda |
-
 ### Idioma
 
 - **Documentação** (README, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, commits): português neutro, com a tabela de palavras dos prompts. Um termo da interface aparece como está, entre aspas retas ("User").
@@ -659,7 +642,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0175:** o README fala com quem usa e com quem administra a ferramenta, e não com quem edita o código. A palavra em português vem primeiro, e os nomes do código ficam nas seções "Estrutura de arquivos" e "Arquitetura". Custo: os termos técnicos em inglês da lista dos prompts não entram no texto para quem usa. Origem: a migração para os prompts 8.0.1, 15 de novembro de 2026 (F-0156).
 - **D-0176:** as regras do arquivo único, do Quine e da sanitização vêm dos três contratos do motor. O arquivo é a aplicação inteira e funciona sem internet; o arquivo copia a si mesmo com a configuração; um dado do usuário nunca chega ao DOM sem `escapeHTML()`. Quebrar o primeiro deixa a ferramenta morta sem internet; o segundo, a cópia exportada corrompida; o terceiro abre um XSS com dados de clientes. Custo: nenhum recurso de fora, e cada edição conferida pelo `validate.sh`. Origem: as "Regras absolutas" do projeto, registradas como decisão em 15 de novembro de 2026 (F-0156).
 - **D-0177:** Na raiz, só o produto, a documentação e as ferramentas que o padrão exige. Quem clona o capture-engine recebia arquivos sem contexto. A raiz guarda o produto, a documentação, o `validate.sh`, o `.stylelintrc.json` e o `.gitattributes`; um arquivo novo na raiz precisa de uma decisão própria. Os testes dos fluxos críticos ficam no repositório dos prompts, em `fluxos/capture-engine.py` (repositório de referência, D-0037), e o check 30 do `validate.sh` os chama pelo clone. Custo: sem o clone, os testes não executam. Origem: o dono, 15 de novembro de 2026.
-- **D-0178:** os ícones dos botões fazem o próprio gesto, ligados por padrão, com a opção "Ícones animados" no Visual Builder (`TOKEN_ANIMATED_ICONS`). Os prompts 8.0.1 pedem a animação e a opção. O gesto usa as propriedades `rotate` e `translate`, que se somam ao `transform` das setas. Crescer desfocava o traço, e subir não ficou bom: os outros ícones só mudam de cor. Custo: cerca de 7 KB de CSS. Medido no Edge, no Firefox e no WebKit, com e sem "reduzir movimento". Origem: F-0160, 15 de novembro de 2026.
+- **D-0179:** o capture-engine não tem ícones animados nem a opção "Ícones animados", uma exceção à D-0034 e à D-0028 dos prompts 8.0.1. O dono testou os gestos em 15 de novembro de 2026: crescer desfocava o traço, subir não ficou bom, e a animação não foi aprovada. Ao passar o mouse, os ícones só mudam de cor. Custo: o projeto diverge dos prompts nesse ponto. Origem: o dono, na correção da F-0160; a D-0178, que descrevia a animação, foi desfeita.
 
 ## 7. Pendentes
 

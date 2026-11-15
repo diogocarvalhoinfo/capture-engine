@@ -292,7 +292,6 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | sim | Histórico → "Segundo campo", interruptor |
 | `TOKEN_USER_LABEL` | `string` | `''` | sim | Histórico → "Primeiro campo", rótulo |
 | `TOKEN_EQUIP_LABEL` | `string` | `''` | sim | Histórico → "Segundo campo", rótulo |
-| `TOKEN_ANIMATED_ICONS` | `bool` | `true` | sim | Interface → "Ícones animados", interruptor. Ligado, cada ícone faz o próprio gesto ao passar o mouse ou com o foco do teclado (D-0178) |
 | `TOKEN_ID_UPPERCASE` | `bool` | `true` | sim | Histórico → "Maiúsculas", interruptor |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | sim | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | sim | Captura → dimensão máxima |

@@ -283,7 +283,7 @@ Para sair do modo administrador, clique 3 vezes no logotipo em menos de 1 segund
 <details>
 <summary>As abas do Visual Builder</summary>
 
-- **Interface:** "Cor principal"; "Cor do texto sobre destaque", automática ou escolhida; "Texto inicial", "Texto em destaque" e "Texto final", as três partes do nome no topo, cada uma com a sua cor; "Texto do rodapé", onde `{YEAR}` vira o ano atual. "Ícones animados", ligado por padrão, faz alguns ícones se mexerem um pouco ao passar o mouse, como a engrenagem, que gira.
+- **Interface:** "Cor principal"; "Cor do texto sobre destaque", automática ou escolhida; "Texto inicial", "Texto em destaque" e "Texto final", as três partes do nome no topo, cada uma com a sua cor; "Texto do rodapé", onde `{YEAR}` vira o ano atual.
 - **Histórico:** o rótulo e o interruptor do "Primeiro campo" e do "Segundo campo"; "Maiúsculas", que converte o que se digita nos dois campos.
 - **Captura:** "Qualidade do PDF", de 70% a 95%; "Dimensão máxima", que reduz as imagens do PDF a 1920, 2560 ou 3840 px, ou "Original".
 - **Manutenção:** "Limpeza automática", que apaga as sessões sem uso há mais de 8, 24 ou 48 horas, ou "Nunca".
