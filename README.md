@@ -449,46 +449,46 @@ Esta seção é para quem edita o código.
 capture-engine.html
 │
 ├── <head>
-│   └── Content Security Policy (metatag)
+│   └── <meta> da CSP      → o que a página pode carregar
 │
 ├── <style>
-│   ├── Design tokens (variáveis CSS)
-│   ├── Light mode (:root)
-│   ├── Dark mode (html.dark)
-│   ├── Layout principal
-│   ├── Componentes (botões, modais, sidebar, cards)
-│   ├── Responsividade → os cortes estão no design-tokens.md
-│   └── Animações
+│   ├── Design tokens      → as variáveis CSS
+│   ├── :root              → o tema claro
+│   ├── html.dark          → o tema escuro
+│   ├── Layout principal   → as colunas da tela
+│   ├── Componentes        → botões, janelas, barras laterais e cartões
+│   ├── Responsividade     → os cortes estão no design-tokens.md
+│   └── Animações          → as @keyframes do app
 │
 ├── <body>
-│   ├── Script anti-FOUC (aplica dark mode antes de pintar — logo após <body>)
-│   ├── Barra de topo (logo, nome, botões de ação)
-│   ├── Layout principal
-│   │   ├── Sidebar esquerda (campos de sessão, controles de export)
-│   │   ├── Painel de imagens (zona de drop + grade de thumbnails)
-│   │   └── Painel de documentos (zona de drop + lista)
-│   ├── Sidebar direita (histórico de sessões)
-│   ├── Barra "Removidos" (#trash-bar)
-│   ├── Rodapé
-│   └── Modais (imagem, documento, anotação, Visual Builder, export)
+│   ├── Script do tema     → liga o tema escuro antes da primeira pintura
+│   ├── Barra de topo      → logotipo, nome e botões de ação
+│   ├── Layout principal   → as três colunas
+│   │   ├── Barra da esquerda    → identificação, layout do PDF e exportação
+│   │   ├── Painel de imagens    → área de soltar e grade de miniaturas
+│   │   └── Painel de documentos → área de soltar e lista
+│   ├── Barra da direita   → o Histórico das sessões
+│   ├── #trash-bar         → a barra dos "Removidos"
+│   ├── Rodapé             → o texto do rodapé
+│   └── Janelas            → imagem, texto, anotação, Visual Builder, exportação
 │
 └── <script> — IIFE com 'use strict'
     │
-    ├── SysLogger         → Logs no console (respeitam TOKEN_DEBUG_MODE)
-    ├── TOKENS            → Variáveis de configuração (TOKEN_*)
-    ├── escapeHTML()      → Sanitização XSS de todos os inputs
-    ├── IndexedDB         → Acesso à base local (idbGet, idbPut, idbDel…)
-    ├── Session Manager   → Criar, carregar, apagar e navegar entre sessões
-    ├── Capture Engine    → Receber imagens e documentos (colar, arrastar)
-    ├── Reorder           → Arrastar e soltar para reordenar itens
-    ├── Annotation        → Canvas transparente para anotação sobre imagens
-    ├── Text Viewer       → Visualizador de documentos de texto inline
-    ├── PDF Engine        → Geração de PDFs em JavaScript puro
-    ├── ZIP Engine        → Geração de ZIPs em JavaScript puro
-    ├── Visual Builder    → Painel de configuração do administrador
-    ├── Quine Engine      → Auto-exportação do arquivo com configurações
-    ├── Admin Gate        → Ativa o modo administrador (6 cliques no logo)
-    └── boot()            → Chamada por init(); liga todas as partes da tela
+    ├── SysLogger         → os logs do console; info e warn com TOKEN_DEBUG_MODE
+    ├── TOKENS            → a configuração, nos TOKEN_*
+    ├── escapeHTML()      → escapa o texto do usuário antes do innerHTML
+    ├── IndexedDB         → lê e grava a base local (idbGet, idbPut, idbDel…)
+    ├── Session Manager   → cria, carrega, apaga e troca as sessões
+    ├── Capture Engine    → recebe imagens e documentos, colados ou arrastados
+    ├── Reorder           → muda a ordem dos itens ao arrastar
+    ├── Annotation        → o editor, um canvas transparente sobre a imagem
+    ├── Text Viewer       → abre e edita os documentos de texto
+    ├── PDF Engine        → gera o PDF em JavaScript puro
+    ├── ZIP Engine        → gera o ZIP em JavaScript puro
+    ├── Visual Builder    → o painel de configuração do administrador
+    ├── Quine Engine      → exporta a cópia do arquivo com a configuração
+    ├── Admin Gate        → liga o modo administrador, com 6 cliques no logotipo
+    └── boot()            → chamada por init(); liga todas as partes da tela
 ```
 
 ### Componentes

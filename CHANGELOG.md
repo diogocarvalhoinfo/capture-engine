@@ -19,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **No aviso de alterações por salvar, os botões ficam parados (F-0181):** "Descartar alterações" e "Aplicar alterações" cresciam 8% duas vezes, contra a regra dos botões parados (D-0179). O editor de imagem avisa com o balão e com o resto apagado. O editor de texto, que só tinha o crescimento, passa a mostrar o mesmo balão acima dos dois botões, até o próximo clique. A D-0112 descreve o aviso antigo e fica como está. Testado no Edge, no Firefox e no WebKit. Decisão do dono.
 - **As setas do Histórico e dos "Removidos" trocam de lado sem girar (F-0183):** cada seta girava durante 240 ms ao abrir e ao fechar. Agora aponta para o outro lado na hora, na mesma direção de antes. Medido no Edge, no Firefox e no WebKit, aos 0, 120 e 300 ms do clique: antes, três valores; agora, um só. Achado na revisão da auditoria e decidido pelo dono.
 - **A árvore da Arquitetura não repete os cortes do layout (F-0172):** faltava o corte de 48rem. A escala das telas grandes começa em 102,5rem, e não em 100rem. Agora aponta para o `design-tokens.md`, que tem a lista.
+- **A árvore do arquivo único tem a função de cada parte depois de uma seta, em português (F-0173):** o `<style>` e o `<body>` explicavam entre parênteses e com termos como "Sidebar", "drop", "thumbnails" e "inputs". O detalhe é o mesmo, e cada linha tem até 80 caracteres.
 
 ## [29.11.1] - 2026-11-15
 
