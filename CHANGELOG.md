@@ -12,6 +12,15 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
   - Cobertura: 28 testes, todos certos. Sem a correção F-0155, falham 3 dos 4 casos de anotação no WebKit.
   - O WebKit do Playwright no Windows não grava um Blob no IndexedDB, nem fora do app. Nele, o teste da captura confere o aviso "Só nesta aba".
 
+### Modificado
+
+- **O README segue as 18 seções dos prompts 8.0.1 (F-0156, F-0158):** tem cerca de 5 200 palavras, e 2 400 à vista. Antes, eram 17 seções e 12 285 palavras. Nenhuma seção passa de 400 palavras à vista; o detalhe fica recolhido.
+  - Entram "Privacidade", com o que vai para a rede e o que fica gravado, e o fecho com o aviso de direitos autorais.
+  - Os 3 diagramas em Mermaid passam a SVG, gerados pelo `diagramas.py`, nos temas claro e escuro. O de componentes mostra também a Reordenação, os Removidos, os menus e o Visualizador de texto, que gravam no IndexedDB e faltavam (F-0158).
+  - As duas imagens anotadas ganham a versão escura, e a de visão geral mostra a primeira tela em uso. O GIF foi refeito.
+  - A escrita segue a 8.0.1: aspas retas, "em um", "executar" e "guardar", sem emoji e sem frases com mais de 30 palavras.
+  - Saem do README a tabela do IndexedDB, a nota da CSP, o XSS e o EMA, que já estão no `AGENTS.md`, e as versões testadas, que ficam nesta linha. Testado à mão: Chrome 148 e Edge 148 no Windows 11, Firefox 151.0.4, e Safari no iPhone 14 Pro com o iOS 26.5, no site. O teclado foi medido com o Playwright no Edge 156, no Firefox 150 e no WebKit 26.4.
+
 ### Corrigido
 
 - **O rodapé e o contorno do foco têm o contraste da WCAG 2.2 AA (F-0161):** o rodapé tinha 1,99:1 no tema claro. Agora tem 4,88:1. No escuro, passa de 2,55:1 a 6,66:1. Ele era a cor do texto secundário com 50% de opacidade, e 40% no telefone. O contorno do foco tinha 2,88:1 sobre o fundo claro, e agora tem 3,67:1, com a cor principal escurecida. (D-0174)

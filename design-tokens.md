@@ -283,7 +283,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_ID_UPPERCASE` | `bool` | `true` | ✅ | Histórico → «Maiúsculas», interruptor |
 | `TOKEN_JPEG_QUALITY` | `float` | `0.92` | ✅ | Captura → "Qualidade do PDF" |
 | `TOKEN_MAX_IMG_DIMENSION` | `int` | `0` | ✅ | Captura → dimensão máxima |
-| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Manutenção → «Limpeza automática» (8h, 24h, 48h, Nunca). O valor 0 desliga a limpeza; ver a nota no README §7.4 |
+| `TOKEN_AUTO_PURGE_HOURS` | `int` | `48` | ✅ | Manutenção → «Limpeza automática» (8h, 24h, 48h, Nunca). O valor 0 desliga a limpeza; ver "Distribuir uma versão nova", na seção 9 do README |
 | `TOKEN_DEBUG_MODE` | `bool` | `true` | ❌ | Sem UI — desativado automaticamente em Export User |
 
 ### Notas sobre tokens específicos

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="390" viewBox="0 0 838 390" role="img" aria-label="Componentes: Sessões, Captura, Removidos, Reordenação, Anotação e Texto gravam no IndexedDB; o Visual Builder edita os TOKEN_* do Quine."><title>Componentes: Sessões, Captura, Removidos, Reordenação, Anotação e Texto gravam no IndexedDB; o Visual Builder edita os TOKEN_* do Quine.</title><rect width="838" height="390" rx="12" fill="#ffffff"/>
+<rect x="12" y="16" width="370" height="254" rx="12" fill="#eeece6"/>
+<text x="24" y="39" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#6b6a66" text-anchor="start" letter-spacing="0.06em">GRAVAM NO NAVEGADOR</text>
+<rect x="24" y="52" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="40" y="77" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Sessões</text>
+<circle cx="177" cy="66" r="4" fill="#e86b2e"/>
+<text x="40" y="98" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">cria, carrega e apaga</text>
+<rect x="203" y="52" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="219" y="77" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Captura e menus</text>
+<circle cx="356" cy="66" r="4" fill="#e86b2e"/>
+<text x="219" y="98" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">colar, duplicar, juntar</text>
+<rect x="24" y="124" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="40" y="149" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Removidos</text>
+<circle cx="177" cy="138" r="4" fill="#e86b2e"/>
+<text x="40" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">remover e restaurar</text>
+<rect x="203" y="124" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="219" y="149" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Reordenação</text>
+<circle cx="356" cy="138" r="4" fill="#e86b2e"/>
+<text x="219" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">ao soltar o item</text>
+<rect x="24" y="196" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="40" y="221" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Anotação</text>
+<circle cx="177" cy="210" r="4" fill="#e86b2e"/>
+<text x="40" y="242" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">aplicar alterações</text>
+<rect x="203" y="196" width="167" height="60" rx="8" fill="#ffffff"/>
+<text x="219" y="221" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Texto</text>
+<circle cx="356" cy="210" r="4" fill="#e86b2e"/>
+<text x="219" y="242" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">editar um documento</text>
+<path d="M197 270 L197 310" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="197 310 193 303 201 303" fill="#6b6a66"/>
+<circle cx="213" cy="290" r="4" fill="#e86b2e"/>
+<text x="223" y="295" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="start">gravam no IndexedDB</text>
+<rect x="12" y="310" width="370" height="64" rx="8" fill="#eeece6"/>
+<g transform="translate(79.1 324) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g>
+<text x="101.1" y="337" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">IndexedDB · CaptureEngineDB</text>
+<text x="197" y="358" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">5 tabelas: sessões, imagens, documentos e removidos</text>
+<rect x="394" y="16" width="432" height="136" rx="12" fill="#eeece6"/>
+<text x="406" y="39" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#6b6a66" text-anchor="start" letter-spacing="0.06em">ADMINISTRAÇÃO</text>
+<rect x="406" y="52" width="126.7" height="86" rx="8" fill="#ffffff"/>
+<g transform="translate(461.3 64) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></g>
+<text x="469.3" y="102" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">Admin Gate</text>
+<text x="469.3" y="123" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">6 cliques no logo</text>
+<rect x="546.7" y="52" width="126.7" height="86" rx="8" fill="#ffffff"/>
+<g transform="translate(602 64) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></g>
+<text x="610" y="102" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">Visual Builder</text>
+<text x="610" y="123" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">edita os tokens</text>
+<rect x="687.3" y="52" width="126.7" height="86" rx="8" fill="#ffffff"/>
+<text x="750.7" y="90" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">TOKEN_*</text>
+<text x="750.7" y="111" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">configuração</text>
+<path d="M535.7 95 L543.7 95" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="543.7 95 536.7 91 536.7 99" fill="#6b6a66"/>
+<path d="M676.3 95 L684.3 95" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="684.3 95 677.3 91 677.3 99" fill="#6b6a66"/>
+<rect x="394" y="238" width="432" height="136" rx="12" fill="#eeece6"/>
+<text x="406" y="261" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#6b6a66" text-anchor="start" letter-spacing="0.06em">EXPORTAÇÃO</text>
+<rect x="406" y="274" width="126.7" height="86" rx="8" fill="#ffffff"/>
+<g transform="translate(461.3 286) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="12" y="17.5" text-anchor="middle" font-size="6" font-weight="700" stroke="none" fill="currentColor" font-family="Arial,sans-serif">PDF</text></g>
+<text x="469.3" y="324" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">PDF</text>
+<text x="469.3" y="345" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">sem dependências</text>
+<rect x="546.7" y="274" width="126.7" height="86" rx="8" fill="#ffffff"/>
+<g transform="translate(602 286) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></g>
+<text x="610" y="324" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">ZIP</text>
+<text x="610" y="345" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">sem dependências</text>
+<rect x="687.3" y="274" width="126.7" height="86" rx="8" fill="#ffffff" stroke="#e86b2e" stroke-width="1.5"/>
+<g transform="translate(742.7 286) scale(0.6667)" fill="none" stroke="#e86b2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e86b2e"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g>
+<text x="750.7" y="324" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">Quine</text>
+<text x="750.7" y="345" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#e86b2e" text-anchor="middle">autocópia</text>
+<path d="M750.7 138 L750.7 274" fill="none" stroke="#e86b2e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="750.7 274 746.7 267 754.7 267" fill="#e86b2e"/>
+</svg>
