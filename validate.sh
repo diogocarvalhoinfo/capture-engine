@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 # =============================================================================
-# validate.sh - static integrity checks for the Capture Engine
+# validate.sh - integrity checks for the Capture Engine
 # -----------------------------------------------------------------------------
-# Runs MECHANICAL checks (text/grep) on capture-engine.html.
-# It does not open a browser, run the app or "interpret" anything: every test
-# is a count or an exact comparison, so the result is ALWAYS the same for the
-# same file -> an AI can rely on it without guessing.
+# Most checks are text counts or exact comparisons on capture-engine.html and
+# the documents, so the result is ALWAYS the same for the same files. Check 30
+# opens Edge, Chrome, Firefox and WebKit and tests capture, annotation, PDF and
+# ZIP; check 34 opens a browser to compare the README images and the GIF.
 #
-# WHAT IT COVERS (checkable without a browser):
-#   - Quine integrity (comment markers, essential functions)
-#   - Zero-dependency rule (no external http:// resources)
-#   - Forbidden APIs (eval / Function / document.write)
-#   - Title structure (3 spans) and licence header
-#   - JavaScript syntax (if 'node' is installed)
+# WHAT IT COVERS:
+#   - Quine integrity (comment markers, essential functions) and the Export User copy
+#   - Zero-dependency rule, forbidden APIs, title structure and licence header
+#   - JavaScript syntax (if node is installed) and the CSS standard (stylelint)
+#   - The documents: tokens, version, README sections, writing and generators
+#   - The critical flows in four browsers (check 30)
 #
-# WHAT IT DOES NOT COVER (needs the app open in a browser):
-#   - Visual behaviour, dark mode, annotation, session life cycle,
-#     real PDF/ZIP export. See the browser test in AGENTS.md, section 5, "Fechar uma versao".
+# WHAT IT DOES NOT COVER: the look of the screens, the session life cycle and
+#   the Export User test by hand. See AGENTS.md, section 5, "Fechar uma versao".
 #
 # USAGE:  ./validate.sh [--rapido] [html-path]   (default: capture-engine.html)
 #         --rapido skips the flow tests (check 30) and the image and GIF checks (check 34), about 3 minutes
@@ -399,7 +398,7 @@ done
 AGOT=$(echo "$AGOT" | sed 's/^ *//')
 check_eq "Duracoes de animacao = documentado" "$AEXP" "$AGOT"
 
-# 25) File size (admin) within a fixed range; README section 12 gives only the rough size (a little over 500 KB).
+# 25) File size (admin) within a fixed range; README section 13 gives only the rough size (a little over 500 KB).
 SZ=$(wc -c < "$FILE" | tr -d ' ')
 if [ "$SZ" -ge 300000 ] && [ "$SZ" -le 600000 ]; then
   printf '[PASS] %-52s (%s bytes)\n' "Tamanho do arquivo na faixa (300-600 KB)" "$SZ"; PASS=$((PASS+1));
