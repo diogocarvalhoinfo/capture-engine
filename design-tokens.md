@@ -27,7 +27,7 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 | `--color-foreground` | `#1a1917` | `#e4e4e4` | Texto principal |
 | `--color-muted-foreground` | `#6b6a66` | `#9a9a9a` | Texto secundário: datas, legendas, metadados |
 | `--color-primary` | `#e86b2e` | — | Cor principal, escolhida no Visual Builder: botões e elementos ativos |
-| `--color-primary-foreground` | `#fff` | — | Texto sobre a cor principal (botões, chips, contadores de bloco); calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio |
+| `--color-primary-foreground` | `#1a1917` | — | Texto sobre a cor principal (botões, chips, contadores de bloco); calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio. O CSS já começa com o valor da cor padrão, e a exportação grava o da cópia (F-0167) |
 | `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
 | `--color-ring` | `color-mix(in srgb, var(--color-primary) 85%, var(--color-foreground))` | `var(--color-primary)` | Contorno do foco do teclado. No tema claro, a cor principal escurecida dá 3,67:1 sobre o fundo; no escuro, a cor principal dá 5,86:1 (D-0174) |
 | `--color-green-500` | `#22c55e` | — | Sucesso, estado "Gravado", confirmar a anotação |
