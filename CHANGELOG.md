@@ -8,8 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
-- **O fluxo do Quine, na Arquitetura do README, deixa mais espaço vazio embaixo:** o texto seguinte parecia colado no diagrama. Segue a D-0047 dos prompts 9.0.1. Pedido do dono.
-- **As árvores do README não rolam mais para o lado:** cada linha tem até 80 caracteres, como pede a D-0048 dos prompts 9.0.1. O PDF e o ZIP perderam o "(sem bibliotecas)", que repetia o "JavaScript puro". Pedido do dono.
+- **O fluxo do Quine, na Arquitetura do README, deixa mais espaço vazio embaixo:** o texto seguinte parecia colado no diagrama. Segue a decisão D-0047 do repositório de referência. Pedido do dono.
+- **As árvores do README não rolam mais para o lado:** cada linha tem até 80 caracteres, como pede a decisão D-0048 do repositório de referência. O PDF e o ZIP perderam o "(sem bibliotecas)", que repetia o "JavaScript puro". Pedido do dono.
 - **Sai do README a árvore "Como os componentes se ligam":** a lista do que o `init()` e o `boot()` chamam é detalhe do código, e a Arquitetura já tem a árvore do arquivo e os diagramas. Pedido do dono.
 
 ### Corrigido
@@ -24,6 +24,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **Os comentários do `validate.sh` dizem o que os checks 30 e 34 testam (F-0175):** o cabeçalho dizia que o script não abre o navegador. Desde a 29.11.0, o check 30 testa a anotação, o PDF e o ZIP nos navegadores. O comentário do check 25 citava a seção 12 do README, e o tamanho está na 13.
 - **Sem o repositório de referência, o `validate.sh` diz "não executado" (F-0176):** os 4 itens que dependem dele diziam só "sem o clone". É o texto que os prompts fixam. O resumo continua sem FAIL.
 - **A D-0179 diz que os prompts adotaram a mesma regra (F-0177):** ela ainda dizia que o projeto diverge dos prompts nos ícones parados. Desde a 9.0.0, os prompts pedem o mesmo. Uma nota no fim registra isso, e o texto da decisão fica.
+- **As decisões de outro repositório são citadas como "do repositório de referência" (F-0178):** "a D-0047 dos prompts 9.0.1" podia ser confundida com uma decisão deste projeto. Três citações mudaram: a D-0179 e duas linhas desta versão.
 
 ## [29.11.1] - 2026-11-15
 
