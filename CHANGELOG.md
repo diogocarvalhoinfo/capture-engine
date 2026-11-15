@@ -8,9 +8,14 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
+- **As imagens do README não formam mais uma caixa no tema escuro:** o fundo é o da página do GitHub, sem borda. Elas seguem o `gerar.py` dos prompts 9.0.0, como os cartões e os diagramas. A seção 7 troca o GIF do editor por uma imagem anotada do editor, nos temas claro e escuro.
 - **O aviso "Aplique ou descarte as alterações" fica até o próximo clique:** antes, o editor voltava ao normal sozinho depois de 5 segundos. Agora fica esmaecido até a pessoa clicar. "Descartar alterações" e "Aplicar alterações" fazem a ação deles, e um clique em outro lugar do editor volta à edição. Testado no Edge, no Firefox e no WebKit. Pedido do dono.
 - **As árvores do README voltam ao formato que o dono preferia:** em "Estrutura de arquivos", a nota de cada arquivo vem depois de uma seta (←), e não de um #. Em "Arquitetura", volta a árvore detalhada do arquivo único, com cada parte do script e a sua função.
 - **Volta a árvore "Como os componentes se ligam", com o que o `init()` e o `boot()` chamam:** montada do código atual, ela traz o `initMenus()`, que faltava na antiga. A tabela do IndexedDB fica só no `AGENTS.md`, e o README aponta para ela.
+
+### Removido
+
+- **O GIF do editor (`annotation-arrow.gif`):** existia só no tema claro e piscava em uma página escura. Pedido do dono.
 
 ### Corrigido
 

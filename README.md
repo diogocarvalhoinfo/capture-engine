@@ -171,10 +171,14 @@ Um clique em uma imagem abre o visualizador. O título é o nome com a extensão
 | Trocar de imagem | As setas nas laterais, ou as teclas ← e → |
 | Fechar | O ✕, ou um clique fora da imagem com o zoom em 100% |
 
-<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
-![Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado em uma captura](docs/images/annotation-arrow.gif)
+<!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/editor.png; preparo=capture-engine-editor; recorte=#img-modal-overlay .modal-box -->
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/editor-dark.png"><img src="docs/images/editor.png" alt="Editor de anotação aberto sobre uma captura, com uma seta desenhada e a barra de ferramentas, as cores e as ações anotadas"></picture>
 
-O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto.
+1. **Ferramentas e espessura**: um clique escolhe a ferramenta; o − e o + mudam a espessura. <!-- anotação: alvo=#ann-row-tools; lado=baixo; ponto=0.4,1 -->
+2. **Cores**: as 8 cores e a "Outra cor", que abre o conta-gotas. <!-- anotação: alvo=#img-modal-ann-actions .ann-row:has(.ann-swatch); lado=baixo; ponto=0.5,1 -->
+3. **Ações**: desfazer, refazer, descartar e aplicar as alterações. <!-- anotação: alvo=#ann-save; lado=baixo; ponto=0.5,1 -->
+
+O editor abre pelo "Editar" do visualizador.
 
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
 - A barra tem também 8 cores e a "Outra cor", "Diminuir" e "Aumentar" para a espessura, "Desfazer", "Refazer", "Descartar alterações" e "Aplicar alterações".
@@ -433,7 +437,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← as imagens, o GIF, os cartões e os diagramas deste README
+├── docs/images/          ← as imagens, os cartões e os diagramas deste README
 └── LICENSE               ← licença MIT
 ```
 

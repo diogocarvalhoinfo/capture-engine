@@ -624,14 +624,20 @@ else
   printf '[FAIL] %-52s\n' ".gitattributes diferente do modelo"; FAIL=$((FAIL+1))
 fi
 
-# 34) The README generators: cartoes.py, diagramas.py, gerar.py and gif.py, with --verificar.
+# 34) The README generators: cartoes.py, diagramas.py, gerar.py and gif.py, with --verificar, each one when the README has its data.
 #     The image and the GIF open the app at http://127.0.0.1:8765; the script serves this folder
 #     there and stops the server at the end. --rapido checks only the cards and the diagrams.
 if [ ! -d "$REF_REPO/anotacoes" ]; then
   printf '[SKIP] %-52s (sem o clone em %s)\n' "Geradores do README (--verificar)" "$REF_REPO"
 else
-  GEN_LIST="cartoes diagramas"
-  [ "$RAPIDO" -eq 0 ] && GEN_LIST="$GEN_LIST gerar gif"
+  # Only the generators whose data comment is in the README; --rapido leaves out the two that open the browser
+  GEN_LIST=""
+  grep -q '<!-- cartoes:' README.md && GEN_LIST="$GEN_LIST cartoes"
+  grep -q '<!-- diagrama:' README.md && GEN_LIST="$GEN_LIST diagramas"
+  if [ "$RAPIDO" -eq 0 ]; then
+    grep -q '<!-- imagem-anotada:' README.md && GEN_LIST="$GEN_LIST gerar"
+    grep -q '<!-- gif:' README.md && GEN_LIST="$GEN_LIST gif"
+  fi
   SRV_PID=""
   if [ "$RAPIDO" -eq 0 ] && ! "$PY_BIN" -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/capture-engine.html', timeout=2)" 2>/dev/null; then
     "$PY_BIN" -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &
