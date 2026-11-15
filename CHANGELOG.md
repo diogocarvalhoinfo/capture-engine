@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **As cores da barra do editor voltam a crescer (D-0183):** a cor sob o mouse cresce 20%, e a escolhida fica 15% maior, como na 29.11.1. Sem isso, a cor escolhida ficava difícil de ver. Os outros ícones e botões continuam parados. Medido no Edge, no Firefox e no WebKit; o GIF do editor foi gerado de novo. Pedido do dono, depois de testar a 29.11.2.
+
 ## [29.11.2] - 2026-11-15
 
 Nada mais cresce nem gira na tela: os botões do aviso, as setas das barras e as cores do editor ficam parados. Os textos de exemplo dos campos ficam legíveis, o editor de texto ganha o balão do aviso, e o projeto deixa de citar o nome do repositório de referência.

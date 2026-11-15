@@ -637,6 +637,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0180:** o marca-texto começa em 18 px, um passo acima dos 12 px da D-0104. Com 12 px, o dono clicava no + toda vez que escolhia a ferramenta. Origem: o dono, em 15 de novembro de 2026.
 - **D-0181:** o nome do repositório de referência não aparece no projeto. O repositório é privado, e o nome, em um projeto público, mostrava que ele existe. Os arquivos e as mensagens de commit dizem "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto, ou no `REF_REPO`. Custo: quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. Origem: o dono, em 15 de novembro de 2026.
 - **D-0182:** a raiz guarda também o `index.html`, o `LICENSE` e o `.gitignore`, que a D-0177 não listava. O `index.html` é a entrada do GitHub Pages: sem ele, o endereço do site não abre o app. O `LICENSE` e o `.gitignore` são exigidos pelos prompts. Custo: nenhum. Origem: a auditoria de 15 de novembro de 2026 (F-0180).
+- **D-0183:** as cores da barra do editor crescem, uma exceção à D-0179. A cor sob o mouse cresce 20%, e a escolhida fica 15% maior, com o contorno branco. Sem o crescimento, a F-0184 da 29.11.2 deixou a escolha difícil de ver, e o dono pediu o feedback de volta depois de testar. Os outros ícones e botões continuam parados. Custo: o projeto diverge dos prompts nas cores. Origem: o dono, em 15 de novembro de 2026.
 
 ## 7. Pendentes
 
