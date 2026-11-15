@@ -656,7 +656,8 @@ else
 fi
 
 # 35) The closing section of the README and the authorship notice at the top of the HTML have the same
-#     data: the product, the year, the author, the two addresses and the licence.
+#     data: the product, the year, the author, the two addresses and the licence. The copyright line of
+#     LICENSE is the same as the one of the notice.
 FC_OUT=$("$PY_BIN" - "$FILE" <<'PY'
 import re, sys
 html = open(sys.argv[1], encoding="utf-8").read(4000)
@@ -668,6 +669,9 @@ if not top:
 name, year, who, site, gh, lic = top.groups()
 need = [f"**{name.strip()}**", f"Direitos autorais (c) {year} {who.strip()}", f"({site})", f"({gh})", f"Licença {lic}"]
 miss = [n for n in need if n not in end]
+lic = open("LICENSE", encoding="utf-8").read()
+if f"Copyright (c) {year} {who.strip()}" not in lic.splitlines():
+    miss.append("LICENSE: Copyright (c) " + year + " " + who.strip())
 print("OK" if not miss else "falta no fecho: " + "; ".join(miss))
 PY
 )

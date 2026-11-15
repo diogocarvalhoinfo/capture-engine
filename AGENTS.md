@@ -28,7 +28,7 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 | Tabelas do `design-tokens.md` (tokens CSS e padrões dos `TOKEN_*`) | `capture-engine.html` | 11, 23, 24 e 29 |
 | Linha "Versão" do README e as 3 referências de versão do HTML | `CHANGELOG.md` | 8 e 8b |
 | Linha das ferramentas de anotação no README ("O editor tem N ferramentas") | `capture-engine.html` | 12 |
-| Fecho do README e aviso de autoria do topo do HTML | um ao outro | 35 |
+| Fecho do README, aviso de autoria do topo do HTML e linha de copyright do `LICENSE` | um ao outro | 35 |
 | Imagens, GIF, cartões e diagramas do README | os dados nos comentários do README | 34 |
 
 **Mudam no mesmo commit:**

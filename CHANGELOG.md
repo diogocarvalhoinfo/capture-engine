@@ -12,6 +12,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **O `LICENSE` tem a mesma linha de copyright do aviso do topo do HTML (F-0166):** saiu o endereço do site, que só ele tinha. O check 35 do `validate.sh` passa a conferir também o `LICENSE`. O arquivo não mudava desde a V22.
 - **No Safari, o desenho não sai mais do lugar de vez em quando (F-0165, reabre a F-0155):** o WebKit encolhia a área da imagem. Ela voltava ao tamanho no mesmo quadro. O canvas, medido nesse meio, ia para `left: 0`, e o `ResizeObserver` não via mudança. Agora cada encaixe se repete no quadro seguinte.
   - Medido com o Playwright no WebKit, em 390 × 844, com o arquivo em que a falha aparecia. Antes, 5 de 6 execuções saíam erradas; depois, 8 de 8 certas.
   - No arquivo atual: 5 execuções certas no WebKit, e o Edge e o Firefox sem falha.
