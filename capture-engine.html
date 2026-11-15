@@ -2251,7 +2251,9 @@
       align-items: center;
       justify-content: center;
       color: var(--color-muted-foreground);
-      transition: all var(--duration-moderate-01);
+
+      /* Only the colours fade. With "all", the visibility the bar passes down also faded: on Cancelar, the tools stayed 150 ms over the viewer bar (F-0168) */
+      transition: color var(--duration-moderate-01), background-color var(--duration-moderate-01), border-color var(--duration-moderate-01), opacity var(--duration-moderate-01);
       flex-shrink: 0;
       cursor: pointer
     }

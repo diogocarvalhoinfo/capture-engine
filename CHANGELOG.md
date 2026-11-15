@@ -8,11 +8,11 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [29.11.1] - 2026-11-15
 
-As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, o marca-texto começa um passo acima, e o texto sobre a cor principal não pisca mais em branco ao carregar.
+As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, o marca-texto começa um passo acima, e nem o texto sobre a cor principal ao carregar nem as ferramentas ao cancelar piscam mais.
 
 Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `file://`, e abertas em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
 
-Cobertura: a F-0165 apareceu nos testes depois da 29.11.0, e a F-0166 e a F-0167 vieram do dono; as três foram corrigidas. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
+Cobertura: a F-0165 apareceu nos testes depois da 29.11.0, e a F-0166, a F-0167 e a F-0168 vieram do dono; as quatro foram corrigidas. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4.
 
 ### Modificado
 
@@ -27,6 +27,8 @@ Cobertura: a F-0165 apareceu nos testes depois da 29.11.0, e a F-0166 e a F-0167
 
 ### Corrigido
 
+- **As ferramentas do editor não piscam por cima do visualizador ao cancelar (F-0168):** por 150 ms, a barra do editor ficava sobre o "Editar" e o "Download". As duas barras dividem o mesmo lugar e trocam pela visibilidade, e os botões do editor faziam a transição de tudo, também da visibilidade herdada. Agora só as cores fazem a transição.
+  - Medido no Edge e no WebKit, logo depois do clique e um quadro depois: antes, 15 botões do editor seguiam visíveis; agora, nenhum.
 - **O texto sobre a cor principal não pisca em branco ao carregar (F-0167):** o "Auto" do PDF e os outros botões cheios mostravam o texto branco e logo depois o preto. O CSS começava com branco, e o navegador pinta a página antes de chegar ao script, no fim do arquivo. Agora o CSS já começa com a cor que o script calcula, e a exportação grava no CSS da cópia a cor principal e a do texto escolhidas.
   - Testado no Edge: sem nenhum script, o texto já sai na cor calculada. Cópias exportadas em azul e em amarelo levam no CSS o branco e o preto, iguais aos calculados.
 - **O `LICENSE` tem a mesma linha de copyright do aviso do topo do HTML (F-0166):** saiu o endereço do site, que só ele tinha. O check 35 do `validate.sh` passa a conferir também o `LICENSE`. O arquivo não mudava desde a V22.
