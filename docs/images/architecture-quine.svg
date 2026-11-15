@@ -1,60 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="838" height="338" viewBox="0 0 838 338" role="img" aria-label="Fluxo do Quine: lê o próprio arquivo, troca os TOKEN_* e grava a cópia Admin, com o Visual Builder, ou a User, sem ele."><title>Fluxo do Quine: lê o próprio arquivo, troca os TOKEN_* e grava a cópia Admin, com o Visual Builder, ou a User, sem ele.</title><rect width="838" height="338" rx="12" fill="#ffffff"/>
-<rect x="16" y="56" width="140" height="56" rx="8" fill="#eeece6"/>
-<g transform="translate(44.5 66) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></g>
-<text x="66.5" y="79" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Exportar</text>
-<text x="86" y="100" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">clique do admin</text>
-<path d="M156 84 L182 84" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="182 84 175 80 175 88" fill="#6b6a66"/>
-<rect x="182" y="56" width="164" height="56" rx="8" fill="#eeece6"/>
-<text x="197.8" y="79" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">capturePristine</text>
-<text x="264" y="100" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">ao abrir o arquivo</text>
-<path d="M346 84 L372 84" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="372 84 365 80 365 88" fill="#6b6a66"/>
-<polygon points="420,48 468,84 420,120 372,84" fill="#eeece6"/>
-<text x="420" y="89" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="13" font-weight="600" fill="#1a1917" text-anchor="middle">fetch</text>
-<text x="420" y="38" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">lê o próprio arquivo?</text>
-<rect x="556" y="16" width="165" height="56" rx="8" fill="#eeece6"/>
-<text x="589.2" y="39" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">HTML original</text>
-<text x="638.5" y="60" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">limpo</text>
-<rect x="556" y="96" width="165" height="56" rx="8" fill="#eeece6"/>
-<text x="598.8" y="119" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">BOOT_HTML</text>
-<text x="638.5" y="140" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">fallback em memória</text>
-<path d="M468 84 L500 84 L500 44 L556 44" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="556 44 549 40 549 48" fill="#6b6a66"/>
-<text x="526" y="36" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">sim</text>
-<path d="M500 84 L500 124 L556 124" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
-<polygon points="556 124 549 120 549 128" fill="#6b6a66"/>
-<text x="492" y="140" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="end">não (CORS)</text>
-<path d="M721 44 L751 44 L751 84" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M721 124 L751 124 L751 84" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M751 84 L751 168 L102.5 168 L102.5 224" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="102.5 224 98.5 217 106.5 217" fill="#6b6a66"/>
-<rect x="16" y="224" width="173" height="56" rx="8" fill="#eeece6"/>
-<text x="31.9" y="247" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">sanitizeForQuine</text>
-<text x="102.5" y="268" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">troca os TOKEN_*</text>
-<path d="M189 252 L215 252" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="215 252 208 248 208 256" fill="#6b6a66"/>
-<polygon points="261,218 307,252 261,286 215,252" fill="#eeece6"/>
-<text x="261" y="257" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="13" font-weight="600" fill="#1a1917" text-anchor="middle">export</text>
-<text x="261" y="206" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">qual cópia?</text>
-<rect x="349" y="184" width="160" height="56" rx="8" fill="#eeece6"/>
-<g transform="translate(370.2 194) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
-<text x="392.2" y="207" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Export Admin</text>
-<text x="429" y="228" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">mantém ADMIN_*</text>
-<rect x="349" y="264" width="160" height="56" rx="8" fill="#eeece6"/>
-<g transform="translate(376.9 274) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g>
-<text x="398.9" y="287" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#1a1917" text-anchor="start">Export User</text>
-<text x="429" y="308" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#6b6a66" text-anchor="middle">remove ADMIN_*</text>
-<path d="M307 252 L327 252 L327 212 L349 212" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="349 212 342 208 342 216" fill="#6b6a66"/>
-<path d="M327 252 L327 292 L349 292" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="349 292 342 288 342 296" fill="#6b6a66"/>
-<path d="M509 212 L539 212 L539 252" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M509 292 L539 292 L539 252" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M539 252 L565 252" fill="none" stroke="#6b6a66" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="565 252 558 248 558 256" fill="#6b6a66"/>
-<rect x="565" y="224" width="188" height="56" rx="8" fill="#e86b2e"/>
-<g transform="translate(612.9 234) scale(0.6667)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#ffffff"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></g>
-<text x="634.9" y="247" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="start">Download</text>
-<text x="659" y="268" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="13" font-weight="400" fill="#ffffff" text-anchor="middle">capture-engine.html</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="448" viewBox="0 0 838 448" role="img" aria-label="Fluxo do Quine: lê o próprio arquivo, troca os TOKEN_* e grava a cópia Admin, com o Visual Builder, ou a User, sem ele."><title>Fluxo do Quine: lê o próprio arquivo, troca os TOKEN_* e grava a cópia Admin, com o Visual Builder, ou a User, sem ele.</title><rect width="838" height="448" rx="12" fill="#ffffff"/>
+<rect x="16" y="76" width="141" height="56" rx="8" fill="#eeece6"/>
+<g transform="translate(40.7 86) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></g>
+<text x="62.7" y="99" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Exportar</text>
+<text x="86.5" y="120" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">clique do admin</text>
+<path d="M157 104 L189 104" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="189 104 183 100.5 183 107.5" fill="#6b6a66"/>
+<rect x="189" y="76" width="183" height="56" rx="8" fill="#eeece6"/>
+<text x="204.9" y="99" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">capturePristine</text>
+<text x="280.5" y="120" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">ao abrir o arquivo</text>
+<path d="M372 104 L404 104" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="404 104 398 100.5 398 107.5" fill="#6b6a66"/>
+<polygon points="452,68 500,104 452,140 404,104" fill="#eeece6"/>
+<text x="452" y="109" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">fetch</text>
+<text x="452" y="58" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">lê o próprio arquivo?</text>
+<rect x="588" y="30" width="176" height="56" rx="8" fill="#eeece6"/>
+<text x="619.7" y="53" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">HTML original</text>
+<text x="676" y="74" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">limpo</text>
+<rect x="588" y="122" width="176" height="56" rx="8" fill="#eeece6"/>
+<text x="630.6" y="145" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">BOOT_HTML</text>
+<text x="676" y="166" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">fallback em memória</text>
+<path d="M500 104 L532 104 L532 58 L588 58" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="588 58 582 54.5 582 61.5" fill="#6b6a66"/>
+<text x="558" y="50" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">sim</text>
+<path d="M532 104 L532 150 L588 150" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
+<polygon points="588 150 582 146.5 582 153.5" fill="#6b6a66"/>
+<text x="524" y="166" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="end">não (CORS)</text>
+<path d="M764 58 L794 58 L794 104" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M764 150 L794 150 L794 104" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M794 104 L794 224 L112.5 224 L112.5 316" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="112.5 316 109 310 116 310" fill="#6b6a66"/>
+<rect x="16" y="316" width="193" height="56" rx="8" fill="#eeece6"/>
+<text x="31.9" y="339" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">sanitizeForQuine</text>
+<text x="112.5" y="360" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">troca os TOKEN_*</text>
+<path d="M209 344 L241 344" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="241 344 235 340.5 235 347.5" fill="#6b6a66"/>
+<polygon points="287,310 333,344 287,378 241,344" fill="#eeece6"/>
+<text x="287" y="349" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="600" fill="#1a1917" text-anchor="middle">export</text>
+<text x="287" y="298" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">qual cópia?</text>
+<rect x="375" y="270" width="163" height="56" rx="8" fill="#eeece6"/>
+<g transform="translate(390.8 280) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
+<text x="412.8" y="293" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Export Admin</text>
+<text x="456.5" y="314" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">mantém ADMIN_*</text>
+<rect x="375" y="362" width="163" height="56" rx="8" fill="#eeece6"/>
+<g transform="translate(398.6 372) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g>
+<text x="420.6" y="385" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Export User</text>
+<text x="456.5" y="406" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="middle">remove ADMIN_*</text>
+<path d="M333 344 L353 344 L353 298 L375 298" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="375 298 369 294.5 369 301.5" fill="#6b6a66"/>
+<path d="M353 344 L353 390 L375 390" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="375 390 369 386.5 369 393.5" fill="#6b6a66"/>
+<path d="M538 298 L568 298 L568 344" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M538 390 L568 390 L568 344" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M568 344 L600 344" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="600 344 594 340.5 594 347.5" fill="#6b6a66"/>
+<rect x="600" y="316" width="200" height="56" rx="8" fill="#e86b2e"/>
+<g transform="translate(648.9 326) scale(0.6667)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#ffffff"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></g>
+<text x="670.9" y="339" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#ffffff" text-anchor="start">Download</text>
+<text x="700" y="360" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="400" fill="#ffffff" text-anchor="middle">capture-engine.html</text>
 </svg>

@@ -1,46 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="838" height="362" viewBox="0 0 838 362" role="img" aria-label="Ciclo de vida da sessão: nada é gravado até a primeira interação; a sessão Ativa vai para o Histórico e é apagada depois de 48 horas sem uso."><title>Ciclo de vida da sessão: nada é gravado até a primeira interação; a sessão Ativa vai para o Histórico e é apagada depois de 48 horas sem uso.</title><rect width="838" height="362" rx="12" fill="#0d1117"/>
-<circle cx="30" cy="136" r="7" fill="#e4e4e4"/>
-<rect x="52" y="108" width="160" height="56" rx="8" fill="#1c2129"/>
-<g transform="translate(94.4 118) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M5 3a2 2 0 0 0-2 2"/><path d="M19 3a2 2 0 0 1 2 2"/><path d="M21 19a2 2 0 0 1-2 2"/><path d="M5 21a2 2 0 0 1-2-2"/><path d="M9 3h1"/><path d="M9 21h1"/><path d="M14 3h1"/><path d="M14 21h1"/><path d="M3 9v1"/><path d="M21 9v1"/><path d="M3 14v1"/><path d="M21 14v1"/></g>
-<text x="116.4" y="131" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e4e4e4" text-anchor="start">Pristine</text>
-<text x="132" y="152" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="middle">nada gravado ainda</text>
-<path d="M37 136 L52 136" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="52 136 45 132 45 140" fill="#9a9a9a"/>
-<rect x="303" y="46" width="220" height="180" rx="12" fill="#13171f" stroke="#e86b2e" stroke-width="1.5"/>
-<text x="315" y="69" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#e86b2e" text-anchor="start" letter-spacing="0.06em">ATIVA</text>
-<rect x="353" y="82" width="120" height="44" rx="8" fill="#1c2129"/>
-<g transform="translate(370.4 96) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></g>
-<text x="392.4" y="109" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e4e4e4" text-anchor="start">Editando</text>
-<rect x="353" y="166" width="120" height="44" rx="8" fill="#1c2129"/>
-<g transform="translate(367.3 180) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></g>
-<text x="389.3" y="193" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e4e4e4" text-anchor="start">Gravando</text>
-<path d="M379 126 L379 166" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="379 166 375 159 383 159" fill="#9a9a9a"/>
-<text x="371" y="151" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="end">isDirty</text>
-<path d="M447 166 L447 126" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="447 126 443 133 451 133" fill="#9a9a9a"/>
-<text x="455" y="151" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="start">a cada 5 s</text>
-<path d="M212 136 L303 136" fill="none" stroke="#e86b2e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="303 136 296 132 296 140" fill="#e86b2e"/>
-<text x="257.5" y="126" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#e86b2e" text-anchor="middle">1.ª interação</text>
-<rect x="676" y="108" width="146" height="56" rx="8" fill="#1c2129"/>
-<g transform="translate(706.3 118) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></g>
-<text x="728.3" y="131" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e4e4e4" text-anchor="start">Histórico</text>
-<text x="749" y="152" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="middle">sessões salvas</text>
-<path d="M523 124 L676 124" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="676 124 669 120 669 128" fill="#9a9a9a"/>
-<text x="599.5" y="116" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="middle">navegar ou recarregar</text>
-<path d="M676 148 L523 148" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="523 148 530 144 530 152" fill="#9a9a9a"/>
-<text x="599.5" y="168" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="middle">selecionar sessão</text>
-<rect x="497" y="258" width="160" height="56" rx="8" fill="#1c2129"/>
-<g transform="translate(533.9 268) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></g>
-<text x="555.9" y="281" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e4e4e4" text-anchor="start">Apagada</text>
-<text x="577" y="302" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#9a9a9a" text-anchor="middle">48 horas sem uso</text>
-<path d="M413 226 L413 286 L497 286" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
-<polygon points="497 286 490 282 490 290" fill="#9a9a9a"/>
-<path d="M749 164 L749 286 L657 286" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
-<polygon points="657 286 664 282 664 290" fill="#9a9a9a"/>
-<path d="M577 314 L577 328" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="577" cy="337" r="9" fill="none" stroke="#e4e4e4" stroke-width="1.5"/><circle cx="577" cy="337" r="5" fill="#e4e4e4"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="406" viewBox="0 0 838 406" role="img" aria-label="Ciclo de vida da sessão: nada é gravado até a primeira interação; a sessão Ativa vai para o Histórico e é apagada depois de 48 horas sem uso."><title>Ciclo de vida da sessão: nada é gravado até a primeira interação; a sessão Ativa vai para o Histórico e é apagada depois de 48 horas sem uso.</title><rect width="838" height="406" rx="12" fill="#0d1117"/>
+<circle cx="30" cy="152" r="7" fill="#e4e4e4"/>
+<rect x="52" y="124" width="144" height="56" rx="8" fill="#1c2129"/>
+<g transform="translate(82.6 134) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M5 3a2 2 0 0 0-2 2"/><path d="M19 3a2 2 0 0 1 2 2"/><path d="M21 19a2 2 0 0 1-2 2"/><path d="M5 21a2 2 0 0 1-2-2"/><path d="M9 3h1"/><path d="M9 21h1"/><path d="M14 3h1"/><path d="M14 21h1"/><path d="M3 9v1"/><path d="M21 9v1"/><path d="M3 14v1"/><path d="M21 14v1"/></g>
+<text x="104.6" y="147" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#e4e4e4" text-anchor="start">Pristine</text>
+<text x="124" y="168" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="middle">nada gravado</text>
+<path d="M37 152 L52 152" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="52 152 46 148.5 46 155.5" fill="#9a9a9a"/>
+<rect x="293" y="62" width="242" height="180" rx="12" fill="#13171f" stroke="#e86b2e" stroke-width="1"/>
+<text x="309" y="87" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#e86b2e" text-anchor="start">Ativa</text>
+<rect x="345" y="98" width="130" height="44" rx="8" fill="#1c2129"/>
+<g transform="translate(362.9 112) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></g>
+<text x="384.9" y="125" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#e4e4e4" text-anchor="start">Editando</text>
+<rect x="345" y="182" width="130" height="44" rx="8" fill="#1c2129"/>
+<g transform="translate(359.3 196) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></g>
+<text x="381.3" y="209" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#e4e4e4" text-anchor="start">Gravando</text>
+<path d="M371 142 L371 182" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="371 182 367.5 176 374.5 176" fill="#9a9a9a"/>
+<text x="363" y="167" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="end">isDirty</text>
+<path d="M449 182 L449 142" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="449 142 445.5 148 452.5 148" fill="#9a9a9a"/>
+<text x="457" y="167" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="start">a cada 5 s</text>
+<path d="M196 152 L293 152" fill="none" stroke="#e86b2e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="293 152 287 148.5 287 155.5" fill="#e86b2e"/>
+<text x="244.5" y="142" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#e86b2e" text-anchor="middle">1.ª interação</text>
+<rect x="683" y="124" width="139" height="56" rx="8" fill="#1c2129"/>
+<g transform="translate(705.2 134) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></g>
+<text x="727.2" y="147" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#e4e4e4" text-anchor="start">Histórico</text>
+<text x="752.5" y="168" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="middle">sessões salvas</text>
+<path d="M535 140 L683 140" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="683 140 677 136.5 677 143.5" fill="#9a9a9a"/>
+<text x="609" y="132" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="middle">navegar, recarregar</text>
+<path d="M683 164 L535 164" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="535 164 541 160.5 541 167.5" fill="#9a9a9a"/>
+<text x="609" y="184" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="middle">selecionar sessão</text>
+<rect x="498" y="286" width="160" height="56" rx="8" fill="#1c2129"/>
+<g transform="translate(530.3 296) scale(0.6667)" fill="none" stroke="#e4e4e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#e4e4e4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></g>
+<text x="552.3" y="309" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#e4e4e4" text-anchor="start">Apagada</text>
+<text x="578" y="330" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#9a9a9a" text-anchor="middle">48 horas sem uso</text>
+<path d="M414 242 L414 314 L498 314" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
+<polygon points="498 314 492 310.5 492 317.5" fill="#9a9a9a"/>
+<path d="M752.5 180 L752.5 314 L658 314" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 4"/>
+<polygon points="658 314 664 310.5 664 317.5" fill="#9a9a9a"/>
+<path d="M578 342 L578 356" fill="none" stroke="#9a9a9a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="578" cy="365" r="9" fill="none" stroke="#e4e4e4" stroke-width="1"/><circle cx="578" cy="365" r="5" fill="#e4e4e4"/>
 </svg>

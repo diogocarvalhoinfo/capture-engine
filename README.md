@@ -171,14 +171,10 @@ Um clique em uma imagem abre o visualizador. O título é o nome com a extensão
 | Trocar de imagem | As setas nas laterais, ou as teclas ← e → |
 | Fechar | O ✕, ou um clique fora da imagem com o zoom em 100% |
 
-<!-- imagem-anotada: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/editor.png; preparo=capture-engine-editor; recorte=#img-modal-overlay .modal-box -->
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/editor-dark.png"><img src="docs/images/editor.png" alt="Editor de anotação aberto sobre uma captura, com uma seta desenhada e a barra de ferramentas, as cores e as ações anotadas"></picture>
+<!-- gif: url=http://127.0.0.1:8765/capture-engine.html; saida=docs/images/annotation-arrow.gif; preparo=capture-engine-editor-arrow; recorte=#img-modal-img, #img-modal-default-actions; passos=clicar #ann-toggle | clicar .ann-btn[data-tool=arrow] | arrastar #ann-canvas 18%,59% 31%,44% -->
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/annotation-arrow-dark.gif"><img src="docs/images/annotation-arrow.gif" alt="Editor de anotação: no visualizador, o Editar abre as ferramentas; com a Seta, uma seta vermelha é desenhada até o arquivo selecionado em uma captura"></picture>
 
-1. **Ferramentas e espessura**: um clique escolhe a ferramenta; o − e o + mudam a espessura. <!-- anotação: alvo=#ann-row-tools; lado=baixo; ponto=0.4,1 -->
-2. **Cores**: as 8 cores e a "Outra cor", que abre o conta-gotas. <!-- anotação: alvo=#img-modal-ann-actions .ann-row:has(.ann-swatch); lado=baixo; ponto=0.5,1 -->
-3. **Ações**: desfazer, refazer, descartar e aplicar as alterações. <!-- anotação: alvo=#ann-save; lado=baixo; ponto=0.5,1 -->
-
-O editor abre pelo "Editar" do visualizador.
+O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto.
 
 - O editor tem 8 ferramentas (desenho livre, retângulo, círculo, seta, marca-texto, texto, selecionar e recortar) e o botão Girar 90°.
 - A barra tem também 8 cores e a "Outra cor", "Diminuir" e "Aumentar" para a espessura, "Desfazer", "Refazer", "Descartar alterações" e "Aplicar alterações".
@@ -437,7 +433,7 @@ capture-engine/
 ├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
-├── docs/images/          ← as imagens, os cartões e os diagramas deste README
+├── docs/images/          ← as imagens, o GIF, os cartões e os diagramas deste README
 └── LICENSE               ← licença MIT
 ```
 
@@ -540,14 +536,14 @@ grade: Gravam no navegador
   Anotação | aplicar alterações | grava
   Texto | editar um documento | grava
 seta: gravam no IndexedDB
-destino: IndexedDB · CaptureEngineDB | 5 tabelas: sessões, imagens, documentos e removidos | ícone=database
+destino: IndexedDB · CaptureEngineDB | sessões, imagens, documentos e removidos | ícone=database
 cadeia: Administração
   Admin Gate | 6 cliques no logo | ícone=lock-open
   Visual Builder | edita os tokens | ícone=settings
   `TOKEN_*` | configuração
 fila: Exportação
-  PDF | sem dependências | ícone=pdf
-  ZIP | sem dependências | ícone=file-archive
+  PDF | em JS puro | ícone=pdf
+  ZIP | em JS puro | ícone=file-archive
   Quine | autocópia | ícone=copy-plus | destaque
 liga: TOKEN_* -> Quine
 -->
@@ -556,7 +552,7 @@ liga: TOKEN_* -> Quine
 ### Ciclo de vida da sessão
 
 <!-- diagrama: forma=estados; saida=docs/images/architecture-session.svg; cor=#e86b2e
-início: Pristine | nada gravado ainda | ícone=square-dashed
+início: Pristine | nada gravado | ícone=square-dashed
 entrada: 1.ª interação
 ativo: Ativa
   Editando | ícone=pencil
@@ -564,7 +560,7 @@ ativo: Ativa
   ida: `isDirty`
   volta: a cada 5 s
 lado: Histórico | sessões salvas | ícone=clock
-  ida: navegar ou recarregar
+  ida: navegar, recarregar
   volta: selecionar sessão
 fim: Apagada | 48 horas sem uso | ícone=trash-2
 -->
