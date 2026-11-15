@@ -1482,9 +1482,9 @@
       opacity: 1
     }
 
+    /* The arrows of the history and of Removidos turn over at once, without rotating (F-0183): icons stay still (D-0179) */
     #sb-chevron {
-      transform: rotate(90deg);
-      transition: transform var(--duration-moderate-02)
+      transform: rotate(90deg)
     }
 
     #sidebar.expanded #sb-chevron {
@@ -1624,7 +1624,7 @@
     #trash-chevron {
       color: var(--color-muted-foreground);
       transform: rotate(180deg);
-      transition: transform var(--duration-moderate-02), color var(--duration-moderate-01)
+      transition: color var(--duration-moderate-01)
     }
 
     #trash-chevron:focus-visible,
