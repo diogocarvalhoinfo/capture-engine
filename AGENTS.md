@@ -91,7 +91,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 - Crie cada id com `genId(prefixo)`: `{prefixo}_{Date.now()}_{5 caracteres base36}`. (D26)
 - Evite nomes repetidos na sessão contra as duas listas, a ativa e a dos "Removidos", sem diferenciar maiúsculas. Incremente o número do fim (`imagem-1` → `imagem-2`), e nunca crie `imagem-1-1`; um nome sem número ganha `-1`. (D26)
 - Ao renomear um documento, mantenha a extensão original. (D26)
-- O número de uma sessão sem nome (`#0001`) é a posição dela entre as que existem e muda quando uma mais antiga é apagada. Não o use como referência fora da ferramenta. (D-0176)
+- O número de uma sessão sem nome (`#0001`) é a posição dela entre as que existem e muda quando uma mais antiga é apagada, porque não há contador gravado. Não o use como referência fora da ferramenta. (D-0187)
 
 ### Sessões
 
@@ -102,28 +102,33 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 ### Código
 
-- Mantenha o script em uma IIFE com `'use strict'`. Uma função chamada por um `onclick` do HTML fica em `window`. (D-0176)
-- Escreva no console só pelo `SysLogger`. O `info` e o `warn` só aparecem com `TOKEN_DEBUG_MODE`; o `error` aparece sempre, por isso use-o só para falhas reais. (D-0176)
-- Use só Pointer Events, e não `mousedown` nem `touchstart`. (D-0176)
+- Mantenha o script em uma IIFE com `'use strict'`, para nenhum nome ficar solto no `window`. Uma função chamada por um `onclick` do HTML fica em `window`. (D-0186)
+- Escreva no console só pelo `SysLogger`. O `info` e o `warn` só aparecem com `TOKEN_DEBUG_MODE`; o `error` aparece sempre, por isso use-o só para falhas reais. (D-0186)
+- Escreva um gesto novo com Pointer Events, que tratam o mouse e o toque com o mesmo código. Os `mouse*` e `touch*` que existem ficam em 5 lugares (D-0186):
+  - o arrasto e os dois dedos na imagem ampliada;
+  - o toque longo na imagem;
+  - o fundo dos modais;
+  - o foco dos campos de texto;
+  - o bloqueio da rolagem durante o arrasto.
 - Escreva os comentários do código em inglês e sem apóstrofos. A heurística de complexidade do `validate.sh` lê os comentários, e um apóstrofo abre uma string falsa e corrompe a contagem. (D-0085, D54)
-- No editor, guarde o passo de desfazer com `annPushUndo()`, até 50 passos, e não com `getImageData`. (D-0176)
+- No editor, guarde o passo de desfazer com `annPushUndo()`, até 50 passos, e não com `getImageData`. O passo guarda o `annHistory`, as anotações como objetos, e não os pixels. (D-0186)
 
 ### CSS e tema
 
 - Escreva os tamanhos de fonte, os espaços e os cortes do layout em `rem`, pelos tokens `--text-*` e `calc(var(--spacing) * n)`. Bordas, alturas, larguras e ícones podem ficar em `px`. (D-0082)
 - Em telas grandes, a interface cresce com `zoom: var(--app-zoom)` no `html`. Uma medida em `vw` ou `vh` divide-se por `var(--app-zoom)`, e uma posição medida na tela que vai para um estilo em `px` divide-se por `uiZoom()`. (D-0082)
-- Ligue o tema escuro pela classe `dark` no `<html>`, e não por `@media (prefers-color-scheme)` no CSS. Só o JavaScript lê a preferência do sistema, na primeira abertura. O bloco `html.dark` só redefine tokens. (D-0176)
-- Use um token `--z-*`, na escala do Bootstrap, em cada `z-index`. (D-0176)
+- Ligue o tema escuro pela classe `dark` no `<html>`, e não por `@media (prefers-color-scheme)` no CSS. Só o JavaScript lê a preferência do sistema, na primeira abertura. O bloco `html.dark` só redefine tokens. (D-0186)
+- Use um token `--z-*`, na escala do Bootstrap, em cada `z-index`. (D-0186)
 
 ### Idioma
 
 - **Documentação** (README, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, commits): português neutro, com a tabela de palavras dos prompts. Um termo da interface aparece como está, entre aspas retas ("User").
-- **Interface:** português neutro, porque a ferramenta serve equipes de qualquer país de língua portuguesa. (D-0176)
+- **Interface:** português neutro, porque a ferramenta serve equipes de qualquer país de língua portuguesa. (D-0187)
 - **Código:** inglês, nos ids, classes, tokens, variáveis, funções e comentários. (D-0085)
 - **Palavras de propósito na interface:**
   - "Quem" e "O que" são os rótulos padrão da identificação. (D-0107)
-  - "User" fica só como nome da cópia "User" e da opção do botão de exportar. (D-0176)
-  - "Histórico", e não "Sessões", e "Primeiro campo" e "Segundo campo" no Visual Builder. (D-0176)
+  - "User" fica só como nome da cópia "User" e da opção do botão de exportar. (D-0107)
+  - "Histórico", e não "Sessões", e "Primeiro campo" e "Segundo campo" no Visual Builder. (D-0187)
 
 ### Versões e changelog
 
@@ -638,6 +643,8 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0181:** o nome do repositório de referência não aparece no projeto. O repositório é privado, e o nome, em um projeto público, mostrava que ele existe. Os arquivos e as mensagens de commit dizem "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto, ou no `REF_REPO`. Custo: quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. Origem: o dono, em 15 de novembro de 2026.
 - **D-0182:** a raiz guarda também o `index.html`, o `LICENSE` e o `.gitignore`, que a D-0177 não listava. O `index.html` é a entrada do GitHub Pages: sem ele, o endereço do site não abre o app. O `LICENSE` e o `.gitignore` são exigidos pelos prompts. Custo: nenhum. Origem: a auditoria de 15 de novembro de 2026 (F-0180).
 - **D-0183:** as cores da barra do editor crescem, uma exceção à D-0179. A cor sob o mouse cresce 20%, e a escolhida fica 15% maior, com o contorno branco. Sem o crescimento, a F-0184 da 29.11.2 deixou a escolha difícil de ver, e o dono pediu o feedback de volta depois de testar. Os outros ícones e botões continuam parados. Custo: o projeto diverge dos prompts nas cores. Origem: o dono, em 15 de novembro de 2026.
+- **D-0186:** as regras de código e de tema. O script fica em uma IIFE, sem nomes soltos no `window`. O console passa pelo `SysLogger`, que respeita o `TOKEN_DEBUG_MODE`. Um gesto novo usa Pointer Events, que tratam o mouse e o toque com o mesmo código desde a V23. O desfazer guarda o `annHistory`, e não pixels. O tema vem da classe `dark`, para a escolha da pessoa vencer a do sistema. As camadas seguem a escala do Bootstrap. Custo: nenhum. Origem: o `AGENTS.md` antigo e a V23, citados como D-0176 na migração de 15 de novembro de 2026 (F-0188).
+- **D-0187:** as palavras e os números da interface. A interface fica em português neutro, porque a ferramenta serve equipes de qualquer país de língua portuguesa. "Histórico", e não "Sessões", é mais claro para quem não é técnico. "Primeiro campo" e "Segundo campo" seguem a ordem da barra lateral. O `#0001` de uma sessão sem nome é a posição dela. Custo: o número muda quando uma sessão mais antiga é apagada. Origem: o `AGENTS.md` antigo, seções 2.1 e 3.1, citadas como D-0176 na migração de 15 de novembro de 2026 (F-0188).
 
 ## 7. Pendentes
 
