@@ -43,6 +43,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **Os botões não encolhem mais ao serem clicados (F-0164):** três tipos de botão diminuíam de 2% a 8% durante o clique. Eram os botões de ação, os de envio, como "Editar" e "Download", e os cartões de exportação. Agora todos os botões ficam parados, como os outros. Pedido do dono durante a correção.
 - **O "Voltar a 100%" do zoom tem uma área de clique maior (F-0163):** passa de cerca de 44 × 16 px a 56 × 28 px. Fica com a altura dos botões + e −, e com um fundo suave ao passar o mouse. Ele também recebe o foco do teclado e responde ao Enter. Pedido do dono durante a correção.
 - **A seta dos "Removidos" acende ao passar o mouse na barra, como a do Histórico (F-0162):** a cor estava escrita no próprio SVG, e nenhuma regra de hover a mudava. Agora fica no CSS: cinza em repouso, a cor do texto com o mouse ou com o foco do teclado. Achado pelo dono durante a correção.
 - **O rodapé e o contorno do foco têm o contraste da WCAG 2.2 AA (F-0161):** o rodapé tinha 1,99:1 no tema claro. Agora tem 4,88:1. No escuro, passa de 2,55:1 a 6,66:1. Ele era a cor do texto secundário com 50% de opacidade, e 40% no telefone. O contorno do foco tinha 2,88:1 sobre o fundo claro, e agora tem 3,67:1, com a cor principal escurecida. (D-0174)
