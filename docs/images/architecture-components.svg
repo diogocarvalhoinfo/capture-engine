@@ -3,32 +3,24 @@
 <text x="28" y="53" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#6b6a66" text-anchor="start">Gravam no navegador</text>
 <rect x="24" y="68" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="40" y="95" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Sessões</text>
-<circle cx="188" cy="82" r="4" fill="#e86b2e"/>
 <text x="40" y="116" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">cria, carrega e apaga</text>
 <rect x="214" y="68" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="230" y="95" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Captura e menus</text>
-<circle cx="378" cy="82" r="4" fill="#e86b2e"/>
 <text x="230" y="116" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">colar, duplicar, juntar</text>
 <rect x="24" y="144" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="40" y="171" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Removidos</text>
-<circle cx="188" cy="158" r="4" fill="#e86b2e"/>
 <text x="40" y="192" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">remover e restaurar</text>
 <rect x="214" y="144" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="230" y="171" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Reordenação</text>
-<circle cx="378" cy="158" r="4" fill="#e86b2e"/>
 <text x="230" y="192" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">ao soltar o item</text>
 <rect x="24" y="220" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="40" y="247" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Anotação</text>
-<circle cx="188" cy="234" r="4" fill="#e86b2e"/>
 <text x="40" y="268" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">aplicar alterações</text>
 <rect x="214" y="220" width="178" height="64" rx="8" fill="#ffffff"/>
 <text x="230" y="247" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">Texto</text>
-<circle cx="378" cy="234" r="4" fill="#e86b2e"/>
 <text x="230" y="268" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">editar um documento</text>
 <path d="M208 296 L208 344" fill="none" stroke="#6b6a66" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
 <polygon points="208 344 204.5 338 211.5 338" fill="#6b6a66"/>
-<circle cx="224" cy="320" r="4" fill="#e86b2e"/>
-<text x="234" y="325" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#6b6a66" text-anchor="start">gravam no IndexedDB</text>
 <rect x="12" y="344" width="392" height="64" rx="8" fill="#eeece6"/>
 <g transform="translate(74.9 358) scale(0.6667)" fill="none" stroke="#1a1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="#1a1917"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g>
 <text x="96.9" y="371" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1a1917" text-anchor="start">IndexedDB · CaptureEngineDB</text>

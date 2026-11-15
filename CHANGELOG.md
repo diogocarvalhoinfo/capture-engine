@@ -11,6 +11,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0:** o fundo é o da página do GitHub, sem a caixa em volta. A borda da captura ficou mais leve, e o texto das anotações fica sempre à esquerda.
   - O GIF do editor ganha a versão escura, com a cena de exemplo escura; a clara piscava em uma página escura.
   - Nos diagramas, o título tem o tamanho do texto do README, 16 px, e as linhas são mais leves. O fluxo do Quine tem mais espaço entre as duas filas.
+  - Nos componentes, a seta até o IndexedDB perdeu o texto "gravam no IndexedDB", e os blocos perderam os pontos laranja: a seta já diz onde gravam.
 - **O aviso "Aplique ou descarte as alterações" fica até o próximo clique:** antes, o editor voltava ao normal sozinho depois de 5 segundos. Agora fica esmaecido até a pessoa clicar. "Descartar alterações" e "Aplicar alterações" fazem a ação deles, e um clique em outro lugar do editor volta à edição. Testado no Edge, no Firefox e no WebKit. Pedido do dono.
 - **As árvores do README voltam ao formato que o dono preferia:** em "Estrutura de arquivos", a nota de cada arquivo vem depois de uma seta (←), e não de um #. Em "Arquitetura", volta a árvore detalhada do arquivo único, com cada parte do script e a sua função.
 - **Volta a árvore "Como os componentes se ligam", com o que o `init()` e o `boot()` chamam:** montada do código atual, ela traz o `initMenus()`, que faltava na antiga. A tabela do IndexedDB fica só no `AGENTS.md`, e o README aponta para ela.

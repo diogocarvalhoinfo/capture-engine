@@ -529,13 +529,12 @@ init()
 
 <!-- diagrama: forma=componentes; saida=docs/images/architecture-components.svg; cor=#e86b2e
 grade: Gravam no navegador
-  Sessões | cria, carrega e apaga | grava
-  Captura e menus | colar, duplicar, juntar | grava
-  Removidos | remover e restaurar | grava
-  Reordenação | ao soltar o item | grava
-  Anotação | aplicar alterações | grava
-  Texto | editar um documento | grava
-seta: gravam no IndexedDB
+  Sessões | cria, carrega e apaga
+  Captura e menus | colar, duplicar, juntar
+  Removidos | remover e restaurar
+  Reordenação | ao soltar o item
+  Anotação | aplicar alterações
+  Texto | editar um documento
 destino: IndexedDB · CaptureEngineDB | sessões, imagens, documentos e removidos | ícone=database
 cadeia: Administração
   Admin Gate | 6 cliques no logo | ícone=lock-open
