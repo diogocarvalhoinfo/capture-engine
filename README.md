@@ -328,6 +328,7 @@ Veja também: [`AGENTS.md`](AGENTS.md), seção "Regras".
 | Cópias anteriores à 29 | Depois de abrir a versão 29, uma cópia mais antiga no mesmo navegador mostra "Armazenamento indisponível". Use sempre a versão mais nova. |
 | Espaço do navegador | Sem espaço, as capturas novas ficam só na aba, e um aviso vermelho aparece no topo. Editar uma imagem guarda o original e a versão editada. |
 | Navegação privada | Em alguns navegadores, as capturas ficam só na aba, com "Só nesta aba" na barra de estado. Exporte antes de fechar a aba. |
+| Página HTML com código | Uma página HTML aberta executa o próprio JavaScript, sem acesso às sessões nem à internet. Depois de um clique dentro dela, ela pode trocar o que está na área de transferência. Abra só páginas de quem você confia. |
 
 <details>
 <summary>Outras limitações</summary>

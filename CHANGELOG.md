@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Segurança
+
+- **O HTML aberto no visualizador não usa mais a permissão da área de transferência (F-0192):** o `iframe` tinha `allow="clipboard-write"`, que nenhuma decisão registrava. Um clique dentro de um documento trocava o que se tinha copiado. Medido no Edge 157 e no Chrome 157: com a permissão, o `navigator.clipboard.writeText` do documento gravava; sem ela, a área de transferência fica como estava. O `execCommand('copy')` ainda funciona depois de um clique, porque os scripts do documento são executados. O dono manteve os scripts, porque sem eles o gerador de senha do `password-reset-ex.html` não aparece; o README diz isso em "Limitações conhecidas". O "Copiar texto" do app, o Ctrl+C e o "Copiar" do gerador ainda funcionam.
+
 ## [29.11.3] - 2026-11-15
 
 As cores da barra do editor voltam a crescer, a pedido do dono. A D-0112 e o CSS dos botões ficam de acordo com o aviso da 29.11.2.
