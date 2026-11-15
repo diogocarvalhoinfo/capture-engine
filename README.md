@@ -207,7 +207,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 - **Colar por cima:** com o editor aberto, o Ctrl+V cola uma imagem como anotação.
 - **Zoom no editor:** a rolagem do mouse e os botões + e −. Para mover a imagem ampliada, use a barra de espaço com o arrasto, ou o botão do meio.
 - **Desfazer e Refazer:** até 50 passos, também para o recorte e o Girar 90°.
-- **Fechar com anotações por salvar:** "Descartar alterações" e "Aplicar alterações" crescem, e o resto fica apagado até o próximo clique. Escolha um dos dois; um clique em outro lugar do editor volta à edição.
+- **Fechar com anotações por salvar:** um balão pede "Aplique ou descarte as alterações", e o resto do editor fica apagado até o próximo clique. Escolha "Descartar alterações" ou "Aplicar alterações"; um clique em outro lugar do editor volta à edição. O editor de texto mostra o mesmo balão.
 
 </details>
 

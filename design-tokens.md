@@ -255,7 +255,6 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 | `--duration-slow-01` | `400ms` |
 | `--duration-slow-02` | `700ms` |
 | `--duration-spinner` | `650ms` |
-| `--duration-ann-alert` | `400ms` |
 | `--duration-admin-pulse` | `1.2s` |
 | `--duration-status-pulse` | `3s` |
 | `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` |

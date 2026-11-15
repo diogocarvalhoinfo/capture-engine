@@ -16,6 +16,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **A "Privacidade" do README diz que o código da última sessão fica gravado em qualquer aparelho (F-0170):** dizia "no telefone". O app grava a chave `ce-last-session` também no computador, e só o telefone e o tablet a usam. Medido no Edge 157, sem tela de toque. Nada muda no app.
 - **Os textos de exemplo dos campos ficam legíveis nos dois temas (F-0171):** quatro deles tinham de 2,09:1 a 4,15:1. São o "Automático" do Visual Builder, o "#RRGGBB" da "Outra cor", e o "Imagem 1" e o "Documento" que aparecem ao apagar um nome. Agora têm de 4,88:1 a 6,89:1, com o cinza do texto secundário; no editor, com o do visualizador. Medido no Edge 157; fora dos campos vazios, a tela não muda.
+- **No aviso de alterações por salvar, os botões ficam parados (F-0181):** "Descartar alterações" e "Aplicar alterações" cresciam 8% duas vezes, contra a regra dos botões parados (D-0179). O editor de imagem avisa com o balão e com o resto apagado. O editor de texto, que só tinha o crescimento, passa a mostrar o mesmo balão acima dos dois botões, até o próximo clique. A D-0112 descreve o aviso antigo e fica como está. Testado no Edge, no Firefox e no WebKit. Decisão do dono.
 
 ## [29.11.1] - 2026-11-15
 

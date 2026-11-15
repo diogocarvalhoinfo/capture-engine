@@ -108,7 +108,6 @@
       --duration-slow-01: 400ms;
       --duration-slow-02: 700ms;
       --duration-spinner: 650ms;
-      --duration-ann-alert: 400ms;
       --duration-admin-pulse: 1.2s;
       --duration-status-pulse: 3s;
       --ease-out: cubic-bezier(0, 0, 0.2, 1);
@@ -3524,21 +3523,6 @@
       display: inline
     }
 
-    @keyframes ann-alert {
-      0%,
-      100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.08);
-      }
-    }
-
-    .alert-anim {
-      animation: ann-alert var(--duration-ann-alert) var(--ease-in-out) 2 !important;
-    }
-
     #img-modal-overlay .modal-info,
     #text-modal-overlay .modal-info {
       color: var(--color-viewer-muted-foreground);
@@ -5093,8 +5077,10 @@
       let textEditing = false, textEditOrig = '';
       const textEditDirty = () => textEditing && $('text-modal-content').value !== textEditOrig;
       function textEditStart() { const ta = $('text-modal-content'); textEditing = true; textEditOrig = ta.value; ta.readOnly = false; ta.style.display = ''; $('text-modal-view').hidden = true; $('text-modal-actions').style.display = 'none'; $('text-modal-edit-actions').style.display = 'flex'; ta.focus() }
-      function textEditEnd() { const ta = $('text-modal-content'); textEditing = false; ta.readOnly = true; $('text-modal-actions').style.display = 'flex'; $('text-modal-edit-actions').style.display = 'none' }
-      function textEditAlert() { ['text-edit-cancel', 'text-edit-save'].forEach(id => { const b = $(id); b.classList.remove('alert-anim'); void b.offsetWidth; b.classList.add('alert-anim') }) }
+      function textEditEnd() { const ta = $('text-modal-content'); textEditing = false; ta.readOnly = true; $('text-modal-actions').style.display = 'flex'; $('text-modal-edit-actions').style.display = 'none'; textEditAlertOut() }
+      /* Unsaved text: the same bubble as the image editor, above its two buttons, until the next click (F-0181) */
+      function textEditAlert() { annAwaitTip(true, 'text-edit-cancel', 'text-edit-save'); document.addEventListener('pointerdown', textEditAlertOut, true) }
+      function textEditAlertOut() { document.removeEventListener('pointerdown', textEditAlertOut, true); annAwaitTip(false) }
       async function textEditSave() { const arr = textModalIsTrash ? removedDocs : docs, o = arr.find(x => x.id === textModalItemId), val = $('text-modal-content').value; if (o && val !== textEditOrig) { o.blob = new Blob([val], { type: o.type || 'text/plain' }); o.size = o.blob.size; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } const sz = document.querySelector(`.d-item[data-id="${o.id}"] .d-size`); if (sz) sz.textContent = fmtSize(o.size); isDirty = true; triggerSave(); updateStatusBar() } textEditEnd(); if (o) window.openTextModal(o.id, textModalIsTrash) }
       function closeTextModal() {
         if (textEditDirty()) { textEditAlert(); return }
@@ -5237,21 +5223,18 @@
         return annActive && annIsDirty;
       }
       function triggerUnsavedAlert() {
-        const btnClose = $('ann-cancel'), btnSave = $('ann-save');
-        if (btnClose) { btnClose.classList.remove('alert-anim'); void btnClose.offsetWidth; btnClose.classList.add('alert-anim'); }
-        if (btnSave) { btnSave.classList.remove('alert-anim'); void btnSave.offsetWidth; btnSave.classList.add('alert-anim'); }
-        // Dim the rest of the toolbar, the photo, the title and the zoom until the next click: Descartar or Aplicar alterações
+        // The two buttons stay still, like every button (D-0179, F-0181). Dim the rest of the toolbar, the photo, the title and the zoom until the next click: Descartar or Aplicar alterações
         // do their own job, and a click anywhere else goes back to editing (asked by the owner, 2026-11-15)
         const bar = $('img-modal-ann-actions');
         if (bar) { bar.classList.add('ann-await'); $('img-modal-overlay').classList.add('ann-await'); document.addEventListener('pointerdown', annAwaitOut, true) }
         annAwaitTip(true);
       }
       /* The alert says what to do: a bubble, in the look of the tooltip, centred above Descartar and Aplicar alterações (D-0165) */
-      function annAwaitTip(on) {
+      function annAwaitTip(on, idA = 'ann-cancel', idB = 'ann-save') {
         let t = $('ann-await-tip'); if (!on) { if (t) t.classList.remove('show'); return }
         if (!t) { t = document.createElement('div'); t.className = 'ce-tip on-dark'; t.id = 'ann-await-tip'; t.setAttribute('role', 'status'); t.textContent = 'Aplique ou descarte as alterações'; document.body.appendChild(t) }
         const tip = $('ce-tip'); if (tip) tip.classList.remove('show'); t.classList.add('show');
-        const z = uiZoom(), a = $('ann-cancel').getBoundingClientRect(), b = $('ann-save').getBoundingClientRect(), w = t.offsetWidth * z, h = t.offsetHeight * z, cx = (Math.min(a.left, b.left) + Math.max(a.right, b.right)) / 2;
+        const z = uiZoom(), a = $(idA).getBoundingClientRect(), b = $(idB).getBoundingClientRect(), w = t.offsetWidth * z, h = t.offsetHeight * z, cx = (Math.min(a.left, b.left) + Math.max(a.right, b.right)) / 2;
         t.style.left = Math.min(Math.max(4, cx - w / 2), innerWidth - w - 4) / z + 'px'; t.style.top = (Math.min(a.top, b.top) - h - 8 * z) / z + 'px';
       }
       /* The viewer bar and the editor bar share one place in the footer (grid-area 1 / 1), and the hidden one keeps its size:
@@ -5349,8 +5332,6 @@
           if (annUndoStack.length && !annUndoStack[0].h.length && !annCurrentRotation && !o.cropBox && !o.firstBlob) Object.assign(annUndoStack[0], { pcrop: null, first: true });
           else annUndoStack.unshift({ h: [], rot: 0, crop: null, pcrop: null, first: true });
         }
-        const btnSave = $('ann-save');
-        if (btnSave) btnSave.classList.remove('alert-anim');
         const img = $('img-modal-img');
         const cv = $('ann-canvas');
         cv.width = img.naturalWidth; cv.height = img.naturalHeight;
