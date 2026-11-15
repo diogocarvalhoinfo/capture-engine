@@ -27,7 +27,7 @@ export LC_ALL=C.UTF-8
 RAPIDO=0
 if [ "${1:-}" = "--rapido" ]; then RAPIDO=1; shift; fi
 FILE="${1:-capture-engine.html}"
-# The clone of the prompts repository, beside this folder (or in REF_REPO): it has the flow tests and the writing checker
+# The clone of the reference repository, in the folder referencia beside this one (or in REF_REPO): it has the flow tests and the writing checker
 REF_REPO="${REF_REPO:-$(cd "$(dirname "$0")/.." && pwd)/referencia}"
 
 # Python interpreter used by several checks (set early: check 2 needs it).
