@@ -8,7 +8,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [29.11.1] - 2026-11-15
 
-As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, e o `LICENSE` tem o mesmo copyright do HTML.
+As imagens, o GIF e os diagramas do README seguem os prompts 9.0.0. O aviso de alterações do editor fica até o próximo clique, o marca-texto começa um passo acima, e o `LICENSE` tem o mesmo copyright do HTML.
 
 Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `file://`, e abertas em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o par do CORS do Quine, normal por `file://`. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
 
@@ -20,6 +20,7 @@ Cobertura: a F-0165 apareceu nos testes depois da 29.11.0, e a F-0166 veio do pe
   - O GIF do editor ganha a versão escura, com a cena de exemplo escura; a clara piscava em uma página escura.
   - Nos diagramas, o título tem o tamanho do texto do README, 16 px, e as linhas são mais leves. O fluxo do Quine tem mais espaço entre as duas filas.
   - Nos componentes, a seta até o IndexedDB perdeu o texto "gravam no IndexedDB", e os blocos perderam os pontos laranja: a seta já diz onde gravam.
+- **O marca-texto começa em 18 px, um passo acima (D-0180):** antes começava em 12 px, e o dono clicava no + toda vez que escolhia a ferramenta. Pedido do dono.
 - **O aviso "Aplique ou descarte as alterações" fica até o próximo clique:** antes, o editor voltava ao normal sozinho depois de 5 segundos. Agora fica esmaecido até a pessoa clicar. "Descartar alterações" e "Aplicar alterações" fazem a ação deles, e um clique em outro lugar do editor volta à edição. Testado no Edge, no Firefox e no WebKit. Pedido do dono.
 - **As árvores do README voltam ao formato que o dono preferia:** em "Estrutura de arquivos", a nota de cada arquivo vem depois de uma seta (←), e não de um #. Em "Arquitetura", volta a árvore detalhada do arquivo único, com cada parte do script e a sua função.
 - **Volta a árvore "Como os componentes se ligam", com o que o `init()` e o `boot()` chamam:** montada do código atual, ela traz o `initMenus()`, que faltava na antiga. A tabela do IndexedDB fica só no `AGENTS.md`, e o README aponta para ela.

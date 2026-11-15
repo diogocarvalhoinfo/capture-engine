@@ -5162,8 +5162,8 @@
       let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
       let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 2; // the step of the current tool: index 2 = lw 4px
-      /* Each tool keeps its own step: the lines start at 4 px, the highlighter at 12 px (D-0104) */
-      const annSizeByTool = { free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 };
+      /* Each tool keeps its own step: the lines start at 4 px (D-0104), the highlighter at 18 px (D-0180) */
+      const annSizeByTool = { free: 2, rect: 2, circle: 2, arrow: 2, highlight: 2 };
       /* The highlighter has its own colour, yellow at first; the other tools share theirs (D-0104) */
       const annColorBy = { hl: '#eab308', line: '#ef4444' };
       const annColorKey = t => t === 'highlight' ? 'hl' : 'line';
