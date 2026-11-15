@@ -10,6 +10,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **As cores da barra do editor voltam a crescer (D-0183):** a cor sob o mouse cresce 20%, e a escolhida fica 15% maior, como na 29.11.1. Sem isso, a cor escolhida ficava difícil de ver. Os outros ícones e botões continuam parados. Medido no Edge, no Firefox e no WebKit; o GIF do editor foi gerado de novo. Pedido do dono, depois de testar a 29.11.2.
 
+### Corrigido
+
+- **A D-0112 diz como é o aviso hoje (F-0185):** ela ainda dizia que os dois botões "pulsam" quando se tenta fechar com desenho por salvar. Desde a 29.11.2, eles ficam parados, e o aviso é o balão. Uma nota no fim registra isso, e o texto da decisão fica.
+
 ## [29.11.2] - 2026-11-15
 
 Nada mais cresce nem gira na tela: os botões do aviso, as setas das barras e as cores do editor ficam parados. Os textos de exemplo dos campos ficam legíveis, o editor de texto ganha o balão do aviso, e o projeto deixa de citar o nome do repositório de referência.
