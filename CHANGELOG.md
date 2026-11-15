@@ -13,6 +13,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **A D-0112 diz como é o aviso hoje (F-0185):** ela ainda dizia que os dois botões "pulsam" quando se tenta fechar com desenho por salvar. Desde a 29.11.2, eles ficam parados, e o aviso é o balão. Uma nota no fim registra isso, e o texto da decisão fica.
+- **Quatro regras do CSS perdem uma transição que não fazia nada (F-0186):** os botões de envio, de contorno, de ação e do ZIP animavam o `transform`, que nenhum estado deles muda desde a F-0164. Nada muda na tela: capturas antes e depois, nos dois temas, iguais.
 
 ## [29.11.2] - 2026-11-15
 
