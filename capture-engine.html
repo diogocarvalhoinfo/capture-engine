@@ -2300,17 +2300,13 @@
       border: 2px solid transparent;
       cursor: pointer;
       padding: 0;
-      transition: transform var(--duration-fast-02), border-color var(--duration-fast-02), opacity var(--duration-moderate-01);
+      transition: border-color var(--duration-fast-02), opacity var(--duration-moderate-01);
       flex-shrink: 0
     }
 
-    .ann-swatch:hover {
-      transform: scale(1.2)
-    }
-
+    /* The swatches keep their size: the chosen one has only the white ring (D-0179, F-0184) */
     .ann-swatch.active {
       border-color: var(--color-white);
-      transform: scale(1.15);
       box-shadow: var(--shadow-swatch-active)
     }
 
