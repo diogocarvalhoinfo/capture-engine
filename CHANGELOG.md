@@ -23,6 +23,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O `AGENTS.md` diz que o check 30 também precisa do repositório de referência (F-0174):** citava só os checks 32 a 34. Os testes de fluxo estão nesse repositório desde a 29.11.0.
 - **Os comentários do `validate.sh` dizem o que os checks 30 e 34 testam (F-0175):** o cabeçalho dizia que o script não abre o navegador. Desde a 29.11.0, o check 30 testa a anotação, o PDF e o ZIP nos navegadores. O comentário do check 25 citava a seção 12 do README, e o tamanho está na 13.
 - **Sem o repositório de referência, o `validate.sh` diz "não executado" (F-0176):** os 4 itens que dependem dele diziam só "sem o clone". É o texto que os prompts fixam. O resumo continua sem FAIL.
+- **A D-0179 diz que os prompts adotaram a mesma regra (F-0177):** ela ainda dizia que o projeto diverge dos prompts nos ícones parados. Desde a 9.0.0, os prompts pedem o mesmo. Uma nota no fim registra isso, e o texto da decisão fica.
 
 ## [29.11.1] - 2026-11-15
 
