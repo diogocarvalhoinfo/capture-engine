@@ -10,9 +10,9 @@ Um token é um nome para um valor visual: `color: var(--color-muted-foreground)`
 
 Há dois tipos:
 - **Tokens CSS**, no `:root` do `capture-engine.html`. O bloco `html.dark` redefine alguns para o tema escuro.
-- **Tokens JavaScript** (`const TOKEN_*`), na §6. Controlam a configuração, e o Quine troca-os na exportação.
+- **Tokens JavaScript** (`const TOKEN_*`), na seção 6. Controlam a configuração, e o Quine troca-os na exportação.
 
-Este documento é uma cópia verificada. O `validate.sh` (check 29) compara cada linha das tabelas com o código, nome a nome e valor a valor, nos dois temas. Um token novo entra aqui no mesmo commit.
+Este documento é uma cópia verificada. O `validate.sh` (check 29) compara três partes com o código, nome a nome e valor a valor. São os tokens CSS, nos dois temas, os `TOKEN_*` e as constantes do motor, na seção 12. As seções 7 a 11 dizem onde cada token é usado e não são comparadas. Um token novo entra aqui no mesmo commit.
 
 ## 1. Cores
 
@@ -101,14 +101,13 @@ Algumas cores ficam escritas como valor no `capture-engine.html` e no `index.htm
 
 | Cor | Onde | Motivo |
 |---|---|---|
-| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, `let annCurrentColor` e `annColorBy` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da §1. |
+| `#ef4444` `#f97316` `#eab308` `#22c55e` `#3b82f6` `#a855f7` `#1a1a1a` `#f0f0f0` | Atributos `data-color` das 8 amostras da paleta de anotação, `let annCurrentColor` e `annColorBy` | São dados: o valor fica gravado no objeto da anotação, no IndexedDB, e redesenha a forma depois. A cor que se vê em cada amostra vem dos tokens da seção 1. |
 | `#ef4444` `#22c55e` `#eab308` | Estilos do `SysLogger` (`console.log('%c…')`) | O console do DevTools não lê as custom properties da página. |
 | `#ffffff` | `fillStyle` e `strokeStyle` do canvas: o fundo branco do JPEG no PDF e as alças da anotação | O canvas não lê custom properties. |
 | `#1a1917` `#ffffff` | Cálculo YIQ do texto sobre a cor principal, e o valor inicial dos campos `#cfg-fg-hex` e `#cfg-cor-fg` | O resultado depende da cor que o administrador escolhe. Os campos mostram o valor antes de qualquer script executar. |
-| `#e86b2e` | O `TOKEN_MAIN_COLOR`, os `value=` de `#cfg-cor-hex` e `#cfg-cor-principal`, e o valor de reserva do `getComputedStyle` | É o valor padrão do próprio token (§6): um `var()` aqui seria circular. |
+| `#e86b2e` | O `TOKEN_MAIN_COLOR`, os `value=` de `#cfg-cor-hex` e `#cfg-cor-principal`, e o valor de reserva do `getComputedStyle` | É o valor padrão do próprio token (seção 6): um `var()` aqui seria circular. |
 | `#35a800` `#ffd82b` | `stop-color` do gradiente `#ce_accent`, no logotipo SVG | Um `stop-color` com custom property não funciona da mesma forma em todos os navegadores. |
 | `#000000` | `<meta name="theme-color">` e `<meta name="msapplication-TileColor">` | O navegador lê as metatags antes de o CSS existir. |
-| `#fdfdfc` `#121212` | `--color-background` do `index.html`, claro e escuro | O `index.html` redireciona antes de a aplicação existir e tem o seu próprio `:root`. |
 
 > **Regra para quem edita:** acrescentar uma cor literal nova **fora** desta tabela é violação do contrato. Se for genuinamente necessária, acrescente aqui a linha com a justificação — caso contrário, use um token.
 
@@ -123,7 +122,7 @@ echo "declaradas e ja sem uso:";    comm -13 <(echo "$CODIGO") <(echo "$DOC")
 
 > **As duas direções importam.** A primeira detecta cor nova não declarada; a segunda detecta entradas que ficaram para
 > trás quando o código mudou — e sem ela a tabela apodrece sem ninguém dar por isso. Ambas devem devolver vazio.
-> O `index.html` entra no âmbito desde a D70: é o outro arquivo distribuído, e tem cores próprias.
+> O comando lê também o `index.html` desde a D70: é o outro arquivo distribuído. As cores dele são tokens do seu próprio `:root`, porque ele redireciona antes de a aplicação existir.
 >
 > O `grep -v` precisa filtrar **linhas**, antes de extrair as cores — as declarações de custom property (uma linha do tipo `--color-background: <hex>`) definem a paleta e não são exceções. Filtrar depois da extração não faz nada, porque nessa altura já não há contexto de linha para casar.
 >
@@ -272,7 +271,7 @@ As durações seguem o IBM Carbon, e as curvas, o Tailwind. Uma animação longa
 
 ---
 
-## 6. Tokens JavaScript (fonte única de verdade)
+## 6. Tokens JavaScript
 
 Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São a **fonte de verdade** para a configuração: o Visual Builder lê estes valores ao abrir, e o Quine Engine os substitui ao exportar.
 
@@ -328,7 +327,7 @@ Afeta **apenas a geração do PDF**, tal como `TOKEN_JPEG_QUALITY`. Se definido 
 > **Este token não reduz o armazenamento.**
 > O `captureImg()` grava sempre o blob original, sem redimensionar. Este token não diminui o consumo de quota do IndexedDB e não serve como mitigação para esgotamento de armazenamento. Para isso, o caminho é exportar (PDF ou ZIP) e apagar sessões antigas.
 >
-> Até a V26, esta seção afirmava que a imagem era "redimensionada antes de ser armazenada", e o `README §9` recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e em uma ferramenta de coleta de provas isso é perda de evidência.
+> Até a V26, esta seção afirmava que a imagem era "redimensionada antes de ser armazenada", e a seção 9 do README recomendava o token como forma de prevenir perda de dados por quota. Ambas as afirmações eram falsas: um administrador que o configurasse para esse fim não obtinha redução nenhuma, e continuava exposto à perda que o conselho pretendia evitar. Corrigiu-se a documentação, e não o código. Redimensionar na captura destruiria o original, e em uma ferramenta de coleta de provas isso é perda de evidência.
 
 > **Comportamento sem-op:** Se a imagem já tiver ambas as dimensões iguais ou inferiores ao limite configurado, nenhum redimensionamento ocorre — a imagem entra no PDF tal como está.
 
@@ -556,9 +555,9 @@ A sombra e o contorno não ocupam espaço, por isso o botão não muda de tamanh
 |---|---|---|
 | `annTool` | `'rect'` (declarado) | Ferramenta ativa: `select` / `rect` / `circle` / `arrow` / `free` / `highlight` / `text` / `crop`. Ao abrir o editor: `select` com anotações, `free` sem elas |
 | `annSizeIdx` | `2` (4px) | Índice em `ANN_SIZES` (ou `ANN_HL_SIZES` no marca-texto) da ferramenta atual |
-| `annSizeByTool` | `{ free: 2, rect: 2, circle: 2, arrow: 2, highlight: 1 }` | O passo guardado de cada ferramenta (4 px nas linhas, 12 px no marca-texto) |
+| `annSizeByTool` | `{ free: 2, rect: 2, circle: 2, arrow: 2, highlight: 2 }` | O passo guardado de cada ferramenta (4 px nas linhas, 18 px no marca-texto) |
 | `annColorBy` | `{ hl: '#eab308', line: '#ef4444' }` | A cor do marca-texto e a das outras ferramentas |
-| `annFill` | `{ rect: false, circle: false, highlight: false }` | A segunda opção de cada ferramenta, "Preenchido" ou "Sólido"; chaves `fill-rect`, `fill-circle` e `hl-solid` (`ANN_OPT2`) |
+| `annFill` | `{}` | A opção de cada ferramenta, lida do navegador ao abrir (chaves `fill-rect`, `fill-circle` e `hl-solid`, em `ANN_OPT2`): `true` em "Preenchido" e "Sólido", `'blur'` em "Desfocado" e `false` sem nada guardado |
 | `annTextSize` | `24` | Tamanho do texto (px), reposto a 24 a cada abertura do editor |
 | `annTextBold` | `true` | Negrito ativo na ferramenta texto |
 | `annTextItalic` | `false` | Itálico ativo na ferramenta texto |

@@ -477,6 +477,9 @@ fi
 #     matches the :root block of the HTML, the "Escuro" column matches the
 #     html.dark block ("—" = not redefined), every token of both blocks has a
 #     row, and every "| `TOKEN_X` | `type` | `value` |" row matches its const.
+#     In section 12, the stroke constants and the state variables: a row whose
+#     value cell is only `value` matches the initializer of the const or let of
+#     the same name. A row with text after the value is skipped.
 DT=$($PY_BIN - "$FILE" design-tokens.md <<'PYDT'
 import re, sys
 h = open(sys.argv[1], encoding="utf-8").read()
@@ -514,11 +517,33 @@ for k in R:
     if k not in seen: err.append(f"{k}: sem linha no design-tokens.md")
 for k in D:
     if k not in seen_dark: err.append(f"{k}: valor escuro sem linha")
-print("OK" if not err else "FAIL " + " | ".join(err[:4]) + (f" (+{len(err)-4})" if len(err) > 4 else ""))
+def init(name):
+    # the initializer of "const|let|var ... name = <value>", up to the top-level , or ;
+    m = re.search(r"\b(?:const|let|var)\s[^;]*?\b" + name + r"\s*=\s*", h)
+    if not m: return None
+    i, depth, q = m.end(), 0, None
+    for j in range(i, len(h)):
+        ch = h[j]
+        if q:
+            if ch == q and h[j - 1] != "\\": q = None
+        elif ch in "'\"`": q = ch
+        elif ch in "([{": depth += 1
+        elif ch in ")]}": depth -= 1
+        elif ch in ",;" and depth == 0: return norm(h[i:j])
+    return None
+s12 = re.search(r"^## 12\..*?(?=^### Tokens CSS)", d, re.M | re.S)
+n12 = 0
+for line in (s12.group(0) if s12 else "").splitlines():
+    m = re.match(r"\| `([A-Za-z_]\w*)` \| `([^`]+)` \|", line)
+    if not m: continue
+    n12 += 1; v, c = norm(m.group(2)), init(m.group(1))
+    if c != v: err.append(f"{m.group(1)}: doc={v} codigo={c}")
+if not s12: err.append("secao 12 sem a tabela das constantes")
+print(f"OK {n12}" if not err else "FAIL " + " | ".join(err[:4]) + (f" (+{len(err)-4})" if len(err) > 4 else ""))
 PYDT
 )
 if [ "${DT%% *}" = "OK" ]; then
-  printf '[PASS] %-52s\n' "design-tokens.md = codigo (CSS e TOKEN_*)"; PASS=$((PASS+1));
+  printf '[PASS] %-52s (%s constantes do motor)\n' "design-tokens.md = codigo (CSS e TOKEN_*)" "${DT#OK }"; PASS=$((PASS+1));
 else
   printf '[FAIL] %-52s %s\n' "design-tokens.md divergente do codigo" "${DT#FAIL }"; FAIL=$((FAIL+1));
 fi
