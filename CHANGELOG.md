@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.7] - 2026-11-16
+
+Ao abrir o site, a página de entrada não mostra nada: o link de reserva só aparece se o redirecionamento não acontecer em 5 segundos.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: o `index.html` foi testado no Edge 157, no Firefox 150 e no WebKit 26.4, com o redirecionamento normal e bloqueado. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores.
 
 ### Corrigido
 
