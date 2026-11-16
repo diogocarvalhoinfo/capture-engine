@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.9] - 2026-11-16
+
+Ao abrir "Outra cor" sem uma cor própria, a bandeja mostra o espectro e o campo vazio, em vez da cor da paleta em uso.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a bandeja foi testada no Edge 157, no Firefox 150 e no WebKit 26.4, sem e com uma cor própria. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores. Os commits saíram fora da janela de horário, com a autorização do dono.
 
 ### Corrigido
 
