@@ -37,8 +37,9 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 | `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja "Outra cor" (D-0156) |
 | `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
-| `--color-success` | `#16884a` | — | O verde padrão: "Concluído", "Copiado", "Aplicar alterações", o exportar do admin, o ponto "Gravado" e o interruptor ligado. Com branco, 4,51:1 (D-0190) |
+| `--color-success` | `#16a34a` | — | O verde padrão (o green 600 do Tailwind): "Concluído", "Copiado", "Aplicar alterações", o exportar do admin, o ponto "Gravado" e o interruptor ligado. Com branco, 3,30:1: o ícone passa, e o texto é uma exceção registrada (D-0191) |
 | `--color-success-hover` | `#15803d` | — | Hover do exportar do admin; com branco, 5,02:1 |
+| `--gradient-spectrum` | `conic-gradient(hsl(0deg 90% 55%), hsl(60deg 90% 55%), hsl(120deg 75% 45%), hsl(180deg 80% 45%), hsl(240deg 85% 60%), hsl(300deg 80% 55%), hsl(360deg 90% 55%))` | — | O círculo "Outra cor" do editor: o espectro completo de cores (D-0194) |
 | `--color-orange-500` | `#f97316` | — | Amostra laranja da paleta de anotação |
 | `--color-blue-500` | `#3b82f6` | — | Amostra azul da paleta de anotação |
 | `--color-purple-500` | `#a855f7` | — | Amostra roxa da paleta de anotação |
@@ -179,8 +180,8 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--shadow-button` | `0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 6%)` | Botões secundários sem contorno ("Adicionar imagem" e "Adicionar documento", as duas escolhas do modo ZIP), no tema claro |
 | `--shadow-control` | `0 2px 4px rgb(0 0 0 / 20%)` | Botões pequenos sobre a miniatura e o interruptor |
 | `--shadow-swatch` | `0 2px 4px rgb(0 0 0 / 15%)` | Amostras de cor do Visual Builder |
-| `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | Amostra ativa da paleta de anotação |
-| `--shadow-input-focus` | `0 0 0 1px var(--color-primary)` | Campos com foco |
+| `--shadow-swatch-active` | `0 0 0 1px rgb(0 0 0 / 40%)` | O marcador do tom no seletor de cor |
+| `--shadow-input-focus` | `0 0 0 1px var(--color-primary)` | Hover dos botões de captura e do .zip; some quando o botão tem o foco do teclado |
 | `--shadow-dragging` | `0 12px 30px rgb(0 0 0 / 35%)` | Item em arrasto e a bandeja das opções do editor (`.ann-flyout`) |
 | `--shadow-sidebar` | `0 12px 48px rgb(0 0 0 / 30%)` | Barra lateral no telefone |
 | `--shadow-settings` | `0 10px 25px rgb(0 0 0 / 20%)` | Visual Builder e painel de exportação |
@@ -191,7 +192,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--focus-width` | `3px` | Espessura do contorno do foco |
+| `--focus-width` | `2px` | Espessura do contorno do foco, o único aviso de foco do app (D-0192) |
 | `--focus-offset` | `2px` | Afastamento do contorno do foco |
 | `--opacity-dimmed` | `0.3` | Botões da barra do editor, título, zoom e ✕ da anotação apagados durante o aviso de anotações por salvar |
 | `--filter-dimmed` | `brightness(35%)` | Foto e anotações escurecidas durante o mesmo aviso; um filtro, e não uma opacidade, para não mostrar o app por trás |

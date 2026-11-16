@@ -4,6 +4,18 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **O círculo "Outra cor" mostra o espectro contínuo (D-0194):** antes, ele mostrava as 6 cores da paleta girando, as mesmas que estão ao lado dele. Agora mostra todas as cores, em um círculo de cores contínuo, por um token novo, o `--gradient-spectrum`.
+
+- **As cores do editor ficam paradas, com um anel na escolhida (D-0193):** o dono achou exagerado o crescimento da D-0183. Agora nenhuma cor muda de tamanho: a escolhida ganha um anel claro, afastado da cor, e a cor sob o mouse, um anel fino e apagado. O espaço entre as cores passa de 4 px a 8 px, para o anel não encostar na vizinha. O foco do teclado continua com o contorno laranja do app. Medido no Edge 157, no Firefox 150 e no WebKit 26.4, nas 4 telas, sem transbordar.
+
+- **O foco do teclado tem uma linha só, de 2 px (D-0192):** os campos mostravam duas linhas laranja no foco. Uma era a borda de foco do próprio campo; a outra, o contorno geral que a 29.11.4 acrescentou. Agora fica só o contorno, de 2 px em vez de 3 px, afastado 2 px, em todo o app. A linha do hover dos botões de captura some enquanto eles têm o foco. O nome da imagem ganha cantos arredondados, e a miniatura em foco fica por cima do nome, que cobria a parte de baixo do contorno. Medido no Edge 157, no Firefox 150 e no WebKit 26.4, nos dois temas.
+
+- **O verde padrão passa a ser o green 600 do Tailwind (D-0191):** o `#16884a` da 29.11.6 ficou escuro demais para o dono. O `#16a34a` é mais vivo e vale em todo lugar, com o texto e o ícone brancos. O ✓ tem 3,30:1 e passa na regra dos ícones. O texto de "Concluído" e de "Copiado" fica abaixo dos 4,5:1 por escolha do dono, registrada na decisão.
+
 ## [29.11.7] - 2026-11-16
 
 Ao abrir o site, a página de entrada não mostra nada: o link de reserva só aparece se o redirecionamento não acontecer em 5 segundos.

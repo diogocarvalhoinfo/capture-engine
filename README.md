@@ -411,8 +411,8 @@ Medido só com o teclado, com o Playwright, no Edge, no Firefox e no WebKit, o m
 - **Barras recolhidas:** com o Histórico ou os "Removidos" fechados, o Tab passa só pelas setas que os abrem.
 - **Janelas:** com uma janela aberta, o Tab fica dentro dela, e ao fechar o foco volta ao lugar de onde ela abriu.
 - **Esc:** no editor, fecha primeiro as opções da ferramenta. Fecha também o visualizador, o texto e a exportação. O Visual Builder fecha só pelo ✕.
-- **Foco visível:** um contorno de 3 px, afastado 2 px, na cor principal escurecida, com pelo menos 3:1 sobre o fundo.
-- **Contraste:** o texto tem pelo menos 4,5:1 nos dois temas, com a cor principal padrão.
+- **Foco visível:** um contorno de 2 px, afastado 2 px, na cor principal escurecida, com pelo menos 3:1 sobre o fundo.
+- **Contraste:** o texto tem pelo menos 4,5:1 nos dois temas, com a cor principal padrão. A exceção é o "Concluído" e o "Copiado", em branco sobre o verde, com 3,30:1.
 - **Ampliar:** no telefone, a pinça amplia só a foto do visualizador. Para letra maior, use o tamanho de letra do navegador.
 - **Safari no Mac:** o Tab passa só pelos campos de texto. Ligue "Pressionar Tab para destacar cada item" nos ajustes avançados, ou use Option+Tab.
 - **Leitores de tela:** não testados. Os avisos de armazenamento usam `role="alert"`; os botões só com ícone têm o nome no `aria-label`; as ferramentas do editor dizem a escolhida com `aria-pressed`.

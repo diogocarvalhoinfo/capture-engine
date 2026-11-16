@@ -38,7 +38,7 @@
       --color-primary-foreground: #1a1917;
       --color-brand: var(--color-primary);
       --color-ring: color-mix(in srgb, var(--color-primary) 85%, var(--color-foreground));
-      --focus-width: 3px;
+      --focus-width: 2px;
       --focus-offset: 2px;
       --opacity-dimmed: 0.3;
       --filter-dimmed: brightness(35%);
@@ -66,7 +66,8 @@
       --color-black: #000;
       --color-banner-critical: #b91c1c;
       --color-banner-close: rgb(255 255 255 / 25%);
-      --color-success: #16884a;
+      --color-success: #16a34a;
+      --gradient-spectrum: conic-gradient(hsl(0deg 90% 55%), hsl(60deg 90% 55%), hsl(120deg 75% 45%), hsl(180deg 80% 45%), hsl(240deg 85% 60%), hsl(300deg 80% 55%), hsl(360deg 90% 55%));
       --color-success-hover: #15803d;
       --color-orange-500: #f97316;
       --color-blue-500: #3b82f6;
@@ -722,11 +723,6 @@
       transition: border-color var(--duration-moderate-01), box-shadow var(--duration-moderate-01)
     }
 
-    .sess-input:focus {
-      border-color: var(--color-primary) !important;
-      box-shadow: var(--shadow-input-focus)
-    }
-
     /* Every placeholder is text and keeps 4.5:1 in both themes (F-0171); the editor, always dark, has its own rule in .ann-hex */
     ::placeholder {
       color: var(--color-muted-foreground)
@@ -1160,7 +1156,12 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       transition: color var(--duration-fast-02), background var(--duration-fast-02);
-      border-radius: 0
+      border-radius: var(--radius-md)
+    }
+
+    /* A focused thumbnail sits above its name, so the name never covers the bottom of the focus ring (D-0192) */
+    .t-wrap:focus-visible {
+      z-index: var(--z-raised)
     }
 
     .t-label:focus {
@@ -1227,8 +1228,7 @@
     }
 
     .d-input:focus {
-      background: var(--color-card);
-      box-shadow: var(--shadow-input-focus)
+      background: var(--color-card)
     }
 
     .d-size {
@@ -2142,13 +2142,13 @@
       transition: color var(--duration-moderate-01), box-shadow var(--duration-moderate-01)
     }
 
-    .btn-capture:hover:not(:disabled) {
+    .btn-capture:hover:not(:disabled, :focus-visible) {
       box-shadow: var(--shadow-input-focus);
       color: var(--color-foreground) !important;
       opacity: 1
     }
 
-    .btn-send.btn-zip-cta:hover:not(:disabled) {
+    .btn-send.btn-zip-cta:hover:not(:disabled, :focus-visible) {
       color: var(--color-foreground) !important;
       box-shadow: var(--shadow-input-focus);
       opacity: 1
@@ -2206,9 +2206,7 @@
     }
 
     .hex-input:focus {
-      border-color: var(--color-primary) !important;
-      background: var(--color-card) !important;
-      box-shadow: var(--shadow-input-focus) !important
+      background: var(--color-card) !important
     }
 
     .text-input-sm {
@@ -2227,9 +2225,7 @@
     }
 
     .text-input-sm:focus {
-      border-color: var(--color-primary) !important;
-      background: var(--color-card) !important;
-      box-shadow: var(--shadow-input-focus) !important
+      background: var(--color-card) !important
     }
 
     /* ═══ ANNOTATION TOOLBAR ═══ */
@@ -2296,32 +2292,35 @@
       border: 2px solid transparent;
       cursor: pointer;
       padding: 0;
-      transition: transform var(--duration-fast-02), border-color var(--duration-fast-02), opacity var(--duration-moderate-01);
+      transition: opacity var(--duration-moderate-01);
       flex-shrink: 0
     }
 
-    /* The colour swatches grow, an exception to the still icons (D-0183): the one under the pointer and the chosen one */
-    .ann-swatch:hover {
-      transform: scale(1.2)
+    /* The swatches stay still (D-0193): the chosen one has a light ring set apart from the colour, and the one under the pointer a faint thin ring */
+    .ann-swatch:hover:not(.active) {
+      outline: 1px solid var(--color-viewer-mark);
+      outline-offset: var(--focus-offset)
     }
 
     .ann-swatch.active {
-      border-color: var(--color-white);
-      transform: scale(1.15);
-      box-shadow: var(--shadow-swatch-active)
+      outline: var(--focus-width) solid var(--color-viewer-control-foreground);
+      outline-offset: var(--focus-offset)
+    }
+
+    /* The keyboard focus keeps the ring of the whole app, also on the chosen swatch (D-0192) */
+    .ann-swatch.active:focus-visible,
+    .ann-swatch:not(.active):focus-visible {
+      outline: var(--focus-width) solid var(--color-ring);
+      outline-offset: var(--focus-offset)
     }
 
     /* Another colour (D-0152): the rainbow circle fills the whole circle (border-box, so the gradient does not repeat under the border).
        With a colour chosen, the circle takes it, in an inline background, like the other swatches */
     .ann-swatch.ann-rainbow {
       touch-action: none;
-      background-image: conic-gradient(var(--color-red-500), var(--color-orange-500), var(--color-yellow-500), var(--color-green-500), var(--color-blue-500), var(--color-purple-500), var(--color-red-500));
+      background-image: var(--gradient-spectrum);
       background-origin: border-box;
       border-color: transparent
-    }
-
-    .ann-swatch.ann-rainbow.active {
-      border-color: var(--color-white)
     }
 
     /* The circle opens options, so it has the dot of the tools (D-0102), on the row of their dots: the circle is 20 px and the tools 36 px.
@@ -4069,7 +4068,7 @@
           </div>
           <div class="ann-sep"></div>
           <!-- COLORS + THICKNESS GROUPED TOGETHER -->
-          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 1);align-items:center">
+          <div class="ann-row" style="display:flex;gap:calc(var(--spacing) * 2);align-items:center">
             <button class="ann-swatch active" data-color="#ef4444" style="background:var(--color-red-500)" title="Vermelho"></button>
             <button class="ann-swatch" data-color="#f97316" style="background:var(--color-orange-500)" title="Laranja"></button>
             <button class="ann-swatch" data-color="#eab308" style="background:var(--color-yellow-500)" title="Amarelo"></button>
