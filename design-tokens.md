@@ -230,9 +230,9 @@ Todo `z-index` usa um token `--z-*`. Os globais seguem a escala do Bootstrap; os
 |---|---|---|---|
 | `--z-raised` | `1` | Empilhamento local: placeholders de arrasto, pequenos overlays | local |
 | `--z-dragging` | `2` | Item a ser arrastado (`.t-item/.d-item.dragging`) acima dos vizinhos | local |
-| `--z-viewer-controls` | `3` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | dentro do modal |
-| `--z-viewer-text` | `4` | `#ann-text-overlay` sobre o canvas | dentro do modal |
-| `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | dentro do modal |
+| `--z-viewer-controls` | `3` | Barra de zoom (`#zoom-ui`) e setas (`#img-nav-prev/next`) sobre a imagem | local (dentro do modal) |
+| `--z-viewer-text` | `4` | `#ann-text-overlay` sobre o canvas | local (dentro do modal) |
+| `--z-viewer-delete` | `5` | Botão `✕` acima do overlay de texto | local (dentro do modal) |
 | `--z-offcanvas-backdrop` | `1040` | `#sb-mobile-overlay` (fundo escurecido) | telefone |
 | `--z-offcanvas` | `1045` | `#sidebar` no telefone, acima do seu fundo | telefone |
 | `--z-popover` | `1070` | Menu do clique direito e o submenu, acima dos modais (D-0129, D-0131) | global |

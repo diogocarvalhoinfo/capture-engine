@@ -19,6 +19,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O traço livre termina onde o ponteiro soltou (F-0210):** a suavização segue o ponteiro com atraso, e o último ponto real não entrava no traço. Em uma reta de 200 px, o traço parava de 12,3 a 36,4 px antes do fim, conforme a velocidade. Agora o ponto onde o ponteiro soltou fecha o traço, no "Livre" e no marca-texto. Medido no Edge 157: 0,0 px nos 3 casos. A suavização no meio do traço não muda.
 - **O texto e o ícone sobre o verde ficam escuros (F-0211, D-0189):** o branco sobre o verde de "Concluído" e de "Aplicar alterações" dava 2,28:1. Agora o verde é o mesmo, e o texto e o ícone são verde-escuros, com 6,54:1 nos dois temas. Vale também para "Copiado" e o disquete ativo do admin, que dá 4,52:1 no hover. A borda do campo HEX do editor dava 1,64:1 e passa a 6,89:1. Medido no Edge 157, com um PDF guardado de verdade.
 - **Apagar a última sessão limpa a marcação (F-0213):** com um item marcado, apagar a única sessão deixava a marcação na memória. A caixa de marcar aparecia nas capturas seguintes, sem nada marcado. Medido no Edge 157: a caixa aparecia antes e agora fica escondida.
+- **As 5 camadas locais estão marcadas como locais (F-0215):** o `design-tokens.md` marcava só 2; as 3 do visualizador diziam "dentro do modal". A entrada da 29.11.4 dizia "4 camadas locais"; são 5.
 
 ## [29.11.4] - 2026-11-15
 
