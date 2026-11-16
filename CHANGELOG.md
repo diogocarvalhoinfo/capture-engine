@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O link de reserva do `index.html` não pisca mais ao abrir o site:** desde a 29.11.4 (F-0201), o link "Abrir o Capture Engine" aparecia por um instante durante o redirecionamento normal. Agora ele começa escondido e só aparece se a página continuar aberta por 5 segundos, quando o navegador bloqueou o redirecionamento. Só com CSS, sem animação. Medido no Edge 157, no Firefox 150 e no WebKit 26.4: escondido no redirecionamento normal; com ele bloqueado, escondido em 1 s e visível aos 6 s.
+
 ## [29.11.6] - 2026-11-16
 
 O app tem um verde só, com texto e ícone brancos, e "Aplicar alterações" mostra o ✓.

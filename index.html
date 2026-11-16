@@ -11,6 +11,7 @@
   :root {
     --color-background: #fdfdfc;
     --color-foreground: #1a1917;
+    --delay-fallback-link: 5s;
   }
 
   html.dark {
@@ -31,7 +32,16 @@
     font-family: system-ui, sans-serif;
   }
 
-  a { color: var(--color-foreground); }
+  /* The link shows only if the redirect did not happen: hidden for 5 s, then it appears at once, without motion */
+  a {
+    color: var(--color-foreground);
+    visibility: hidden;
+    animation: show-fallback-link 0s linear var(--delay-fallback-link) forwards;
+  }
+
+  @keyframes show-fallback-link {
+    to { visibility: visible; }
+  }
 </style>
 </head>
 <body>
