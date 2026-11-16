@@ -79,7 +79,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 - Em uma regex nova que lê o valor de um token, use `'(?:[^'\\]|\\.)*'`, e nunca `'[^']*'`. A forma curta para no primeiro apóstrofo escapado e quebra a cópia da segunda geração. (D40)
 - Passe os valores dos tokens por `sanitizeForQuine()` antes de os gravar na cópia. Ela põe um espaço de largura zero nos 8 marcadores e escapa o apóstrofo. (D-0176)
 - Teste o Quine com um servidor que entrega o arquivo sem mudança, como o `python -m http.server`. Um servidor que gera o HTML faz a cópia sair do que ele devolveu. (D-0176)
-- Por `file://`, o `fetch` falha e a cópia sai do `BOOT_HTML`, serializado de novo pelo navegador. Por `http(s)`, a cópia "Administrador" sai igual ao arquivo, byte a byte. Ao registrar um teste, diga o protocolo. (D-0176)
+- Por `file://`, no Chromium e no WebKit, o motor do Safari, o `fetch` falha e a cópia sai do `BOOT_HTML`, serializado de novo pelo navegador. No Firefox, o `fetch` por `file://` funciona, e a cópia sai igual ao arquivo. Por `http(s)`, a cópia "Administrador" sai igual ao arquivo, byte a byte. Ao registrar um teste, diga o protocolo. (D-0176)
 
 ### Segurança
 
@@ -458,7 +458,7 @@ A única proteção é exportar em PDF ou ZIP o que importa: não há cópia de 
 
 ### Teste no navegador
 
-A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o Playwright (D-0084).
+A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o Playwright (D-0084). No WebKit do Playwright para Windows, toda captura fica "Só nesta aba", por `http` e por `file://`: ele não prova a gravação das imagens, que se confere no Edge, no Chrome e no Firefox.
 
 **Ciclo de vida da sessão:**
 - [ ] Abrir o arquivo: a tela limpa, os campos e o Histórico vazios
@@ -527,6 +527,7 @@ Faça o teste com o arquivo gerado pelo botão de exportar, e nunca com o `captu
 3. [ ] Nenhum erro no console. Um `TypeError: Cannot read properties of null` é a assinatura exata do defeito D25. Ele mostra que o IIFE abortou: a aplicação está morta por baixo de uma interface que parece normal.
    - O Export User não tem o bloco `ADMIN_JS`, por isso não chama o `capturePristine()` nem faz o `fetch(location.href)`. Aberto por `file://` ou servido por `http(s)`, o console fica sem erro nenhum.
    - O par `Access to fetch at 'file:///…' … CORS` e `[CE] Quine fallback: BOOT_HTML` é normal só no `capture-engine.html` principal e no Export Admin abertos por `file://` (seção 3, "Quine"). **Em um Export User, esse par reprova o passo:** quer dizer que o bloco `ADMIN_JS` não foi removido.
+   - No WebKit, a primeira linha do par é `Cross origin requests are only supported for HTTP.`; no Firefox, o par não aparece, porque o `fetch` funciona.
 4. [ ] Cole uma imagem (Ctrl+V) e confira que ela aparece na grade.
 5. [ ] Escreva em "Quem", recarregue a página e confira que a sessão está no Histórico.
 6. [ ] Confira que a cor, o nome e o rodapé configurados aparecem.

@@ -20,6 +20,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **O texto e o ícone sobre o verde ficam escuros (F-0211, D-0189):** o branco sobre o verde de "Concluído" e de "Aplicar alterações" dava 2,28:1. Agora o verde é o mesmo, e o texto e o ícone são verde-escuros, com 6,54:1 nos dois temas. Vale também para "Copiado" e o disquete ativo do admin, que dá 4,52:1 no hover. A borda do campo HEX do editor dava 1,64:1 e passa a 6,89:1. Medido no Edge 157, com um PDF guardado de verdade.
 - **Apagar a última sessão limpa a marcação (F-0213):** com um item marcado, apagar a única sessão deixava a marcação na memória. A caixa de marcar aparecia nas capturas seguintes, sem nada marcado. Medido no Edge 157: a caixa aparecia antes e agora fica escondida.
 - **As 5 camadas locais estão marcadas como locais (F-0215):** o `design-tokens.md` marcava só 2; as 3 do visualizador diziam "dentro do modal". A entrada da 29.11.4 dizia "4 camadas locais"; são 5.
+- **O teste do Export User diz o que muda em cada navegador (F-0214, F-0220):** o `AGENTS.md` descrevia só o Chromium. No Firefox, o `fetch` por `file://` funciona, e a cópia Admin sai igual ao arquivo. No WebKit, o motor do Safari, a mensagem do `fetch` é outra. No WebKit do Playwright para Windows, as capturas ficam "Só nesta aba". Medido no Edge 157, no Firefox 150 e no WebKit 26.4, por `file://` e por `http`.
 
 ## [29.11.4] - 2026-11-15
 
