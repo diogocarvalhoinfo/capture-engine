@@ -5239,9 +5239,10 @@
         annAwaitTip(true);
       }
       /* The alert says what to do: a bubble, in the look of the tooltip, centred above Descartar and Aplicar alterações (D-0165) */
-      function annAwaitTip(on, idA = 'ann-cancel', idB = 'ann-save') {
+      function annAwaitTip(on, idA = 'ann-cancel', idB = 'ann-save', text = 'Aplique ou descarte as alterações') {
         let t = $('ann-await-tip'); if (!on) { if (t) t.classList.remove('show'); return }
-        if (!t) { t = document.createElement('div'); t.className = 'ce-tip on-dark'; t.id = 'ann-await-tip'; t.setAttribute('role', 'status'); t.textContent = 'Aplique ou descarte as alterações'; document.body.appendChild(t) }
+        if (!t) { t = document.createElement('div'); t.className = 'ce-tip on-dark'; t.id = 'ann-await-tip'; t.setAttribute('role', 'status'); document.body.appendChild(t) }
+        t.textContent = text;
         const tip = $('ce-tip'); if (tip) tip.classList.remove('show'); t.classList.add('show');
         const z = uiZoom(), a = $(idA).getBoundingClientRect(), b = $(idB).getBoundingClientRect(), w = t.offsetWidth * z, h = t.offsetHeight * z, cx = (Math.min(a.left, b.left) + Math.max(a.right, b.right)) / 2;
         t.style.left = Math.min(Math.max(4, cx - w / 2), innerWidth - w - 4) / z + 'px'; t.style.top = (Math.min(a.top, b.top) - h - 8 * z) / z + 'px';
@@ -6050,6 +6051,8 @@
           }
           const blob = await annRenderSaved(img, fW, fH, cX, cY);
           const o = images.find(x => x.id === modalItemId);
+          /* No image came out (a canvas too large for the browser): the editor stays open with the drawing, and the bubble says so (F-0208) */
+          if (o && !blob) { SysLogger.error('Aplicar: a imagem não foi gerada'); annAwaitTip(true, 'ann-cancel', 'ann-save', 'Não foi possível aplicar. Tente de novo.'); document.addEventListener('pointerdown', () => annAwaitTip(false), { once: true, capture: true }); return }
           if (o && blob) {
             if (annUseFirst && (o.firstBlob || o.origBlob)) { o.origBlob = o.firstBlob || o.origBlob; delete o.firstBlob } // back at the photo as captured (P1)
             if (!o.origBlob) o.origBlob = o.blob;
