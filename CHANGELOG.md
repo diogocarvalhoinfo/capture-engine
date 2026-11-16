@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.5] - 2026-11-16
+
+Abrir o app em outra aba não apaga mais a sessão aberta há dias, e remover, restaurar ou aplicar alterações não perde o trabalho quando a gravação falha. O zoom fica parado sob o mouse, o traço termina onde se soltou, e o texto sobre o verde fica legível.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: a segunda auditoria do Fable 5.2, de 15 de novembro de 2026, com os prompts 10.2.0, achou de F-0206 a F-0220. Cada achado foi conferido no código antes do plano, e cada correção começou reproduzindo o defeito. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores. A F-0216 foi rebaixada de Médio para Baixo: a pasta de testes guarda de propósito uma cópia antiga dos diagramas, e só a frase enganava.
 
 ### Modificado
 
