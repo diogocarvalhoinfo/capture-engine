@@ -7053,7 +7053,7 @@
             renderSbSessions();
           } else {
             /* No sessions left — pristine empty state */
-            sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = []; sessLock(null);
+            sessId = null; sessObj = null; images = []; docs = []; removed = []; removedDocs = []; sessLock(null); marked.clear(); markSync(); /* no mark survives the session (F-0213) */
             const tg = $('thumb-grid'); if (tg) tg.innerHTML = '';
             const dl = $('doc-list'); if (dl) dl.innerHTML = '';
             const ie = $('img-empty'); if (ie) ie.style.display = '';
