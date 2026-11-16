@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **"Outra cor" abre com o espectro e o campo vazio (D-0195):** sem uma cor própria escolhida, a bandeja mostrava a cor da paleta em uso, como o vermelho `#EF4444`. Agora o círculo mostra o espectro, e o campo fica vazio, com o exemplo `#RRGGBB`. Com uma cor própria escolhida, a bandeja mostra essa cor, como antes. Medido no Edge 157, no Firefox 150 e no WebKit 26.4.
+
 ## [29.11.8] - 2026-11-16
 
 O verde fica mais vivo, o foco do teclado tem uma linha só e mais fina, e as cores do editor ficam paradas, com um anel na escolhida. O círculo "Outra cor" mostra o espectro completo.

@@ -6149,13 +6149,15 @@
           annCloseFlyout();
           const f = $('ann-fly-color'); f.dataset.tool = 'color'; f.classList.add('open'); b.setAttribute('aria-expanded', 'true'); annFlyoutOpen = f; annPlaceFlyout(f);
           const _tip = $('ce-tip'); if (_tip) _tip.classList.remove('show');
-          annHexShow(b.dataset.color || annCurrentColor); // the eyedropper starts off: a click turns it on until a colour is picked (D-0164)
+          if (b.dataset.color) annHexShow(b.dataset.color); else annHexBlank(); // the eyedropper starts off: a click turns it on until a colour is picked (D-0164)
         }
+        /* No colour of its own yet: the tray shows the spectrum and an empty HEX with the #RRGGBB hint, and the picker starts at the current colour (D-0195) */
+        function annHexBlank() { const h = $('ann-hex'); h.value = ''; h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = 'var(--gradient-spectrum)'; annPkFrom(annCurrentColor) }
         function annHexShow(c, fromPk) { const h = $('ann-hex'); h.value = String(c).toUpperCase(); h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = c; if (!fromPk) annPkFrom(c) }
         $('ann-hex').addEventListener('input', e => {
           let v = e.target.value.trim(); if (v && v[0] !== '#') v = '#' + v;
           const ok = ANN_HEX.test(v); e.target.setAttribute('aria-invalid', String(!ok && v.length >= 7));
-          if (ok) { v = v.toLowerCase(); $('ann-hex-preview').style.background = v; annPkFrom(v); annApplyColor(v, true) }
+          if (ok) { v = v.toLowerCase(); $('ann-hex-preview').style.background = v; annPkFrom(v); annApplyColor(v, true) } else if (!v) $('ann-hex-preview').style.background = 'var(--gradient-spectrum)';
         });
         $('ann-hex').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); annCloseFlyout(true) } });
         $('ann-eyedrop').onclick = () => annEye(!annEyeOn);
