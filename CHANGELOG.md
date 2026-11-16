@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.11.6] - 2026-11-16
+
+O app tem um verde só, com texto e ícone brancos, e "Aplicar alterações" mostra o ✓.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: o contraste do verde novo foi medido no Edge 157, nos dois temas: 4,51:1 em "Concluído", "Aplicar alterações" e o exportar do admin. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores.
 
 ### Modificado
 
