@@ -67,6 +67,7 @@
       --color-banner-critical: #b91c1c;
       --color-banner-close: rgb(255 255 255 / 25%);
       --color-green-600: #16a34a;
+      --color-green-950: #052e16;
       --color-orange-500: #f97316;
       --color-blue-500: #3b82f6;
       --color-purple-500: #a855f7;
@@ -479,6 +480,7 @@
 
     .btn-send.st-success {
       background: var(--color-green-500) !important;
+      color: var(--color-green-950) !important;
       pointer-events: none
     }
 
@@ -627,13 +629,13 @@
 
     #btn-admin-save.admin-active {
       background: var(--color-green-500) !important;
-      color: var(--color-white) !important;
+      color: var(--color-green-950) !important;
       animation: pulse var(--duration-admin-pulse) var(--ease-in-out) infinite !important
     }
 
     #btn-admin-save.admin-active:hover {
       background: var(--color-green-600) !important;
-      color: var(--color-white) !important
+      color: var(--color-green-950) !important
     }
 
     .spinner {
@@ -2414,7 +2416,7 @@
       width: 72px;
       height: 28px;
       padding: 0 calc(var(--spacing) * 1.5);
-      border: 1px solid var(--color-viewer-control-border);
+      border: 1px solid var(--color-viewer-muted-foreground); /* 6.89:1 on the tray; the control border gave 1.64:1 (F-0211) */
       border-radius: var(--radius-md);
       background: transparent;
       color: var(--color-viewer-control-foreground);
@@ -4117,7 +4119,7 @@
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="ann-save" title="Aplicar alterações"
-            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-green-950)"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
               <polyline points="7 3 7 8 15 8" />
@@ -4187,7 +4189,7 @@
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="text-edit-save" title="Aplicar alterações"
-            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-white)"><svg viewBox="0 0 24 24">
+            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-green-950)"><svg viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" />
               <polyline points="7 3 7 8 15 8" />
