@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **A limpeza não apaga a sessão aberta em outra aba (F-0206):** uma aba aberta por dias perdia as capturas quando o app abria em outra. A segunda aba apagava a sessão da primeira, que continuava a mostrar as miniaturas até recarregar. Agora cada aba segura uma trava do navegador com o nome da sua sessão, e a limpeza pula as sessões travadas. Medido no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4: com a primeira aba aberta, a sessão fica; fechada, sai como antes. Uma sessão que a aba deixou ao começar outra também sai. A trava funciona por `http` e por `file://`.
+- **Remover e restaurar não perdem o item quando a gravação falha (F-0207):** remover apagava a imagem de Imagens e depois a gravava nos "Removidos", em duas operações. Se a segunda falhava, por falta de espaço ou porque a aba fechou no meio, o item sumia. Agora os dois passos são uma transação só, e o item fica onde estava. Vale para imagens e documentos, ao remover e ao restaurar. Medido no Edge 157, com a falha simulada: antes, os 4 casos perdiam o item; agora, nenhum perde.
 
 ## [29.11.4] - 2026-11-15
 
