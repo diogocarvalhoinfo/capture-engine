@@ -6671,6 +6671,8 @@
           let p = annCanvasXYClamped(e); if (annShift && !annIsStroke() && annTool !== 'text') p = annShiftPoint(annShiftKind(annTool), annStart, p);
           if (annIsStroke()) {
             annSmoothLast = null;
+            /* The smoothing trails the pointer: the stroke ends at the point where the pointer let go (F-0210) */
+            if (annPath.length > 1 && !annShift) { const lp = annPath[annPath.length - 1]; if (Math.hypot(p.x - lp.x, p.y - lp.y) > 1) annPath.push({ x: p.x, y: p.y }) }
             if (annPath.length > 1) {
               annPushUndo(); // M1: snapshot BEFORE adding a free stroke
               const _st = { type: 'free', pts: annPath.slice(), color: annCurrentColor, lw: annLineW() }; if (annTool === 'highlight') _st.hl = annHlMode();
