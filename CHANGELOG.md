@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **Os ícones ficam como estão (D-0188):** a auditoria achou 10 desenhos diferentes da lista do `icones.md` (F-0212). O dono os aprovou como desenhos próprios do projeto, e a decisão os lista para a próxima auditoria não os trocar.
+
 ### Corrigido
 
 - **A limpeza não apaga a sessão aberta em outra aba (F-0206):** uma aba aberta por dias perdia as capturas quando o app abria em outra. A segunda aba apagava a sessão da primeira, que continuava a mostrar as miniaturas até recarregar. Agora cada aba segura uma trava do navegador com o nome da sua sessão, e a limpeza pula as sessões travadas. Medido no Edge 157, no Chrome 157, no Firefox 150 e no WebKit 26.4: com a primeira aba aberta, a sessão fica; fechada, sai como antes. Uma sessão que a aba deixou ao começar outra também sai. A trava funciona por `http` e por `file://`.
