@@ -66,8 +66,8 @@
       --color-black: #000;
       --color-banner-critical: #b91c1c;
       --color-banner-close: rgb(255 255 255 / 25%);
-      --color-green-600: #16a34a;
-      --color-green-950: #052e16;
+      --color-success: #16884a;
+      --color-success-hover: #15803d;
       --color-orange-500: #f97316;
       --color-blue-500: #3b82f6;
       --color-purple-500: #a855f7;
@@ -479,8 +479,8 @@
     }
 
     .btn-send.st-success {
-      background: var(--color-green-500) !important;
-      color: var(--color-green-950) !important;
+      background: var(--color-success) !important;
+      color: var(--color-white) !important;
       pointer-events: none
     }
 
@@ -628,14 +628,14 @@
     }
 
     #btn-admin-save.admin-active {
-      background: var(--color-green-500) !important;
-      color: var(--color-green-950) !important;
+      background: var(--color-success) !important;
+      color: var(--color-white) !important;
       animation: pulse var(--duration-admin-pulse) var(--ease-in-out) infinite !important
     }
 
     #btn-admin-save.admin-active:hover {
-      background: var(--color-green-600) !important;
-      color: var(--color-green-950) !important
+      background: var(--color-success-hover) !important;
+      color: var(--color-white) !important
     }
 
     .spinner {
@@ -1570,7 +1570,7 @@
       width: 8px;
       height: 8px;
       border-radius: var(--radius-circle);
-      background: var(--color-green-500);
+      background: var(--color-success);
       flex-shrink: 0;
       animation: pulse var(--duration-status-pulse) var(--ease-in-out) infinite
     }
@@ -1980,7 +1980,7 @@
     }
 
     input:checked+.toggle-slider {
-      background-color: var(--color-green-500)
+      background-color: var(--color-success)
     }
 
     input:checked+.toggle-slider::before {
@@ -4119,10 +4119,8 @@
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="ann-save" title="Aplicar alterações"
-            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-green-950)"><svg viewBox="0 0 24 24">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
+            style="background:var(--color-success);border-color:var(--color-success);color:var(--color-white)"><svg viewBox="0 0 24 24">
+              <path d="M20 6 9 17l-5-5" />
             </svg></button>
           </div>
         </div>
@@ -4189,10 +4187,8 @@
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg></button>
           <button class="ann-btn" id="text-edit-save" title="Aplicar alterações"
-            style="background:var(--color-green-500);border-color:var(--color-green-500);color:var(--color-green-950)"><svg viewBox="0 0 24 24">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
+            style="background:var(--color-success);border-color:var(--color-success);color:var(--color-white)"><svg viewBox="0 0 24 24">
+              <path d="M20 6 9 17l-5-5" />
             </svg></button>
         </div>
       </div>

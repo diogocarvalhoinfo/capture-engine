@@ -30,15 +30,15 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 | `--color-primary-foreground` | `#1a1917` | — | Texto sobre a cor principal (botões, chips, contadores de bloco); calculado pelo YIQ quando o `TOKEN_ACCENT_FG_OVERRIDE` está vazio. O CSS já começa com o valor da cor padrão, e a exportação grava o da cópia (F-0167) |
 | `--color-brand` | `var(--color-primary)` | — | A cor principal em textos e ícones |
 | `--color-ring` | `color-mix(in srgb, var(--color-primary) 85%, var(--color-foreground))` | `var(--color-primary)` | Contorno do foco do teclado. No tema claro, a cor principal escurecida dá 3,67:1 sobre o fundo; no escuro, a cor principal dá 5,86:1 (D-0174) |
-| `--color-green-500` | `#22c55e` | — | Sucesso, estado "Gravado", confirmar a anotação |
+| `--color-green-500` | `#22c55e` | — | A amostra "Verde" da paleta de anotação e o seletor de cor |
 | `--color-red-500` | `#ef4444` | — | Erro, remover, cancelar a anotação |
 | `--color-yellow-500` | `#eab308` | — | Aviso |
 | `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos "Removidos", spinner, botões verdes e vermelhos, avisos de armazenamento) |
 | `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja "Outra cor" (D-0156) |
 | `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
-| `--color-green-600` | `#16a34a` | — | Hover do botão de exportar no modo de administrador |
-| `--color-green-950` | `#052e16` | — | Texto e ícone sobre o verde de sucesso: 6,54:1 sobre o `#22c55e` (D-0189) |
+| `--color-success` | `#16884a` | — | O verde padrão: "Concluído", "Copiado", "Aplicar alterações", o exportar do admin, o ponto "Gravado" e o interruptor ligado. Com branco, 4,51:1 (D-0190) |
+| `--color-success-hover` | `#15803d` | — | Hover do exportar do admin; com branco, 5,02:1 |
 | `--color-orange-500` | `#f97316` | — | Amostra laranja da paleta de anotação |
 | `--color-blue-500` | `#3b82f6` | — | Amostra azul da paleta de anotação |
 | `--color-purple-500` | `#a855f7` | — | Amostra roxa da paleta de anotação |
@@ -474,7 +474,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 |---|---|---|---|---|
 | Visualizador de imagem | **Editar** | `.btn-send`, cheio | `var(--color-primary)` + `var(--color-primary-foreground)` | Imagem ativa |
 | Visualizador de imagem | **Download** e **Restaurar** | `.btn-viewer`, a regra das ferramentas do editor (D-0098) | `--color-viewer-control`, borda `--color-viewer-control-border`; no hover, `--color-viewer-control-hover` | Download sempre; Restaurar só nos "Removidos" |
-| Editor | **Aplicar alterações** | Cheio | `var(--color-green-500)` + `var(--color-green-950)` | No modo de anotação |
+| Editor | **Aplicar alterações** (✓) | Cheio | `var(--color-success)` + branco | No modo de anotação |
 | Editor | **Descartar alterações** | Cheio | `var(--color-red-500)` + branco | No modo de anotação |
 | Visualizador de documento | "Restaurar", "Copiar texto" e "Download" | `.btn-viewer`, como no visualizador de imagem (D-0123) | `--color-viewer-control`, borda `--color-viewer-control-border` | Restaurar só nos "Removidos"; Copiar texto só em documentos de texto; Download sempre |
 

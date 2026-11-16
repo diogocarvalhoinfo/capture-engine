@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **Um verde padrão, com branco, e o ✓ em "Aplicar alterações" (D-0190):** o dono achou feio o ícone verde-escuro da 29.11.5. Ele escolheu o `#16884a`, um pouco mais escuro que o verde antigo. Com o branco, ele dá 4,51:1, o mínimo da WCAG para texto. Ele vale para "Concluído", "Copiado", "Aplicar alterações", o exportar do admin, o ponto "Gravado" e o interruptor ligado. "Aplicar alterações" troca o disquete pelo ✓, que combina com o nome. A amostra "Verde" da paleta de anotação continua `#22c55e`. Substitui a D-0189.
+
 ## [29.11.5] - 2026-11-16
 
 Abrir o app em outra aba não apaga mais a sessão aberta há dias, e remover, restaurar ou aplicar alterações não perde o trabalho quando a gravação falha. O zoom fica parado sob o mouse, o traço termina onde se soltou, e o texto sobre o verde fica legível.
