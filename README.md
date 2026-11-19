@@ -103,7 +103,7 @@ No iPhone, use o site, pelo cartão "Abrir o site": o arquivo guardado abre no a
 
 - O Ctrl+V cola uma imagem, um arquivo copiado ou um texto, que vira um `.txt`.
 - Arrastar funciona direto da Área de Trabalho ou do explorador de arquivos.
-- O botão "Atualizar", no topo, começa uma sessão nova; a anterior fica no Histórico.
+- O botão "Nova sessão", no topo, começa uma sessão nova; a anterior fica no Histórico.
 - No telefone e no tablet, abrir o site volta à última sessão.
 - A aplicação grava a cada 5 segundos. Fechar o navegador antes disso perde as últimas mudanças.
 
@@ -152,7 +152,7 @@ Um item removido vai para a barra "Removidos", no fundo da tela, e volta pelo bo
 <details>
 <summary>Sessões e Histórico</summary>
 
-- No computador, cada abertura começa com uma sessão em branco. No telefone e no tablet, a ferramenta volta à última sessão; "Atualizar" começa outra.
+- No computador, cada abertura começa com uma sessão em branco. No telefone e no tablet, a ferramenta volta à última sessão; "Nova sessão" começa outra.
 - A sessão nova só entra no Histórico depois da primeira ação: colar, arrastar ou digitar no "Quem".
 - O nome da sessão junta "Quem" e "O que", em maiúsculas quando "Maiúsculas" está ligado. Sem nome, a sessão recebe um número, como `#0001`.
 - A sessão sem atividade há mais de 48 horas é apagada ao abrir a ferramenta. O prazo conta da última atividade, e quem administra pode mudá-lo.

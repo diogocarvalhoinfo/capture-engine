@@ -6,10 +6,11 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
-As verificações do projeto passam a executar do repositório de referência, e o `AGENTS.md` declara a opção de cada conceito do catálogo de lá.
+O botão do topo passa a se chamar "Nova sessão", e o primeiro clique direito em uma anotação, vindo de uma ferramenta de desenho, só a seleciona. O rodapé usa o ponto médio. As verificações do projeto passam a executar do repositório de referência.
 
 ### Modificado
 
+- **O botão do topo diz "Nova sessão" (D-0197):** o nome antigo, "Atualizar", não dizia que o botão começa uma sessão em branco. A seta circular continua.
 - **As verificações executam do repositório de referência (D-0196):** o `AGENTS.md` manda executar `bash ../referencia/projetos/capture-engine/validate.sh .`, na pasta do projeto, e aponta os testes de fluxo para `projetos/capture-engine/fluxos.py` de lá.
 - **O `AGENTS.md` declara as opções do catálogo:** o foco é a opção B (D-0192), e os botões parados, a opção A (D-0179). A cor escolhida com anel é a opção A (D-0193), e a cor de sucesso, a B, com a exceção do texto (D-0191). Os ícones são a opção A, com as exceções já registradas (D-0190).
 - **A primeira linha do `.gitattributes`** diz o que o arquivo faz, igual ao modelo do repositório de referência.

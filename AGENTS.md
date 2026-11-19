@@ -95,7 +95,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 ### Sessões
 
-- Comece uma sessão nova a cada abertura. Na tela de toque, o `reopenLastSession()` volta à última, e "Atualizar" começa outra. (D-0113)
+- Comece uma sessão nova a cada abertura. Na tela de toque, o `reopenLastSession()` volta à última, e "Nova sessão" começa outra. (D-0113)
 - Crie a sessão só no `ensureSession()`, na primeira interação. Nunca a crie no `deleteSessionId()`: quem apaga a última sessão escolhe a tela vazia. (D7)
 - Ao apagar a sessão ativa, guarde a vizinha antes de apagar e abra-a depois; sem vizinha, limpe a tela sem criar sessão. (D7)
 - Grave na hora a digitação em "Quem" e "O que", sem esperar os 5 segundos do `setInterval`. (D3)
@@ -312,7 +312,7 @@ O app usa o localStorage para as preferências que valem entre abas e arquivos d
 - `fill-rect` e `fill-circle`: a escolha do retângulo e do círculo. `'1'` é "Preenchido", `'b'` é "Desfocado"; `'0'` ou `null` é "Contorno", o padrão (D-0102).
 - `text-bg`: a escolha do texto. `'1'` é "Com fundo"; `'0'` é "Fundo transparente".
 - `ec_pending_session`: usada até a V16 e removida na V17. Não reuse o nome.
-- `ce-last-session`: o id da última sessão aberta. Em uma tela de toque, a ferramenta volta a ela ao abrir; o botão "Atualizar" apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
+- `ce-last-session`: o id da última sessão aberta. Em uma tela de toque, a ferramenta volta a ela ao abrir; o botão "Nova sessão" apaga a chave antes de recarregar. No computador, a chave é gravada mas não é lida (D-0113).
 Limpar o localStorage só volta as preferências ao padrão. Limpar o IndexedDB apaga as sessões.
 
 ### Gravação automática e limpeza
@@ -681,6 +681,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0194:** o círculo "Outra cor" mostra o espectro contínuo de cores (`--gradient-spectrum`), e não as 6 cores da paleta girando. É o desenho mais conhecido para escolher qualquer cor, e não repete as cores que já estão ao lado. Com uma cor escolhida, o círculo continua a mostrar essa cor (D-0152). Custo: nenhum. Origem: o dono, em 16 de novembro de 2026 (opção 2 entre cinco).
 - **D-0195:** ao abrir "Outra cor" sem uma cor própria escolhida, o círculo da bandeja mostra o espectro, e o campo HEX fica vazio, com o exemplo `#RRGGBB`. Antes, a bandeja mostrava a cor da paleta em uso, como o vermelho `#EF4444`, e parecia que ela era a cor própria. Com uma cor própria escolhida, a bandeja mostra essa cor e o código dela. O seletor de tons começa na cor em uso. Custo: nenhum. Origem: o dono, em 16 de novembro de 2026.
 - **D-0196:** o `validate.sh` e o `.stylelintrc.json` saem da raiz. O script vive no repositório de referência, em `projetos/capture-engine/validate.sh`, com os testes dos fluxos críticos (`projetos/capture-engine/fluxos.py`), e o stylelint usa o modelo de lá, `modelos/stylelint/.stylelintrc.json`, sem cópia. Execute-o na pasta do projeto: `bash ../referencia/projetos/capture-engine/validate.sh .`. A raiz guarda o `capture-engine.html`, o `index.html`, a documentação (`README.md`, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, `docs/` e `LICENSE`), o `.gitattributes` e o `.gitignore`. Uma cópia do script e da configuração em cada projeto divergia do repositório de referência a cada mudança. Custo: sem o clone na pasta `referencia`, nenhuma verificação executa. Origem: a reestruturação do repositório de referência (versão 11.0.0), 19 de novembro de 2026.
+- **D-0197:** o botão do topo com a seta circular diz "Nova sessão", e não "Atualizar". A seta passa a ideia de limpar a área de trabalho, e o nome diz que o botão começa uma sessão nova, em branco. O ícone continua o `rotate-cw` do `icones.md` ("Recarregar, começar de novo"). Custo: nenhum. Origem: o dono, em 19 de novembro de 2026.
 
 ## 7. Pendentes
 

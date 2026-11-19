@@ -3674,7 +3674,7 @@
         </svg>
       </button>
       <!-- ADMIN_BUTTONS_END -->
-      <button class="action-btn" id="btn-refresh" title="Atualizar">
+      <button class="action-btn" id="btn-refresh" title="Nova sessão">
         <svg viewBox="0 0 24 24">
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -4590,7 +4590,7 @@
       }
       /* On a touch screen the tool goes back to the last session, as the apps of a phone do: the iPhone closes Safari
          or reloads a tab left in the background, and the reopening started an empty session (F-0109). The id of the last
-         session lives in localStorage; the «Atualizar» button forgets it and starts another. On a computer each opening still
+         session lives in localStorage; the «Nova sessão» button forgets it and starts another. On a computer each opening still
          starts a new session, because each opening is a new case, sometimes on a shared computer (D-0113). */
       const LAST_SESSION_KEY = 'ce-last-session';
       const touchScreen = () => !!window.matchMedia && window.matchMedia('(hover: none)').matches;

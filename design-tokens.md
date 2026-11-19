@@ -362,7 +362,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 └────────────────────────────────────────────────────────────────┘
   height: 64px (--top-bar-h)
   [⚙] [💾]: ADMIN_BUTTONS, removidos em exports User
-  [↻] "Atualizar"; [🕒] "Histórico", só até 900 px de largura; [🌙] tema
+  [↻] "Nova sessão"; [🕒] "Histórico", só até 900 px de largura; [🌙] tema
 ```
 
 ### Layout principal
