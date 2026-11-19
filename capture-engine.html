@@ -6404,7 +6404,7 @@
           clearAnnAwait(); // a click on the image means: keep editing
           if (annSpaceHeld) return;
           if (e.button === 1) { const _mp = annCanvasXY(e); if (annHitTest(_mp.x, _mp.y) >= 0) { e.preventDefault(); annDownGrab(e) } return; } // on a shape: grab it, as the right button; elsewhere: the viewport pans the zoomed image
-          if (e.button === 2) { annRightAt = { x: e.clientX, y: e.clientY }; annDownGrab(e) }
+          if (e.button === 2) { annRightAt = { x: e.clientX, y: e.clientY }; annRightMenu = annRightOpensMenu(e); annDownGrab(e) }
           else if ((e.ctrlKey || e.metaKey) && annTool !== 'crop' && annTool !== 'select') { annCtrlHeld = true; annDownSelect(e); } // Ctrl: Selecionar for a moment (D-0101)
           else if (annTool === 'crop') { if (annCropMode === 'rect') annDownCrop(e); else annDownMode(e) }
           else if (annTool === 'select') annDownSelect(e);
@@ -6418,14 +6418,17 @@
         cv.addEventListener('pointerdown', e => { annHoldEnd(); if (e.pointerType !== 'touch' || !annActive || annTool === 'crop' || annTool === 'select' || annEyeOn) return; const p = annCanvasXY(e); if (annHitTest(p.x, p.y) < 0) return; annHold = { x: e.clientX, y: e.clientY, t: setTimeout(() => { annHold = null; if (annTextClickTimer) { clearTimeout(annTextClickTimer); annTextClickTimer = null } annDrawing = false; annPath = []; annDownGrab(e); annRenderAll() }, 500) } }, true);
         window.addEventListener('pointermove', e => { if (annHold && Math.hypot(e.clientX - annHold.x, e.clientY - annHold.y) > 10) annHoldEnd() }); ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, annHoldEnd));
         /* The menu of the right click on an annotation: a right click that did not move opens it; a right drag still moves the annotation (D-0103, D-0143) */
-        let annRightAt = null;
+        let annRightAt = null, annRightMenu = false;
+        /* From a drawing tool, the first right click on an annotation that is not selected only selects it; the menu opens on one
+           already selected, or in Selecionar chosen in the toolbar (D-0198) */
+        function annRightOpensMenu(e) { const p = annCanvasXY(e), i = annHitTest(p.x, p.y); return i >= 0 && (i === annSelectedIdx || (annTool === 'select' && !annTempSelectFrom)) }
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
         cv.addEventListener('pointerdown', () => { if (annAllSel) { annAllSel = false; annRenderAll() } }, true); // a click on the photo leaves the selection of all (D-0162)
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
           e.preventDefault();
-          const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5; annRightAt = null;
-          if (!still || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+          const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5, menu = annRightMenu; annRightAt = null; annRightMenu = false;
+          if (!still || !menu || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
           ctxOpen(e.clientX, e.clientY, [[['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
         // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
