@@ -287,7 +287,7 @@ Estes tokens estão declarados como `const` no topo do IIFE do JavaScript. São 
 | `TOKEN_TITLE_END_COLOR` | `string` | `''` | sim | Interface → amostra de cor do "Texto final" (vazio = herda cor do texto) |
 | `TOKEN_MAIN_COLOR` | `string` | `'#e86b2e'` | sim | Interface → seletor da "Cor principal" |
 | `TOKEN_ACCENT_FG_OVERRIDE` | `string` | `''` | sim | Interface → seletor da "Cor do texto sobre destaque" |
-| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} • CAPTURE ENGINE • DIOGO CARVALHO'` | sim | Interface → "Texto do rodapé" |
+| `TOKEN_FOOTER_TEXT` | `string` | `'© {YEAR} CAPTURE ENGINE · DIOGO CARVALHO'` | sim | Interface → "Texto do rodapé" |
 | `TOKEN_SHOW_SESSION_USER` | `bool` | `true` | sim | Histórico → "Primeiro campo", interruptor |
 | `TOKEN_SHOW_SESSION_PC` | `bool` | `true` | sim | Histórico → "Segundo campo", interruptor |
 | `TOKEN_USER_LABEL` | `string` | `''` | sim | Histórico → "Primeiro campo", rótulo |
@@ -385,7 +385,7 @@ O padrão do valor precisa aceitar escapes. Um padrão que para no primeiro apó
 ├──────────────┴────────────────────────────┴──────────────────┴───────┤
 │ TRASH BAR  [🗑 REMOVIDOS  3]                              [⌃]        │
 ├───────────────────────────────────────────────────────────────────────┤
-│ RODAPÉ  © 2026 • CAPTURE ENGINE • DIOGO CARVALHO     (opacity: 0.5)  │
+│ RODAPÉ  © 2026 CAPTURE ENGINE · DIOGO CARVALHO       (opacity: 0.5)  │
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
