@@ -2,7 +2,7 @@
 
 Regras para quem edita este projeto, pessoa ou IA, com a decisão de cada uma.
 
-Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa no `validate.sh`, com 0 FAIL, antes do commit.
+Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa no `bash ../referencia/projetos/capture-engine/validate.sh .`, com 0 FAIL, antes do commit.
 
 ## 1. Donos dos fatos
 
@@ -12,8 +12,8 @@ Toda mudança no `capture-engine.html` preserva os marcadores do Quine e passa n
 | O uso, o comportamento visível e as limitações | o [`README.md`](README.md) |
 | A árvore de arquivos e os diagramas da arquitetura | o README, seções "Estrutura de arquivos" e "Arquitetura" |
 | Os valores visuais e os `TOKEN_*` | o `capture-engine.html`; o [`design-tokens.md`](design-tokens.md) é uma cópia verificada |
-| As verificações antes do commit | o [`validate.sh`](validate.sh); cada check está descrito no comentário dele |
-| Os testes dos fluxos críticos | o `fluxos/capture-engine.py` do repositório de referência (D-0177) |
+| As verificações antes do commit | o `projetos/capture-engine/validate.sh` do repositório de referência; cada check está descrito no comentário dele (D-0196) |
+| Os testes dos fluxos críticos | o `projetos/capture-engine/fluxos.py` do repositório de referência (D-0196) |
 | O ícone de cada conceito | o `icones.md` do repositório de referência |
 | O armazenamento do navegador, as regras, as decisões e os pendentes | este arquivo |
 
@@ -120,6 +120,16 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 - Ligue o tema escuro pela classe `dark` no `<html>`, e não por `@media (prefers-color-scheme)` no CSS. Só o JavaScript lê a preferência do sistema, na primeira abertura. O bloco `html.dark` só redefine tokens. (D-0186)
 - Use um token `--z-*`, na escala do Bootstrap, em cada `z-index`. (D-0186)
 
+### Catálogo do repositório de referência
+
+A opção de cada conceito da pasta `padroes/` do repositório de referência:
+
+- Foco: opção B (padroes/foco.md). Um contorno de 2 px, afastado 2 px, sem outra linha. (D-0192)
+- Botões: opção A (padroes/botoes-parados.md). Ao passar o mouse ou ao focar, só a cor muda. (D-0179)
+- Cor escolhida: opção A (padroes/cor-escolhida.md). As cores do editor ficam paradas, e a escolhida ganha um anel. (D-0193)
+- Cor de sucesso: opção B (padroes/cor-de-sucesso.md). O green 600 com o texto e o ícone brancos; o texto de "Concluído" e de "Copiado" fica abaixo dos 4,5:1, como exceção. (D-0191)
+- Ícones: opção A (padroes/icones.md). As exceções são o ✓ em "Aplicar alterações" (D-0190), o disquete em "Exportar versão" (D-0184) e os 10 desenhos próprios (D-0188).
+
 ### Idioma
 
 - **Documentação** (README, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, commits): português neutro, com a tabela de palavras do repositório de referência. Um termo da interface aparece como está, entre aspas retas ("User").
@@ -137,15 +147,15 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 ### Validação
 
-- Execute `bash validate.sh` antes de cada commit; precisa dar 0 FAIL. No Windows, use o Git Bash ou o WSL. O `--rapido` pula os testes de fluxo. (D-0084)
+- Execute `bash ../referencia/projetos/capture-engine/validate.sh .` na pasta do projeto, antes de cada commit; precisa dar 0 FAIL. No Windows, use o Git Bash ou o WSL. O `--rapido`, depois do `.`, pula os testes de fluxo. (D-0084, D-0196)
 - O `validate.sh` completo precisa destes programas (D-0084):
   - o Bash: no Windows, o Git Bash ou o WSL;
   - o Python 3 com `playwright`, `pillow`, `fonttools` e `brotli`, os navegadores do `python -m playwright install` e o Edge e o Chrome instalados;
   - o `ffmpeg`, para o `gif.py`;
   - o Node.js 22.12 ou mais novo, com o `npx`, para a sintaxe, o Export User e o stylelint;
-  - o clone do repositório de referência na pasta `referencia`.
+  - o clone do repositório de referência na pasta `referencia`, ao lado do projeto, onde fica o `validate.sh`.
 - Um `[SKIP]` não é um PASS: o check não executou. Antes de um commit, só o check 30 pode sair como SKIP, e só com `--rapido`.
-- O `validate.sh` executa 35 verificações mecânicas, em 30 blocos numerados. São 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo. Cada uma dá uma linha PASS, FAIL ou SKIP; os WARN e a heurística de complexidade não contam. Os checks 30 e 32 a 34 usam o clone do repositório de referência; sem ele, não executam. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
+- O `validate.sh` executa 35 verificações mecânicas, em 30 blocos numerados. São 32 com regex, grep ou Python, uma com o stylelint, uma com os geradores do README e uma com os testes de fluxo. Cada uma dá uma linha PASS, FAIL ou SKIP; os WARN e a heurística de complexidade não contam. O script mora no clone do repositório de referência; sem ele, nenhum check executa. Os números dos comentários do script não são os de uma lista antiga deste arquivo; cite o check pelo comentário. (D69)
 - Chame o repositório que guarda os modelos, as ferramentas e os testes de fluxo de "repositório de referência", nos arquivos e nos commits, e nunca pelo nome dele no GitHub. O clone fica na pasta `referencia`, ao lado do projeto. (D-0181)
 - Leia o `[WARN]` de complexidade como o mapa de onde uma edição quebra mais fácil, e não como defeito. Antes de editar uma dessas funções, leia a regra do motor dela. (D-0092)
 - Teste no navegador o que a mudança toca, com o Playwright ou à mão. (D-0084)
@@ -446,7 +456,7 @@ A única proteção é exportar em PDF ou ZIP o que importa: não há cópia de 
 
 1. Troque `## [Unreleased]` por `## [X.Y.Z] - AAAA-MM-DD`.
 2. Atualize a versão nas cópias que o `validate.sh` confere: a linha "Versão" do README e, no HTML, o comentário `<!-- VISUAL BUILDER MODAL (X.Y.Z) -->`, o selo `>X.Y.Z</span>` do Visual Builder e o `SysLogger.info('Capture Engine X.Y.Z Ready')`. Gere de novo o `docs/images/admin-mode.png`, que mostra o número da versão, com o `gerar.py`.
-3. Execute o `bash validate.sh`, que deve dar 0 FAIL.
+3. Execute o `bash ../referencia/projetos/capture-engine/validate.sh .`, que deve dar 0 FAIL.
 4. Faça o teste no navegador da lista abaixo, com o "Teste do Export User", e escreva o resultado na entrada do changelog.
 5. Faça o commit `docs(changelog): versão X.Y.Z`.
 6. Crie a tag leve `vX.Y.Z` nesse commit.
@@ -648,10 +658,12 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0175:** o README fala com quem usa e com quem administra a ferramenta, e não com quem edita o código. A palavra em português vem primeiro, e os nomes do código ficam nas seções "Estrutura de arquivos" e "Arquitetura". Custo: os termos técnicos em inglês da lista do repositório de referência não entram no texto para quem usa. Origem: a migração para a versão 8.0.1 do repositório de referência, 15 de novembro de 2026 (F-0156).
 - **D-0176:** as regras do arquivo único, do Quine e da sanitização vêm dos três contratos do motor. O arquivo é a aplicação inteira e funciona sem internet; o arquivo copia a si mesmo com a configuração; um dado do usuário nunca chega ao DOM sem `escapeHTML()`. Quebrar o primeiro deixa a ferramenta morta sem internet; o segundo, a cópia exportada corrompida; o terceiro abre um XSS com dados de clientes. Custo: nenhum recurso de fora, e cada edição conferida pelo `validate.sh`. Origem: as "Regras absolutas" do projeto, registradas como decisão em 15 de novembro de 2026 (F-0156).
 - **D-0177:** Na raiz, só o produto, a documentação e as ferramentas que o padrão exige. Quem clona o capture-engine recebia arquivos sem contexto. A raiz guarda o produto, a documentação, o `validate.sh`, o `.stylelintrc.json` e o `.gitattributes`; um arquivo novo na raiz precisa de uma decisão própria. Os testes dos fluxos críticos ficam no repositório de referência, em `fluxos/capture-engine.py` (D-0037 desse repositório), e o check 30 do `validate.sh` os chama pelo clone. Custo: sem o clone, os testes não executam. Origem: o dono, 15 de novembro de 2026.
+  - Substituída em parte pela D-0196.
 - **D-0179:** o capture-engine não tem ícones animados nem a opção "Ícones animados", uma exceção às decisões D-0034 e D-0028 do repositório de referência. O dono testou os gestos em 15 de novembro de 2026: crescer desfocava o traço, subir não ficou bom, e a animação não foi aprovada. Ao passar o mouse, os ícones só mudam de cor. Custo: nenhum. Origem: o dono, na correção da F-0160; a D-0178, que descrevia a animação, foi desfeita. O repositório de referência adotou a regra na 9.0.0.
 - **D-0180:** o marca-texto começa em 18 px, um passo acima dos 12 px da D-0104. Com 12 px, o dono clicava no + toda vez que escolhia a ferramenta. Origem: o dono, em 15 de novembro de 2026.
 - **D-0181:** o nome do repositório de referência não aparece no projeto. O repositório é privado, e o nome, em um projeto público, mostrava que ele existe. Os arquivos e as mensagens de commit dizem "repositório de referência", e o `validate.sh` procura o clone na pasta `referencia`, ao lado do projeto, ou no `REF_REPO`. Custo: quem tem o clone com outro nome cria essa pasta ou usa o `REF_REPO`. Origem: o dono, em 15 de novembro de 2026.
 - **D-0182:** a raiz guarda também o `index.html`, o `LICENSE` e o `.gitignore`, que a D-0177 não listava. O `index.html` é a entrada do GitHub Pages: sem ele, o endereço do site não abre o app. O `LICENSE` e o `.gitignore` são exigidos pelo repositório de referência. Custo: nenhum. Origem: a auditoria de 15 de novembro de 2026 (F-0180).
+  - Substituída em parte pela D-0196.
 - **D-0183:** as cores da barra do editor crescem, uma exceção à D-0179. A cor sob o mouse cresce 20%, e a escolhida fica 15% maior, com o contorno branco. Sem o crescimento, a F-0184 da 29.11.2 deixou a escolha difícil de ver, e o dono pediu o feedback de volta depois de testar. Os outros ícones e botões continuam parados. Custo: o projeto diverge do repositório de referência nas cores. Origem: o dono, em 15 de novembro de 2026.
   - Substituída pela D-0193.
 - **D-0184:** "Exportar versão" usa o disquete (`save`), e não o `upload` que o `icones.md` dá a "Exportar". O botão guarda um `.html` no computador, que é o conceito "Guardar" do `icones.md`. O `upload` passa a ideia do começo de um envio; o disquete, a do fim, quando algo fica guardado. Custo: o ícone difere do "Exportar" de outros projetos. Origem: o dono, na auditoria de 15 de novembro de 2026 (F-0197).
@@ -668,6 +680,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0193:** as cores da barra do editor ficam paradas, como os outros botões (D-0179). A escolhida ganha um anel claro de 2 px, afastado 2 px, e a cor sob o mouse, um anel fino e apagado. As cores têm 8 px de espaço entre si, para o anel não encostar na vizinha. É o padrão dos editores da Apple, do Google e do Figma. Custo: nenhum. Origem: o dono, em 16 de novembro de 2026, que achou o crescimento exagerado (opção 4A entre cinco).
 - **D-0194:** o círculo "Outra cor" mostra o espectro contínuo de cores (`--gradient-spectrum`), e não as 6 cores da paleta girando. É o desenho mais conhecido para escolher qualquer cor, e não repete as cores que já estão ao lado. Com uma cor escolhida, o círculo continua a mostrar essa cor (D-0152). Custo: nenhum. Origem: o dono, em 16 de novembro de 2026 (opção 2 entre cinco).
 - **D-0195:** ao abrir "Outra cor" sem uma cor própria escolhida, o círculo da bandeja mostra o espectro, e o campo HEX fica vazio, com o exemplo `#RRGGBB`. Antes, a bandeja mostrava a cor da paleta em uso, como o vermelho `#EF4444`, e parecia que ela era a cor própria. Com uma cor própria escolhida, a bandeja mostra essa cor e o código dela. O seletor de tons começa na cor em uso. Custo: nenhum. Origem: o dono, em 16 de novembro de 2026.
+- **D-0196:** o `validate.sh` e o `.stylelintrc.json` saem da raiz. O script vive no repositório de referência, em `projetos/capture-engine/validate.sh`, com os testes dos fluxos críticos (`projetos/capture-engine/fluxos.py`), e o stylelint usa o modelo de lá, `modelos/stylelint/.stylelintrc.json`, sem cópia. Execute-o na pasta do projeto: `bash ../referencia/projetos/capture-engine/validate.sh .`. A raiz guarda o `capture-engine.html`, o `index.html`, a documentação (`README.md`, `AGENTS.md`, `CHANGELOG.md`, `design-tokens.md`, `docs/` e `LICENSE`), o `.gitattributes` e o `.gitignore`. Uma cópia do script e da configuração em cada projeto divergia do repositório de referência a cada mudança. Custo: sem o clone na pasta `referencia`, nenhuma verificação executa. Origem: a reestruturação do repositório de referência (versão 11.0.0), 19 de novembro de 2026.
 
 ## 7. Pendentes
 

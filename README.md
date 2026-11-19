@@ -430,8 +430,6 @@ capture-engine/
 ├── AGENTS.md             ← regras para quem edita o projeto, pessoa ou IA
 ├── CHANGELOG.md          ← as versões, da mais nova para a mais antiga
 ├── design-tokens.md      ← o nome e o valor de cada token visual
-├── validate.sh           ← verificações; execute antes de cada commit
-├── .stylelintrc.json     ← configuração do stylelint, cópia do modelo
 ├── .gitattributes        ← fim de linha LF em qualquer computador
 ├── .gitignore            ← pastas locais de ferramentas de IA fora do git
 ├── docs/images/          ← imagens, GIF, cartões e diagramas deste README

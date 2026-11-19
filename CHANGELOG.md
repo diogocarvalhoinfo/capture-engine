@@ -4,6 +4,20 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+As verificações do projeto passam a executar do repositório de referência, e o `AGENTS.md` declara a opção de cada conceito do catálogo de lá.
+
+### Modificado
+
+- **As verificações executam do repositório de referência (D-0196):** o `AGENTS.md` manda executar `bash ../referencia/projetos/capture-engine/validate.sh .`, na pasta do projeto, e aponta os testes de fluxo para `projetos/capture-engine/fluxos.py` de lá.
+- **O `AGENTS.md` declara as opções do catálogo:** o foco é a opção B (D-0192), e os botões parados, a opção A (D-0179). A cor escolhida com anel é a opção A (D-0193), e a cor de sucesso, a B, com a exceção do texto (D-0191). Os ícones são a opção A, com as exceções já registradas (D-0190).
+- **A primeira linha do `.gitattributes`** diz o que o arquivo faz, igual ao modelo do repositório de referência.
+
+### Removido
+
+- **O `validate.sh` e o `.stylelintrc.json` saem da raiz (D-0196):** o script vive no repositório de referência, e o stylelint usa o modelo de lá, sem cópia. A árvore do README perde as duas linhas.
+
 ## [29.11.9] - 2026-11-16
 
 Ao abrir "Outra cor" sem uma cor própria, a bandeja mostra o espectro e o campo vazio, em vez da cor da paleta em uso.
