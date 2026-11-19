@@ -393,7 +393,7 @@ Nada. A ferramenta protege os marcadores internos, e a cópia exportada sai cert
 
 ## 14. Requisitos
 
-**Versão:** 29.11.9. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
+**Versão:** 29.12.0. As mudanças de cada versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 - **Navegadores:** Chrome, Edge e Firefox no computador; Safari no iPhone, pelo site.
 - **Sistemas:** Windows, macOS e Linux, com um desses navegadores.

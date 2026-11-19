@@ -4,9 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.12.0] - 2026-11-19
 
 O botão do topo passa a se chamar "Nova sessão", e o primeiro clique direito em uma anotação, vindo de uma ferramenta de desenho, só a seleciona. O rodapé usa o ponto médio. As verificações do projeto passam a executar do repositório de referência.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 157, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão ao recarregar, sem o botão de administração nem o Visual Builder. As duas mostram "Nova sessão" e o rodapé novo. A Admin teve só o aviso do CORS do Quine em cada abertura, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Cobertura: o clique direito foi testado no Chromium, no Firefox e no WebKit do Playwright. O primeiro clique vindo do Retângulo só seleciona, o segundo abre o menu, e no Selecionar o primeiro já abre. No Firefox e no WebKit do Playwright, o arrasto com o botão direito abre o menu, como já fazia na 29.11.9. O `validate.sh` deu 0 FAIL, com os 28 testes de fluxo nos 4 navegadores.
 
 ### Modificado
 
