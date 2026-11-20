@@ -13,7 +13,18 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
 - **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
 - **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
+- **O segundo documento com um nome que começa por ponto (F-0228, D-0201)** vira `.env-1`, e não `-1.env`. Renomear `.env` para `.env2` dá `.env2`, e não `.env2.env`.
+- **As falhas do desfazer e do refazer (F-0229, D-0202)** aparecem no console, assim como as da leitura de uma sessão; antes, sumiam sem rastro.
+- **O código tem uma instrução por linha (F-0226, D-0203).** As 23 funções escritas em uma linha só foram separadas, sem mudar nenhum token do programa.
+- **Os estilos escritos no script passaram para o CSS (F-0230).** São 12, nas miniaturas, nos Removidos e no documento sem prévia, com 0 pixels diferentes nos dois temas.
+- **A abertura de um documento (F-0227)** decide menos sozinha: a complexidade da função cai de 29 para 16, e o documento sem prévia tem a sua própria função.
+- **A busca da imagem aberta no editor (F-0225)** é uma função só, no lugar de 13 cópias.
 - **O código perdeu 4 duplicações (F-0221 a F-0224).** Nada muda para quem usa. O desfazer e o refazer são uma função só. O arrasto com o mouse e o toque longo levantam o item pela mesma função. As cores do Visual Builder usam uma função para cada tarefa, e a trava da rolagem dos modais é uma linha. O arquivo tem 3 946 bytes a menos. As linhas repetidas do script caem de 209 para 140, e os blocos clonados, de 27 linhas para 0.
+
+### Corrigido
+
+- **O quadro do recorte depois do giro (F-0232)** é desenhado de novo na escala certa quando a imagem girada muda de tamanho na tela. Antes, ficava com a espessura da imagem de antes do giro.
+- **O círculo ao lado do conta-gotas (F-0233)**, sem cor escolhida, é o arco-íris sem o anel branco, como o círculo "Outra cor" da barra. Com uma cor, continua igual.
 
 Auditoria de 20 de novembro de 2026: cada mudança passou pelo `validate.sh` completo (35 PASS) e por um teste diferencial. O teste executa o mesmo roteiro no arquivo de antes e no de depois, no Chromium e no Firefox do Playwright, e compara 73 estados.
 
