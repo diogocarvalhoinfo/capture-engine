@@ -5875,7 +5875,47 @@
       function annMoveMode(e) { const p = annCanvasXY(e), cv = $('ann-canvas'); if (annCropMode === 'quad' && typeof annModeDrag === 'number') { annQuad[annModeDrag] = { x: Math.max(0, Math.min(cv.width, p.x)), y: Math.max(0, Math.min(cv.height, p.y)) } } else if (annModeDrag === 'level') { let a = annLevelBase + (Math.atan2(p.y - cv.height / 2, p.x - cv.width / 2) - annLevelFrom) * 180 / Math.PI; a = ((a + 540) % 360) - 180; a = Math.max(-45, Math.min(45, a)); annLevel = Math.abs(a) < 0.3 ? 0 : a; $('img-modal-img').style.transform = annLevel ? `rotate(${annLevel}deg)` : ''; $('ann-wrap').style.overflow = 'hidden' } annRenderAll() }
       function annUpMode() { annDraggingCrop = false; annModeDrag = null; annRenderAll() }
       /* The overlay of the two modes: the quadrilateral with its four dots, or the grid with the round handle and, while dragging, the angle */
-      function annDrawCropMode(ctx, cv) { const k = annPx(); ctx.save(); if (annCropMode === 'quad') { ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.moveTo(annQuad[0].x, annQuad[0].y); annQuad.slice(1).forEach(q => ctx.lineTo(q.x, q.y)); ctx.closePath(); ctx.fill('evenodd'); ctx.lineWidth = 2 * k; ctx.strokeStyle = '#ffffff'; ctx.stroke(); annQuad.forEach(q => annDot(ctx, q.x, q.y, 9 * k, k)) } else { if (annLevel) { const r = annLevelKeep(cv.width, cv.height, annLevel); ctx.fillStyle = 'rgb(0 0 0 / 45%)'; ctx.beginPath(); ctx.rect(0, 0, cv.width, cv.height); ctx.rect((cv.width - r.w) / 2, (cv.height - r.h) / 2, r.w, r.h); ctx.fill('evenodd') } ctx.strokeStyle = 'rgb(255 255 255 / 55%)'; ctx.lineWidth = k; ctx.beginPath(); for (let i = 1; i < 6; i++) { const x = cv.width * i / 6, y = cv.height * i / 6; ctx.moveTo(x, 0); ctx.lineTo(x, cv.height); ctx.moveTo(0, y); ctx.lineTo(cv.width, y) } ctx.stroke(); const hd = annLevelHandle(); annDot(ctx, hd.x, hd.y, 11 * k, k); if (annModeDrag === 'level') annAngleLabel(ctx, hd.x, hd.y + 34 * k, k) } ctx.restore() }
+      function annDrawCropMode(ctx, cv) {
+        const k = annPx();
+        ctx.save();
+        if (annCropMode === 'quad') {
+          ctx.fillStyle = 'rgb(0 0 0 / 45%)';
+          ctx.beginPath();
+          ctx.rect(0, 0, cv.width, cv.height);
+          ctx.moveTo(annQuad[0].x, annQuad[0].y);
+          annQuad.slice(1).forEach(q => ctx.lineTo(q.x, q.y));
+          ctx.closePath();
+          ctx.fill('evenodd');
+          ctx.lineWidth = 2 * k;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+          annQuad.forEach(q => annDot(ctx, q.x, q.y, 9 * k, k))
+        } else {
+          if (annLevel) {
+            const r = annLevelKeep(cv.width, cv.height, annLevel);
+            ctx.fillStyle = 'rgb(0 0 0 / 45%)';
+            ctx.beginPath();
+            ctx.rect(0, 0, cv.width, cv.height);
+            ctx.rect((cv.width - r.w) / 2, (cv.height - r.h) / 2, r.w, r.h);
+            ctx.fill('evenodd')
+          }
+          ctx.strokeStyle = 'rgb(255 255 255 / 55%)';
+          ctx.lineWidth = k;
+          ctx.beginPath();
+          for (let i = 1; i < 6; i++) {
+            const x = cv.width * i / 6, y = cv.height * i / 6;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, cv.height);
+            ctx.moveTo(0, y);
+            ctx.lineTo(cv.width, y)
+          }
+          ctx.stroke();
+          const hd = annLevelHandle();
+          annDot(ctx, hd.x, hd.y, 11 * k, k);
+          if (annModeDrag === 'level') annAngleLabel(ctx, hd.x, hd.y + 34 * k, k)
+        }
+        ctx.restore()
+      }
       function annDot(ctx, x, y, r, k) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 2 * k; ctx.strokeStyle = 'rgb(0 0 0 / 60%)'; ctx.stroke() }
       function annAngleLabel(ctx, x, y, k) { const t = annLevel.toFixed(1).replace('.', ',').replace('-0,0', '0,0') + '\u00b0'; ctx.font = `600 ${13 * k}px sans-serif`; const w = ctx.measureText(t).width + 16 * k, h = 24 * k; ctx.fillStyle = 'rgb(25 25 25 / 80%)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, 6 * k); else ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y) }
       /* Finds the paper (B9, D-0139): the photo at 480 px, gray, the Otsu threshold, the largest light region, and its corners by the extremes of x+y and x−y.
