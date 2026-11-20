@@ -7538,7 +7538,34 @@
       }
 
       /* ═══ DRAG-DROP FILES ═══ */
-      function initDragDrop() { ['img-zone', 'doc-zone'].forEach(zId => { const z = $(zId); z.addEventListener('dragover', e => { e.preventDefault(); if (document.querySelector('.dragging')) return; const t = e.dataTransfer.types; if (t && t.includes('Files')) z.classList.add('drag-over') }); z.addEventListener('dragleave', e => { if (!z.contains(e.relatedTarget)) z.classList.remove('drag-over') }); z.addEventListener('drop', async e => { e.preventDefault(); z.classList.remove('drag-over'); if (document.querySelector('.dragging')) return; const txt = e.dataTransfer.getData('text/plain'); if (txt && (txt.startsWith('img_') || txt.startsWith('doc_'))) return; const files = e.dataTransfer.files; if (!files.length) return; for (const f of files) await captureFile(f) }) }); document.addEventListener('dragleave', e => { if (!e.clientX && !e.clientY) document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')) }); document.addEventListener('drop', e => document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))) }
+      function initDragDrop() {
+        ['img-zone', 'doc-zone'].forEach(zId => {
+          const z = $(zId);
+          z.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (document.querySelector('.dragging')) return;
+            const t = e.dataTransfer.types;
+            if (t && t.includes('Files')) z.classList.add('drag-over')
+          });
+          z.addEventListener('dragleave', e => {
+            if (!z.contains(e.relatedTarget)) z.classList.remove('drag-over')
+          });
+          z.addEventListener('drop', async e => {
+            e.preventDefault();
+            z.classList.remove('drag-over');
+            if (document.querySelector('.dragging')) return;
+            const txt = e.dataTransfer.getData('text/plain');
+            if (txt && (txt.startsWith('img_') || txt.startsWith('doc_'))) return;
+            const files = e.dataTransfer.files;
+            if (!files.length) return;
+            for (const f of files) await captureFile(f)
+          })
+        });
+        document.addEventListener('dragleave', e => {
+          if (!e.clientX && !e.clientY) document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))
+        });
+        document.addEventListener('drop', e => document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')))
+      }
 
       /* ═══ DRAG-DROP REORDER ═══ */
       function initReorder() {
