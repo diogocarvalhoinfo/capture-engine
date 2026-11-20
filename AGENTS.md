@@ -91,6 +91,7 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 - Crie cada id com `genId(prefixo)`: `{prefixo}_{Date.now()}_{5 caracteres base36}`. (D26)
 - Evite nomes repetidos na sessão contra as duas listas, a ativa e a dos "Removidos", sem diferenciar maiúsculas. Incremente o número do fim (`imagem-1` → `imagem-2`), e nunca crie `imagem-1-1`; um nome sem número ganha `-1`. (D26)
 - Ao renomear um documento, mantenha a extensão original. (D26)
+- Leia a extensão só depois do primeiro caractere: `.env` não tem extensão, e o segundo `.env` vira `.env-1`. Use `fileExt()` ou a mesma regra. (D-0201)
 - O número de uma sessão sem nome (`#0001`) é a posição dela entre as que existem e muda quando uma mais antiga é apagada, porque não há contador gravado. Não o use como referência fora da ferramenta. (D-0187)
 
 ### Sessões
@@ -104,6 +105,8 @@ Os scanners de segurança marcam o `unsafe-inline` como aviso. No arquivo único
 
 - Mantenha o script em uma IIFE com `'use strict'`, para nenhum nome ficar solto no `window`. Uma função chamada por um `onclick` do HTML fica em `window`. (D-0186)
 - Escreva no console só pelo `SysLogger`. O `info` e o `warn` só aparecem com `TOKEN_DEBUG_MODE`; o `error` aparece sempre, por isso use-o só para falhas reais. (D-0186)
+- Não engula um erro em silêncio. Uma falha real vai para o `SysLogger.error`; um `catch` vazio leva um comentário com o motivo. (D-0202)
+- Escreva uma instrução por linha, com o recuo do bloco. Nenhuma função fica inteira em uma linha só. (D-0203)
 - Escreva um gesto novo com Pointer Events, que tratam o mouse e o toque com o mesmo código. Os `mouse*` e `touch*` que existem ficam em 5 lugares (D-0186):
   - o arrasto e os dois dedos na imagem ampliada;
   - o toque longo na imagem;
@@ -686,10 +689,13 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0198:** no editor, vindo de uma ferramenta de desenho, o primeiro clique direito em uma anotação que não está selecionada só a seleciona, sem abrir o menu. O clique direito em uma anotação já selecionada, ou no Selecionar escolhido na barra, abre o menu da D-0143. Arrastar com o botão direito continua movendo a anotação, sem menu. No touchpad, o clique direito para selecionar abria o menu toda vez. Custo: abrir o menu de uma anotação não selecionada pede dois cliques direitos. Origem: o dono, em 19 de novembro de 2026.
 - **D-0199:** o rodapé diz `© {YEAR} CAPTURE ENGINE · DIOGO CARVALHO`, com o ponto médio como separador único e sem separador depois do ano. É o padrão de identidade do dono para os rodapés dos aplicativos. Custo: uma cópia já exportada continua com o texto dela, porque o `TOKEN_FOOTER_TEXT` vai junto. Origem: o dono, em 19 de novembro de 2026.
 - **D-0200:** o aviso de autoria do HTML e o fecho do README abrem com `© 2026 Capture Engine · Diogo Carvalho`, como o rodapé. O aviso tem 3 linhas e aponta para o repositório, que é o caminho de volta de quem tem só o arquivo. O fecho se chama "Licença", com o nome como link para o site e o link do GitHub ao lado. O `LICENSE` mantém "Copyright (c) 2026 Diogo Carvalho", sem o perfil. É o formato da D-0059 do repositório de referência, que o cheque 35 confere. Custo: nenhum. Origem: o dono, em 20 de novembro de 2026.
+- **D-0201:** um nome que começa por ponto não tem extensão, em todo o código. O segundo `.env` vira `.env-1`, e renomear `.env` para `.env2` dá `.env2`. O código tinha três regras: `fileExt()` e o ZIP contavam o ponto depois do primeiro caractere, e a captura, a renomeação e o visualizador contavam qualquer ponto. Antes, o segundo `.env` virava `-1.env`, e a renomeação dava `.env2.env`. O rótulo da tela de arquivo sem prévia continua mostrando o fim do nome. Custo: nenhum. Origem: o dono, na auditoria de 20 de novembro de 2026 (F-0228).
+- **D-0202:** uma falha real aparece no console pelo `SysLogger.error`: o desfazer, o refazer, a leitura da sessão ao reabrir e a dos documentos removidos. Os 18 `catch` em que o navegador recusa sem perda ganham o motivo em um comentário. Uma falha do desfazer sumia sem rastro. Custo: quem administra vê mais mensagens no console quando algo falha. Origem: o dono, na auditoria de 20 de novembro de 2026 (F-0229).
+- **D-0203:** uma instrução por linha. As 23 funções escritas inteiras em uma linha, até 3 229 caracteres, foram separadas, e a sequência de tokens do JavaScript ficou igual. Ficam longas só as linhas de templates de HTML, do objeto dos ícones e do bloco `ADMIN_JS`, que é do Quine. Custo: cerca de 10 KB a mais no arquivo. Origem: o dono, na auditoria de 20 de novembro de 2026 (F-0226).
 
 ## 7. Pendentes
 
-Nenhum pendente aberto.
+- **F-0230:** o script mostra e esconde de três jeitos: 65 vezes pelo `style.display`, 7 pelo `hidden` e o resto por classes. Os estilos escritos dentro das strings já passaram para o CSS. Origem: a auditoria de 20 de novembro de 2026.
 
 ## 8. IDs
 
