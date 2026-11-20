@@ -5796,19 +5796,19 @@
         if (seq !== annBgSeq) return;
         _cv.width = img.naturalWidth; _cv.height = img.naturalHeight;
       }
-      // annDoUndo / annDoRedo: no special cases, symmetric
-      async function annDoUndo() {
-        if (!annUndoStack.length) return;
-        annRedoStack.push(annCloneState()); // keeps the current state for redo
-        const _prev = annUndoStack.pop();
+      // Undo and redo are one step through the history: from one stack to the other, symmetric
+      async function annStep(from, to) {
+        if (!from.length) return;
+        to.push(annCloneState()); // keeps the current state for the opposite step
+        const _snap = from.pop();
         const prevCrop = annCropBox;
         const prevRot = annCurrentRotation;
-        annHistory.splice(0, annHistory.length, ..._prev.h); // mutate IN PLACE, never reassign
-        annCropBox = _prev.crop ? JSON.parse(JSON.stringify(_prev.crop)) : null;
-        annCurrentRotation = _prev.rot;
+        annHistory.splice(0, annHistory.length, ..._snap.h); // mutate IN PLACE, never reassign
+        annCropBox = _snap.crop ? JSON.parse(JSON.stringify(_snap.crop)) : null;
+        annCurrentRotation = _snap.rot;
         // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
-        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_prev.first;
-        if ('pcrop' in _prev) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_prev.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_prev.pcrop)); else delete _ro.cropBox; } }
+        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_snap.first;
+        if ('pcrop' in _snap) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_snap.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_snap.pcrop)); else delete _ro.cropBox; } }
         const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
         annSelectedIdx = -1; annAllSel = false;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
@@ -5827,36 +5827,8 @@
         }
         setAnnDirty(true); annRenderAll();
       }
-      async function annDoRedo() {
-        if (!annRedoStack.length) return;
-        annUndoStack.push(annCloneState()); // keeps the current state for undo
-        const _next = annRedoStack.pop();
-        const prevCrop = annCropBox;
-        const prevRot = annCurrentRotation;
-        annHistory.splice(0, annHistory.length, ..._next.h); // mutate IN PLACE, never reassign
-        annCropBox = _next.crop ? JSON.parse(JSON.stringify(_next.crop)) : null;
-        annCurrentRotation = _next.rot;
-        // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
-        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_next.first;
-        if ('pcrop' in _next) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_next.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_next.pcrop)); else delete _ro.cropBox; } }
-        const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
-        annSelectedIdx = -1; annAllSel = false;
-        const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
-        // Coordinate shift: crop→no-crop unshift
-        if (prevCrop && !annCropBox) {
-          const cx = prevCrop.x, cy = prevCrop.y;
-          annHistory.forEach(e => {
-            if (e.type === 'free') e.pts.forEach(p => { p.x -= cx; p.y -= cy; });
-            else if (e.type === 'text') { e.x1 -= cx; e.y1 -= cy; }
-            else { e.x1 -= cx; e.y1 -= cy; e.x2 -= cx; e.y2 -= cy; }
-          });
-        }
-        // Reload the clean background if the visual state changed (rotation or crop)
-        if (prevRot !== annCurrentRotation || (!!prevCrop) !== (!!annCropBox) || _bgChanged) {
-          await annLoadCleanBg();
-        }
-        setAnnDirty(true); annRenderAll();
-      }
+      function annDoUndo() { return annStep(annUndoStack, annRedoStack) }
+      function annDoRedo() { return annStep(annRedoStack, annUndoStack) }
       // Grows the textarea in height (scrollHeight) and width (longest line measured in the scaled font).
       // wrap="off" => lines break only with Enter; the textarea must show everything without cutting or scrolling.
       function annAutosizeText() {
