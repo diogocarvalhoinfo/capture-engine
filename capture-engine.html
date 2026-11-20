@@ -5933,7 +5933,42 @@
       function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
       function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
       /* Aplicar alterações with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
-      async function annSaveMode() { const img = $('img-modal-img'), o = modalImage(); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const old = th.src; th.src = URL.createObjectURL(o.blob); if (old.startsWith('blob:')) URL.revokeObjectURL(old) } /* the thumbnail keeps its address while it shows it (D-0168) */ setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
+      async function annSaveMode() {
+        const img = $('img-modal-img'), o = modalImage();
+        if (!o) return;
+        const flat = document.createElement('canvas');
+        flat.width = img.naturalWidth;
+        flat.height = img.naturalHeight;
+        const fx = flat.getContext('2d');
+        fx.drawImage(img, 0, 0);
+        annRedraw();
+        fx.drawImage($('ann-canvas'), 0, 0);
+        const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png'));
+        if (!blob) return;
+        o.firstBlob = o.firstBlob || o.origBlob || o.blob;
+        o.blob = blob;
+        ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]);
+        annHistory.length = 0;
+        annRedoStack.length = 0;
+        annUndoStack.length = 0;
+        annCropBox = null;
+        try {
+          await idbPut('images', o)
+        } catch (e) {
+          keepInTab(o, e)
+        }
+        const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`);
+        if (th) {
+          const old = th.src;
+          th.src = URL.createObjectURL(o.blob);
+          if (old.startsWith('blob:')) URL.revokeObjectURL(old)
+        } /* the thumbnail keeps its address while it shows it (D-0168) */ setAnnDirty(false);
+        isDirty = true;
+        triggerSave();
+        annSaved = true;
+        SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada');
+        annDeactivate()
+      }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
          the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
