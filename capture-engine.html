@@ -7001,7 +7001,42 @@
              While the button is held, passing over another tool opens its tray instead; with a tray open, the mouse over another tool does the same, as a menu bar (D-0142) */
           const fly = b.parentElement.querySelector('.ann-flyout');
           b.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && (annFlyoutOpen.closest('#ann-row-tools') || annFlyoutOpen.id === 'ann-fly-color') && !annTyping()) { annCloseFlyout(); annOpenFlyout(b) } });
-          b.addEventListener('pointerdown', e => { if (e.button !== 0) return; const y0 = e.clientY; let up = false; const mv = ev => { const dy = ev.clientY - y0; if (!up && dy <= -12) { up = true; _held = true; clearTimeout(_hold); if (annFlyoutOpen !== fly) { annCloseFlyout(); open() } } else if (!up && dy >= 12 && annFlyoutOpen === fly) { _held = true; clearTimeout(_hold); annCloseFlyout() } if (!up) return; const over = document.elementFromPoint(ev.clientX, ev.clientY), tb = over && over.closest('.ann-tool-wrap > .ann-btn[aria-controls]'); if (tb && (!annFlyoutOpen || annFlyoutOpen.parentElement !== tb.parentElement)) { annCloseFlyout(); annOpenFlyout(tb) } else if (over && over.id === 'ann-color-custom' && (!annFlyoutOpen || annFlyoutOpen.id !== 'ann-fly-color')) annColorTray(over, true) }; const end = ev => { document.removeEventListener('pointermove', mv); if (!up) return; const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button'); if (opt) opt.click() }; document.addEventListener('pointermove', mv); document.addEventListener('pointerup', end, { once: true }) });
+          b.addEventListener('pointerdown', e => {
+            if (e.button !== 0) return;
+            const y0 = e.clientY;
+            let up = false;
+            const mv = ev => {
+              const dy = ev.clientY - y0;
+              if (!up && dy <= -12) {
+                up = true;
+                _held = true;
+                clearTimeout(_hold);
+                if (annFlyoutOpen !== fly) {
+                  annCloseFlyout();
+                  open()
+                }
+                
+              } else if (!up && dy >= 12 && annFlyoutOpen === fly) {
+                _held = true;
+                clearTimeout(_hold);
+                annCloseFlyout()
+              }
+              if (!up) return;
+              const over = document.elementFromPoint(ev.clientX, ev.clientY), tb = over && over.closest('.ann-tool-wrap > .ann-btn[aria-controls]');
+              if (tb && (!annFlyoutOpen || annFlyoutOpen.parentElement !== tb.parentElement)) {
+                annCloseFlyout();
+                annOpenFlyout(tb)
+              } else if (over && over.id === 'ann-color-custom' && (!annFlyoutOpen || annFlyoutOpen.id !== 'ann-fly-color')) annColorTray(over, true)
+            };
+            const end = ev => {
+              document.removeEventListener('pointermove', mv);
+              if (!up) return;
+              const t = document.elementFromPoint(ev.clientX, ev.clientY), opt = t && t.closest('.ann-flyout button');
+              if (opt) opt.click()
+            };
+            document.addEventListener('pointermove', mv);
+            document.addEventListener('pointerup', end, { once: true })
+          });
           b.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); open(); const o = annFlyoutOpen && annFlyoutOpen.querySelector('button'); if (o) o.focus() } });
         });
         // An option of the tray of another tool picks that tool first (a tray opened by dragging up; D-0142)
