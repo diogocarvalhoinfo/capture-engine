@@ -15,7 +15,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
 - **O segundo documento com um nome que começa por ponto (F-0228, D-0201)** vira `.env-1`, e não `-1.env`. Renomear `.env` para `.env2` dá `.env2`, e não `.env2.env`.
 - **As falhas do desfazer e do refazer (F-0229, D-0202)** aparecem no console, assim como as da leitura de uma sessão; antes, sumiam sem rastro.
-- **O código tem uma instrução por linha (F-0226, D-0203).** As 23 funções escritas em uma linha só foram separadas, sem mudar nenhum token do programa.
+- **O código tem uma instrução por linha (F-0226, D-0203).** As 24 funções escritas em uma linha só foram separadas, sem mudar nenhum token do programa.
 - **Os estilos escritos no script passaram para o CSS (F-0230).** São 12, nas miniaturas, nos Removidos e no documento sem prévia, com 0 pixels diferentes nos dois temas.
 - **A abertura de um documento (F-0227)** decide menos sozinha: a complexidade da função cai de 29 para 16, e o documento sem prévia tem a sua própria função.
 - **A busca da imagem aberta no editor (F-0225)** é uma função só, no lugar de 13 cópias.
