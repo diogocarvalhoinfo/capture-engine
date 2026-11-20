@@ -2353,14 +2353,21 @@
       }
     }
 
+    /* Without a colour, the preview is the rainbow circle of Outra cor, without a ring; with a colour, it keeps its light ring (F-0233) */
     .ann-hex-preview {
       width: 20px;
       height: 20px;
       flex-shrink: 0;
       padding: 0;
       cursor: pointer;
-      border: 2px solid var(--color-white);
-      border-radius: var(--radius-circle)
+      border: 2px solid transparent;
+      border-radius: var(--radius-circle);
+      background-image: var(--gradient-spectrum);
+      background-origin: border-box
+    }
+
+    .ann-hex-preview.has-color {
+      border-color: var(--color-white)
     }
 
     /* The colour picker (D-0156): a square of tones and a bar of hues, above the row of the tray and as wide as it */
@@ -6119,12 +6126,12 @@
           if (b.dataset.color) annHexShow(b.dataset.color); else annHexBlank(); // the eyedropper starts off: a click turns it on until a colour is picked (D-0164)
         }
         /* No colour of its own yet: the tray shows the spectrum and an empty HEX with the #RRGGBB hint, and the picker starts at the current colour (D-0195) */
-        function annHexBlank() { const h = $('ann-hex'); h.value = ''; h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = 'var(--gradient-spectrum)'; annPkFrom(annCurrentColor) }
-        function annHexShow(c, fromPk) { const h = $('ann-hex'); h.value = String(c).toUpperCase(); h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = c; if (!fromPk) annPkFrom(c) }
+        function annHexBlank() { const h = $('ann-hex'); h.value = ''; h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = ''; $('ann-hex-preview').classList.remove('has-color'); annPkFrom(annCurrentColor) }
+        function annHexShow(c, fromPk) { const h = $('ann-hex'); h.value = String(c).toUpperCase(); h.removeAttribute('aria-invalid'); $('ann-hex-preview').style.background = c; $('ann-hex-preview').classList.add('has-color'); if (!fromPk) annPkFrom(c) }
         $('ann-hex').addEventListener('input', e => {
           let v = e.target.value.trim(); if (v && v[0] !== '#') v = '#' + v;
           const ok = ANN_HEX.test(v); e.target.setAttribute('aria-invalid', String(!ok && v.length >= 7));
-          if (ok) { v = v.toLowerCase(); $('ann-hex-preview').style.background = v; annPkFrom(v); annApplyColor(v, true) } else if (!v) $('ann-hex-preview').style.background = 'var(--gradient-spectrum)';
+          if (ok) { v = v.toLowerCase(); $('ann-hex-preview').style.background = v; $('ann-hex-preview').classList.add('has-color'); annPkFrom(v); annApplyColor(v, true) } else if (!v) { $('ann-hex-preview').style.background = ''; $('ann-hex-preview').classList.remove('has-color') }
         });
         $('ann-hex').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); annCloseFlyout(true) } });
         $('ann-eyedrop').onclick = () => annEye(!annEyeOn);
