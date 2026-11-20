@@ -5703,32 +5703,33 @@
       const pdfViewDrop = () => { if (pdfViewUrl) { URL.revokeObjectURL(pdfViewUrl); pdfViewUrl = null } };
       /* The record the document viewer shows: a document, or a PDF of Imagens seen as a document (B6.6) */
       function textRec(id, trash) { const d = (trash ? removedDocs : docs).find(x => x.id === id); if (d) return d; const p = (trash ? removed : images).find(x => x.id === id && x.kind === 'pdf'); return p ? { id: p.id, name: imgName(p), type: 'application/pdf', size: p.blob.size, blob: p.blob, inImages: true } : null }
+      async function showBinaryDoc(o, fext, view, id) {
+        const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
+        $('text-modal-binary-msg').innerHTML = '<svg class="bin-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="bin-ext">' + escapeHTML(ext) + '</span><span class="bin-hint">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
+        $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
+        $('text-modal-content').style.display = 'none';
+        $('text-modal-copy').style.display = 'none';
+        if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
+        if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
+      }
       window.openTextModal = async function (id, trash) {
         const o = textRec(id, trash);
         if (!o) return;
         textModalItemId = id;
         textModalIsTrash = trash;
-        const dot = (o.name || '').lastIndexOf('.'), fext = dot > 0 ? o.name.slice(dot + 1).toLowerCase() : '';
-        const isText = !o.type || o.type.startsWith('text/') || o.type === 'application/json' || o.type === 'application/xml' || o.type === 'application/javascript' || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
+        const fext = fileExt(o.name);
+        const isText = !o.type || o.type.startsWith('text/') || /^application\/(json|xml|javascript)$/.test(o.type) || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
         const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
           try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
           $('text-modal-content').value = val;
           const kind = /^(md|markdown)$/.test(fext) ? 'md' : fext === 'csv' ? 'csv' : /^html?$/.test(fext) ? 'html' : 'text';
-          if (kind !== 'text') { view.hidden = false; view.className = 'view-' + kind; view.append(kind === 'md' ? mdView(val) : kind === 'csv' ? csvView(val) : htmlView(val)) }
+          if (kind !== 'text') { view.hidden = false; view.className = 'view-' + kind; view.append({ md: mdView, csv: csvView, html: htmlView }[kind](val)) }
           $('text-modal-content').style.display = kind === 'text' ? '' : 'none';
           $('text-modal-copy').style.display = '';
           $('text-modal-binary-msg').style.display = 'none';
-        } else {
-          const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
-          $('text-modal-binary-msg').innerHTML = '<svg class="bin-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="bin-ext">' + escapeHTML(ext) + '</span><span class="bin-hint">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
-          $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
-          $('text-modal-content').style.display = 'none';
-          $('text-modal-copy').style.display = 'none';
-          if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
-          if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
-        }
+        } else await showBinaryDoc(o, fext, view, id);
         $('text-modal-title').textContent = o.name || 'Visualizar documento';
         $('text-modal-info').textContent = fmtSize(o.size); // the name is already the title (D-0119)
         $('text-modal-restore').style.display = trash ? 'flex' : 'none';
