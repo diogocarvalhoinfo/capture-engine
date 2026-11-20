@@ -4892,7 +4892,49 @@
       window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); try { await idbMove('images', 'removed_images', id, o) } catch (e) { removed.splice(removed.indexOf(o), 1); delete o.removedAt; images.splice(idx, 0, o); moveFailed(e); return } const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); try { await idbMove('documents', 'removed_documents', id, o) } catch (e) { removedDocs.splice(removedDocs.indexOf(o), 1); delete o.removedAt; docs.splice(idx, 0, o); moveFailed(e); return } const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; const back = { removedAt: o.removedAt, order: o.order, label: o.label }; delete o.removedAt; o.order = nextOrder(images); let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); try { await idbMove('removed_images', 'images', id, o) } catch (e) { images.splice(images.indexOf(o), 1); Object.assign(o, back); removed.splice(idx, 0, o); moveFailed(e); return } renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
-      window.restoreDoc = async function (id) { const idx = removedDocs.findIndex(x => x.id === id); if (idx < 0) return; const o = removedDocs.splice(idx, 1)[0]; const back = { removedAt: o.removedAt, order: o.order, name: o.name }; delete o.removedAt; let baseName = o.name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot > 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } o.name = finalName; o.order = nextOrder(docs); docs.push(o); try { await idbMove('removed_documents', 'documents', id, o) } catch (e) { docs.splice(docs.indexOf(o), 1); Object.assign(o, back); removedDocs.splice(idx, 0, o); moveFailed(e); return } renderDoc(o); $('doc-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
+      window.restoreDoc = async function (id) {
+        const idx = removedDocs.findIndex(x => x.id === id);
+        if (idx < 0) return;
+        const o = removedDocs.splice(idx, 1)[0];
+        const back = { removedAt: o.removedAt, order: o.order, name: o.name };
+        delete o.removedAt;
+        let baseName = o.name || 'texto-1.txt', ext = '';
+        const lastDot = baseName.lastIndexOf('.');
+        if (lastDot > 0) {
+          ext = baseName.substring(lastDot);
+          baseName = baseName.substring(0, lastDot)
+        }
+        let finalName = baseName + ext;
+        while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) {
+          const match = baseName.match(/-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1)
+          } else {
+            baseName = baseName + '-1'
+          }
+          finalName = baseName + ext
+        }
+        o.name = finalName;
+        o.order = nextOrder(docs);
+        docs.push(o);
+        try {
+          await idbMove('removed_documents', 'documents', id, o)
+        } catch (e) {
+          docs.splice(docs.indexOf(o), 1);
+          Object.assign(o, back);
+          removedDocs.splice(idx, 0, o);
+          moveFailed(e);
+          return
+        }
+        renderDoc(o);
+        $('doc-empty').style.display = 'none';
+        renderTrash();
+        updateCounters();
+        updateBtns();
+        isDirty = true;
+        triggerSave()
+      };
       window.setLabel = async function (id, val) { const o = images.find(x => x.id === id); if (!o) return; const oldVal = o.label; let newVal = val.trim(); if (!newVal) { const free = n => !images.some(x => x !== o && x.label.toLowerCase() === n) && !removed.some(x => x.label.toLowerCase() === n); let k = 1; while (!free('imagem-' + k)) k++; newVal = o.defLabel || 'imagem-' + k } /* an empty name gives back the name of the capture, or the first free «imagem-N» for an image older than defLabel */ if (newVal.toLowerCase() !== oldVal.toLowerCase()) { let base = newVal; let finalLabel = newVal; let counter = 1; while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalLabel = base } newVal = finalLabel } o.label = newVal; await idbPut('images', o); isDirty = true; triggerSave(); const el = document.querySelector(`.t-item[data-id="${id}"] .t-label`); if (el && document.activeElement !== el) { el.value = imgName(o) } };
       window.setDocName = async function (id, val) { const o = docs.find(x => x.id === id); if (!o) return; const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot > 0) { ext = oldName.substring(lastDot) } let newName = val.trim(); if (!newName) { newName = oldName } else { if (ext && !newName.toLowerCase().endsWith(ext.toLowerCase())) { newName += ext } } if (newName.toLowerCase() !== oldName.toLowerCase()) { let base = newName, baseExt = ''; const dotIdx = base.lastIndexOf('.'); if (dotIdx > 0) { baseExt = base.substring(dotIdx); base = base.substring(0, dotIdx) } let finalName = newName; while (docs.some(d => d.id !== id && d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = base.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1) } else { base = base + '-1' } finalName = base + baseExt } newName = finalName } o.name = newName; await idbPut('documents', o); isDirty = true; triggerSave(); const el = document.querySelector(`[data-id="${id}"] .d-input`); if (el) { el.value = newName; el.title = newName } };
 
