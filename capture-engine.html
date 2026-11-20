@@ -5301,7 +5301,9 @@
       function annKeepBlobs(o) { const keep = {}; let n = 0; [annHistory, ...annRedoStack.map(st => st.h)].forEach(a => a.forEach(h => { if (h.type === 'image' && annPasteBlobs.has(h.id) && !keep[h.id]) { keep[h.id] = annPasteBlobs.get(h.id); n++ } })); if (n) o.annBlobs = keep; else delete o.annBlobs }
       /* The canvas covers the image itself, and not the box around it: in WebKit, a tall image left the box wider than the image,
          so a drawing stretched sideways on the screen and came out flattened in the saved image */
-      function annFitNow() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }) }
+      /* The canvas follows the box of the image; when its size on screen changes, the marks drawn in screen px (annPx) are drawn again,
+         or after a rotation the crop frame keeps the scale of the old layout (F-0232) */
+      function annFitNow() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; const w0 = c.style.width, h0 = c.style.height; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }); if (annActive && (c.style.width !== w0 || c.style.height !== h0)) annRenderAll() }
       /* WebKit can shrink the box and widen it back inside one frame: a fit measured in between left the canvas at left 0,
          and the observer, which compares frame to frame, saw no change. So each fit is repeated in the next frame, once the layout has settled */
       let annFitFrame = 0;
