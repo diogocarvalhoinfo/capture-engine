@@ -4665,6 +4665,8 @@
       /* The viewer image keeps its blob address while it shows it: Safari on the iPhone may load a shown image again from its
          address, and a revoked one breaks (D-0168). The address of before is revoked when a new one takes its place, or on closing */
       let modalImgUrl = null;
+      // The image record open in the image modal (and in its editor)
+      function modalImage() { return images.find(x => x.id === modalItemId) }
       function modalImgSrc(blob) { const img = $('img-modal-img'), old = modalImgUrl; modalImgUrl = blob ? URL.createObjectURL(blob) : null; img.src = modalImgUrl || ''; if (old) URL.revokeObjectURL(old) }
       // Waits for the image to load, or to fail: an image Safari cannot load does not hold the editor forever
       const modalImgLoad = blob => new Promise(r => { const img = $('img-modal-img'); img.onload = img.onerror = () => { img.onload = img.onerror = null; r() }; modalImgSrc(blob) });
@@ -5291,7 +5293,7 @@
       function annLevelKeep(w, h, deg) { const t = Math.abs(deg) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t), k = Math.min(w / (w * c + h * sn), h / (w * sn + h * c)); return { w: w * k, h: h * k } }
       function annLevelCanvas(src, deg) { const w = src.width, h = src.height, r = annLevelKeep(w, h, deg), W = Math.round(r.w), H = Math.round(r.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.translate(W / 2, H / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -w / 2, -h / 2); return cv }
       /* Aplicar alterações with Cantos livres or Endireitar: the photo with its annotations goes through the transform and becomes the photo (D-0138) */
-      async function annSaveMode() { const img = $('img-modal-img'), o = images.find(x => x.id === modalItemId); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const old = th.src; th.src = URL.createObjectURL(o.blob); if (old.startsWith('blob:')) URL.revokeObjectURL(old) } /* the thumbnail keeps its address while it shows it (D-0168) */ setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
+      async function annSaveMode() { const img = $('img-modal-img'), o = modalImage(); if (!o) return; const flat = document.createElement('canvas'); flat.width = img.naturalWidth; flat.height = img.naturalHeight; const fx = flat.getContext('2d'); fx.drawImage(img, 0, 0); annRedraw(); fx.drawImage($('ann-canvas'), 0, 0); const out = annCropMode === 'quad' ? annWarpQuad(flat, annQuad) : annLevelCanvas(flat, annLevel), blob = await new Promise(r => out.toBlob(r, 'image/png')); if (!blob) return; o.firstBlob = o.firstBlob || o.origBlob || o.blob; o.blob = blob; ['origBlob', 'annHistory', 'annRedoStack', 'annBlobs', 'rotation', 'cropBox'].forEach(k => delete o[k]); annHistory.length = 0; annRedoStack.length = 0; annUndoStack.length = 0; annCropBox = null; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } const th = document.querySelector(`.t-item[data-id="${modalItemId}"] .t-wrap img`); if (th) { const old = th.src; th.src = URL.createObjectURL(o.blob); if (old.startsWith('blob:')) URL.revokeObjectURL(old) } /* the thumbnail keeps its address while it shows it (D-0168) */ setAnnDirty(false); isDirty = true; triggerSave(); annSaved = true; SysLogger.info(annCropMode === 'quad' ? 'Perspectiva desfeita' : 'Foto endireitada'); annDeactivate() }
       /* ═══ PASTED IMAGE ═══ (B7, N4) With the editor open, Ctrl+V puts the image of the clipboard on the photo as an annotation
          { type: 'image', id, x1, y1, x2, y2, ar, rot }. The blob stays in a field of the image record (annBlobs, by id), and the annotation keeps only the id:
          the undo stacks copy the state as JSON, 50 times. The bitmaps are decoded once (annPasteBmp), so annDrawShape stays synchronous */
@@ -5320,7 +5322,7 @@
       if (window.ResizeObserver) { const annFitRo = new ResizeObserver(annFitCanvas); annFitRo.observe($('img-modal-img')); annFitRo.observe($('ann-wrap')) }
       async function annActivate() {
         annActive = true;
-        const o = images.find(x => x.id === modalItemId);
+        const o = modalImage();
         annCurrentRotation = o ? (o.rotation || 0) : 0;
         annHistory = (o && o.annHistory) ? JSON.parse(JSON.stringify(o.annHistory)) : [];
         annPasteForget(); if (o && o.annBlobs) { for (const [id, b] of Object.entries(o.annBlobs)) { annPasteBlobs.set(id, b); await annPasteBitmap(id) } }
@@ -5357,7 +5359,7 @@
         SysLogger.info('Annotation mode ON');
       }
       function annDeactivate() {
-        { const _o = images.find(x => x.id === modalItemId); if (_o && annActive && !annSaved) { if (annOpenCrop) _o.cropBox = annOpenCrop; else delete _o.cropBox } annUseFirst = false; annOpenCrop = null }
+        { const _o = modalImage(); if (_o && annActive && !annSaved) { if (annOpenCrop) _o.cropBox = annOpenCrop; else delete _o.cropBox } annUseFirst = false; annOpenCrop = null }
         clearAnnAwait(); annPasteForget(); annCropMode = 'rect'; Object.entries(ANN_CROP_BTNS).forEach(([k, id]) => annPress(id, k === 'rect')); $('img-modal-img').style.transform = ''; $('ann-wrap').style.overflow = '';
         annActive = false; annDrawing = false; annSelectedIdx = -1; annAllSel = false;
         // A gesture cut in the middle ends here: its snapshot never reaches the undo of another image (F-0084)
@@ -5365,7 +5367,7 @@
         [annDragRafId, annResizeRafId, annRafId].forEach(id => { if (id) cancelAnimationFrame(id) }); annDragRafId = annResizeRafId = annRafId = 0;
         annTempSelectFrom = null; annCloseFlyout();
         // Restore the baked image as the background (for the viewer)
-        const _restoreO = images.find(x => x.id === modalItemId);
+        const _restoreO = modalImage();
         if (_restoreO) {
           modalImgSrc(_restoreO.blob);
         }
@@ -5380,7 +5382,7 @@
         imgBarShow(false);
         if ($('img-modal-overlay').classList.contains('open')) { var _navArr = (modalIsTrash ? removed : images).filter(function (x) { return x.kind !== 'pdf' }); ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navArr.length > 1 ? 'flex' : 'none'; }); }
         document.querySelectorAll('.ann-btn[data-tool]').forEach(b => b.classList.remove('active'));
-        const o = images.find(x => x.id === modalItemId);
+        const o = modalImage();
         if (o) {
           const img = $('img-modal-img');
           img.onload = () => { $('img-modal-dims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' · ' + fmtSize(o.blob.size) }; // the info follows the saved image (B8)
@@ -5495,7 +5497,7 @@
         if (_s && t !== 'select' && (t === 'text' || (_s.hl ? 'highlight' : _s.type) !== t)) { annSelectedIdx = -1; annRenderAll(); }
         const _cv = $('ann-canvas');
         if (_cv) _cv.style.cursor = annToolCursor();
-        const o = images.find(x => x.id === modalItemId);
+        const o = modalImage();
         if (t === 'crop') await annEnterCrop(o, _cv);
         else if (annCropBox) await annLeaveCrop(o, _cv);
         annShowTextStyleBtns();
@@ -5753,7 +5755,7 @@
       // New Undo/Redo system of full-state snapshots
       // annCloneState: exact deep clone (shapes are POJOs, a JSON round trip is safe)
       function annCloneState() {
-        const _po = images.find(x => x.id === modalItemId);
+        const _po = modalImage();
         return {
           h: JSON.parse(JSON.stringify(annHistory)),
           rot: annCurrentRotation,
@@ -5778,7 +5780,7 @@
       let annBgSeq = 0;
       async function annLoadCleanBg() {
         const seq = ++annBgSeq;
-        const o = images.find(x => x.id === modalItemId);
+        const o = modalImage();
         if (!o) return;
         const img = $('img-modal-img'), _cv = $('ann-canvas');
         if (!img || !_cv) return;
@@ -5812,9 +5814,9 @@
         annCropBox = _snap.crop ? JSON.parse(JSON.stringify(_snap.crop)) : null;
         annCurrentRotation = _snap.rot;
         // D19: restore the persisted crop (o.cropBox) when the snapshot captured it; the rotation changes it outside annCropBox
-        const _pcBefore = JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_snap.first;
-        if ('pcrop' in _snap) { const _ro = images.find(x => x.id === modalItemId); if (_ro) { if (_snap.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_snap.pcrop)); else delete _ro.cropBox; } }
-        const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((images.find(x => x.id === modalItemId) || {}).cropBox || null);
+        const _pcBefore = JSON.stringify((modalImage() || {}).cropBox || null), _firstBefore = annUseFirst; annUseFirst = !!_snap.first;
+        if ('pcrop' in _snap) { const _ro = modalImage(); if (_ro) { if (_snap.pcrop) _ro.cropBox = JSON.parse(JSON.stringify(_snap.pcrop)); else delete _ro.cropBox; } }
+        const _bgChanged = _firstBefore !== annUseFirst || _pcBefore !== JSON.stringify((modalImage() || {}).cropBox || null);
         annSelectedIdx = -1; annAllSel = false;
         const _db = $('ann-shape-del-btn'); if (_db) _db.style.display = 'none';
         // Coordinate shift: crop→no-crop unshift
@@ -6023,7 +6025,7 @@
             cX = Math.round(annCropBox.x); cY = Math.round(annCropBox.y);
           }
           const blob = await annRenderSaved(img, fW, fH, cX, cY);
-          const o = images.find(x => x.id === modalItemId);
+          const o = modalImage();
           /* No image came out (a canvas too large for the browser): the editor stays open with the drawing, and the bubble says so (F-0208) */
           if (o && !blob) { SysLogger.error('Aplicar: a imagem não foi gerada'); annAwaitTip(true, 'ann-cancel', 'ann-save', 'Não foi possível aplicar. Tente de novo.'); document.addEventListener('pointerdown', () => annAwaitTip(false), { once: true, capture: true }); return }
           if (o && blob) {
@@ -6076,7 +6078,7 @@
             annCropBox = { x: h - (_cb.y + _cb.h), y: _cb.x, w: _cb.h, h: _cb.w };
           } else {
             // Case B: crop saved outside crop mode -> BH = height of the full base in the current rotation (from origBlob)
-            const _o = images.find(x => x.id === modalItemId);
+            const _o = modalImage();
             if (_o && _o.cropBox && _o.origBlob) {
               const _ob = new Image();
               const _ou = URL.createObjectURL(_o.origBlob);
