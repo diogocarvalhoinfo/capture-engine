@@ -4,6 +4,16 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine · Diogo Carvalho`, como o rodapé.
+
+### Modificado
+
+- **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
+- **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
+- **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
+
 ## [29.12.0] - 2026-11-19
 
 O botão do topo passa a se chamar "Nova sessão", e o primeiro clique direito em uma anotação, vindo de uma ferramenta de desenho, só a seleciona. O rodapé usa o ponto médio. As verificações do projeto passam a executar do repositório de referência.
