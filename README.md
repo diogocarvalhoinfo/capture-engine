@@ -27,7 +27,7 @@ Ferramenta para capturar, organizar e exportar imagens e documentos como evidên
 15. [Estrutura de arquivos](#15-estrutura-de-arquivos)
 16. [Arquitetura](#16-arquitetura)
 17. [Contribuição](#17-contribuição)
-18. [Licença e autor](#18-licença-e-autor)
+18. [Licença](#18-licença)
 
 ## 1. O que é
 
@@ -555,11 +555,8 @@ Veja também: [`AGENTS.md`](AGENTS.md), seções "Regras" e "Armazenamento do na
 
 Projeto pessoal, sem contribuições externas (nem issues nem pull requests); a licença MIT permite usar e adaptar em um fork.
 
-## 18. Licença e autor
+## 18. Licença
 
-**Capture Engine**\
-Direitos autorais (c) 2026 Diogo Carvalho (@diogocarvalhoinfo)\
-Autor: [diogocarvalhoinfo.com](https://diogocarvalhoinfo.com)\
-GitHub: [github.com/diogocarvalhoinfo](https://github.com/diogocarvalhoinfo)
+© 2026 Capture Engine · [Diogo Carvalho](https://diogocarvalhoinfo.com) · [GitHub](https://github.com/diogocarvalhoinfo)
 
-Licenciado sob a Licença MIT. Consulte o arquivo LICENSE distribuído com este software para conhecer os termos completos. Este aviso deve ser mantido em todas as cópias.
+Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para os termos completos.
