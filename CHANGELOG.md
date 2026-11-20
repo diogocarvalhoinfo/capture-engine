@@ -13,6 +13,9 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
 - **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
 - **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
+- **O código perdeu 4 duplicações (F-0221 a F-0224).** Nada muda para quem usa. O desfazer e o refazer são uma função só. O arrasto com o mouse e o toque longo levantam o item pela mesma função. As cores do Visual Builder usam uma função para cada tarefa, e a trava da rolagem dos modais é uma linha. O arquivo tem 3 946 bytes a menos. As linhas repetidas do script caem de 209 para 140, e os blocos clonados, de 27 linhas para 0.
+
+Auditoria de 20 de novembro de 2026: cada mudança passou pelo `validate.sh` completo (35 PASS) e por um teste diferencial. O teste executa o mesmo roteiro no arquivo de antes e no de depois, no Chromium e no Firefox do Playwright, e compara 73 estados.
 
 ## [29.12.0] - 2026-11-19
 
