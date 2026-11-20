@@ -1030,6 +1030,59 @@
       opacity: 1
     }
 
+    /* The thumbnails built by the script: the magnifier, the hand on an image that opens, a removed document and the empty Removidos (F-0230) */
+    .t-overlay svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: var(--color-white);
+      stroke-width: 2;
+      stroke-linecap: round
+    }
+
+    .t-wrap.t-open {
+      cursor: pointer
+    }
+
+    #trash-grid .t-wrap.t-doc {
+      background: var(--color-background);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .trash-empty {
+      min-height: 118px;
+      width: 100%
+    }
+
+    /* A document without a preview: the icon, the extension and the hint (F-0230) */
+    #text-modal-binary-msg .bin-icon {
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: var(--color-muted-foreground);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+      flex-shrink: 0
+    }
+
+    #text-modal-binary-msg .bin-ext {
+      font-size: var(--text-subtitle);
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--color-foreground);
+      letter-spacing: 1px
+    }
+
+    #text-modal-binary-msg .bin-hint {
+      font-size: var(--text-sm);
+      color: var(--color-muted-foreground);
+      line-height: 1.5
+    }
+
     .t-del {
       position: absolute;
       top: -5px;
@@ -1084,6 +1137,7 @@
     }
 
     .t-del svg,
+    .t-restore svg,
     .d-del svg,
     .sb-sess-del svg {
       width: 14px;
@@ -4702,7 +4756,7 @@
         el.dataset.id = o.id;
         el.draggable = false;
         el.addEventListener('dragstart', e => e.preventDefault());
-        el.innerHTML = `<div class="t-wrap" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" style="cursor:pointer" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`;
+        el.innerHTML = `<div class="t-wrap t-open" onclick="window.openImgModal('${escapeHTML(o.id)}',false)" role="button" tabindex="0" aria-label="Ver imagem"><img alt=""><div class="t-overlay"><svg viewBox="0 0 24 24"><path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/></svg></div></div><button class="t-del" title="Remover" onclick="event.stopPropagation();window.delImg('${escapeHTML(o.id)}')">${TRASH_SVG}</button>`;
         el.prepend(markBox(o.id));
         if (o.kind === 'pdf') {
           URL.revokeObjectURL(url);
@@ -4807,7 +4861,7 @@
         }
         grid.innerHTML = '';
         if (total === 0) {
-          grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>'
+          grid.innerHTML = '<div class=\"trash-empty\"></div>'
         }
         removed.forEach(r => {
           const url = URL.createObjectURL(r.blob);
@@ -4817,7 +4871,7 @@
           el.style.opacity = '1';
           el.style.cursor = 'pointer';
           el.onclick = () => window.openImgModal(r.id, true);
-          el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`;
+          el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`;
           if (r.kind === 'pdf') pdfFace(el, r);
           grid.appendChild(el)
         });
@@ -4827,7 +4881,7 @@
           el.style.opacity = '1';
           el.style.cursor = 'pointer';
           el.onclick = () => window.openTextModal(d.id, true);
-          el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`;
+          el.innerHTML = `<div class=\"t-wrap t-doc\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled>`;
           grid.appendChild(el)
         });
         setTimeout(() => {
@@ -5668,7 +5722,7 @@
           $('text-modal-binary-msg').style.display = 'none';
         } else {
           const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
-          $('text-modal-binary-msg').innerHTML = '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:none;stroke:var(--color-muted-foreground);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:0.5;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="font-size:var(--text-subtitle);font-weight:600;text-transform:uppercase;color:var(--color-foreground);letter-spacing:1px">' + escapeHTML(ext) + '</span><span style="font-size:var(--text-sm);color:var(--color-muted-foreground);line-height:1.5">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
+          $('text-modal-binary-msg').innerHTML = '<svg class="bin-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="bin-ext">' + escapeHTML(ext) + '</span><span class="bin-hint">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
           $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
           $('text-modal-content').style.display = 'none';
           $('text-modal-copy').style.display = 'none';
