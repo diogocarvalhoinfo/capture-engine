@@ -6401,7 +6401,87 @@
         ctx.save(); ctx.beginPath(); if (h.type === 'circle') ctx.ellipse(ex + ew / 2, ey + eh / 2, ew / 2 || 1, eh / 2 || 1, 0, 0, Math.PI * 2); else ctx.rect(x, y, w, hh); ctx.clip();
         ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(t, 0, 0, cw, ch, x, y, w, hh); ctx.restore();
       }
-      function annDrawShape(ctx, h) { if (h.type === 'image') { annDrawImage(ctx, h); return } if (h.blur) { annDrawBlur(ctx, h); return } ctx.strokeStyle = h.color; ctx.lineWidth = h.lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.fillStyle = 'transparent'; if (h.type === 'circle') { const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry; ctx.beginPath(); ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2); if (h.fill) { ctx.fillStyle = h.color; ctx.fill() } ctx.stroke() } else if (h.type === 'rect') { const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)]; if (h.fill) { ctx.fillStyle = h.color; ctx.fillRect(..._r) } ctx.strokeRect(..._r) } else if (h.type === 'arrow') { ctx.beginPath(); ctx.moveTo(h.x1, h.y1); ctx.lineTo(h.x2, h.y2); ctx.stroke(); const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2; ctx.beginPath(); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4)); ctx.moveTo(h.x2, h.y2); ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4)); ctx.stroke() } else if (h.type === 'free' && h.pts && h.pts.length > 1) { ctx.save(); annStrokeStyle(ctx, h.color, h.lw, h.hl); annCR(ctx, h.pts, !!h.closed); ctx.restore() } else if (h.type === 'text' && h.txt) { const fontSize = h.fontSize || 24; let _fStr = ''; if (h.italic) _fStr += 'italic '; if (h.bold !== false) _fStr += 'bold '; _fStr += fontSize + 'px sans-serif'; ctx.font = _fStr; ctx.fillStyle = h.color; const lineH = fontSize * ANN_TEXT_LINE_RATIO; const halfLeading = (lineH - fontSize) / 2; const lines = String(h.txt).split('\n'); ctx.textBaseline = 'top'; if (h.bg) { const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length; ctx.save(); if (h.rot) { ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); ctx.fillRect(-_p, 0, _w + _p * 2, _hh) } else ctx.fillRect(h.x1 - _p, h.y1, _w + _p * 2, _hh); ctx.restore(); ctx.fillStyle = annOnColor(h.color) } if (h.rot) { ctx.save(); ctx.translate(h.x1, h.y1); ctx.rotate(h.rot * Math.PI / 180); lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH)); ctx.restore() } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH)); ctx.textBaseline = 'alphabetic'; } }
+      function annDrawShape(ctx, h) {
+        if (h.type === 'image') {
+          annDrawImage(ctx, h);
+          return
+        }
+        if (h.blur) {
+          annDrawBlur(ctx, h);
+          return
+        }
+        ctx.strokeStyle = h.color;
+        ctx.lineWidth = h.lw;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.fillStyle = 'transparent';
+        if (h.type === 'circle') {
+          const rx = Math.abs(h.x2 - h.x1) / 2, ry = Math.abs(h.y2 - h.y1) / 2, cx = Math.min(h.x1, h.x2) + rx, cy = Math.min(h.y1, h.y2) + ry;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx || 1, ry || 1, 0, 0, Math.PI * 2);
+          if (h.fill) {
+            ctx.fillStyle = h.color;
+            ctx.fill()
+          }
+          ctx.stroke()
+        } else if (h.type === 'rect') {
+          const _r = [Math.min(h.x1, h.x2), Math.min(h.y1, h.y2), Math.abs(h.x2 - h.x1), Math.abs(h.y2 - h.y1)];
+          if (h.fill) {
+            ctx.fillStyle = h.color;
+            ctx.fillRect(..._r)
+          }
+          ctx.strokeRect(..._r)
+        } else if (h.type === 'arrow') {
+          ctx.beginPath();
+          ctx.moveTo(h.x1, h.y1);
+          ctx.lineTo(h.x2, h.y2);
+          ctx.stroke();
+          const a = Math.atan2(h.y2 - h.y1, h.x2 - h.x1), hl = 12 + h.lw * 2;
+          ctx.beginPath();
+          ctx.moveTo(h.x2, h.y2);
+          ctx.lineTo(h.x2 - hl * Math.cos(a - 0.4), h.y2 - hl * Math.sin(a - 0.4));
+          ctx.moveTo(h.x2, h.y2);
+          ctx.lineTo(h.x2 - hl * Math.cos(a + 0.4), h.y2 - hl * Math.sin(a + 0.4));
+          ctx.stroke()
+        } else if (h.type === 'free' && h.pts && h.pts.length > 1) {
+          ctx.save();
+          annStrokeStyle(ctx, h.color, h.lw, h.hl);
+          annCR(ctx, h.pts, !!h.closed);
+          ctx.restore()
+        } else if (h.type === 'text' && h.txt) {
+          const fontSize = h.fontSize || 24;
+          let _fStr = '';
+          if (h.italic) _fStr += 'italic ';
+          if (h.bold !== false) _fStr += 'bold ';
+          _fStr += fontSize + 'px sans-serif';
+          ctx.font = _fStr;
+          ctx.fillStyle = h.color;
+          const lineH = fontSize * ANN_TEXT_LINE_RATIO;
+          const halfLeading = (lineH - fontSize) / 2;
+          const lines = String(h.txt).split('\n');
+          ctx.textBaseline = 'top';
+          if (h.bg) {
+            const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length;
+            ctx.save();
+            if (h.rot) {
+              ctx.translate(h.x1, h.y1);
+              ctx.rotate(h.rot * Math.PI / 180);
+              ctx.fillRect(-_p, 0, _w + _p * 2, _hh)
+            } else ctx.fillRect(h.x1 - _p, h.y1, _w + _p * 2, _hh);
+            ctx.restore();
+            ctx.fillStyle = annOnColor(h.color)
+          }
+          if (h.rot) {
+            ctx.save();
+            ctx.translate(h.x1, h.y1);
+            ctx.rotate(h.rot * Math.PI / 180);
+            lines.forEach((ln, i) => ctx.fillText(ln, 0, halfLeading + i * lineH));
+            ctx.restore()
+          } else lines.forEach((ln, i) => ctx.fillText(ln, h.x1, h.y1 + halfLeading + i * lineH));
+          ctx.textBaseline = 'alphabetic';
+        }
+        
+      }
       function annCanvasXY(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) } }
       function annCanvasXYClamped(e) { const cv = $('ann-canvas'), r = cv.getBoundingClientRect(); const scaleX = cv.width / r.width, scaleY = cv.height / r.height; const x = Math.max(0, Math.min(cv.width, (e.clientX - r.left) * scaleX)); const y = Math.max(0, Math.min(cv.height, (e.clientY - r.top) * scaleY)); return { x, y } }
       function annUpdateThicknessIcon() {
