@@ -4682,8 +4682,7 @@
         imgBarShow(false);
 
         $('img-modal-overlay').classList.add('open');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = document.body.style.overflow = 'hidden';
         const _navShow = (trash ? removed : images).filter(x => x.kind !== 'pdf').length > 1;
         ['img-nav-prev', 'img-nav-next'].forEach(function(nid) { var nb = $(nid); if (nb) nb.style.display = _navShow ? 'flex' : 'none'; });
       };
@@ -4695,8 +4694,7 @@
         annDeactivate();
         resetImgZoom();
         $('img-modal-overlay').classList.remove('open');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
+        document.documentElement.style.overflow = document.body.style.overflow = '';
         modalImgSrc(null);
       }
 
@@ -5074,8 +5072,7 @@
         textEditEnd(); $('text-modal-edit').style.display = isText && !trash ? '' : 'none'; // Editar: the plain text, also of Markdown, CSV and HTML (D-0125)
         $('text-modal-dl').style.display = 'flex';
         $('text-modal-overlay').classList.add('open');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = document.body.style.overflow = 'hidden';
       };
       /* The minimal text editor (D-0125): Editar turns the page into the plain text, editable; Descartar alterações and Aplicar alterações end it, as in the image editor.
          With changes not saved, Esc, the ✕ and a click outside make the two pulse, and nothing closes */
@@ -5091,8 +5088,7 @@
         if (textEditDirty()) { textEditAlert(); return }
         textEditEnd();
         $('text-modal-overlay').classList.remove('open');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
+        document.documentElement.style.overflow = document.body.style.overflow = '';
         $('text-modal-content').value = '';
         $('text-modal-view').replaceChildren(); pdfViewDrop();
       }
@@ -7105,8 +7101,7 @@
         const o = $('vb-overlay');
         if (!o) return;
         o.classList.add('open');
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = document.body.style.overflow = 'hidden';
         _vbLabelDirty.user = false;
         _vbLabelDirty.equip = false;
         applySwatchVisuals();
@@ -7115,8 +7110,7 @@
       window.closeSettingsModal = function () {
         const _vbOv = $('vb-overlay');
         if (_vbOv) _vbOv.classList.remove('open');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
+        document.documentElement.style.overflow = document.body.style.overflow = '';
         if (window._deactivateAdmin) window._deactivateAdmin();
         if (isDirty) {
           triggerSave();
