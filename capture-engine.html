@@ -5342,7 +5342,67 @@
       const dosDate = (t, d) => new Date(1980 + (d >> 9), ((d >> 5) & 15) - 1, d & 31, t >> 11, (t >> 5) & 63, (t & 31) * 2);
       function listZip(u) { const v = new DataView(u.buffer, u.byteOffset, u.byteLength); let e = -1; for (let i = u.length - 22; i >= Math.max(0, u.length - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break } if (e < 0) return null; const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const rows = [], utf = new TextDecoder(), lat = new TextDecoder('latin1'); for (let k = 0; k < n && p + 46 <= u.length && v.getUint32(p, true) === 0x02014b50; k++) { const fl = v.getUint16(p + 8, true), nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true); const name = (fl & 0x800 ? utf : lat).decode(u.subarray(p + 46, p + 46 + nl)); rows.push([name, name.endsWith('/') ? '' : fmtSize(v.getUint32(p + 24, true)), archDate(dosDate(v.getUint16(p + 12, true), v.getUint16(p + 14, true)))]); p += 46 + nl + xl + cl } return { rows } }
       function listTar(u) { const rows = [], dec = new TextDecoder(), str = (a, b) => dec.decode(u.subarray(a, b)).replace(/\0.*$/s, ''), oct = (a, b) => parseInt(str(a, b).trim() || '0', 8); for (let p = 0; p + 512 <= u.length && rows.length < 5000;) { if (u[p] === 0) break; const name = (str(p + 345, p + 500) ? str(p + 345, p + 500) + '/' : '') + str(p, p + 100), size = oct(p + 124, p + 136), type = String.fromCharCode(u[p + 156] || 48); if (type !== 'x' && type !== 'g' && type !== 'L') rows.push([type === '5' ? name.replace(/\/?$/, '/') : name, type === '5' ? '' : fmtSize(size), archDate(new Date(oct(p + 136, p + 148) * 1000))]); p += 512 + Math.ceil(size / 512) * 512 } return rows.length ? { rows } : null }
-      function listRar(u) { const sig = String.fromCharCode(...u.subarray(0, 8)); const v = new DataView(u.buffer, u.byteOffset, u.byteLength), rows = [], dec = new TextDecoder(); if (sig === 'Rar!\x1a\x07\x01\x00') { let p = 8; const vint = () => { let r = 0, s = 1, b; do { b = u[p++]; r += (b & 127) * s; s *= 128 } while (b & 128 && p < u.length); return r }; while (p + 7 < u.length && rows.length < 5000) { const start = p + 4; p = start; const hs = vint(), body = p, type = vint(), hf = vint(); if (type === 4) return { rows: [], note: 'Lista protegida por senha' }; if (hf & 1) vint(); const ds = hf & 2 ? vint() : 0; if (type === 2) { const ff = vint(), size = vint(); vint(); let t = null; if (ff & 2) { t = new Date(v.getUint32(p, true) * 1000); p += 4 } if (ff & 4) p += 4; vint(); vint(); const nl = vint(); const name = dec.decode(u.subarray(p, p + nl)); rows.push([ff & 1 ? name + '/' : name, ff & 1 ? '' : fmtSize(size), archDate(t)]) } if (type === 5) break; p = body + hs + ds } return { rows } } if (sig.startsWith('Rar!\x1a\x07\x00')) { let p = 7; while (p + 7 <= u.length && rows.length < 5000) { const type = u[p + 2], fl = v.getUint16(p + 3, true), hs = v.getUint16(p + 5, true); if (type === 0x73 && fl & 0x80) return { rows: [], note: 'Lista protegida por senha' }; let add = fl & 0x8000 ? v.getUint32(p + 7, true) : 0; if (type === 0x74) { add = v.getUint32(p + 7, true); const size = v.getUint32(p + 11, true), tm = v.getUint32(p + 20, true), nl = v.getUint16(p + 26, true), big = fl & 0x100 ? 8 : 0; const name = new TextDecoder('latin1').decode(u.subarray(p + 32 + big, p + 32 + big + nl)).split('\0')[0].replace(/\\/g, '/'); const dir = (fl & 0xe0) === 0xe0; rows.push([dir ? name + '/' : name, dir ? '' : fmtSize(size), archDate(dosDate(tm & 0xffff, tm >>> 16))]) } if (!hs || type === 0x7b) break; p += hs + add } return { rows } } return null }
+      function listRar(u) {
+        const sig = String.fromCharCode(...u.subarray(0, 8));
+        const v = new DataView(u.buffer, u.byteOffset, u.byteLength), rows = [], dec = new TextDecoder();
+        if (sig === 'Rar!\x1a\x07\x01\x00') {
+          let p = 8;
+          const vint = () => {
+            let r = 0, s = 1, b;
+            do {
+              b = u[p++];
+              r += (b & 127) * s;
+              s *= 128
+            } while (b & 128 && p < u.length);
+            return r
+          };
+          while (p + 7 < u.length && rows.length < 5000) {
+            const start = p + 4;
+            p = start;
+            const hs = vint(), body = p, type = vint(), hf = vint();
+            if (type === 4) return { rows: [], note: 'Lista protegida por senha' };
+            if (hf & 1) vint();
+            const ds = hf & 2 ? vint() : 0;
+            if (type === 2) {
+              const ff = vint(), size = vint();
+              vint();
+              let t = null;
+              if (ff & 2) {
+                t = new Date(v.getUint32(p, true) * 1000);
+                p += 4
+              }
+              if (ff & 4) p += 4;
+              vint();
+              vint();
+              const nl = vint();
+              const name = dec.decode(u.subarray(p, p + nl));
+              rows.push([ff & 1 ? name + '/' : name, ff & 1 ? '' : fmtSize(size), archDate(t)])
+            }
+            if (type === 5) break;
+            p = body + hs + ds
+          }
+          return { rows }
+        }
+        if (sig.startsWith('Rar!\x1a\x07\x00')) {
+          let p = 7;
+          while (p + 7 <= u.length && rows.length < 5000) {
+            const type = u[p + 2], fl = v.getUint16(p + 3, true), hs = v.getUint16(p + 5, true);
+            if (type === 0x73 && fl & 0x80) return { rows: [], note: 'Lista protegida por senha' };
+            let add = fl & 0x8000 ? v.getUint32(p + 7, true) : 0;
+            if (type === 0x74) {
+              add = v.getUint32(p + 7, true);
+              const size = v.getUint32(p + 11, true), tm = v.getUint32(p + 20, true), nl = v.getUint16(p + 26, true), big = fl & 0x100 ? 8 : 0;
+              const name = new TextDecoder('latin1').decode(u.subarray(p + 32 + big, p + 32 + big + nl)).split('\0')[0].replace(/\\/g, '/');
+              const dir = (fl & 0xe0) === 0xe0;
+              rows.push([dir ? name + '/' : name, dir ? '' : fmtSize(size), archDate(dosDate(tm & 0xffff, tm >>> 16))])
+            }
+            if (!hs || type === 0x7b) break;
+            p += hs + add
+          }
+          return { rows }
+        }
+        return null
+      }
       async function archiveList(blob, ext) { try { let u = new Uint8Array(await blob.arrayBuffer()); if (ext === 'tgz' || ext === 'gz') { if (typeof DecompressionStream !== 'function') return null; u = new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); return listTar(u) } if (ext === 'zip') return listZip(u); if (ext === 'tar') return listTar(u); if (ext === 'rar') return listRar(u); if (ext === '7z') return { rows: [], note: 'Lista não disponível: o .7z guarda a lista de arquivos comprimida' }; } catch (e) { SysLogger.warn('Archive list: ' + e.message) } return null }
       /* The list as a tree: the folders with their files under them, indented; the size and the date on the right (D-0126) */
       const ARCH_ICON = { dir: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' };
