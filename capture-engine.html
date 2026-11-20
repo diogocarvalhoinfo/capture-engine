@@ -6821,24 +6821,29 @@
           }
           function startEdgeScroll(cx, cy) { lastX = cx; lastY = cy; if (!scrollRaf) scrollRaf = requestAnimationFrame(edgeScroll) }
 
+          /* Lifts the held item, by the mouse after the threshold or by the finger after the long press: it shrinks and floats under the pointer,
+             and a placeholder keeps its place in the list */
+          function lift(cx, cy) {
+            const r = dragEl.getBoundingClientRect();
+            w = r.width / uiZoom(); h = r.height / uiZoom();
+            const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
+            ph = makePlaceholder(r);
+            container.insertBefore(ph, dragEl.nextSibling);
+            dragEl.style.width = w + 'px';
+            dragEl.style.height = h + 'px';
+            dragEl.classList.add('dragging');
+            positionFloat(cx, cy);
+            try { dragEl.setPointerCapture(pointerId) } catch (_) {}
+            startEdgeScroll(cx, cy);
+          }
+
           function onMove(e) {
             if (!dragEl) return;
             const cx = e.clientX, cy = e.clientY;
             if (!active) {
               if (Math.hypot(cx - startX, cy - startY) < DRAG_THRESHOLD) return; // still a click
               active = true;
-              const r = dragEl.getBoundingClientRect();
-              w = r.width / uiZoom(); h = r.height / uiZoom();
-              const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
-              // creates the placeholder in the current place and takes the item out of the flow
-              ph = makePlaceholder(r);
-              container.insertBefore(ph, dragEl.nextSibling);
-              dragEl.style.width = w + 'px';
-              dragEl.style.height = h + 'px';
-              dragEl.classList.add('dragging');
-              positionFloat(cx, cy);
-              try { dragEl.setPointerCapture(pointerId) } catch (_) {}
-              startEdgeScroll(cx, cy);
+              lift(cx, cy);
               return;
             }
             e.preventDefault();
@@ -6968,28 +6973,15 @@
                 active = true;
                 if (dragEl) {
                   dragEl.style.touchAction = 'none';
-                  const r = dragEl.getBoundingClientRect();
-                  w = r.width / uiZoom(); h = r.height / uiZoom();
-                  const SCALE = 0.75; grabDX = (startX - r.left) * SCALE; grabDY = (startY - r.top) * SCALE;
-                  ph = makePlaceholder(r);
-                  container.insertBefore(ph, dragEl.nextSibling);
-                  dragEl.style.width = w + 'px';
-                  dragEl.style.height = h + 'px';
-                  dragEl.classList.add('dragging');
-                  positionFloat(startX, startY);
-                  try { dragEl.setPointerCapture(pointerId) } catch (_) {}
-                  startEdgeScroll(startX, startY);
+                  lift(startX, startY);
                 }
                 container.addEventListener('pointermove', onMove);
               }, LONG_PRESS_DELAY);
-
-              window.addEventListener('pointerup', onUp);
-              window.addEventListener('pointercancel', onUp);
             } else {
               container.addEventListener('pointermove', onMove);
-              window.addEventListener('pointerup', onUp);
-              window.addEventListener('pointercancel', onUp);
             }
+            window.addEventListener('pointerup', onUp);
+            window.addEventListener('pointercancel', onUp);
           });
         });
       }
