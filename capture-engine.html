@@ -7140,29 +7140,45 @@
         /* The whole Visual Builder lives in the ADMIN_EDIT block, removed in the Export User.
            Without this early return, boot() aborts and the app never starts (see D25). */
         if (!$('cfg-cor-principal')) return;
-        // Main color input
-        $('cfg-cor-principal').addEventListener('input', (e) => {
-          sysColors.main = e.target.value;
+        // Every color change ends the same way: the swatches and the theme color follow, and the settings count as changed
+        function setColor(key, value) {
+          sysColors[key] = value;
           applySwatchVisuals();
           updateThemeColor();
           isDirty = true;
-        });
-        $('cfg-cor-hex').addEventListener('input', (e) => {
-          let val = e.target.value.toUpperCase();
-          if (e.target.value !== val) {
-            let pos = e.target.selectionStart;
-            e.target.value = val;
-            e.target.setSelectionRange(pos, pos);
-          }
-          let c = val;
-          if (c.length > 0 && !c.startsWith('#')) c = '#' + c;
-          if (/^#[0-9A-F]{6}$/i.test(c)) {
-            sysColors.main = c;
-            applySwatchVisuals();
-            updateThemeColor();
-            isDirty = true;
-          }
-        });
+        }
+        // A hex field turns into capitals as it is typed, keeping the cursor; a full #RRGGBB becomes the color.
+        // With allowEmpty, an empty field is the automatic color.
+        function bindHexInput(id, key, allowEmpty) {
+          $(id).addEventListener('input', (e) => {
+            let val = e.target.value.toUpperCase();
+            if (e.target.value !== val) {
+              let pos = e.target.selectionStart;
+              e.target.value = val;
+              e.target.setSelectionRange(pos, pos);
+            }
+            let c = val;
+            if (allowEmpty && c === '') { setColor(key, ''); return; }
+            if (c.length > 0 && !c.startsWith('#')) c = '#' + c;
+            if (/^#[0-9A-F]{6}$/i.test(c)) setColor(key, c);
+          });
+        }
+        // Color swatch: the picker sets the color; a double click or a right click clears it to automatic
+        function bindSwatch(inputId, wrapId, sysKey) {
+          const inp = $(inputId);
+          if (!inp) return;
+          inp.addEventListener('input', (e) => setColor(sysKey, e.target.value));
+          const clearSwatch = (e) => {
+            e.preventDefault();
+            setColor(sysKey, '');
+          };
+          $(wrapId).addEventListener('dblclick', clearSwatch);
+          $(wrapId).addEventListener('contextmenu', clearSwatch);
+        }
+
+        // Main color input
+        $('cfg-cor-principal').addEventListener('input', (e) => setColor('main', e.target.value));
+        bindHexInput('cfg-cor-hex', 'main', false);
         $('cfg-cor-hex').addEventListener('blur', (e) => {
           let c = e.target.value;
           if (!c.startsWith('#')) c = '#' + c;
@@ -7170,82 +7186,21 @@
           else $('cfg-cor-hex').value = c.toUpperCase();
         });
 
-        // Foreground color input
-        $('cfg-cor-fg').addEventListener('input', (e) => {
-          sysColors.fg = e.target.value;
-          applySwatchVisuals();
-          updateThemeColor();
-          isDirty = true;
-        });
-        $('cfg-fg-hex').addEventListener('input', (e) => {
-          let val = e.target.value.toUpperCase();
-          if (e.target.value !== val) {
-            let pos = e.target.selectionStart;
-            e.target.value = val;
-            e.target.setSelectionRange(pos, pos);
-          }
-          let c = val;
-          if (c === '') {
-            sysColors.fg = '';
-            applySwatchVisuals();
-            updateThemeColor();
-            isDirty = true;
-          } else {
-            if (!c.startsWith('#')) c = '#' + c;
-            if (/^#[0-9A-F]{6}$/i.test(c)) {
-              sysColors.fg = c;
-              applySwatchVisuals();
-              updateThemeColor();
-              isDirty = true;
-            }
-          }
-        });
+        // Foreground color input; a double click or a right click clears it to auto
+        bindSwatch('cfg-cor-fg', 'wrap-cor-fg', 'fg');
+        bindHexInput('cfg-fg-hex', 'fg', true);
         $('cfg-fg-hex').addEventListener('blur', (e) => {
           let c = e.target.value;
           if (c === '') return;
           if (!c.startsWith('#')) c = '#' + c;
-          if (!/^#[0-9A-F]{6}$/i.test(c)) {
-            sysColors.fg = '';
-            applySwatchVisuals();
-            updateThemeColor();
-            isDirty = true;
-          } else $('cfg-fg-hex').value = c.toUpperCase();
+          if (!/^#[0-9A-F]{6}$/i.test(c)) setColor('fg', '');
+          else $('cfg-fg-hex').value = c.toUpperCase();
         });
 
-        // Double click and right click clear foreground to auto
-        const clearFg = (e) => {
-          e.preventDefault();
-          sysColors.fg = '';
-          applySwatchVisuals();
-          updateThemeColor();
-          isDirty = true;
-        };
-        $('wrap-cor-fg').addEventListener('dblclick', clearFg);
-        $('wrap-cor-fg').addEventListener('contextmenu', clearFg);
-
-        // Title color swatches — bindTitleSwatch(inputId, bgId, wrapId, sysKey, cssVar)
-        function bindTitleSwatch(inputId, bgId, wrapId, sysKey, cssVar) {
-          const inp = $(inputId);
-          if (!inp) return;
-          inp.addEventListener('input', (e) => {
-            sysColors[sysKey] = e.target.value;
-            applySwatchVisuals();
-            updateThemeColor();
-            isDirty = true;
-          });
-          const clearSwatch = (e) => {
-            e.preventDefault();
-            sysColors[sysKey] = '';
-            applySwatchVisuals();
-            updateThemeColor();
-            isDirty = true;
-          };
-          $(wrapId).addEventListener('dblclick', clearSwatch);
-          $(wrapId).addEventListener('contextmenu', clearSwatch);
-        }
-        bindTitleSwatch('cfg-cor-tstart',  'sw-tstart-bg',  'wrap-cor-tstart',  'tStart',  '--color-title-start');
-        bindTitleSwatch('cfg-cor-taccent', 'sw-taccent-bg', 'wrap-cor-taccent', 'tAccent', '--color-title-accent');
-        bindTitleSwatch('cfg-cor-tend',    'sw-tend-bg',    'wrap-cor-tend',    'tEnd',    '--color-title-end');
+        // Title color swatches
+        bindSwatch('cfg-cor-tstart', 'wrap-cor-tstart', 'tStart');
+        bindSwatch('cfg-cor-taccent', 'wrap-cor-taccent', 'tAccent');
+        bindSwatch('cfg-cor-tend', 'wrap-cor-tend', 'tEnd');
 
         // Live text settings
         function syncTitleSpans() {
@@ -7269,24 +7224,22 @@
           isDirty = true;
         });
 
-        // Live session visibility settings
-        $('cfg-show-user').addEventListener('change', (e) => {
-          $('session-user').style.display = e.target.checked ? '' : 'none';
-          const idWrap = $('id-section-wrap');
-          if (idWrap) { const showAny = $('cfg-show-user').checked || $('cfg-show-pc').checked; idWrap.style.display = showAny ? 'flex' : 'none' }
-          isDirty = true;
-        });
+        // Live session visibility settings: the field shows or hides, and the identification block hides with both fields
+        function bindShowField(switchId, fieldId) {
+          $(switchId).addEventListener('change', (e) => {
+            $(fieldId).style.display = e.target.checked ? '' : 'none';
+            const idWrap = $('id-section-wrap');
+            if (idWrap) { const showAny = $('cfg-show-user').checked || $('cfg-show-pc').checked; idWrap.style.display = showAny ? 'flex' : 'none' }
+            isDirty = true;
+          });
+        }
+        bindShowField('cfg-show-user', 'session-user');
         $('cfg-user-label').addEventListener('input', (e) => {
           _vbLabelDirty.user = true;
           $('session-user').placeholder = e.target.value;
           isDirty = true;
         });
-        $('cfg-show-pc').addEventListener('change', (e) => {
-          $('session-pc').style.display = e.target.checked ? '' : 'none';
-          const idWrap = $('id-section-wrap');
-          if (idWrap) { const showAny = $('cfg-show-user').checked || $('cfg-show-pc').checked; idWrap.style.display = showAny ? 'flex' : 'none' }
-          isDirty = true;
-        });
+        bindShowField('cfg-show-pc', 'session-pc');
         $('cfg-equip-label').addEventListener('input', (e) => {
           _vbLabelDirty.equip = true;
           $('session-pc').placeholder = e.target.value;
@@ -7304,15 +7257,8 @@
           isDirty = true;
         });
 
-        // Max dimension radio group
-        document.querySelectorAll('input[name="cfg-max-dim"]').forEach(el => {
-          el.addEventListener('change', () => {
-            isDirty = true;
-          });
-        });
-
-        // Purge radio group
-        document.querySelectorAll('input[name="cfg-purge"]').forEach(el => {
+        // Max dimension and purge radio groups
+        document.querySelectorAll('input[name="cfg-max-dim"], input[name="cfg-purge"]').forEach(el => {
           el.addEventListener('change', () => {
             isDirty = true;
           });
