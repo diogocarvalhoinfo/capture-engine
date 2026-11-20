@@ -5194,7 +5194,44 @@
 
       /* Modal layers: Tab stays in the top layer, and closing it gives the focus back. Outside it all is inert but the banners,
          the notice and the tooltip. The Visual Builder and the export modal do not exist in the Export User, hence the filter. */
-      function initModalLayers() { const stack = []; const keep = el => el.matches('script, .ce-banner, .ce-notice, .ce-tip'); const apply = () => { const top = stack.length ? stack[stack.length - 1].el : null; [...document.body.children].forEach(ch => { if (keep(ch)) return; if (top && ch !== top) { if (!ch.inert) { ch.inert = true; ch.dataset.layerInert = '1' } } else if (ch.dataset.layerInert) { ch.inert = false; delete ch.dataset.layerInert } }) }; const sync = el => { const open = el.classList.contains('open'), i = stack.findIndex(l => l.el === el); if (open && i < 0) { stack.push({ el, from: document.activeElement }); apply(); if (!el.contains(document.activeElement)) el.focus({ preventScroll: true }) } else if (!open && i >= 0) { const l = stack.splice(i, 1)[0]; apply(); if (l.from && l.from.isConnected && !l.from.closest('[inert]')) l.from.focus({ preventScroll: true }) } }; ['img-modal-overlay', 'text-modal-overlay', 'vb-overlay', 'export-overlay'].map(id => $(id)).filter(Boolean).forEach(el => { el.tabIndex = -1; new MutationObserver(() => sync(el)).observe(el, { attributes: true, attributeFilter: ['class'] }) }) }
+      function initModalLayers() {
+        const stack = [];
+        const keep = el => el.matches('script, .ce-banner, .ce-notice, .ce-tip');
+        const apply = () => {
+          const top = stack.length ? stack[stack.length - 1].el : null;
+          [...document.body.children].forEach(ch => {
+            if (keep(ch)) return;
+            if (top && ch !== top) {
+              if (!ch.inert) {
+                ch.inert = true;
+                ch.dataset.layerInert = '1'
+              }
+              
+            } else if (ch.dataset.layerInert) {
+              ch.inert = false;
+              delete ch.dataset.layerInert
+            }
+            
+          })
+        };
+        const sync = el => {
+          const open = el.classList.contains('open'), i = stack.findIndex(l => l.el === el);
+          if (open && i < 0) {
+            stack.push({ el, from: document.activeElement });
+            apply();
+            if (!el.contains(document.activeElement)) el.focus({ preventScroll: true })
+          } else if (!open && i >= 0) {
+            const l = stack.splice(i, 1)[0];
+            apply();
+            if (l.from && l.from.isConnected && !l.from.closest('[inert]')) l.from.focus({ preventScroll: true })
+          }
+          
+        };
+        ['img-modal-overlay', 'text-modal-overlay', 'vb-overlay', 'export-overlay'].map(id => $(id)).filter(Boolean).forEach(el => {
+          el.tabIndex = -1;
+          new MutationObserver(() => sync(el)).observe(el, { attributes: true, attributeFilter: ['class'] })
+        })
+      }
 
       // --- ZOOM & PAN LOGIC ---
       const vp = $('ann-viewport');
