@@ -4729,7 +4729,70 @@
       /* The face of a PDF card in Imagens and in «Removidos» (B6.6): the icon in the colour of the PDF label, with «PDF» on the page (D-0151), and «PDF · N páginas» */
       function pdfFace(el, o) { const img = el.querySelector('img'), f = document.createElement('div'); f.className = 't-pdf'; f.innerHTML = '<svg class="t-pdf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="12" y="16.3" text-anchor="middle" font-size="4.6">PDF</text></svg>'; const t = document.createElement('span'); t.className = 't-pdf-info'; t.textContent = 'PDF'; f.append(t); if (img) img.replaceWith(f); const w = el.querySelector('.t-wrap'); if (w) w.setAttribute('aria-label', 'Abrir PDF'); pdfPages(o.blob).then(n => { if (n) t.textContent = 'PDF \u00b7 ' + n + (n === 1 ? ' página' : ' páginas') }) }
       /* ═══ RENDER DOC ═══ */
-      function renderDoc(o) { if (docs.length === 1) $('doc-empty').style.display = 'none'; const el = document.createElement('div'); el.className = 'd-item'; el.dataset.id = o.id; el.draggable = false; el.addEventListener('dragstart', e => e.preventDefault()); el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`; { const bd = docBadge(o); if (bd) el.querySelector('.d-icon').replaceWith(bd) } el.prepend(markBox(o.id)); const lb = document.createElement('input'); lb.type = 'text'; lb.className = 'd-input'; lb.value = o.name || ''; lb.placeholder = 'Documento'; lb.title = o.name; lb.addEventListener('click', ev => ev.stopPropagation()); lb.addEventListener('focus', () => { const val = lb.value; const lastDot = val.lastIndexOf('.'); if (lastDot > 0) lb.value = val.substring(0, lastDot) }); lb.addEventListener('blur', () => { const val = lb.value.trim(); const oldName = o.name; let ext = ''; const lastDot = oldName.lastIndexOf('.'); if (lastDot > 0) ext = oldName.substring(lastDot); if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) { lb.value = (val || oldName.substring(0, lastDot)) + ext } }); lb.addEventListener('change', () => window.setDocName(o.id, lb.value)); el.appendChild(lb); const sizeSp = document.createElement('span'); sizeSp.className = 'd-size'; sizeSp.textContent = fmtSize(o.size); el.appendChild(sizeSp); const delBtn = document.createElement('button'); delBtn.className = 'd-del'; delBtn.title = 'Remover'; delBtn.onclick = e => { e.stopPropagation(); window.delDoc(o.id) }; delBtn.innerHTML = TRASH_SVG; el.appendChild(delBtn); el.addEventListener('click', e => { if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return; window.openTextModal(o.id, false) }); if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => { if (!n) return; const pg = document.createElement('span'); pg.className = 'd-pages'; pg.textContent = n + (n === 1 ? ' pág.' : ' págs.'); sizeSp.before(pg) }); $('doc-list').appendChild(el) }
+      function renderDoc(o) {
+        if (docs.length === 1) $('doc-empty').style.display = 'none';
+        const el = document.createElement('div');
+        el.className = 'd-item';
+        el.dataset.id = o.id;
+        el.draggable = false;
+        el.addEventListener('dragstart', e => e.preventDefault());
+        el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+        {
+          const bd = docBadge(o);
+          if (bd) el.querySelector('.d-icon').replaceWith(bd)
+        }
+        el.prepend(markBox(o.id));
+        const lb = document.createElement('input');
+        lb.type = 'text';
+        lb.className = 'd-input';
+        lb.value = o.name || '';
+        lb.placeholder = 'Documento';
+        lb.title = o.name;
+        lb.addEventListener('click', ev => ev.stopPropagation());
+        lb.addEventListener('focus', () => {
+          const val = lb.value;
+          const lastDot = val.lastIndexOf('.');
+          if (lastDot > 0) lb.value = val.substring(0, lastDot)
+        });
+        lb.addEventListener('blur', () => {
+          const val = lb.value.trim();
+          const oldName = o.name;
+          let ext = '';
+          const lastDot = oldName.lastIndexOf('.');
+          if (lastDot > 0) ext = oldName.substring(lastDot);
+          if (ext && !val.toLowerCase().endsWith(ext.toLowerCase())) {
+            lb.value = (val || oldName.substring(0, lastDot)) + ext
+          }
+          
+        });
+        lb.addEventListener('change', () => window.setDocName(o.id, lb.value));
+        el.appendChild(lb);
+        const sizeSp = document.createElement('span');
+        sizeSp.className = 'd-size';
+        sizeSp.textContent = fmtSize(o.size);
+        el.appendChild(sizeSp);
+        const delBtn = document.createElement('button');
+        delBtn.className = 'd-del';
+        delBtn.title = 'Remover';
+        delBtn.onclick = e => {
+          e.stopPropagation();
+          window.delDoc(o.id)
+        };
+        delBtn.innerHTML = TRASH_SVG;
+        el.appendChild(delBtn);
+        el.addEventListener('click', e => {
+          if (e.target.closest('.d-input') || e.target.closest('.d-del') || e.target.closest('.item-check')) return;
+          window.openTextModal(o.id, false)
+        });
+        if (fileExt(o.name) === 'pdf') pdfPages(o.blob).then(n => {
+          if (!n) return;
+          const pg = document.createElement('span');
+          pg.className = 'd-pages';
+          pg.textContent = n + (n === 1 ? ' pág.' : ' págs.');
+          sizeSp.before(pg)
+        });
+        $('doc-list').appendChild(el)
+      }
 
       /* ═══ RENDER TRASH ═══ */
       function renderTrash() { trashUrls.forEach(u => URL.revokeObjectURL(u)); trashUrls = []; const grid = $('trash-grid'), badge = $('trash-badge'), total = removed.length + removedDocs.length; badge.textContent = total; if (total > 0) { badge.classList.add('vis') } else { badge.classList.remove('vis') } grid.innerHTML = ''; if (total === 0) { grid.innerHTML = '<div style=\"min-height:118px;width:100%\"></div>' } removed.forEach(r => { const url = URL.createObjectURL(r.blob); trashUrls.push(url); const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openImgModal(r.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`; if (r.kind === 'pdf') pdfFace(el, r); grid.appendChild(el) }); removedDocs.forEach(d => { const el = document.createElement('div'); el.className = 't-item'; el.style.opacity = '1'; el.style.cursor = 'pointer'; el.onclick = () => window.openTextModal(d.id, true); el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\" style=\"background:var(--color-background);display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\" style=\"width:24px;height:24px;fill:none;stroke:var(--color-white);stroke-width:2;stroke-linecap:round\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\" style=\"width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled style=\"text-align:center\">`; grid.appendChild(el) }); setTimeout(() => { if ($('trash-bar').classList.contains('expanded')) $('trash-bar').style.maxHeight = Math.min(360, 52 + $('trash-grid').scrollHeight) + 'px' }, 0) }
