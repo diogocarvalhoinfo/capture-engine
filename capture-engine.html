@@ -5281,7 +5281,56 @@
 
       /* The views of the text viewer, built with elements and textContent, never with innerHTML of the file (D-0123) */
       function mdInline(txt) { const f = document.createDocumentFragment(); const re = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|\[[^\]]+\]\([^)]+\))/g; let last = 0, m; while ((m = re.exec(txt))) { if (m.index > last) f.append(txt.slice(last, m.index)); const t = m[0]; let el; if (t[0] === '`') { el = document.createElement('code'); el.textContent = t.slice(1, -1) } else if (t.startsWith('**')) { el = document.createElement('strong'); el.append(mdInline(t.slice(2, -2))) } else if (t[0] === '*' || t[0] === '_') { el = document.createElement('em'); el.append(mdInline(t.slice(1, -1))) } else { el = document.createElement('span'); el.textContent = t.slice(1, t.indexOf('](')) } f.append(el); last = m.index + t.length } if (last < txt.length) f.append(txt.slice(last)); return f }
-      function mdView(src) { const root = document.createElement('div'), lines = src.replace(/\r\n/g, '\n').split('\n'); let list = null, para = null, pre = null; const end = () => { list = null; para = null }; for (const ln of lines) { if (pre) { if (/^```/.test(ln)) { pre = null } else pre.textContent += (pre.textContent ? '\n' : '') + ln; continue } if (/^```/.test(ln)) { end(); pre = document.createElement('pre'); root.append(pre); continue } const h = /^(#{1,4})\s+(.*)$/.exec(ln), li = /^\s*([-*+]|\d+[.])\s+(.*)$/.exec(ln); if (h) { end(); const el = document.createElement('h' + h[1].length); el.append(mdInline(h[2])); root.append(el) } else if (li) { para = null; const tag = /\d/.test(li[1]) ? 'ol' : 'ul'; if (!list || list.tagName.toLowerCase() !== tag) { list = document.createElement(tag); root.append(list) } const el = document.createElement('li'); el.append(mdInline(li[2])); list.append(el) } else if (!ln.trim()) { end() } else { list = null; if (!para) { para = document.createElement('p'); root.append(para) } else para.append(' '); para.append(mdInline(ln.trim())) } } return root }
+      function mdView(src) {
+        const root = document.createElement('div'), lines = src.replace(/\r\n/g, '\n').split('\n');
+        let list = null, para = null, pre = null;
+        const end = () => {
+          list = null;
+          para = null
+        };
+        for (const ln of lines) {
+          if (pre) {
+            if (/^```/.test(ln)) {
+              pre = null
+            } else pre.textContent += (pre.textContent ? '\n' : '') + ln;
+            continue
+          }
+          if (/^```/.test(ln)) {
+            end();
+            pre = document.createElement('pre');
+            root.append(pre);
+            continue
+          }
+          const h = /^(#{1,4})\s+(.*)$/.exec(ln), li = /^\s*([-*+]|\d+[.])\s+(.*)$/.exec(ln);
+          if (h) {
+            end();
+            const el = document.createElement('h' + h[1].length);
+            el.append(mdInline(h[2]));
+            root.append(el)
+          } else if (li) {
+            para = null;
+            const tag = /\d/.test(li[1]) ? 'ol' : 'ul';
+            if (!list || list.tagName.toLowerCase() !== tag) {
+              list = document.createElement(tag);
+              root.append(list)
+            }
+            const el = document.createElement('li');
+            el.append(mdInline(li[2]));
+            list.append(el)
+          } else if (!ln.trim()) {
+            end()
+          } else {
+            list = null;
+            if (!para) {
+              para = document.createElement('p');
+              root.append(para)
+            } else para.append(' ');
+            para.append(mdInline(ln.trim()))
+          }
+          
+        }
+        return root
+      }
       function csvView(src) { const first = src.split('\n')[0] || '', sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ';' : first.includes('\t') ? '\t' : ','; const rows = []; let row = [], cell = '', q = false; for (let i = 0; i < src.length && rows.length < 2000; i++) { const c = src[i]; if (q) { if (c === '"' && src[i + 1] === '"') { cell += '"'; i++ } else if (c === '"') q = false; else cell += c } else if (c === '"') q = true; else if (c === sep) { row.push(cell); cell = '' } else if (c === '\n') { row.push(cell.replace(/\r$/, '')); rows.push(row); row = []; cell = '' } else cell += c } if (cell || row.length) { row.push(cell); rows.push(row) } const t = document.createElement('table'); rows.forEach((r, ri) => { const tr = document.createElement('tr'); r.forEach(v => { const td = document.createElement(ri ? 'td' : 'th'); td.textContent = v; tr.append(td) }); t.append(tr) }); return t }
       /* An HTML page runs in a sealed box: without allow-same-origin it reaches neither the session nor the storage of the app, and it keeps the CSP of the app (no internet) */
       function htmlView(src) { const f = document.createElement('iframe'); f.setAttribute('sandbox', 'allow-scripts allow-modals allow-forms'); f.setAttribute('title', 'Página HTML'); f.srcdoc = src; return f }
