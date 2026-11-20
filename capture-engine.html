@@ -7904,7 +7904,32 @@
       function initPickers() { $('file-img-input').onchange = async e => { for (const f of Array.from(e.target.files)) await captureFile(f); e.target.value = '' }; $('file-doc-input').onchange = async e => { for (const f of Array.from(e.target.files)) await captureFile(f); e.target.value = '' } }
 
       /* ═══ THEME ═══ */
-      function initTheme() { try { const _t = localStorage.getItem('theme'); if (_t === 'dark') document.documentElement.classList.add('dark'); else if (_t === 'light') document.documentElement.classList.remove('dark'); else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark') } catch (e) { /* storage blocked: the theme follows the system */ } const themeTip = () => { const b = $('theme-btn'), t = document.documentElement.classList.contains('dark') ? 'Modo claro' : 'Modo noturno'; b.removeAttribute('title'); b.dataset.tip = t; b.setAttribute('aria-label', t); b.dataset.tipLabel = '1'; const tip = $('ce-tip'); if (tip && tip.classList.contains('show') && b.matches(':hover')) tip.textContent = t }; themeTip(); $('theme-btn').onclick = function () { document.documentElement.classList.toggle('dark'); try { localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') } catch (e) { /* storage blocked: the theme lasts until the page closes */ } themeTip() } }
+      function initTheme() {
+        try {
+          const _t = localStorage.getItem('theme');
+          if (_t === 'dark') document.documentElement.classList.add('dark');
+          else if (_t === 'light') document.documentElement.classList.remove('dark');
+          else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark')
+        } catch (e) { /* storage blocked: the theme follows the system */ }
+        const themeTip = () => {
+          const b = $('theme-btn'), t = document.documentElement.classList.contains('dark') ? 'Modo claro' : 'Modo noturno';
+          b.removeAttribute('title');
+          b.dataset.tip = t;
+          b.setAttribute('aria-label', t);
+          b.dataset.tipLabel = '1';
+          const tip = $('ce-tip');
+          if (tip && tip.classList.contains('show') && b.matches(':hover')) tip.textContent = t
+        };
+        themeTip();
+        $('theme-btn').onclick = function () {
+          document.documentElement.classList.toggle('dark');
+          try {
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+          } catch (e) { /* storage blocked: the theme lasts until the page closes */ }
+          themeTip()
+        }
+        
+      }
 
       /* ═══ TRASH BAR ═══ */
       /* Enter and Space on a control that is not a native button (role button, tab or radio) do what its click does.
