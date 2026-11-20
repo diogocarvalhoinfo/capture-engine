@@ -4853,7 +4853,40 @@
          Switching to another window and back is not an interaction, so the person still sees what was done last. */
       function holdSuccess(reset) { const evs = ['pointerdown', 'keydown', 'paste', 'drop']; const mods = ['Alt', 'Control', 'Shift', 'Meta', 'Tab', 'OS']; const done = e => { if (e.type === 'keydown' && mods.includes(e.key)) return; evs.forEach(t => document.removeEventListener(t, done, true)); reset() }; setTimeout(() => evs.forEach(t => document.addEventListener(t, done, true)), 0) }
       function showNotice(msg) { let n = $('ce-notice'); if (!n) { n = document.createElement('div'); n.id = 'ce-notice'; n.className = 'ce-notice'; n.setAttribute('role', 'status'); n.onclick = () => n.classList.remove('show'); document.body.appendChild(n) } n.textContent = msg; n.classList.add('show'); clearTimeout(n._t); n._t = setTimeout(() => n.classList.remove('show'), 8000) }
-      async function captureDoc(blob, name, type) { await ensureSession(); let baseName = name || 'texto-1.txt', ext = ''; const lastDot = baseName.lastIndexOf('.'); if (lastDot > 0) { ext = baseName.substring(lastDot); baseName = baseName.substring(0, lastDot) } let finalName = baseName + ext; while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) { const match = baseName.match(/-(\d+)$/); if (match) { const num = parseInt(match[1], 10); baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1) } else { baseName = baseName + '-1' } finalName = baseName + ext } const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: nextOrder(docs), addedAt: Date.now() }; try { await idbPut('documents', o) } catch (e) { keepInTab(o, e) } docs.push(o); renderDoc(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Documento capturado: ' + finalName) }
+      async function captureDoc(blob, name, type) {
+        await ensureSession();
+        let baseName = name || 'texto-1.txt', ext = '';
+        const lastDot = baseName.lastIndexOf('.');
+        if (lastDot > 0) {
+          ext = baseName.substring(lastDot);
+          baseName = baseName.substring(0, lastDot)
+        }
+        let finalName = baseName + ext;
+        while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) {
+          const match = baseName.match(/-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1)
+          } else {
+            baseName = baseName + '-1'
+          }
+          finalName = baseName + ext
+        }
+        const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: nextOrder(docs), addedAt: Date.now() };
+        try {
+          await idbPut('documents', o)
+        } catch (e) {
+          keepInTab(o, e)
+        }
+        docs.push(o);
+        renderDoc(o);
+        updateCounters();
+        updateBtns();
+        updateBtnTitles();
+        isDirty = true;
+        triggerSave();
+        SysLogger.info('Documento capturado: ' + finalName)
+      }
 
       /* ═══ DELETE / RESTORE ═══ */
       window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); try { await idbMove('images', 'removed_images', id, o) } catch (e) { removed.splice(removed.indexOf(o), 1); delete o.removedAt; images.splice(idx, 0, o); moveFailed(e); return } const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
