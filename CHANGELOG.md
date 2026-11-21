@@ -17,6 +17,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **Todo documento tem um selo de 40 px (D-0205)**, e os nomes ficam alinhados. Um tipo sem cor mostra a extensão em um selo vazado; sem extensão, ou com uma longa, mostra a folha.
 - **O texto em edição tem a linha da seleção (D-0206)**, sem as alças, ao escrever e ao reabrir. Antes, nada marcava a edição.
 - **A seleção do texto em edição é azul, com a letra branca (D-0207).** O laranja translúcido sumia no vermelho, no laranja e no amarelo.
+- **O "Abrir" do clique direito tem o olho da miniatura (D-0209)**, só com a pálpebra de cima. Antes, o menu mostrava um olho fechado, diferente.
 - **Em uma captura de tela de telefone, o texto e o traço nascem maiores (D-0208).** Em um iPhone, o texto começa com 64 px, e não com 28. As capturas de computador e as fotos não mudam.
 - **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
 - **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
