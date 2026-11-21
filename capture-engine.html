@@ -5888,8 +5888,8 @@
       $('text-modal-copy').onclick = async function () {
         const btn = $('text-modal-copy'), old = btn.innerHTML;
         const show = (cls, html) => { btn.classList.add(cls); btn.innerHTML = html; setTimeout(() => { btn.classList.remove(cls); btn.innerHTML = old }, 1500) };
-        try { await navigator.clipboard.writeText($('text-modal-content').value); show('st-success', '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Copiado') }
-        catch (err) { SysLogger.error('Erro ao copiar.'); show('st-error', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro') }
+        try { await navigator.clipboard.writeText($('text-modal-content').value); show('st-success', OK_SVG + ' Copiado') }
+        catch (err) { SysLogger.error('Erro ao copiar.'); show('st-error', ERR_SVG + ' Erro') }
       };
       $('text-modal-dl').onclick = function () {
         if (!textModalItemId) return;
@@ -8544,11 +8544,11 @@
           const quality = TOKEN_JPEG_QUALITY;
           const blob = list.some(x => x.kind === 'pdf') ? await pdfMixed(list, pdfFmt, quality) : await buildPdfBlob(await jpegsOf(list, quality), pdfFmt);
           if (returnBlob) return blob;
-          dlBlob(blob, buildFilename('pdf')); btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído'; btn.classList.add('st-success');
+          dlBlob(blob, buildFilename('pdf')); btn.innerHTML = OK_SVG + ' Concluído'; btn.classList.add('st-success');
           holdSuccess(() => pdfBtnReset(btn, 'st-success')); SysLogger.info('PDF gerado: ' + fmtSize(blob.size))
         } catch (e) {
           if (returnBlob) throw e;
-          SysLogger.error('PDF: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro';
+          SysLogger.error('PDF: ' + e.message); btn.classList.add('st-error'); btn.innerHTML = ERR_SVG + ' Erro';
           holdSuccess(() => pdfBtnReset(btn, 'st-error'))
         }
       }
@@ -8608,7 +8608,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
           const files = await zipFilesOf(images, docs, isPdf);
           const zipBlob = buildZIP(files);
           dlBlob(zipBlob, buildFilename('zip'));
-          btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Concluído';
+          btn.innerHTML = OK_SVG + ' Concluído';
           btn.classList.add('st-success');
           $('btn-pdf').disabled = (!images.length || docs.length > 0);
           holdSuccess(() => {
@@ -8620,7 +8620,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
         } catch (e) {
           SysLogger.error('ZIP: ' + e.message);
           btn.classList.add('st-error');
-          btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Erro';
+          btn.innerHTML = ERR_SVG + ' Erro';
           holdSuccess(() => {
             btn.classList.remove('st-error');
             btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10 5h1M10 8h1M10 11h1"/><rect x="9" y="14" width="3" height="4" rx="1"/></svg> .zip';
