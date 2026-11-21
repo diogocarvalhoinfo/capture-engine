@@ -4944,6 +4944,7 @@
           el.style.opacity = '1';
           el.style.cursor = 'pointer';
           el.onclick = () => window.openImgModal(r.id, true);
+          el.dataset.id = r.id; // the menu of the right click finds the item by it (D-0214)
           el.innerHTML = `<div class=\"t-wrap\" role=\"button\" tabindex=\"0\" aria-label=\"Ver imagem removida\"><img src=\"${url}\" loading=\"lazy\"><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreImg('${escapeHTML(r.id)}')\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(imgName(r))}\" disabled>`;
           if (r.kind === 'pdf') pdfFace(el, r);
           grid.appendChild(el)
@@ -4954,6 +4955,7 @@
           el.style.opacity = '1';
           el.style.cursor = 'pointer';
           el.onclick = () => window.openTextModal(d.id, true);
+          el.dataset.id = d.id; el.dataset.kind = 'doc';
           el.innerHTML = `<div class=\"t-wrap t-doc\" role=\"button\" tabindex=\"0\" aria-label=\"Ver documento removido\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-muted-foreground)\" stroke-width=\"2\" stroke-linecap=\"round\" width=\"28\" height=\"28\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><div class=\"t-overlay\"><svg viewBox=\"0 0 24 24\"><path d=\"M2 12s5-7 10-7 10 7 10 7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></div></div><button class=\"t-restore\" title=\"Restaurar\" onclick=\"event.stopPropagation();window.restoreDoc('${escapeHTML(d.id)}')\"><svg viewBox=\"0 0 24 24\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><polyline points=\"3 3 3 8 8 8\"/></svg></button><input type=\"text\" class=\"t-label\" value=\"${escapeHTML(d.name || 'documento')}\" disabled>`;
           grid.appendChild(el)
         });
@@ -5736,7 +5738,15 @@
       /* «Marcar» in the menu marks the item and shows the boxes of all items; «Desmarcar» on the last one hides them (D-0135) */
       function markToggle(id) { if (marked.has(id)) marked.delete(id); else marked.add(id); markSync() }
       /* The menu of the marked items is the same whatever item opens it (D-0136): Juntar when all are PDFs, the .pdf when none is in Documentos (D1), the .zip and Remover */
-      function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip]], [['del', 'Remover', 'Del', removeMarked, 1]]] }
+      function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip], ['check', 'Desmarcar todos', 'Esc', markClear]], [['del', 'Remover', 'Del', removeMarked, 1]]] } /* Desmarcar todos, as the Esc (D-0215) */
+      // A document of text: it opens in the editor of text, and its text is copied (D-0216)
+      function docIsText(o) { return /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fileExt(o.name)) || (o.type || '').startsWith('text/') }
+      async function copyText(o) { try { await navigator.clipboard.writeText(await o.blob.text()); showNotice('Texto copiado.') } catch (e) { SysLogger.error('Copy text: ' + e.message); showNotice('Não foi possível copiar o texto.') } }
+      /* The menu of an item in Removidos: Abrir, Restaurar and Download, as the viewer of a removed item (D-0214) */
+      function trashGroups(it) {
+        const id = it.dataset.id, doc = it.dataset.kind === 'doc', o = (doc ? removedDocs : removed).find(x => x.id === id); if (!o) return null;
+        return [[['open', 'Abrir', 'Enter', () => doc ? window.openTextModal(id, true) : window.openImgModal(id, true)], ['restore', 'Restaurar', '', () => doc ? window.restoreDoc(id) : window.restoreImg(id)]], [['dl', 'Download', '', () => doc ? dlDoc(o) : dlImg(o)]]]
+      }
       function ctxGroups(target) {
         const ti = target.closest('#thumb-grid .t-item'), di = target.closest('#doc-list .d-item');
         if (ti || di) {
@@ -5750,11 +5760,11 @@
               await annActivate()
             }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]
           }
-          const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(ext) || (o.type || '').startsWith('text/'), view = txt || ARCH_EXT.test(ext) || ext === 'pdf';
+          const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = docIsText(o), view = txt || ARCH_EXT.test(ext) || ext === 'pdf';
           return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => {
             await window.openTextModal(id, false);
             textEditStart()
-          }] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)], mk].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]]
+          }] : null, txt ? ['copy', 'Copiar texto', 'Ctrl+C', () => copyText(o)] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)], mk].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]]
         }
         if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]];
         if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]];
@@ -5762,6 +5772,7 @@
       }
       function initMenus() {
         ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('contextmenu', e => { const f = e.target.closest('input'); if (f && f === document.activeElement && !f.matches('.item-check')) return; /* a name being edited keeps the menu of the browser */ const g = ctxGroups(e.target); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) }));
+        $('trash-grid').addEventListener('contextmenu', e => { const it = e.target.closest('.t-item'), g = it && trashGroups(it); if (!g) return; e.preventDefault(); ctxOpen(e.clientX, e.clientY, g) });
         document.addEventListener('pointerdown', e => { if (ctxMenu && !ctxMenu.contains(e.target) && !(ctxSub && ctxSub.contains(e.target))) ctxClose() }, true); /* a click or a tap outside the items unmarks them, as Esc does */ document.addEventListener('pointerdown', e => { if (marked.size && e.button === 0 && !e.target.closest('.t-item, .d-item, .ctx-menu, .modal-overlay, .sb-overlay')) markClear() }); /* a right click on a name does not start editing it: the menu opens instead */ ['img-zone', 'doc-zone'].forEach(z => $(z).addEventListener('mousedown', e => { const f = e.target.closest('.t-label, .d-input'); if (e.button === 2 && f && f !== document.activeElement) e.preventDefault() }));
         window.addEventListener('blur', ctxClose); window.addEventListener('resize', ctxClose); document.addEventListener('scroll', ctxClose, true);
         document.addEventListener('keydown', e => {
@@ -5771,6 +5782,7 @@
           if (e.key === 'Escape' && marked.size) { e.preventDefault(); markClear() }
           else if (e.key === 'Delete' && (marked.size || el)) { e.preventDefault(); if (marked.size) removeMarked(); else if (el.matches('.t-item')) window.delImg(el.dataset.id); else window.delDoc(el.dataset.id) }
           else if (e.key === 'F2' && el) { e.preventDefault(); renameItem(el) }
+          else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString() && el && el.matches('.d-item') && docIsText(docs.find(x => x.id === el.dataset.id) || { name: '' })) { e.preventDefault(); copyText(docs.find(x => x.id === el.dataset.id)) } // the text of a document of text (D-0216)
           else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !window.getSelection().toString()) { const o = el && el.matches('.t-item') ? images.find(x => x.id === el.dataset.id) : markedImgs().length === 1 && !markedDocs().length ? markedImgs()[0] : null; if (o && o.kind !== 'pdf') { e.preventDefault(); copyImg(o) } }
           else if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && el) { e.preventDefault(); const r = el.getBoundingClientRect(); ctxOpen(r.left + 12, r.top + 12, ctxGroups(el)) }
         });
