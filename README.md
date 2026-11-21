@@ -189,7 +189,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 - **Retângulo e círculo:** "Contorno", "Preenchido", uma forma cheia que cobre o que está embaixo, ou "Desfocado", que esconde um dado antes de exportar. Para um dado muito sensível, use "Preenchido".
 - **Marca-texto:** "Translúcido", com 40% de opacidade, ou "Sólido", que cobre. Começa no amarelo e guarda a sua cor.
 - **Texto:** "Negrito" e "Itálico" (Ctrl+B e Ctrl+I), e "Com fundo" ou "Fundo transparente". Um clique duplo em um texto, ou "Editar texto" no clique direito, o reabre.
-- **Espessura:** cada ferramenta guarda a sua. O desenho livre, o retângulo, o círculo e a seta começam com 4 px, o marca-texto com 18 px, e o texto com 24. Em uma foto grande, como a de um telefone, os passos crescem na mesma proporção.
+- **Espessura:** cada ferramenta guarda a sua. O desenho livre, o retângulo, o círculo e a seta começam com 4 px, o marca-texto com 18 px, e o texto com 24. Em uma foto grande, os passos crescem na mesma proporção. Em uma captura de tela de telefone, crescem com a densidade da tela: o texto nasce com 64 px em um iPhone.
 - **Outra cor:** o círculo do arco-íris abre o conta-gotas, o código HEX e um quadrado de tons.
 - **Recortar:** "Retângulo", "Cantos livres", que endireita uma folha fotografada de lado, e "Endireitar", que gira a foto olhando a grade.
 

@@ -5881,7 +5881,9 @@
       /* The steps grow with the image: up to 1080 px on the short side they stay as they are; a 3024 x 4032 photo draws them 2.8 times thicker,
          so the same step looks the same on the screen. Saved annotations keep their own width */
       let annScaleF = 1;
-      function annSetScale(w, h) { annScaleF = Math.max(1, Math.min(w, h) / 1080) }
+      /* A tall print (height at least 1.9 times the width) is a phone screen, drawn at about 3 pixels per point: the width over 393 points;
+         any other image, the shorter side over 1080 (D-0173) */
+      function annSetScale(w, h) { annScaleF = Math.max(1, h >= 1.9 * w ? w / 393 : Math.min(w, h) / 1080) }
       function annStepOf(lw, L) { return L.reduce((b, x, i) => Math.abs(x * annScaleF - lw) < Math.abs(L[b] * annScaleF - lw) ? i : b, 0) }
       function annTextNear(v) { return ANN_TEXT_SIZES.reduce((b, x) => Math.abs(x - v) < Math.abs(b - v) ? x : b) }
       function annLineW() { return Math.max(1, Math.round((annTool === 'highlight' ? ANN_HL_SIZES : ANN_SIZES)[annSizeIdx] * annScaleF)) }
