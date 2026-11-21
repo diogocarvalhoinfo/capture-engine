@@ -422,7 +422,8 @@
         height: 0 !important;
       }
 
-      input, textarea, select {
+      /* Not the annotation text: its size follows the image, and 16 px drew the letters larger than the field and the text it saves */
+      input, textarea:not(#ann-text-input), select {
         font-size: var(--text-base) !important;
       }
 
