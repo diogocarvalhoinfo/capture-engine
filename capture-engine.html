@@ -4738,7 +4738,7 @@
             const _ub = document.getElementById('ce-upgrade-banner');
             if (_ub) _ub.remove(); /* the other tab closed: the upgrade is done */ _db.onversionchange = () => {
               _db.close();
-              showBanner('ce-version-banner', 'Versão nova aberta', 'recarregue a página para voltar a gravar.')
+              showVersionBanner()
             };
             res()
           };
@@ -4754,7 +4754,10 @@
          The icon of Aviso, the title with a colon and what to do, short and in neutral Portuguese (D-0219). The guard on the id shows each bar once */
       function showBanner(id, title, text) { if (document.getElementById(id)) return; const b = document.createElement('div'); b.id = id; b.className = 'ce-banner'; b.setAttribute('role', 'alert'); b.innerHTML = WARN_SVG; const t = document.createElement('strong'); t.textContent = title + ':'; b.appendChild(t); b.appendChild(document.createTextNode(' ' + text)); const btn = document.createElement('button'); btn.className = 'ce-banner-close'; btn.innerHTML = X_SVG; btn.title = 'Fechar aviso'; btn.setAttribute('aria-label', 'Fechar aviso'); btn.addEventListener('click', function () { b.remove() }); b.appendChild(btn); document.body.prepend(b) }
       function showQuotaBanner() { showBanner('ce-quota-banner', 'Armazenamento cheio', 'exporte e limpe o Histórico para voltar a gravar.') }
-      function showStorageBanner() { showBanner('ce-storage-banner', 'Armazenamento bloqueado', 'saia do modo privado para voltar a gravar.') }
+      /* A newer version holds the database: on the site, reloading opens it; an older file stays out until the newer one is opened (F-0235) */
+      function showVersionBanner() { showBanner('ce-version-banner', 'Versão nova aberta', 'abra a versão nova para voltar a gravar.') }
+      /* The database did not open: a newer version took it (VersionError), or the browser blocks the data of the site (F-0235) */
+      function showStorageBanner(err) { if (err && err.name === 'VersionError') showVersionBanner(); else showBanner('ce-storage-banner', 'Armazenamento bloqueado', 'libere os dados do site para voltar a gravar.') }
       function showMemOnlyBanner() { showBanner('ce-memonly-banner', 'Capturas não gravadas', 'exporte antes de fechar.') }
       function idbTx(store, mode, fn) { return new Promise((res, rej) => { const tx = _db.transaction(store, mode), st = tx.objectStore(store); const _chkQ = e => { if (e && e.name === 'QuotaExceededError') showQuotaBanner() }; let r; try { r = fn(st) } catch (e) { _chkQ(e); throw e } /* a quota error can also come synchronously from put() */ tx.onabort = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction aborted')) }; tx.onerror = () => { _chkQ(tx.error); rej(tx.error || new Error('Transaction error')) }; r.onsuccess = () => res(r.result); r.onerror = () => { _chkQ(r.error); rej(r.error) } }) }
       /* Items kept only in this tab, because the browser refused to store them; the banner shows once per page (F-0063) */
@@ -8728,7 +8731,7 @@ const safeDocName = dc.name.replace(/[/\\]/g, '_').replace(/\.\.\//g, '').replac
             async function init() {
               try {
                 await openDB(); SysLogger.info('IndexedDB OK'); await purgeExpired(); SysLogger.info('Purge OK');
-              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner() } catch (_) { /* the error above is already in the console */ } } try { boot(); SysLogger.info('Capture Engine 29.12.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
+              } catch (e) { SysLogger.error('init DB: ' + e.message); try { showStorageBanner(e) } catch (_) { /* the error above is already in the console */ } } try { boot(); SysLogger.info('Capture Engine 29.12.0 Ready') } catch (e) { SysLogger.error('boot: ' + e.message) } try { await reopenLastSession() } catch (e) { SysLogger.error('reabrir a última sessão: ' + e.message) }
             }
 function boot() { setInterval(triggerSave, 5000); initClipboard(); initDragDrop(); initReorder(); initMenus(); initSidebar(); initPickers(); initTheme(); initTrashBar(); initCollapsedBars(); initModalLayers(); initKeyClick(); initPdfModal(); initVbSync(); initAdminGate(); initSessionSync(); initAnnotation(); applyTokens(); initChips(); /* after the tokens, so aria-checked follows the chip they mark (F-0099) */ $('btn-zip').onclick = handleZipClick; $('btn-refresh').onclick = () => { lastSessionKeep(null); location.reload() }; updateCounters(); updateBtns(); updateBtnTitles(); updateStatusBar();/* ADMIN_JS_START */capturePristine();/* ADMIN_JS_END */ }
 init();
