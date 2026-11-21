@@ -1251,14 +1251,17 @@
       background: var(--color-background)
     }
 
-    .d-item .d-icon {
-      width: 20px;
-      height: 20px;
+    /* The page icon in the badge of a document with no extension, or with a long one (D-0205) */
+    .d-type svg {
+      display: block;
+      width: 12px;
+      height: 1lh;
+      margin: 0 auto;
       fill: none;
-      stroke: var(--color-muted-foreground);
+      stroke: currentcolor;
       stroke-width: 2;
       stroke-linecap: round;
-      flex-shrink: 0
+      stroke-linejoin: round
     }
 
     .d-input {
@@ -2601,10 +2604,11 @@
       background: var(--color-selected)
     }
 
-    /* The type of a document in its colour (D-0128) */
+    /* The type of a document in its colour (D-0128), in a badge of the same width for every document, so the names line up (D-0205) */
     .d-type {
-      min-width: 40px;
-      padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 1.5);
+      width: 40px;
+      padding: calc(var(--spacing) * 0.25);
+      border: 1px solid transparent;
       border-radius: var(--radius-sm);
       font-size: var(--text-micro);
       font-weight: 700;
@@ -2637,6 +2641,12 @@
 
     .d-type-text {
       background: var(--color-file-text)
+    }
+
+    /* Any other type: outlined, with the extension or the page icon */
+    .d-type-other {
+      color: var(--color-muted-foreground);
+      border-color: var(--color-border-strong)
     }
 
     .d-pages {
@@ -4790,12 +4800,7 @@
         el.dataset.id = o.id;
         el.draggable = false;
         el.addEventListener('dragstart', e => e.preventDefault());
-        el.innerHTML = `<svg class="d-icon" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Abrir documento"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
-        {
-          const bd = docBadge(o);
-          if (bd) el.querySelector('.d-icon').replaceWith(bd)
-        }
-        el.prepend(markBox(o.id));
+        el.append(markBox(o.id), docBadge(o));
         const lb = document.createElement('input');
         lb.type = 'text';
         lb.className = 'd-input';
@@ -5618,7 +5623,9 @@
       /* The type label of a document, in the colours of --color-file-* (D-0128) */
       const FILE_TYPES = { pdf: 'pdf', doc: 'docx', docx: 'docx', xls: 'xlsx', xlsx: 'xlsx', csv: 'xlsx', ppt: 'pptx', pptx: 'pptx', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip', tgz: 'zip', txt: 'text', md: 'text', html: 'text', htm: 'text' };
       const fileExt = n => { const d = (n || '').lastIndexOf('.'); return d > 0 ? n.slice(d + 1).toLowerCase() : '' };
-      function docBadge(o) { const ext = fileExt(o.name), kind = FILE_TYPES[ext]; if (!kind) return null; const b = document.createElement('span'); b.className = 'd-type d-type-' + kind; b.textContent = ext.toUpperCase(); b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', 'Abrir documento'); return b }
+      /* Every document has a badge of the same width (D-0205): a known type in its colour, any other with its extension in an outlined badge,
+         and a name with no extension, or one longer than 5 letters, with the page icon. A name with only the first dot (.env2) shows what follows it */
+      function docBadge(o) { const n = o.name || '', ext = fileExt(n) || (/^\.[^.]+$/.test(n) ? n.slice(1).toLowerCase() : ''), kind = FILE_TYPES[ext]; const b = document.createElement('span'); b.className = 'd-type d-type-' + (kind || 'other'); if (ext && ext.length <= 5) b.textContent = ext.toUpperCase(); else b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'; b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', 'Abrir documento'); return b }
       /* Names of the downloads of the marked items: the name of the Export with the count and the word in front (decision 23) */
       function markedName(ext, imgs, ds) { const n = imgs.length + ds.length, w = !ds.length ? 'imagens' : !imgs.length && ds.every(d => fileExt(d.name) === 'pdf') ? 'pdfs' : 'itens', s = $('session-name').value.trim(); return buildFilename(ext, n + ' ' + w + (s ? ' ' + s : '')) }
       async function dlMarkedPdf() { const imgs = markedImgs(); if (!imgs.length) return; try { dlBlob(await generatePDF(true, imgs), markedName('pdf', imgs, [])) } catch (e) { SysLogger.error('PDF: ' + e.message); showNotice('Não foi possível gerar o PDF.') } }
