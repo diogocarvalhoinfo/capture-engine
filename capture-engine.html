@@ -5317,7 +5317,7 @@
         const k = e.key.toLowerCase();
         if (!(e.ctrlKey || e.metaKey) || (k !== 'z' && k !== 'y')) return false;
         e.preventDefault();
-        (k === 'z' && !e.shiftKey ? annDoUndo() : annDoRedo()).catch(err => SysLogger.error('Undo or redo failed', err));
+        k === 'z' && !e.shiftKey ? annDoUndo() : annDoRedo();
         return true;
       }
       // Removes the selected annotation, from the Delete key or its ✕; then the tool of before (D-0103). Returns true when there was one
@@ -5863,7 +5863,7 @@
         textModalItemId = id;
         textModalIsTrash = trash;
         const fext = fileExt(o.name);
-        const isText = !o.type || o.type.startsWith('text/') || /^application\/(json|xml|javascript)$/.test(o.type) || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fext);
+        const isText = docIsText(o) || !o.type || /^application\/(json|xml|javascript)$/.test(o.type); // the viewer also opens a file with no type, or JSON, XML and JavaScript by type
         const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
@@ -6798,8 +6798,9 @@
         }
         setAnnDirty(true); annRenderAll();
       }
-      function annDoUndo() { return annStep(annUndoStack, annRedoStack) }
-      function annDoRedo() { return annStep(annRedoStack, annUndoStack) }
+      // The keys, the buttons and the menu call these two; a failure goes to the console here, once (D-0202, F-0239)
+      function annDoUndo() { return annStep(annUndoStack, annRedoStack).catch(err => SysLogger.error('Undo failed', err)) }
+      function annDoRedo() { return annStep(annRedoStack, annUndoStack).catch(err => SysLogger.error('Redo failed', err)) }
       // Grows the textarea in height (scrollHeight) and width (longest line measured in the scaled font).
       // wrap="off" => lines break only with Enter; the textarea must show everything without cutting or scrolling.
       function annAutosizeText() {
@@ -7062,8 +7063,8 @@
         };
         const annKeepTyping = b => b.addEventListener('mousedown', e => { if (annTyping()) e.preventDefault() });
         annKeepTyping(document.querySelector('.ann-btn[data-tool="text"]')); // the Texto tool opens its tray without closing the field (F-0104)
-        $('ann-undo').onclick = () => annDoUndo().catch(err => SysLogger.error('Undo failed', err));
-        $('ann-redo').onclick = () => annDoRedo().catch(err => SysLogger.error('Redo failed', err));
+        $('ann-undo').onclick = annDoUndo;
+        $('ann-redo').onclick = annDoRedo;
         // Colour swatches: mousedown.preventDefault stops the blur of the text input
         // A colour, from a swatch, the eyedropper or the HEX field: the selected annotation, else the tool. keepFocus: the HEX field keeps the focus
         function annApplyColor(_color, keepFocus) {
@@ -7398,17 +7399,18 @@
            already selected, or in Selecionar chosen in the toolbar (D-0198) */
         function annRightOpensMenu(e) { const p = annCanvasXY(e), i = annHitTest(p.x, p.y); return i >= 0 && (i === annSelectedIdx || (annTool === 'select' && !annTempSelectFrom)) }
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
+        // The drawing of a button of the bar or of a tray, for the same item in a menu (D-0211, D-0213)
+        function annIconOf(sel) { return document.querySelector(sel + ' svg').innerHTML.trim() }
         /* The menu on the photo, outside an annotation: Selecionar tudo when there is one, and Desfazer and Refazer, always in place as in the bar (D-0077, D-0213) */
         function annPhotoMenu(x, y) {
-          const svg = sel => document.querySelector(sel).innerHTML.trim(), fail = err => SysLogger.error('Undo or redo failed', err);
-          ctxOpen(x, y, [annHistory.length ? [[svg('.ann-btn[data-tool="select"] svg'), 'Selecionar tudo', 'Ctrl+A', annSelectAll]] : [],
-            [[svg('#ann-undo svg'), 'Desfazer', 'Ctrl+Z', () => annDoUndo().catch(fail)], [svg('#ann-redo svg'), 'Refazer', 'Ctrl+Y', () => annDoRedo().catch(fail)]]], true);
+          ctxOpen(x, y, [annHistory.length ? [[annIconOf('.ann-btn[data-tool="select"]'), 'Selecionar tudo', 'Ctrl+A', annSelectAll]] : [],
+            [[annIconOf('#ann-undo'), 'Desfazer', 'Ctrl+Z', annDoUndo], [annIconOf('#ann-redo'), 'Refazer', 'Ctrl+Y', annDoRedo]]], true);
         }
         /* Contorno, Preenchido or Desfocado of the rectangle or circle i, from the menu, with undo, as the tray does (D-0211) */
         function annShapeFill(i, on) { const s = annHistory[i]; if (!s || (s.type !== 'rect' && s.type !== 'circle')) return; annPushUndo(); delete s.fill; delete s.blur; if (on) s.fill = true; if (on === 'blur') s.blur = true; setAnnDirty(true); annRenderAll() }
         // The items of a shape in the menu: Preencher and Desfocar on a rectangle or circle, and the Espessura of a line that shows (D-0211)
         function annShapeItems(i) {
-          const s = annHistory[i], ids = ANN_OPT2[s.type], st = s.blur ? 'blur' : !!s.fill, svg = id => $(id).querySelector('svg').innerHTML.trim(), items = [];
+          const s = annHistory[i], ids = ANN_OPT2[s.type], st = s.blur ? 'blur' : !!s.fill, svg = id => annIconOf('#' + id), items = [];
           if (ids) items.push(st === true ? [svg(ids[0]), 'Tirar preenchimento', '', () => annShapeFill(i, false)] : [svg(ids[1]), 'Preencher', '', () => annShapeFill(i, true)],
             st === 'blur' ? [svg(ids[0]), 'Tirar desfoque', '', () => annShapeFill(i, false)] : [svg(ids[3]), 'Desfocar', '', () => annShapeFill(i, 'blur')]);
           if (!st) items.push(() => annSizeRow(i));

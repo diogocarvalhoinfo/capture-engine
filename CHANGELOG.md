@@ -39,7 +39,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **Os estilos escritos no script passaram para o CSS (F-0230).** São 12, nas miniaturas, nos Removidos e no documento sem prévia, com 0 pixels diferentes nos dois temas.
 - **A abertura de um documento (F-0227)** decide menos sozinha: a complexidade da função cai de 29 para 16, e o documento sem prévia tem a sua própria função.
 - **A busca da imagem aberta no editor (F-0225)** é uma função só, no lugar de 13 cópias.
-- **O código perdeu 4 duplicações (F-0221 a F-0224).** Nada muda para quem usa. O desfazer e o refazer são uma função só. O arrasto com o mouse e o toque longo levantam o item pela mesma função. As cores do Visual Builder usam uma função para cada tarefa, e a trava da rolagem dos modais é uma linha. O arquivo tem 3 946 bytes a menos. As linhas repetidas do script caem de 209 para 140, e os blocos clonados, de 27 linhas para 0.
+- **O código perdeu 4 duplicações (F-0221 a F-0224).** Nada muda para quem usa. O desfazer e o refazer são uma função só. O arrasto com o mouse e o toque longo levantam o item pela mesma função. As cores do Visual Builder usam uma função para cada tarefa, e a trava da rolagem dos modais é uma linha. O arquivo tem 3 946 bytes a menos. As linhas repetidas do script caem de 209 para 140, e os blocos clonados, de 27 linhas para 0. Os menus novos também perderam 3 cópias: a lista das extensões de texto, o desenho de um botão da barra e o registro da falha do desfazer (F-0239).
 
 ### Corrigido
 
