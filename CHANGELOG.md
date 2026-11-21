@@ -6,10 +6,18 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
-O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine · Diogo Carvalho`, como o rodapé.
+O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine · Diogo Carvalho`, como o rodapé. Um texto se reabre pelo clique direito, e todo documento tem um selo do mesmo tamanho.
+
+### Adicionado
+
+- **"Editar texto" no clique direito de um texto (D-0204)**, em qualquer ferramenta. Antes, só o clique duplo reabria um texto, e só no Texto e no Selecionar.
 
 ### Modificado
 
+- **Todo documento tem um selo de 40 px (D-0205)**, e os nomes ficam alinhados. Um tipo sem cor mostra a extensão em um selo vazado; sem extensão, ou com uma longa, mostra a folha.
+- **O texto em edição tem a linha da seleção (D-0206)**, sem as alças, ao escrever e ao reabrir. Antes, nada marcava a edição.
+- **A seleção do texto em edição é azul, com a letra branca (D-0207).** O laranja translúcido sumia no vermelho, no laranja e no amarelo.
+- **Em uma captura de tela de telefone, o texto e o traço nascem maiores (D-0208).** Em um iPhone, o texto começa com 64 px, e não com 28. As capturas de computador e as fotos não mudam.
 - **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
 - **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
 - **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
@@ -23,10 +31,13 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 
 ### Corrigido
 
+- **No telefone, o texto em edição aparecia grande e cortado**, e ficava pequeno ao salvar. A regra de 16 px dos campos, que evita o zoom do iPhone, pegava também o campo da anotação. Agora o texto em edição tem o tamanho do texto salvo.
 - **O quadro do recorte depois do giro (F-0232)** é desenhado de novo na escala certa quando a imagem girada muda de tamanho na tela. Antes, ficava com a espessura da imagem de antes do giro.
 - **O círculo ao lado do conta-gotas (F-0233)**, sem cor escolhida, é o arco-íris sem o anel branco, como o círculo "Outra cor" da barra. Com uma cor, continua igual.
 
 Auditoria de 20 de novembro de 2026: cada mudança passou pelo `validate.sh` completo (35 PASS) e por um teste diferencial. O teste executa o mesmo roteiro no arquivo de antes e no de depois, no Chromium e no Firefox do Playwright, e compara 73 estados.
+
+Mudanças de 21 de novembro de 2026: cada uma passou pelo `validate.sh` completo (35 PASS) e por um teste no navegador. O campo do telefone e a escala foram testados no WebKit e no Chromium do Playwright, com um iPhone 14 Pro emulado.
 
 ## [29.12.0] - 2026-11-19
 
