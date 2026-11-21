@@ -10,6 +10,8 @@ Os menus do clique direito ganham as ações de cada lugar: o estilo de um texto
 
 Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
 
+Teste no navegador (`AGENTS.md`, seção 5): a lista inteira foi feita pelo agente, no Chrome do dono, por `http` local, e no Edge 158 do Playwright. O Playwright ficou com o arrasto em vários passos, o zoom, as telas de 360 e 375 px e os downloads. Tudo passou, menos a reordenação por toque, que não foi feita, sem tela de toque.
+
 ### Adicionado
 
 - **"Editar texto" no clique direito de um texto (D-0204)**, em qualquer ferramenta. Antes, só o clique duplo reabria um texto, e só no Texto e no Selecionar.
