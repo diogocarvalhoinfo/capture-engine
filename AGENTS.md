@@ -698,6 +698,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0207:** a seleção do texto em edição é o azul do Windows (`#0078d4`), com a letra branca. O laranja a 32% sumia no vermelho, no laranja e no amarelo. Custo: em uma anotação azul, a seleção quase não aparece. Origem: o dono, em 21 de novembro de 2026, entre 3 opções.
 - **D-0208:** uma captura de tela de telefone tem a altura de pelo menos 1,9 vez a largura. Nela, a escala da D-0173 é a largura dividida por 393, os pontos da largura de um iPhone. Em uma captura de 1179 × 2556, o texto nasce com 64 px, e não com 28. As capturas de computador e as fotos 3:4 não mudam. Custo: nenhum. Origem: o dono, no teste de um iPhone 14 Pro, em 21 de novembro de 2026.
 - **D-0209:** o olho da D-0188 é o da miniatura, só com a pálpebra de cima, e vale também no "Abrir" do clique direito. O menu tinha o olho fechado, e os dois olhos destoavam. Custo: o menu se afasta do `eye` do `icones.md`. Origem: o dono, em 21 de novembro de 2026, entre 3 opções: o olho do menu, o da miniatura e o `eye` do Lucide.
+- **D-0210:** o clique direito de um texto muda o negrito, o itálico, o fundo e o tamanho. Cada item diz o que faz ("Tirar negrito", "Pôr fundo"), sem marca de ligado. O − e o + do tamanho seguem a lista da bandeja e deixam o menu aberto. O Ctrl+B e o Ctrl+I só valem no texto em edição e ficam fora. Custo: o menu passa de 5 para 9 linhas. Origem: o dono, em 21 de novembro de 2026, entre 6 simulações.
 
 ## 7. Pendentes
 

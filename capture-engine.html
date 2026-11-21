@@ -2767,6 +2767,63 @@
       color: var(--color-red-500)
     }
 
+    /* The size of a text in the menu: a 20 px box around − and +, with 28 px to click, close to the number (D-0210) */
+    .ctx-step {
+      cursor: default
+    }
+
+    .ctx-menu .ctx-step:hover:not(:focus-visible) {
+      background: none
+    }
+
+    .ctx-steps {
+      display: flex;
+      align-items: center;
+      margin-right: calc(var(--spacing) * -1);
+      margin-left: auto
+    }
+
+    .ctx-step-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(var(--spacing) * 7);
+      height: calc(var(--spacing) * 7)
+    }
+
+    .ctx-step-btn span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(var(--spacing) * 5);
+      height: calc(var(--spacing) * 5);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm)
+    }
+
+    .ctx-step-btn:hover span {
+      background: var(--color-background)
+    }
+
+    .ctx-step-btn .ctx-icon {
+      width: 14px;
+      height: 14px
+    }
+
+    .ctx-step-val {
+      min-width: calc(var(--spacing) * 5.5);
+      text-align: center;
+      font-variant-numeric: tabular-nums
+    }
+
+    .ctx-dark .ctx-step-btn span {
+      border-color: var(--color-viewer-control-border)
+    }
+
+    .ctx-dark .ctx-step-btn:hover span {
+      background: var(--color-viewer-control-hover)
+    }
+
     /* ═══ RESPONSIVE ═══ */
     @media (width <= 56.25rem) {
       /* Allow page to scroll vertically on mobile */
@@ -5655,10 +5712,10 @@
       function dlImg(o) { const u = URL.createObjectURL(o.blob), a = document.createElement('a'); a.href = u; a.download = imgName(o); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000) }
       function dlDoc(o) { dlBlob(o.blob, o.name) }
       async function newNote() { await captureDoc(new Blob([''], { type: 'text/plain' }), 'nota-1.txt', 'text/plain'); const o = docs[docs.length - 1]; await window.openTextModal(o.id, false); textEditStart() }
-      const MI = { restore: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>', front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"/><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M9 7v10"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
+      const MI = { restore: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>', front: '<rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/>', back: '<rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="2" width="8" height="8" rx="2"/><path d="M7 14v1a2 2 0 0 0 2 2h1"/><path d="M14 7h1a2 2 0 0 1 2 2v1"/>', x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', check: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>', shrink: '<path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/>', open: '<path d="M2 12s5-7 10-7 10 7 10 7"/><circle cx="12" cy="12" r="3"/>', bold: '<text x="12" y="18" text-anchor="middle" style="font: 700 17px sans-serif" fill="currentColor" stroke="none">B</text>', italic: '<text x="12" y="18.5" text-anchor="middle" style="font: italic 400 19px serif" fill="currentColor" stroke="none">I</text>', textbg: '<rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" fill-opacity="0.35"/><path d="M8 8h8M8 8v1.5M16 8v1.5M12 8v9M10.5 17h3"/>', textclear: '<rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 2.5"/><path d="M8 8h8M8 8v1.5M16 8v1.5M12 8v9M10.5 17h3"/>', text: '<path d="M5 5h14M5 5v2M19 5v2M12 5v15M9.5 20h5"/>', minus: '<path d="M5 12h14"/>', plus: '<path d="M5 12h14M12 5v14"/>', edit: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>', copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', dup: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 11v7M11 14.5h7"/>', ren: '<path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"/><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M9 7v10"/>', dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>', del: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>', add: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', note: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>' };
       let ctxMenu = null, ctxFrom = null;
       function ctxClose() { ctxSubClose(); if (!ctxMenu) return; ctxMenu.remove(); ctxMenu = null; if (ctxFrom && ctxFrom.isConnected) ctxFrom.focus({ preventScroll: true }); ctxFrom = null }
-      function ctxOpen(x, y, groups, dark) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu' + (dark ? ' ctx-dark' : ''); m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(ctxItem(it))) }); document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
+      function ctxOpen(x, y, groups, dark) { ctxClose(); ctxFrom = document.activeElement; const m = document.createElement('div'); m.className = 'ctx-menu' + (dark ? ' ctx-dark' : ''); m.setAttribute('role', 'menu'); groups.filter(g => g.length).forEach((g, gi) => { if (gi) { const s = document.createElement('div'); s.className = 'ctx-sep'; s.setAttribute('role', 'separator'); m.append(s) } g.forEach(it => m.append(typeof it === 'function' ? it() : ctxItem(it))) }); /* a function builds its own row, as the size of a text (D-0210) */ document.body.append(m); ctxMenu = m; const z = uiZoom(), r = m.getBoundingClientRect(); m.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px'; m.querySelector('.ctx-item').focus({ preventScroll: true }) }
       /* One item of the menu; with a sixth value (a function that gives the rows), it opens a submenu instead (B6.5) */
       function ctxItem([icon, label, key, fn, danger, sub]) { const b = document.createElement('button'); b.className = 'ctx-item' + (danger ? ' ctx-danger' : ''); b.setAttribute('role', 'menuitem'); b.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg>`; const l = document.createElement('span'); l.textContent = label; b.append(l); if (key || sub) { const k = document.createElement('span'); k.className = 'ctx-key'; if (sub) k.innerHTML = '<svg class="ctx-icon ctx-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>'; else k.textContent = key; b.append(k) } if (sub) { b.sub = sub; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => ctxSubOpen(b, sub, true); b.onmouseenter = () => ctxSubOpen(b, sub, false) } else { b.onclick = () => { ctxClose(); fn() }; b.onmouseenter = ctxSubClose } return b }
       /* The submenu: the same form as the menu, beside the item; on the left when the right has no room, below the item when neither side has */
@@ -5668,7 +5725,7 @@
       function ctxSubPlace(m, b) { const z = uiZoom(), pr = ctxMenu.getBoundingClientRect(), br = b.getBoundingClientRect(), r = m.getBoundingClientRect(); let x = pr.right - 4, y = br.top - 5; if (x + r.width > innerWidth - 4) x = pr.left - r.width + 4; if (x < 4) { x = Math.max(4, Math.min(br.left + 24, innerWidth - r.width - 4)); y = br.bottom } m.style.left = x / z + 'px'; m.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) / z + 'px' }
       function ctxSubOpen(b, sub, focus) { if (!ctxSub || ctxSub.from !== b) { ctxSubClose(); const m = document.createElement('div'); m.className = 'ctx-menu ctx-sub'; m.setAttribute('role', 'menu'); m.from = b; sub().forEach(row => m.append(ctxSubRow(row))); document.body.append(m); ctxSub = m; b.setAttribute('aria-expanded', 'true'); ctxSubPlace(m, b) } if (focus) { const f = ctxSub.querySelector('.ctx-item'); if (f) f.focus({ preventScroll: true }) } }
       /* The keys of an open menu: up and down move, right opens the submenu, left and Esc go back from it, Tab and Esc close */
-      function ctxKey(e) { const a = document.activeElement, inSub = !!ctxSub && ctxSub.contains(a), it = [...(inSub ? ctxSub : ctxMenu).querySelectorAll('.ctx-item:not(:disabled)')], i = it.indexOf(a), k = e.key; if (k === 'Tab' || (k === 'Escape' && !inSub)) { e.preventDefault(); ctxClose(); return } if (inSub && (k === 'Escape' || k === 'ArrowLeft')) { e.preventDefault(); const p = ctxSub.from; ctxSubClose(); p.focus(); return } if (k === 'ArrowRight' && a && a.sub) { e.preventDefault(); ctxSubOpen(a, a.sub, true); return } if ((k === 'ArrowDown' || k === 'ArrowUp') && it.length) { e.preventDefault(); it[(i + (k === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } }
+      function ctxKey(e) { const a = document.activeElement, inSub = !!ctxSub && ctxSub.contains(a), it = [...(inSub ? ctxSub : ctxMenu).querySelectorAll('.ctx-item:not(:disabled)')], i = it.indexOf(a), k = e.key; if (k === 'Tab' || (k === 'Escape' && !inSub)) { e.preventDefault(); ctxClose(); return } if ((k === 'ArrowLeft' || k === 'ArrowRight') && a && a.step) { e.preventDefault(); a.step(k === 'ArrowRight' ? 1 : -1); return } if (inSub &&(k === 'Escape' || k === 'ArrowLeft')) { e.preventDefault(); const p = ctxSub.from; ctxSubClose(); p.focus(); return } if (k === 'ArrowRight' && a && a.sub) { e.preventDefault(); ctxSubOpen(a, a.sub, true); return } if ((k === 'ArrowDown' || k === 'ArrowUp') && it.length) { e.preventDefault(); it[(i + (k === 'ArrowDown' ? 1 : it.length - 1)) % it.length].focus() } }
       /* «Marcar» in the menu marks the item and shows the boxes of all items; «Desmarcar» on the last one hides them (D-0135) */
       function markToggle(id) { if (marked.has(id)) marked.delete(id); else marked.add(id); markSync() }
       /* The menu of the marked items is the same whatever item opens it (D-0136): Juntar when all are PDFs, the .pdf when none is in Documentos (D1), the .zip and Remover */
@@ -7261,14 +7318,30 @@
            already selected, or in Selecionar chosen in the toolbar (D-0198) */
         function annRightOpensMenu(e) { const p = annCanvasXY(e), i = annHitTest(p.x, p.y); return i >= 0 && (i === annSelectedIdx || (annTool === 'select' && !annTempSelectFrom)) }
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
+        // Negrito, Itálico or the background of the text i, from the menu, with undo (D-0210)
+        function annTextFlip(i, k) { const h = annHistory[i]; if (!h || h.type !== 'text') return; annPushUndo(); if (k === 'bold') h.bold = h.bold === false; else h[k] = !h[k]; setAnnDirty(true); annRenderAll(); annSyncTextIcon() }
+        /* The size of the text i in the menu: − and + beside the number keep the menu open, and the arrows to the sides step it (D-0210) */
+        function annSizeRow(i) {
+          const r = document.createElement('div'), val = document.createElement('span'), box = document.createElement('span');
+          r.className = 'ctx-item ctx-step'; r.tabIndex = -1; r.setAttribute('role', 'menuitem');
+          const show = () => { const v = (annHistory[i] && annHistory[i].fontSize) || 24; val.textContent = v; r.setAttribute('aria-label', 'Tamanho ' + v) };
+          r.step = dir => { if (annSelectedIdx !== i) return; annSizeStep(dir); show() };
+          const btn = (dir, icon, label) => { const b = document.createElement('button'); b.className = 'ctx-step-btn'; b.tabIndex = -1; b.setAttribute('aria-label', label); b.innerHTML = `<span><svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI[icon]}</svg></span>`; b.onmousedown = e => e.preventDefault(); b.onclick = () => r.step(dir); return b };
+          r.innerHTML = `<svg class="ctx-icon" viewBox="0 0 24 24" aria-hidden="true">${MI.text}</svg><span>Tamanho</span>`;
+          val.className = 'ctx-step-val'; box.className = 'ctx-steps'; box.append(btn(-1, 'minus', 'Diminuir'), val, btn(1, 'plus', 'Aumentar')); r.append(box); show();
+          return r;
+        }
         cv.addEventListener('pointerdown', () => { if (annAllSel) { annAllSel = false; annRenderAll() } }, true); // a click on the photo leaves the selection of all (D-0162)
         cv.addEventListener('contextmenu', e => {
           if (!annActive) return;
           e.preventDefault();
           const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5, menu = annRightMenu; annRightAt = null; annRightMenu = false;
           if (!still || !menu || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-          const ti = annSelectedIdx, isText = annHistory[ti].type === 'text'; // a text opens for editing from the menu too, from any tool (D-0204)
-          ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
+          const ti = annSelectedIdx, h = annHistory[ti], isText = h.type === 'text'; // a text opens for editing from the menu too, from any tool (D-0204)
+          /* The style of a text from the menu: each item says what it does, and the size steps through the list of the tray (D-0210) */
+          const styles = isText ? [['bold', h.bold !== false ? 'Tirar negrito' : 'Negrito', '', () => annTextFlip(ti, 'bold')], ['italic', h.italic ? 'Tirar itálico' : 'Itálico', '', () => annTextFlip(ti, 'italic')],
+            h.bg ? ['textclear', 'Tirar fundo', '', () => annTextFlip(ti, 'bg')] : ['textbg', 'Pôr fundo', '', () => annTextFlip(ti, 'bg')], () => annSizeRow(ti)] : [];
+          ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], styles, [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
         // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
         function annTextAt(p) {

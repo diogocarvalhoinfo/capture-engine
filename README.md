@@ -203,7 +203,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 - **Redimensionar:** as alças dos cantos. A seta tem uma alça em cada ponta.
 - **Shift:** quadrado, círculo perfeito, e seta e desenho livre em passos de 45°.
 - **Camadas:** "Trazer para frente" (Ctrl+]) e "Enviar para trás" (Ctrl+[).
-- **Menu da anotação:** o clique direito em uma anotação já selecionada, ou no Selecionar, abre o menu: "Trazer para frente", "Enviar para trás", "Duplicar" e "Apagar"; em um texto, também "Editar texto". Em outra ferramenta, o primeiro clique direito só seleciona.
+- **Menu da anotação:** o clique direito em uma anotação já selecionada, ou no Selecionar, abre o menu: "Trazer para frente", "Enviar para trás", "Duplicar" e "Apagar". Em um texto, também "Editar texto", o negrito, o itálico e o fundo, com o nome do que o item faz ("Tirar negrito", "Pôr fundo"), e o tamanho, com − e +, que deixam o menu aberto. Em outra ferramenta, o primeiro clique direito só seleciona.
 - **Girar um texto:** o botão redondo acima do texto selecionado. Prende em 0°, 90°, 180° e 270°; com Shift, anda de 15° em 15°.
 - **Colar por cima:** com o editor aberto, o Ctrl+V cola uma imagem como anotação.
 - **Zoom no editor:** a rolagem do mouse e os botões + e −. Para mover a imagem ampliada, use a barra de espaço com o arrasto, ou o botão do meio.

@@ -11,6 +11,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 ### Adicionado
 
 - **"Editar texto" no clique direito de um texto (D-0204)**, em qualquer ferramenta. Antes, só o clique duplo reabria um texto, e só no Texto e no Selecionar.
+- **O negrito, o itálico, o fundo e o tamanho no clique direito de um texto (D-0210)**, sem abrir o texto, e cada mudança com o desfazer. Cada item diz o que faz, como "Tirar negrito" e "Pôr fundo". O − e o + do tamanho deixam o menu aberto.
 
 ### Modificado
 
