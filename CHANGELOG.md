@@ -4,9 +4,11 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.13.0] - 2026-11-21
 
 Os menus do clique direito ganham as ações de cada lugar: o estilo de um texto, o preenchimento de uma forma, a foto do editor e os "Removidos". Os avisos e as faixas do topo ficam curtos e com um ícone, e um clique duplo em um texto pequeno não o apaga mais.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
 
 ### Adicionado
 
@@ -50,7 +52,7 @@ Os menus do clique direito ganham as ações de cada lugar: o estilo de um texto
 
 Auditoria de 20 de novembro de 2026: cada mudança passou pelo `validate.sh` completo (35 PASS) e por um teste diferencial. O teste executa o mesmo roteiro no arquivo de antes e no de depois, no Chromium e no Firefox do Playwright, e compara 73 estados.
 
-Mudanças de 21 de novembro de 2026: cada uma passou pelo `validate.sh` completo (35 PASS) e por um teste no navegador. O campo do telefone e a escala foram testados no WebKit e no Chromium do Playwright, com um iPhone 14 Pro emulado.
+Mudanças de 21 de novembro de 2026: cada uma passou pelo `validate.sh` completo (35 PASS) e por um teste no navegador. O campo do telefone e a escala foram testados no WebKit e no Chromium do Playwright, com um iPhone 14 Pro emulado. As correções F-0234 a F-0240 foram reproduzidas antes e depois no Edge do Playwright, pelo caminho de quem usa; a F-0235 também no Firefox.
 
 ## [29.12.0] - 2026-11-19
 
