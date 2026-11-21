@@ -366,6 +366,13 @@
       color: inherit
     }
 
+    /* The text being written or edited keeps the thin line of the selection, without the handles, and the line grows as it is typed */
+    #ann-text-input,
+    #ann-text-input:focus-visible {
+      outline: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+      outline-offset: calc(var(--spacing) * 1.5)
+    }
+
     /* ═══ SCROLLBAR ═══ */
     * {
       scrollbar-width: thin;
@@ -4009,7 +4016,7 @@
         <!-- INLINE TEXT OVERLAY FOR ANNOTATION -->
         <div id="ann-text-overlay" style="display:none;position:absolute;inset:0;z-index:var(--z-viewer-text);pointer-events:none">
           <textarea id="ann-text-input" wrap="off" rows="1" autocomplete="off" spellcheck="false"
-            style="position:absolute;background:transparent;color:var(--color-white);border:0;padding:0;margin:0;outline:none;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
+            style="position:absolute;background:transparent;color:var(--color-white);border:0;padding:0;margin:0;resize:none;overflow:hidden;white-space:pre;box-sizing:content-box;font-family:sans-serif;pointer-events:auto;"></textarea>
         </div>
         <!-- IMAGE NAVIGATION ARROWS -->
         <button id="img-nav-prev" onclick="window.imgModalNav(-1)" title="Imagem anterior" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:var(--z-viewer-controls);width:36px;height:36px;border-radius:var(--radius-circle);background:var(--color-viewer-floating);border:1px solid var(--color-viewer-line);color:var(--color-white);align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;transition:background var(--duration-moderate-01)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;pointer-events:none"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -6314,7 +6321,7 @@
       }
       function annDrawSelectionOverlay() {
         if (annAllSel) { const k = annPx(), M = 6 * k, ctx = annGetCtx(); ctx.save(); ctx.strokeStyle = ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(); ctx.lineWidth = k; annHistory.forEach(e => { const b = annBBox(e); ctx.globalAlpha = 0.55; ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2); ctx.globalAlpha = 0.04; ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2) }); ctx.restore(); return }
-        if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
+        if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length || annSelectedIdx === annEditingTextIdx) return; // the text in the editor draws its own line
         const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
