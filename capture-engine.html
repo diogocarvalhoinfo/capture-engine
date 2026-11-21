@@ -114,7 +114,7 @@
       --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
       --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
       --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-      --color-annotation-selection: rgb(232 107 46 / 32%);
+      --color-annotation-selection: #0078d4;
       --color-hover-overlay-dark: rgb(255 255 255 / 6%);
       --color-hover-overlay: rgb(0 0 0 / 5%);
       --color-action-hover: var(--color-hover-overlay);
@@ -360,10 +360,10 @@
       color: var(--color-primary-foreground)
     }
 
-    /* Soft, translucent selection only in the annotation text editor (it does not force the text colour) */
+    /* The selection in the annotation text editor: the Windows blue with white text, seen on any colour of the text but blue */
     #ann-text-input::selection {
       background: var(--color-annotation-selection);
-      color: inherit
+      color: var(--color-white)
     }
 
     /* The text being written or edited keeps the thin line of the selection, without the handles, and the line grows as it is typed */

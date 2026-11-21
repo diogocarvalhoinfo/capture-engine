@@ -51,7 +51,7 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 | `--color-viewer-control-border-hover` | `#555` | — | Borda desses botões no hover |
 | `--color-viewer-control-foreground` | `#e0e0e0` | — | Texto e ícones desses botões |
 | `--color-viewer-active-foreground` | `#121212` | — | Texto do negrito e do itálico ativos |
-| `--color-annotation-selection` | `rgb(232 107 46 / 32%)` | — | Seleção do texto no editor de texto da anotação |
+| `--color-annotation-selection` | `#0078d4` | — | Seleção do texto no editor de texto da anotação, com a letra `--color-white` |
 | `--color-hover-overlay-dark` | `rgb(255 255 255 / 6%)` | — | No tema escuro: fundo de hover dos botões de ação e fundo dos botões secundários sem contorno, onde a sombra não aparece |
 | `--color-hover-overlay` | `rgb(0 0 0 / 5%)` | — | Fundo de hover dos botões de ação, no tema claro |
 | `--color-spinner-track` | `rgb(255 255 255 / 30%)` | — | Trilho do spinner |
