@@ -6401,7 +6401,10 @@
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
       let annRotCenter = null, annRotStart = 0, annRotStartAng = 0;
-      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy), m = annTextPad(), mx = m + (e.bg ? (e.fontSize || 24) * ANN_TEXT_BG_PAD : 0); if (Math.abs(l.x) <= l.g.w / 2 + mx && Math.abs(l.y) <= l.g.h / 2 + m) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
+      /* A text takes the click up to ANN_TEXT_HIT screen px around it, counted from the background drawn, in its own turned frame (D-0220).
+         The click, the right click and the double click use this one rule (F-0238) */
+      function annTextHit(e, cx, cy) { const l = annTextLocal(e, cx, cy), m = annTextPad(), mx = m + (e.bg ? (e.fontSize || 24) * ANN_TEXT_BG_PAD : 0); return Math.abs(l.x) <= l.g.w / 2 + mx && Math.abs(l.y) <= l.g.h / 2 + m }
+      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { if (annTextHit(e, cx, cy)) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
       // The resize cursor of a handle points the way it pulls: the corner direction, turned with a turned text
       function annHandleCursor(h) {
         if (h === 'rot') return 'grab'; if (h === 'p1' || h === 'p2') return 'crosshair';
@@ -7440,14 +7443,11 @@
             h.bg ? ['textclear', 'Tirar fundo', '', () => annTextFlip(ti, 'bg')] : ['textbg', 'Pôr fundo', '', () => annTextFlip(ti, 'bg')], () => annSizeRow(ti)] : annShapeItems(ti);
           ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], styles, [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
-        // The text under the point p, the topmost first, with the margin of the click around its box (D-0220). Returns its index, or -1
+        // The text under the point p, the topmost first, with the same area as the click (D-0220, F-0238). Returns its index, or -1
         function annTextAt(p) {
-          const m = annTextPad();
           for (let _i = annHistory.length - 1; _i >= 0; _i--) {
             const _h = annHistory[_i];
-            if (_h.type !== 'text' || !_h.txt) continue;
-            const _tb = annBBox(_h);
-            if (p.x >= _tb.x - m && p.x <= _tb.x + _tb.w + m && p.y >= _tb.y - m && p.y <= _tb.y + _tb.h + m) return _i;
+            if (_h.type === 'text' && _h.txt && annTextHit(_h, p.x, p.y)) return _i;
           }
           return -1;
         }
