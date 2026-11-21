@@ -12,6 +12,12 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 
 - **"Editar texto" no clique direito de um texto (D-0204)**, em qualquer ferramenta. Antes, só o clique duplo reabria um texto, e só no Texto e no Selecionar.
 - **O negrito, o itálico, o fundo e o tamanho no clique direito de um texto (D-0210)**, sem abrir o texto, e cada mudança com o desfazer. Cada item diz o que faz, como "Tirar negrito" e "Pôr fundo". O − e o + do tamanho deixam o menu aberto.
+- **"Preencher", "Desfocar" e a espessura no clique direito de uma forma (D-0211).**
+- **O Ctrl+B e o Ctrl+I em um texto selecionado (D-0212)**, sem abrir o texto.
+- **Um menu na foto do editor, fora de uma anotação (D-0213):** "Selecionar tudo", "Desfazer" e "Refazer".
+- **Um menu nos "Removidos" (D-0214):** "Abrir", "Restaurar" e "Download".
+- **"Desmarcar todos" no menu dos itens marcados (D-0215).**
+- **"Copiar texto" em um documento de texto (D-0216)**, pelo menu ou pelo Ctrl+C.
 
 ### Modificado
 
