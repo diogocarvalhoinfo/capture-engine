@@ -6380,8 +6380,9 @@
       function annPx() { const cv = $('ann-canvas'), r = cv ? cv.getBoundingClientRect() : null; return r && r.width ? cv.width / r.width : 1 }
       /* Ctrl+A selects every annotation (D-0162): a box around each, without handles; Delete removes them all, with one undo */
       let annAllSel = false;
+      function annSelectAll() { if (annHistory.length) { annAllSel = true; annSelectedIdx = -1; annRenderAll() } }
       function annAllKey(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); if (annHistory.length) { annAllSel = true; annSelectedIdx = -1; annRenderAll() } return true }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); annSelectAll(); return true }
         if (!annAllSel) return false;
         if (e.key === 'Delete') { e.preventDefault(); annPushUndo(); annHistory.splice(0); annAllSel = false; setAnnDirty(true); annRenderAll(); return true }
         if (e.key === 'Escape') { e.preventDefault(); annAllSel = false; annRenderAll(); return true }
@@ -7325,6 +7326,12 @@
            already selected, or in Selecionar chosen in the toolbar (D-0198) */
         function annRightOpensMenu(e) { const p = annCanvasXY(e), i = annHitTest(p.x, p.y); return i >= 0 && (i === annSelectedIdx || (annTool === 'select' && !annTempSelectFrom)) }
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
+        /* The menu on the photo, outside an annotation: Selecionar tudo when there is one, and Desfazer and Refazer, always in place as in the bar (D-0077, D-0213) */
+        function annPhotoMenu(x, y) {
+          const svg = sel => document.querySelector(sel).innerHTML.trim(), fail = err => SysLogger.error('Undo or redo failed', err);
+          ctxOpen(x, y, [annHistory.length ? [[svg('.ann-btn[data-tool="select"] svg'), 'Selecionar tudo', 'Ctrl+A', annSelectAll]] : [],
+            [[svg('#ann-undo svg'), 'Desfazer', 'Ctrl+Z', () => annDoUndo().catch(fail)], [svg('#ann-redo svg'), 'Refazer', 'Ctrl+Y', () => annDoRedo().catch(fail)]]], true);
+        }
         /* Contorno, Preenchido or Desfocado of the rectangle or circle i, from the menu, with undo, as the tray does (D-0211) */
         function annShapeFill(i, on) { const s = annHistory[i]; if (!s || (s.type !== 'rect' && s.type !== 'circle')) return; annPushUndo(); delete s.fill; delete s.blur; if (on) s.fill = true; if (on === 'blur') s.blur = true; setAnnDirty(true); annRenderAll() }
         // The items of a shape in the menu: Preencher and Desfocar on a rectangle or circle, and the Espessura of a line that shows (D-0211)
@@ -7356,6 +7363,7 @@
           if (!annActive) return;
           e.preventDefault();
           const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5, menu = annRightMenu; annRightAt = null; annRightMenu = false;
+          if (still && annHitTest(annCanvasXY(e).x, annCanvasXY(e).y) < 0) { annPhotoMenu(e.clientX, e.clientY); return } // outside an annotation (D-0213)
           if (!still || !menu || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
           const ti = annSelectedIdx, h = annHistory[ti], isText = h.type === 'text'; // a text opens for editing from the menu too, from any tool (D-0204)
           /* The style of a text from the menu: each item says what it does, and the size steps through the list of the tray (D-0210) */
