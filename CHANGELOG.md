@@ -45,6 +45,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 
 - **No telefone, o texto em edição aparecia grande e cortado**, e ficava pequeno ao salvar. A regra de 16 px dos campos, que evita o zoom do iPhone, pegava também o campo da anotação. Agora o texto em edição tem o tamanho do texto salvo.
 - **O quadro do recorte depois do giro (F-0232)** é desenhado de novo na escala certa quando a imagem girada muda de tamanho na tela. Antes, ficava com a espessura da imagem de antes do giro.
+- **O clique duplo na parte direita de um texto pequeno apagava o texto (F-0240, D-0223).** O primeiro clique mostrava o ✕ em cima do texto, e o segundo caía nele. Agora o clique duplo reabre o texto, no mouse e no toque.
 - **O círculo ao lado do conta-gotas (F-0233)**, sem cor escolhida, é o arco-íris sem o anel branco, como o círculo "Outra cor" da barra. Com uma cor, continua igual.
 
 Auditoria de 20 de novembro de 2026: cada mudança passou pelo `validate.sh` completo (35 PASS) e por um teste diferencial. O teste executa o mesmo roteiro no arquivo de antes e no de depois, no Chromium e no Firefox do Playwright, e compara 73 estados.

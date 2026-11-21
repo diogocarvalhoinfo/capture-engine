@@ -7728,11 +7728,14 @@
         _annDelBtnEl.style.cssText = 'display:none;opacity:1;z-index:var(--z-viewer-delete);pointer-events:auto';
         // Click on ✕: deletes the selected annotation
         // Only a press that began on the ✕ deletes: on a phone, the click a tap on the canvas sends can land on the ✕ that the tap just showed (D-0169). Enter has no press
-        let _annDelDown = false; window.addEventListener('pointerdown', e => { _annDelDown = e.target === _annDelBtnEl }, true);
+        /* A second press within 500 ms of the press on the photo that showed the ✕ is the end of a double click, and does not delete:
+           the double click reaches the photo and opens the text, as on any other point of it (F-0240) */
+        let _annDelDown = false, _annCvDownAt = -1e9; window.addEventListener('pointerdown', e => { const cv = e.target.id === 'ann-canvas'; _annDelDown = e.target === _annDelBtnEl && e.timeStamp - _annCvDownAt > 500; if (cv) _annCvDownAt = e.timeStamp }, true);
         _annDelBtnEl.onclick = (e) => { e.stopPropagation(); if (_annDelDown || !e.detail) annDeleteSelected(); _annDelDown = false };
         /* A right click that began on the photo ends on the ✕ the press just showed, on the right of a small text: the photo gets it,
            and the menu of the annotation opens, as for the left click of D-0169 (D-0220) */
         _annDelBtnEl.addEventListener('contextmenu', e => { if (_annDelDown) return; e.preventDefault(); e.stopPropagation(); $('ann-canvas').dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY, button: 2 })) });
+        _annDelBtnEl.addEventListener('dblclick', e => { e.preventDefault(); e.stopPropagation(); $('ann-canvas').dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY })) });
         $('ann-viewport').appendChild(_annDelBtnEl);
       }
 
