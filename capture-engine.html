@@ -5283,7 +5283,11 @@
       function annLayerKey(e) { if (!(e.ctrlKey || e.metaKey)) return false; const up = e.code === 'BracketRight' || e.key === ']' || e.key === '}', down = e.code === 'BracketLeft' || e.key === '[' || e.key === '{'; if (!up && !down) return false; e.preventDefault(); annLayer(up ? 1 : -1, e.shiftKey); return true }
       function annDeleteKey(e) { if (e.key !== 'Delete' || !annDeleteSelected()) return false; e.preventDefault(); return true }
       // Editor keys (undo, redo, delete), only while the editor is open and no text field has the focus
-      const annEditorKey = e => annActive && !typingInField() && (annAllKey(e) || annUndoKey(e) || annDeleteKey(e) || annLayerKey(e));
+      const annEditorKey = e => annActive && !typingInField() && (annAllKey(e) || annUndoKey(e) || annDeleteKey(e) || annLayerKey(e) || annStyleKey(e));
+      // Ctrl+B and Ctrl+I on a selected text, as in the menu; while typing, the field keeps them (D-0212)
+      function annStyleKey(e) { const k = e.key.toLowerCase(), s = annHistory[annSelectedIdx]; if (!(e.ctrlKey || e.metaKey) || (k !== 'b' && k !== 'i') || !s || s.type !== 'text') return false; e.preventDefault(); annTextFlip(annSelectedIdx, k === 'b' ? 'bold' : 'italic'); return true }
+      // Negrito, Itálico or the background of the text i, from the menu or the keys, with undo (D-0210, D-0212)
+      function annTextFlip(i, k) { const h = annHistory[i]; if (!h || h.type !== 'text') return; annPushUndo(); if (k === 'bold') h.bold = h.bold === false; else h[k] = !h[k]; setAnnDirty(true); annRenderAll(); annSyncTextIcon() }
       // Image viewer keys: the arrows go to the previous or next image; Escape leaves the editor, or closes the viewer
       function viewerKey(e) {
         if (annActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return; // in the editor the arrows move in the toolbar and its trays; the image changes after Aplicar alterações or Descartar alterações (F-0083)
@@ -7321,8 +7325,6 @@
            already selected, or in Selecionar chosen in the toolbar (D-0198) */
         function annRightOpensMenu(e) { const p = annCanvasXY(e), i = annHitTest(p.x, p.y); return i >= 0 && (i === annSelectedIdx || (annTool === 'select' && !annTempSelectFrom)) }
         function annDupSelected() { const i = annSelectedIdx; if (i < 0 || i >= annHistory.length) return; annPushUndo(); const c = JSON.parse(JSON.stringify(annHistory[i])), k = 16 * annPx(); annMoveShapeBy(c, k, k); annHistory.push(c); annSelectedIdx = annHistory.length - 1; setAnnDirty(true); annRenderAll() }
-        // Negrito, Itálico or the background of the text i, from the menu, with undo (D-0210)
-        function annTextFlip(i, k) { const h = annHistory[i]; if (!h || h.type !== 'text') return; annPushUndo(); if (k === 'bold') h.bold = h.bold === false; else h[k] = !h[k]; setAnnDirty(true); annRenderAll(); annSyncTextIcon() }
         /* Contorno, Preenchido or Desfocado of the rectangle or circle i, from the menu, with undo, as the tray does (D-0211) */
         function annShapeFill(i, on) { const s = annHistory[i]; if (!s || (s.type !== 'rect' && s.type !== 'circle')) return; annPushUndo(); delete s.fill; delete s.blur; if (on) s.fill = true; if (on === 'blur') s.blur = true; setAnnDirty(true); annRenderAll() }
         // The items of a shape in the menu: Preencher and Desfocar on a rectangle or circle, and the Espessura of a line that shows (D-0211)
@@ -7357,7 +7359,7 @@
           if (!still || !menu || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
           const ti = annSelectedIdx, h = annHistory[ti], isText = h.type === 'text'; // a text opens for editing from the menu too, from any tool (D-0204)
           /* The style of a text from the menu: each item says what it does, and the size steps through the list of the tray (D-0210) */
-          const styles = isText ? [['bold', h.bold !== false ? 'Tirar negrito' : 'Negrito', '', () => annTextFlip(ti, 'bold')], ['italic', h.italic ? 'Tirar itálico' : 'Itálico', '', () => annTextFlip(ti, 'italic')],
+          const styles = isText ? [['bold', h.bold !== false ? 'Tirar negrito' : 'Negrito', 'Ctrl+B', () => annTextFlip(ti, 'bold')], ['italic', h.italic ? 'Tirar itálico' : 'Itálico', 'Ctrl+I', () => annTextFlip(ti, 'italic')],
             h.bg ? ['textclear', 'Tirar fundo', '', () => annTextFlip(ti, 'bg')] : ['textbg', 'Pôr fundo', '', () => annTextFlip(ti, 'bg')], () => annSizeRow(ti)] : annShapeItems(ti);
           ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], styles, [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
