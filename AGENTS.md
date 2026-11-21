@@ -705,6 +705,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0214:** o clique direito em um item dos "Removidos" abre "Abrir", "Restaurar" e "Download", como o visualizador de um item removido. Origem: o dono, em 21 de novembro de 2026.
 - **D-0215:** o menu dos itens marcados tem "Desmarcar todos", que faz o mesmo que o Esc. Origem: o dono, em 21 de novembro de 2026.
 - **D-0216:** um documento de texto tem "Copiar texto" no clique direito, e o Ctrl+C no item focado faz o mesmo. Girar uma imagem pelo menu, sem o editor, ficou de fora: o giro, o recorte e as anotações guardadas teriam de ser refeitos fora dele. Origem: o dono, em 21 de novembro de 2026.
+- **D-0217:** o clique direito fora dos menus do app e dos campos não abre o menu do navegador, na aba e no app instalado. O "Recarregar" e o "Voltar" dele perdiam as anotações não aplicadas. Os campos mantêm o menu do navegador, que cola sem pedir permissão. O Shift + clique direito abre o menu do navegador em qualquer lugar. Recusados: um menu próprio nos campos e um "Colar" nas áreas vazias, porque ler a área de transferência pede permissão. Origem: o dono, em 21 de novembro de 2026.
 
 ## 7. Pendentes
 

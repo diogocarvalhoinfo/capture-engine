@@ -18,6 +18,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **Um menu nos "Removidos" (D-0214):** "Abrir", "Restaurar" e "Download".
 - **"Desmarcar todos" no menu dos itens marcados (D-0215).**
 - **"Copiar texto" em um documento de texto (D-0216)**, pelo menu ou pelo Ctrl+C.
+- **O menu do navegador só com o Shift (D-0217).** Fora dos menus do app e dos campos, o clique direito não o abre mais, e o "Recarregar" dele perdia as anotações não aplicadas. O Shift + clique direito o abre em qualquer lugar, e os campos o mantêm.
 
 ### Modificado
 

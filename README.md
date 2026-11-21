@@ -121,6 +121,8 @@ Uma imagem vai para Imagens; qualquer outro arquivo vai para Documentos. Os nome
 
 O clique direito em um item abre o menu do lugar: abrir, editar, copiar (Ctrl+C), duplicar, renomear (F2), fazer o download e remover (Del). Copiar leva a imagem, ou o texto de um documento de texto. "Marcar" põe uma caixa em cada item para agir em vários de uma vez, e "Desmarcar todos" (Esc) tira as caixas. Arrastar um item muda a ordem, e a ordem nova fica gravada.
 
+Fora desses menus, o clique direito não abre o menu do navegador, a não ser em um campo de texto. O Shift + clique direito abre o menu do navegador em qualquer lugar.
+
 Um item removido vai para a barra "Removidos", no fundo da tela, e volta pelo botão "Restaurar" até a sessão expirar. O clique direito nele abre, restaura ou faz o download.
 
 > [!CAUTION]
