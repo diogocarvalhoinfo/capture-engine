@@ -188,7 +188,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 - **Fechar as opções:** um clique fora, o Esc, outra ferramenta ou arrastar para baixo.
 - **Retângulo e círculo:** "Contorno", "Preenchido", uma forma cheia que cobre o que está embaixo, ou "Desfocado", que esconde um dado antes de exportar. Para um dado muito sensível, use "Preenchido".
 - **Marca-texto:** "Translúcido", com 40% de opacidade, ou "Sólido", que cobre. Começa no amarelo e guarda a sua cor.
-- **Texto:** "Negrito" e "Itálico" (Ctrl+B e Ctrl+I), e "Com fundo" ou "Fundo transparente". Um clique duplo em um texto o reabre.
+- **Texto:** "Negrito" e "Itálico" (Ctrl+B e Ctrl+I), e "Com fundo" ou "Fundo transparente". Um clique duplo em um texto, ou "Editar texto" no clique direito, o reabre.
 - **Espessura:** cada ferramenta guarda a sua. O desenho livre, o retângulo, o círculo e a seta começam com 4 px, o marca-texto com 18 px, e o texto com 24. Em uma foto grande, como a de um telefone, os passos crescem na mesma proporção.
 - **Outra cor:** o círculo do arco-íris abre o conta-gotas, o código HEX e um quadrado de tons.
 - **Recortar:** "Retângulo", "Cantos livres", que endireita uma folha fotografada de lado, e "Endireitar", que gira a foto olhando a grade.
@@ -203,7 +203,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 - **Redimensionar:** as alças dos cantos. A seta tem uma alça em cada ponta.
 - **Shift:** quadrado, círculo perfeito, e seta e desenho livre em passos de 45°.
 - **Camadas:** "Trazer para frente" (Ctrl+]) e "Enviar para trás" (Ctrl+[).
-- **Menu da anotação:** o clique direito em uma anotação já selecionada, ou no Selecionar, abre o menu: "Trazer para frente", "Enviar para trás", "Duplicar" e "Apagar". Em outra ferramenta, o primeiro clique direito só seleciona.
+- **Menu da anotação:** o clique direito em uma anotação já selecionada, ou no Selecionar, abre o menu: "Trazer para frente", "Enviar para trás", "Duplicar" e "Apagar"; em um texto, também "Editar texto". Em outra ferramenta, o primeiro clique direito só seleciona.
 - **Girar um texto:** o botão redondo acima do texto selecionado. Prende em 0°, 90°, 180° e 270°; com Shift, anda de 15° em 15°.
 - **Colar por cima:** com o editor aberto, o Ctrl+V cola uma imagem como anotação.
 - **Zoom no editor:** a rolagem do mouse e os botões + e −. Para mover a imagem ampliada, use a barra de espaço com o arrasto, ou o botão do meio.

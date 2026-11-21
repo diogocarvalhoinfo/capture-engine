@@ -7250,7 +7250,8 @@
           e.preventDefault();
           const still = annRightAt && Math.hypot(e.clientX - annRightAt.x, e.clientY - annRightAt.y) < 5, menu = annRightMenu; annRightAt = null; annRightMenu = false;
           if (!still || !menu || annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return;
-          ctxOpen(e.clientX, e.clientY, [[['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
+          const ti = annSelectedIdx, isText = annHistory[ti].type === 'text'; // a text opens for editing from the menu too, from any tool (D-0204)
+          ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
         // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
         function annTextAt(p) {
