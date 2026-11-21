@@ -6,7 +6,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
-O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine · Diogo Carvalho`, como o rodapé. Um texto se reabre pelo clique direito, e todo documento tem um selo do mesmo tamanho.
+Os menus do clique direito ganham as ações de cada lugar: o estilo de um texto, o preenchimento de uma forma, a foto do editor e os "Removidos". Os avisos e as faixas do topo ficam curtos e com um ícone, e um clique duplo em um texto pequeno não o apaga mais.
 
 ### Adicionado
 
@@ -18,13 +18,13 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **Um menu nos "Removidos" (D-0214):** "Abrir", "Restaurar" e "Download".
 - **"Desmarcar todos" no menu dos itens marcados (D-0215).**
 - **"Copiar texto" em um documento de texto (D-0216)**, pelo menu ou pelo Ctrl+C.
+
+### Modificado
+
 - **O menu do navegador só com o Shift (D-0217).** Fora dos menus do app e dos campos, o clique direito não o abre mais, e o "Recarregar" dele perdia as anotações não aplicadas. O Shift + clique direito o abre em qualquer lugar, e os campos o mantêm.
 - **Os avisos do fundo da tela têm o ícone do resultado (D-0218):** ✓ no sucesso, ✕ na falha e ⓘ na informação, na cor do texto. "Texto copiado" e os outros de uma frase não têm mais ponto final.
 - **As faixas vermelhas do topo ficaram curtas (D-0219).** Cada uma tem o ícone de aviso, o título com dois-pontos e o que fazer, como "Armazenamento cheio: exporte e limpe o Histórico". O botão de fechar usa o `x` do app. Uma base aberta por uma versão mais nova pede para abrir a versão nova. Qualquer outro bloqueio pede para liberar os dados do site (F-0235, D-0222).
 - **Um texto no editor fica mais fácil de clicar (D-0220).** O clique pega o texto até 8 px da tela em volta dele, em qualquer foto. Antes, em uma captura de iPhone, era preciso acertar as letras. O clique duplo usa a mesma área (F-0238).
-
-### Modificado
-
 - **Todo documento tem um selo de 40 px (D-0205)**, e os nomes ficam alinhados. Um tipo sem cor mostra a extensão em um selo vazado; sem extensão, ou com uma longa, mostra a folha.
 - **O texto em edição tem a linha da seleção (D-0206)**, sem as alças, ao escrever e ao reabrir. Antes, nada marcava a edição.
 - **A seleção do texto em edição é azul, com a letra branca (D-0207).** O laranja translúcido sumia no vermelho, no laranja e no amarelo.
@@ -33,7 +33,6 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **O aviso de autoria do HTML (D-0200)** tem 3 linhas: o copyright, o endereço do repositório e a licença.
 - **O fim do README (D-0200)** passa a se chamar "Licença". O nome do autor é o link para o site, com o link do GitHub ao lado, e a frase da licença aponta para o `LICENSE`.
 - **O `LICENSE`** diz "Copyright (c) 2026 Diogo Carvalho", sem o perfil.
-- **O segundo documento com um nome que começa por ponto (F-0228, D-0201)** vira `.env-1`, e não `-1.env`. Renomear `.env` para `.env2` dá `.env2`, e não `.env2.env`.
 - **As falhas do desfazer e do refazer (F-0229, D-0202)** aparecem no console, assim como as da leitura de uma sessão; antes, sumiam sem rastro.
 - **O código tem uma instrução por linha (F-0226, D-0203).** As 24 funções escritas em uma linha só foram separadas, sem mudar nenhum token do programa.
 - **Os estilos escritos no script passaram para o CSS (F-0230).** São 12, nas miniaturas, nos Removidos e no documento sem prévia, com 0 pixels diferentes nos dois temas.
@@ -43,6 +42,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 
 ### Corrigido
 
+- **O segundo documento com um nome que começa por ponto (F-0228, D-0201)** vira `.env-1`, e não `-1.env`. Renomear `.env` para `.env2` dá `.env2`, e não `.env2.env`.
 - **No telefone, o texto em edição aparecia grande e cortado**, e ficava pequeno ao salvar. A regra de 16 px dos campos, que evita o zoom do iPhone, pegava também o campo da anotação. Agora o texto em edição tem o tamanho do texto salvo.
 - **O quadro do recorte depois do giro (F-0232)** é desenhado de novo na escala certa quando a imagem girada muda de tamanho na tela. Antes, ficava com a espessura da imagem de antes do giro.
 - **O clique duplo na parte direita de um texto pequeno apagava o texto (F-0240, D-0223).** O primeiro clique mostrava o ✕ em cima do texto, e o segundo caía nele. Agora o clique duplo reabre o texto, no mouse e no toque.
