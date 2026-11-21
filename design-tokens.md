@@ -35,7 +35,7 @@ A coluna "Escuro" mostra o valor no tema escuro (classe `dark` no `<html>`); "�
 | `--color-yellow-500` | `#eab308` | — | Aviso |
 | `--color-white` | `#fff` | — | Branco sobre preenchimentos de cor sólida (contador dos "Removidos", spinner, botões verdes e vermelhos, avisos de armazenamento) |
 | `--color-black` | `#000` | — | Preto do quadrado de tons do seletor de cor, na bandeja "Outra cor" (D-0156) |
-| `--color-banner-critical` | `#b91c1c` | — | Fundo dos avisos de armazenamento cheio e indisponível (D-0080): mais escuro que o `--color-red-500`, para o bloco de largura total |
+| `--color-banner-critical` | `#b91c1c` | — | Fundo das 5 faixas do topo, em que a página deixou de gravar (D-0080, D-0219): mais escuro que o `--color-red-500`, para o bloco de largura total |
 | `--color-banner-close` | `rgb(255 255 255 / 25%)` | — | Fundo do ✕ desses avisos |
 | `--color-success` | `#16a34a` | — | O verde padrão (o green 600 do Tailwind): "Concluído", "Copiado", "Aplicar alterações", o exportar do admin, o ponto "Gravado" e o interruptor ligado. Com branco, 3,30:1: o ícone passa, e o texto é uma exceção registrada (D-0191) |
 | `--color-success-hover` | `#15803d` | — | Hover do exportar do admin; com branco, 5,02:1 |

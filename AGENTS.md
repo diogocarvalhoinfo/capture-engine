@@ -182,7 +182,7 @@ A opção de cada conceito da pasta `padroes/` do repositório de referência:
 
 - **O que a versão 3 muda:** nenhum dado guardado. Ela marca que um registro de `images` pode ter um PDF (`kind`) e imagens coladas no editor (`annBlobs`), que uma 28.x leria errado. Por isso uma cópia 28.x não abre mais a base.
 - **O que uma cópia 28.x faz depois:** o `open` com a versão 2 falha (`VersionError`), e aparece a faixa "Armazenamento indisponível". O Histórico fica vazio, e uma captura nova fica "Só nesta aba". Ela não lê nem apaga nada; a 29 reaberta mostra tudo como estava. Medido no Chrome 156, com a cópia exportada da 28.7.3.
-- **Aba antiga aberta:** se uma aba 28.x está aberta quando a 29 abre, a atualização espera, e a 29 mostra a faixa "Feche as outras abas". Ao fechar a aba antiga, a atualização termina, e a faixa some. Uma aba aberta quando uma versão futura atualizar a base fecha a conexão e pede para recarregar (`onversionchange`).
+- **Aba antiga aberta:** se uma aba 28.x está aberta quando a 29 abre, a atualização espera, e a 29 mostra a faixa "Versão anterior aberta". Ao fechar a aba antiga, a atualização termina, e a faixa some. Uma aba aberta quando uma versão futura atualizar a base fecha a conexão e pede para recarregar (`onversionchange`).
 - **Caminho de volta:** não há como voltar a base para a versão 2. Para voltar a uma 28.x, exporte antes as sessões na 29, em PDF ou ZIP. Depois, apague os dados do site no navegador e abra a 28.x, que começa vazia.
 
 > [!IMPORTANT]
@@ -324,7 +324,7 @@ Limpar o localStorage só volta as preferências ao padrão. Limpar o IndexedDB 
 - **Sem espaço no navegador:** um aviso vermelho fica fixo no topo (`#ce-quota-banner`, criado em runtime, na camada `--z-toast`) e volta a cada falha. Ele diz que as capturas deixaram de ser gravadas e manda exportar. Não esconda esse aviso: é o único sinal da falha. Só o `QuotaExceededError` o mostra; as outras falhas vão para o console. O que já estava gravado fica intacto.
 - **Limpeza:** as sessões sem uso há mais tempo que o `TOKEN_AUTO_PURGE_HOURS` (48 horas, por padrão) saem uma vez, ao abrir o app, com as imagens, os documentos e os removidos. Uma aba aberta por dias não limpa nada, e o espaço pode acabar antes da próxima abertura. A sessão aberta em outra aba não sai: cada aba segura uma trava do navegador (`navigator.locks`) com o nome da sua sessão, e a limpeza pula as travadas (F-0206).
 - **Prazo menor em uma versão nova:** na primeira abertura, apaga as sessões que antes ficariam. Avise quem usa antes de distribuir.
-- **Várias abas:** não bloqueie a tela no `onblocked`; ele só registra no console, e a faixa "Feche as outras abas" aparece só durante uma atualização da base. A tela de erro que bloqueava a segunda aba saiu na V23, a pedido do dono. As abas dividem a mesma base, e a última gravação da mesma sessão vence. Veja o README, "Limitações conhecidas".
+- **Várias abas:** não bloqueie a tela no `onblocked`; ele só registra no console, e a faixa "Versão anterior aberta" aparece só durante uma atualização da base. A tela de erro que bloqueava a segunda aba saiu na V23, a pedido do dono. As abas dividem a mesma base, e a última gravação da mesma sessão vence. Veja o README, "Limitações conhecidas".
 
 ### Recuperar os dados
 
@@ -707,6 +707,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0216:** um documento de texto tem "Copiar texto" no clique direito, e o Ctrl+C no item focado faz o mesmo. Girar uma imagem pelo menu, sem o editor, ficou de fora: o giro, o recorte e as anotações guardadas teriam de ser refeitos fora dele. Origem: o dono, em 21 de novembro de 2026.
 - **D-0217:** o clique direito fora dos menus do app e dos campos não abre o menu do navegador, na aba e no app instalado. O "Recarregar" e o "Voltar" dele perdiam as anotações não aplicadas. Os campos mantêm o menu do navegador, que cola sem pedir permissão. O Shift + clique direito abre o menu do navegador em qualquer lugar. Recusados: um menu próprio nos campos e um "Colar" nas áreas vazias, porque ler a área de transferência pede permissão. Origem: o dono, em 21 de novembro de 2026.
 - **D-0218:** o aviso do fundo da tela (`showNotice`) tem um tipo e o ícone dele, na cor do texto: o ✓ no sucesso, o `circle-x` na falha e o `info` na informação. Um aviso de uma frase não tem ponto final. Os ícones ficam em `OK_SVG`, `ERR_SVG` e `INFO_SVG`, e os botões que mostram um resultado usam os mesmos. Recusados: o aviso na cor do resultado, com 3,3:1 no texto, e o ícone colorido. Origem: o dono, em 21 de novembro de 2026.
+- **D-0219:** as 5 faixas do topo têm o ícone de aviso (`triangle-alert`), o título com dois-pontos e o `x` do app no botão de fechar. Todas ficam vermelhas, porque em todas a página deixou de gravar. Os textos seguem "causa: o que fazer para voltar a gravar", com até 11 palavras e em português neutro: sem gerúndio, sem "aba" e sem pronome oblíquo. Origem: o dono, em 21 de novembro de 2026.
 
 ## 7. Pendentes
 
