@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O menu do clique direito aberto pelo mouse não marca mais o primeiro item (F-0241, D-0224).** Em uma área vazia e no visualizador, o primeiro item abria com o anel laranja de foco. Agora nada fica marcado até a pessoa usar uma seta. Pelo teclado, o primeiro item continua marcado.
+
 ## [29.13.0] - 2026-11-21
 
 Os menus do clique direito ganham as ações de cada lugar: o estilo de um texto, o preenchimento de uma forma, a foto do editor e os "Removidos". Os avisos e as faixas do topo ficam curtos e com um ícone, e um clique duplo em um texto pequeno não o apaga mais.
