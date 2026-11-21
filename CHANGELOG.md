@@ -21,6 +21,7 @@ O aviso de autoria do HTML e o fim do README abrem com `© 2026 Capture Engine �
 - **O menu do navegador só com o Shift (D-0217).** Fora dos menus do app e dos campos, o clique direito não o abre mais, e o "Recarregar" dele perdia as anotações não aplicadas. O Shift + clique direito o abre em qualquer lugar, e os campos o mantêm.
 - **Os avisos do fundo da tela têm o ícone do resultado (D-0218):** ✓ no sucesso, ✕ na falha e ⓘ na informação, na cor do texto. "Texto copiado" e os outros de uma frase não têm mais ponto final.
 - **As faixas vermelhas do topo ficaram curtas (D-0219).** Cada uma tem o ícone de aviso, o título com dois-pontos e o que fazer, como "Armazenamento cheio: exporte e limpe o Histórico". O botão de fechar usa o `x` do app.
+- **Um texto no editor fica mais fácil de clicar (D-0220).** O clique pega o texto até 8 px da tela em volta dele, em qualquer foto. Antes, em uma captura de iPhone, era preciso acertar as letras.
 
 ### Modificado
 

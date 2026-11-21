@@ -6398,7 +6398,7 @@
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
       function annSnapAngle(a, fine) { a = ((a % 360) + 360) % 360; if (fine) return Math.round(a / 15) * 15 % 360; const q = Math.round(a / 90) * 90; return Math.abs(a - q) <= 5 ? q % 360 : Math.round(a) % 360 }
       let annRotCenter = null, annRotStart = 0, annRotStartAng = 0;
-      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy); if (Math.abs(l.x) <= l.g.w / 2 + 4 && Math.abs(l.y) <= l.g.h / 2 + 4) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
+      function annHitTest(cx, cy) { for (let _i = annHistory.length - 1; _i >= 0; _i--) { const e = annHistory[_i]; if (e.type === 'text') { const l = annTextLocal(e, cx, cy), m = annTextPad(), mx = m + (e.bg ? (e.fontSize || 24) * ANN_TEXT_BG_PAD : 0); if (Math.abs(l.x) <= l.g.w / 2 + mx && Math.abs(l.y) <= l.g.h / 2 + m) return _i; continue; } const b = annBBox(e); if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) return _i; } return -1; }
       // The resize cursor of a handle points the way it pulls: the corner direction, turned with a turned text
       function annHandleCursor(h) {
         if (h === 'rot') return 'grab'; if (h === 'p1' || h === 'p2') return 'crosshair';
@@ -6439,6 +6439,9 @@
       // Handles keep the same size on screen whatever the image resolution: sizes are in screen px,
       // and annPx() converts them to canvas px (a 3000 px image shown at 789 px has 3.8 canvas px per screen px)
       const ANN_HANDLE_SIZE = 6; // half side of the visible handle, in screen px (12 x 12)
+      const ANN_TEXT_HIT = 8;    // the margin around a text that still takes the click, in screen px: the same on any photo (D-0220)
+      const ANN_TEXT_BG_PAD = 0.25; // the background of a text goes past the letters by this part of the size, on each side: drawn and clicked
+      function annTextPad() { return ANN_TEXT_HIT * annPx() }
       const ANN_HIT_SIZE = 22;   // half side of the hit area, in screen px (44 x 44)
       function annPx() { const cv = $('ann-canvas'), r = cv ? cv.getBoundingClientRect() : null; return r && r.width ? cv.width / r.width : 1 }
       /* Ctrl+A selects every annotation (D-0162): a box around each, without handles; Delete removes them all, with one undo */
@@ -6662,7 +6665,7 @@
           const lines = String(h.txt).split('\n');
           ctx.textBaseline = 'top';
           if (h.bg) {
-            const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * 0.25, _hh = lineH * lines.length;
+            const _w = Math.max(...lines.map(l => ctx.measureText(l).width)), _p = fontSize * ANN_TEXT_BG_PAD, _hh = lineH * lines.length;
             ctx.save();
             if (h.rot) {
               ctx.translate(h.x1, h.y1);
@@ -7434,13 +7437,14 @@
             h.bg ? ['textclear', 'Tirar fundo', '', () => annTextFlip(ti, 'bg')] : ['textbg', 'Pôr fundo', '', () => annTextFlip(ti, 'bg')], () => annSizeRow(ti)] : annShapeItems(ti);
           ctxOpen(e.clientX, e.clientY, [isText ? [['edit', 'Editar texto', '', () => annEditText(ti)]] : [], styles, [['front', 'Trazer para frente', 'Ctrl+]', () => annLayer(1, false)], ['back', 'Enviar para trás', 'Ctrl+[', () => annLayer(-1, false)], ['dup', 'Duplicar', '', annDupSelected]], [['x', 'Apagar', 'Del', annDeleteSelected, 1]]], true);
         });
-        // The text under the point p, the topmost first (with 2 px around its box). Returns its index, or -1
+        // The text under the point p, the topmost first, with the margin of the click around its box (D-0220). Returns its index, or -1
         function annTextAt(p) {
+          const m = annTextPad();
           for (let _i = annHistory.length - 1; _i >= 0; _i--) {
             const _h = annHistory[_i];
             if (_h.type !== 'text' || !_h.txt) continue;
             const _tb = annBBox(_h);
-            if (p.x >= _tb.x - 2 && p.x <= _tb.x + _tb.w + 2 && p.y >= _tb.y - 2 && p.y <= _tb.y + _tb.h + 2) return _i;
+            if (p.x >= _tb.x - m && p.x <= _tb.x + _tb.w + m && p.y >= _tb.y - m && p.y <= _tb.y + _tb.h + m) return _i;
           }
           return -1;
         }
@@ -7723,6 +7727,9 @@
         // Only a press that began on the ✕ deletes: on a phone, the click a tap on the canvas sends can land on the ✕ that the tap just showed (D-0169). Enter has no press
         let _annDelDown = false; window.addEventListener('pointerdown', e => { _annDelDown = e.target === _annDelBtnEl }, true);
         _annDelBtnEl.onclick = (e) => { e.stopPropagation(); if (_annDelDown || !e.detail) annDeleteSelected(); _annDelDown = false };
+        /* A right click that began on the photo ends on the ✕ the press just showed, on the right of a small text: the photo gets it,
+           and the menu of the annotation opens, as for the left click of D-0169 (D-0220) */
+        _annDelBtnEl.addEventListener('contextmenu', e => { if (_annDelDown) return; e.preventDefault(); e.stopPropagation(); $('ann-canvas').dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY, button: 2 })) });
         $('ann-viewport').appendChild(_annDelBtnEl);
       }
 
