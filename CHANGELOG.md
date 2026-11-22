@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **No topo da foto, a alça de girar de um texto aparece embaixo dele, junto com o ✕ (F-0248).** A alça é desenhada dentro da foto e ficava cortada em cima, enquanto o ✕ descia sozinho. Agora a alça, o ✕ e o clique na alça usam o mesmo lado. Medido no Edge e no Chrome.
+
 ## [29.13.1] - 2026-11-22
 
 O editor de anotação fica mais limpo: a seleção encosta na anotação, e o ✕ sai do canto para o lado da alça de girar. O Desfazer depois do Girar 90° devolve as anotações ao lugar, o Espaço sem zoom não desenha mais, e o traço livre não cresce ao soltar o botão.

@@ -6438,10 +6438,17 @@
       // The Selecionar cursor at a canvas point: the one of the handle, move over a shape, or the arrow
       let annPtr = null; // the last pointer position on the canvas, in canvas px
       function annSelectCursorAt(p) { const _h = annHandleHitTest(p.x, p.y); return _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' }
+      /* The side of a text where the turning handle and the ✕ go, in its turned frame: 1 above it, -1 below it.
+         The handle is drawn on the photo, so it goes below when above it would leave the photo (F-0248) */
+      function annRotSide(e, k) {
+        const cv = $('ann-canvas'), d = annTextHalf(e, annTextGeom(e)).h + ANN_ROT_OFFSET * k, R = 9 * k;
+        const inside = p => p.x >= R && p.y >= R && p.x <= cv.width - R && p.y <= cv.height - R;
+        return inside(annTextToCanvas(e, 0, -d)) || !inside(annTextToCanvas(e, 0, d)) ? 1 : -1;
+      }
       // The handle of a text under (cx, cy), in its own turned frame: 'rot', a corner, or ''
       function annTextHandleAt(e, cx, cy, H, k) {
         const l = annTextLocal(e, cx, cy), t = annTextHalf(e, l.g), hw = t.w, hh = t.h;
-        if (Math.abs(l.x) <= H && Math.abs(l.y + hh + ANN_ROT_OFFSET * k) <= H) return 'rot';
+        if (Math.abs(l.x) <= H && Math.abs(l.y + annRotSide(e, k) * (hh + ANN_ROT_OFFSET * k)) <= H) return 'rot';
         const Hc = Math.min(H, Math.min(hw, hh) * 2 / 3); // on a small text, a third of its box each, so the middle moves it (D-0226)
         for (const [id, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) if (Math.abs(l.x - sx * hw) <= Hc && Math.abs(l.y - sy * hh) <= Hc) return id;
         return '';
@@ -6525,7 +6532,7 @@
         });
         if (_isTxt) {
           // Turning handle as in Paint: a round button with two curved arrows, without a line to the box
-          const ry = _by - ANN_ROT_OFFSET * k, R = 9 * k, r = 4.5 * k, hs = 2.2 * k;
+          const ry = annRotSide(_e, k) > 0 ? _by - ANN_ROT_OFFSET * k : _by + _bh + ANN_ROT_OFFSET * k, R = 9 * k, r = 4.5 * k, hs = 2.2 * k; // below the text when above it would leave the photo (F-0248)
           ctx.globalAlpha = 1; ctx.fillStyle = '#ffffff'; ctx.strokeStyle = accent; ctx.lineWidth = 1.5 * k;
           ctx.beginPath(); ctx.arc(0, ry, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
           ctx.fillStyle = accent; ctx.lineCap = 'round';
@@ -6549,9 +6556,9 @@
          on a shape, above the middle of the box, where a turning handle would be, else below it; on an arrow, beside its middle */
       function annDelPoints(e, k) {
         if (e.type === 'arrow') return [annArrowDelPoint(e)];
-        if (e.type === 'text') { const s = ANN_DEL_STEP * k, o = annTextHalf(e, annTextGeom(e)).h + ANN_ROT_OFFSET * k; return [annTextToCanvas(e, s, -o), annTextToCanvas(e, s, o)] }
-        const b = annSelBox(e), x = b.x + b.w / 2;
-        return [{ x, y: b.y - ANN_ROT_OFFSET * k }, { x, y: b.y + b.h + ANN_ROT_OFFSET * k }];
+        if (e.type === 'text') { const s = ANN_DEL_STEP * k, o = annRotSide(e, k) * (annTextHalf(e, annTextGeom(e)).h + ANN_ROT_OFFSET * k); return [annTextToCanvas(e, s, -o), annTextToCanvas(e, s, o)] }
+        const b = annSelBox(e), x = b.x + b.w / 2, up = { x, y: b.y - ANN_ROT_OFFSET * k }, down = { x, y: b.y + b.h + ANN_ROT_OFFSET * k };
+        return up.y >= 9 * k ? [up, down] : [down, up]; // on the photo when it fits, as the turning handle of a text (F-0248)
       }
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
