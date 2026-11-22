@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **O ✕ de uma anotação é redondo e fica entre a caixa e a alça de girar (D-0228).** Na 29.13.1, ele era quadrado e ficava ao lado da alça. Agora os dois ficam em coluna, no meio da borda, e o ✕ não cobre um texto girado. Em uma forma, o ✕ fica no mesmo lugar.
+
 ### Corrigido
 
 - **No topo da foto, a alça de girar de um texto aparece embaixo dele, junto com o ✕ (F-0248).** A alça é desenhada dentro da foto e ficava cortada em cima, enquanto o ✕ descia sozinho. Agora a alça, o ✕ e o clique na alça usam o mesmo lado. Medido no Edge e no Chrome.

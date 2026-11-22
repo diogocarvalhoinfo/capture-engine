@@ -1159,6 +1159,7 @@
     #ann-shape-del-btn {
       width: 18px;
       height: 18px;
+      border-radius: var(--radius-circle); /* round, as the turning handle above it (D-0228) */
       background: var(--color-red-500);
       font-size: var(--text-micro);
       font-weight: bold;
@@ -6416,8 +6417,10 @@
       function annTextCenter(e) { const g = annTextGeom(e); return { x: e.x1 + g.w / 2 * g.c - g.h / 2 * g.s, y: e.y1 + g.w / 2 * g.s + g.h / 2 * g.c, g } }
       function annTextPlaceCenter(e, cx, cy) { const g = annTextGeom(e); e.x1 = cx - (g.w / 2 * g.c - g.h / 2 * g.s); e.y1 = cy - (g.w / 2 * g.s + g.h / 2 * g.c) }
       // Turning handle of a selected text: free angle, drawn to 0°, 90°, 180° and 270° within 5°; Shift turns in steps of 15°
-      const ANN_ROT_OFFSET = 22; // distance from the top of the selection box to the centre of the handle, in screen px
-      const ANN_DEL_STEP = 24; // from the centre of the turning handle to the centre of the ✕ beside it, along the text, in screen px: their 24 px circles do not overlap (D-0226)
+      /* The ✕ sits between the box and the turning handle, both on the middle of the box (D-0228), in screen px:
+         22 from the box to the ✕, and 24 more to the handle, so their 24 px circles do not overlap */
+      const ANN_DEL_OFFSET = 22;
+      const ANN_ROT_OFFSET = ANN_DEL_OFFSET + 24; // distance from the box to the centre of the turning handle
       // The selection of a text turns with it: a canvas point to the frame of the text (lx right, ly down, from its centre), and back
       function annTextToCanvas(e, lx, ly) { const c = annTextCenter(e); return { x: c.x + lx * c.g.c - ly * c.g.s, y: c.y + lx * c.g.s + ly * c.g.c } }
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
@@ -6551,13 +6554,13 @@
       // No hover logic: the button appears and disappears only with the selection.
       // The ✕ of an arrow: 28 screen px beside its middle, away from both end handles
       function annArrowDelPoint(e) { const k = annPx(), dx = e.x2 - e.x1, dy = e.y2 - e.y1, L = Math.hypot(dx, dy) || 1; let nx = -dy / L, ny = dx / L; if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny } return { x: (e.x1 + e.x2) / 2 + nx * 28 * k, y: (e.y1 + e.y2) / 2 + ny * 28 * k } }
-      /* Where the ✕ can go, in canvas px, the first one in view wins (D-0226). It leaves the corners to the handles:
-         on a text, beside the turning handle, in the frame of the text so it never lands on it, else on the other side of the text;
-         on a shape, above the middle of the box, where a turning handle would be, else below it; on an arrow, beside its middle */
+      /* Where the ✕ can go, in canvas px, the first one in view wins. It leaves the corners to the handles (D-0226):
+         on a text, between the box and the turning handle, on the side of the handle and in the frame of the text (D-0228, F-0248);
+         on a shape, above the middle of the box, else below it when above leaves the photo (F-0248); on an arrow, beside its middle */
       function annDelPoints(e, k) {
         if (e.type === 'arrow') return [annArrowDelPoint(e)];
-        if (e.type === 'text') { const s = ANN_DEL_STEP * k, o = annRotSide(e, k) * (annTextHalf(e, annTextGeom(e)).h + ANN_ROT_OFFSET * k); return [annTextToCanvas(e, s, -o), annTextToCanvas(e, s, o)] }
-        const b = annSelBox(e), x = b.x + b.w / 2, up = { x, y: b.y - ANN_ROT_OFFSET * k }, down = { x, y: b.y + b.h + ANN_ROT_OFFSET * k };
+        if (e.type === 'text') { const o = annRotSide(e, k) * (annTextHalf(e, annTextGeom(e)).h + ANN_DEL_OFFSET * k); return [annTextToCanvas(e, 0, -o), annTextToCanvas(e, 0, o)] }
+        const b = annSelBox(e), x = b.x + b.w / 2, up = { x, y: b.y - ANN_DEL_OFFSET * k }, down = { x, y: b.y + b.h + ANN_DEL_OFFSET * k };
         return up.y >= 9 * k ? [up, down] : [down, up]; // on the photo when it fits, as the turning handle of a text (F-0248)
       }
       function annUpdateDelBtn() {
