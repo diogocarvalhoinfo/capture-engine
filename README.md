@@ -409,7 +409,7 @@ As versões testadas de cada navegador estão no changelog.
 
 Medido só com o teclado, com o Playwright, no Edge, no Firefox e no WebKit, o motor do Safari. O resultado foi o mesmo nos três.
 
-- **Teclado:** o Tab alcança todos os controles, e o Enter ou o Espaço os ativam. Isso inclui as miniaturas, os documentos, os removidos, as sessões, os chips do layout do PDF, as abas do Visual Builder e os cartões de exportação.
+- **Teclado:** o Tab alcança todos os controles, e o Enter ou o Espaço os ativam. Isso inclui as miniaturas, os documentos, os removidos, as sessões, os chips do layout do PDF, as abas do Visual Builder e os cartões de exportação. No editor de anotação, o Espaço segurado é o gesto de mover a imagem, e o Enter ativa os botões.
 - **Botões que aparecem com o mouse:** a lixeira e o botão de restaurar aparecem também com o foco.
 - **Barras recolhidas:** com o Histórico ou os "Removidos" fechados, o Tab passa só pelas setas que os abrem.
 - **Janelas:** com uma janela aberta, o Tab fica dentro dela, e ao fechar o foco volta ao lugar de onde ela abriu.

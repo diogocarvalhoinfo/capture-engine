@@ -17,6 +17,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A Limpeza automática diz "Eliminar sessões mais antigas que o período selecionado" (F-0243, D-0225).** Dizia "Remover", a palavra do que vai para os "Removidos" e pode voltar. A limpeza apaga a sessão para sempre, com as imagens, os documentos e os removidos dela.
 - **A barra de estado diz "Não gravado" quando o navegador não grava uma captura (F-0244).** Dizia "Só nesta aba", e "aba" é uma palavra do Brasil, contra o português neutro da interface (D-0187). O texto novo combina com "Gravado" e com a faixa "Capturas não gravadas".
 - **A lista de testes do `AGENTS.md` e o `design-tokens.md` dizem que a miniatura tem cantos arredondados (F-0245).** Os dois diziam "cantos retos", mas a moldura tem 6 px de raio desde a V19 e corta a imagem. Medido no Edge.
+- **O Espaço + arrastar sem zoom não desenha mais um traço (F-0246, D-0227).** Com zoom, o gesto já movia a imagem sem desenhar; sem zoom, o Espaço era ignorado, e o arrasto desenhava. No editor, o Enter aciona os botões, e o Espaço fica para esse gesto.
 
 ## [29.13.0] - 2026-11-21
 

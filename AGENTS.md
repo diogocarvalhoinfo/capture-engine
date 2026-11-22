@@ -513,7 +513,7 @@ A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o
 - [ ] Opções das ferramentas: um clique (ou toque) na ferramenta já escolhida, o duplo clique e o botão apertado por 1 s abrem as opções. Elas ficam lado a lado, acima de cada ferramenta que desenha. O − e o + da bandeja mudam o tamanho mostrado depois deles e o da barra. Um clique em uma ferramenta não escolhida só a escolhe, e um novo clique na escolhida fecha a bandeja. A seta para cima abre pelo teclado, e o Esc fecha sem fechar o editor
 - [ ] Retângulo e círculo "Preenchido": a forma sai cheia na cor; escolher a opção com uma forma selecionada a muda, e o Ctrl+Z desfaz
 - [ ] Zoom no editor (rolagem do mouse e botões + e −): um traço feito a 200% cai debaixo do cursor
-- [ ] Zoom no editor: Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom
+- [ ] Zoom no editor: Espaço + arrastar e o botão do meio movem a imagem sem desenhar; o campo de texto aberto e o botão ✕ acompanham o zoom. Sem zoom, o Espaço + arrastar não desenha (F-0246)
 
 **Reordenação:**
 - [ ] Arrastar uma imagem com o mouse muda a ordem sem saltos nem piscadas
@@ -719,6 +719,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 - **D-0224:** um menu aberto pelo mouse ou pelo toque fica com o foco no próprio menu, sem item marcado. A seta para baixo marca o primeiro item, e a seta para cima, o último. Aberto pelo teclado (Shift+F10 ou a tecla de menu), o primeiro item continua marcado. Antes, o primeiro item abria com o anel laranja de foco no clique direito em uma área vazia e no visualizador. Medido no Edge, no Chrome e no Firefox. Origem: o dono, em 21 de novembro de 2026 (F-0241).
 - **D-0225:** cada desfecho de tirar um item tem um termo. "Remover", com a lixeira, manda o item para os "Removidos", e "Restaurar" o devolve (D-0117). "Apagar", com o ✕, tira uma anotação, que volta com o Desfazer (D-0137). "Eliminar" apaga para sempre, sem os "Removidos" e sem o Desfazer: "Eliminar sessão" (D-0118), a Limpeza automática e uma ação futura nos "Removidos". A Limpeza automática dizia "Remover". Custo: nenhum. Medido no Edge. Origem: o dono, em 22 de novembro de 2026 (F-0243).
 - **D-0226:** a caixa de seleção fica colada ao traço, ou ao fundo do texto, e a linha do texto em edição também (D-0206). O ✕ (D-0137) cobria uma alça no canto. Agora fica ao lado da alça de girar, no sentido do texto, ou acima de uma forma; sem espaço, do outro lado. A área de clique dele passa a 24 px. Em uma anotação pequena, cada alça pega um terço da caixa. O Ctrl+A mantém a folga. Medido no Edge, depois de 4 protótipos. Origem: o dono, em 22 de novembro de 2026.
+- **D-0227:** no editor, o Espaço segurado fora de um campo nunca desenha: com zoom, move a imagem; sem zoom, só impede o traço. Antes, sem zoom, o mesmo gesto desenhava. Custo: no editor, o Espaço não aciona o botão com o foco, e o Enter aciona, como já acontecia com zoom. Medido no Edge. Origem: o dono, em 22 de novembro de 2026 (F-0246).
 
 ## 7. Pendentes
 

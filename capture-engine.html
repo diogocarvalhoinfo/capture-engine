@@ -5439,7 +5439,7 @@
         // In the editor a drag draws, so the zoomed image moves with Space + drag or with the middle button, as in Photoshop and Figma
         const inField = () => { const a = document.activeElement; return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable) };
         const spaceUp = () => { annSpaceHeld = false; vp.classList.remove('ann-pan') };
-        window.addEventListener('keydown', e => { if (e.code !== 'Space' || !annActive || !imgZoomed || inField()) return; e.preventDefault(); annSpaceHeld = true; vp.classList.add('ann-pan') });
+        window.addEventListener('keydown', e => { if (e.code !== 'Space' || !annActive || inField()) return; e.preventDefault(); annSpaceHeld = true; if (imgZoomed) vp.classList.add('ann-pan') }); // without zoom, Space held only keeps a drag from drawing (F-0246)
         window.addEventListener('keyup', e => { if (e.code === 'Space' && annSpaceHeld) { e.preventDefault(); spaceUp() } });
         window.addEventListener('blur', spaceUp);
         vp.addEventListener('mousedown', function (e) { if (e.button === 1 && annDragging) { e.preventDefault(); return } /* the middle button grabbed a shape: no pan, no autoscroll */ if (!imgZoomed || (annActive && !annSpaceHeld && e.button !== 1)) return; if (e.button === 1) e.preventDefault(); vp.classList.add('ann-grabbing'); imgPanning = true; imgStartX = e.clientX - imgPanX * uiZoom(); imgStartY = e.clientY - imgPanY * uiZoom(); $('ann-wrap').classList.add('no-anim'); vp.style.cursor = 'grabbing' });
@@ -5971,7 +5971,7 @@
       let annCurrentColor = '#ef4444';
       let annCommitText = null;
       let annTextPlace = null; // places the text field over its point on the image again (after a zoom or a pan)
-      let annSpaceHeld = false; // Space held in the editor: a drag moves the zoomed image instead of drawing
+      let annSpaceHeld = false; // Space held in the editor: a drag never draws, and with zoom it moves the image (F-0246)
       const ANN_SIZES = [1, 2, 4, 6, 8, 12]; let annSizeIdx = 2; // the step of the current tool: index 2 = lw 4px
       /* Each tool keeps its own step: the lines start at 4 px (D-0104), the highlighter at 18 px (D-0180) */
       const annSizeByTool = { free: 2, rect: 2, circle: 2, arrow: 2, highlight: 2 };
