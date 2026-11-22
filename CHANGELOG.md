@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.13.3] - 2026-11-22
+
+O texto em edição acompanha a foto quando a janela muda de tamanho, e o "Remover" funciona quando o navegador não grava as capturas.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o painel de administração. A Admin teve só o aviso do CORS do Quine, e por `http` saiu igual ao arquivo, byte a byte.
+
+Teste no navegador (`AGENTS.md`, seção 5): os itens de arrasto, zoom, telas estreitas e downloads passaram no Edge 158 do Playwright, com o `secao5.py` da referência. As três correções foram testadas no Edge, no Chrome, no Firefox e no WebKit do Playwright, e no Chrome do dono.
 
 ### Corrigido
 
