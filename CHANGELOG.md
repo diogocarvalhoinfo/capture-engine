@@ -13,6 +13,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **O menu do clique direito aberto pelo mouse não marca mais o primeiro item (F-0241, D-0224).** Em uma área vazia e no visualizador, o primeiro item abria com o anel laranja de foco. Agora nada fica marcado até a pessoa usar uma seta. Pelo teclado, o primeiro item continua marcado.
+- **O desfazer depois do Girar 90° devolve as anotações ao lugar delas (F-0242).** Com duas anotações ou mais, depois de girar, o Desfazer e o Refazer mostravam as de antes do giro em outro lugar, giradas e às vezes fora da foto. O Girar 90° girava também os passos guardados do desfazer, que já tinham a rotação deles. Medido no Edge: o retângulo voltava em x 478 a 680, e não em x 178 a 480.
 - **A Limpeza automática diz "Eliminar sessões mais antigas que o período selecionado" (F-0243, D-0225).** Dizia "Remover", a palavra do que vai para os "Removidos" e pode voltar. A limpeza apaga a sessão para sempre, com as imagens, os documentos e os removidos dela.
 
 ## [29.13.0] - 2026-11-21
