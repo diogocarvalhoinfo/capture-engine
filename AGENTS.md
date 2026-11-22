@@ -181,7 +181,7 @@ A opção de cada conceito da pasta `padroes/` do repositório de referência:
 **Versão do schema:** `3` (`DB_VERSION`), desde a 29.0.0 (D-0127).
 
 - **O que a versão 3 muda:** nenhum dado guardado. Ela marca que um registro de `images` pode ter um PDF (`kind`) e imagens coladas no editor (`annBlobs`), que uma 28.x leria errado. Por isso uma cópia 28.x não abre mais a base.
-- **O que uma cópia 28.x faz depois:** o `open` com a versão 2 falha (`VersionError`), e aparece a faixa "Armazenamento indisponível". O Histórico fica vazio, e uma captura nova fica "Só nesta aba". Ela não lê nem apaga nada; a 29 reaberta mostra tudo como estava. Medido no Chrome 156, com a cópia exportada da 28.7.3.
+- **O que uma cópia 28.x faz depois:** o `open` com a versão 2 falha (`VersionError`), e aparece a faixa "Armazenamento indisponível". O Histórico fica vazio, e uma captura nova não é gravada ("Não gravado"). Ela não lê nem apaga nada; a 29 reaberta mostra tudo como estava. Medido no Chrome 156, com a cópia exportada da 28.7.3.
 - **Aba antiga aberta:** se uma aba 28.x está aberta quando a 29 abre, a atualização espera, e a 29 mostra a faixa "Versão anterior aberta". Ao fechar a aba antiga, a atualização termina, e a faixa some. Uma aba aberta quando uma versão futura atualizar a base fecha a conexão e pede para recarregar (`onversionchange`).
 - **Caminho de volta:** não há como voltar a base para a versão 2. Para voltar a uma 28.x, exporte antes as sessões na 29, em PDF ou ZIP. Depois, apague os dados do site no navegador e abra a 28.x, que começa vazia.
 
@@ -471,7 +471,7 @@ A única proteção é exportar em PDF ou ZIP o que importa: não há cópia de 
 
 ### Teste no navegador
 
-A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o Playwright (D-0084). No WebKit do Playwright para Windows, toda captura fica "Só nesta aba", por `http` e por `file://`: ele não prova a gravação das imagens, que se confere no Edge, no Chrome e no Firefox.
+A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o Playwright (D-0084). No WebKit do Playwright para Windows, nenhuma captura é gravada ("Não gravado"), por `http` e por `file://`: ele não prova a gravação das imagens, que se confere no Edge, no Chrome e no Firefox.
 
 **Ciclo de vida da sessão:**
 - [ ] Abrir o arquivo: a tela limpa, os campos e o Histórico vazios

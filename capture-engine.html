@@ -4691,7 +4691,7 @@
           if (ago < 60) timeStr = 'Gravado';
           else timeStr = 'Gravado h\u00e1 ' + Math.floor(ago / 60) + 'm';
         } else { timeStr = 'Pronto' }
-        if (images.some(i => memOnly.has(i)) || docs.some(d => memOnly.has(d))) timeStr = 'S\u00f3 nesta aba';
+        if (images.some(i => memOnly.has(i)) || docs.some(d => memOnly.has(d))) timeStr = 'N\u00e3o gravado';
         elT.textContent = timeStr;
         elD.innerHTML = '';
         if (ni || np || nd) {
