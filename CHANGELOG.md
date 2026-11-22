@@ -10,6 +10,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **O campo de um texto em edição acompanha a foto quando a janela muda de tamanho (F-0249).** Ele ficava no lugar antigo, longe da foto, até ser fechado. Já era assim na 29.12.0. Agora o app reposiciona o campo e o ✕ como faz no zoom, também quando a foto só se desloca. Medido no Edge, no Chrome, no Firefox e no WebKit: de 50% para 80% da largura da foto antes; agora, 50% nos dois tamanhos.
 - **O "Remover" tira a imagem quando o navegador não grava as capturas (F-0250).** Com "Não gravado" na barra, a imagem ficava na grade, porque o app esperava uma gravação que nunca terminava. Uma imagem que nunca foi gravada passa agora aos "Removidos" sem a base. Medido no WebKit do Playwright; no Edge, o "Remover" já funcionava.
+- **Dois avisos usam aspas retas, e dois textos dizem "em um" (F-0251).** O nome de uma imagem que não entra no PDF vinha entre aspas angulares, e o aviso dos formatos e a dica do ZIP diziam "num".
 
 ## [29.13.2] - 2026-11-22
 
