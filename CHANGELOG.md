@@ -4,7 +4,15 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.13.1] - 2026-11-22
+
+O editor de anotação fica mais limpo: a seleção encosta na anotação, e o ✕ sai do canto para o lado da alça de girar. O Desfazer depois do Girar 90° devolve as anotações ao lugar, o Espaço sem zoom não desenha mais, e o traço livre não cresce ao soltar o botão.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o botão de administração nem o Visual Builder. A Admin teve só o aviso do CORS do Quine, normal por `file://` no Chromium. Por `http`, a Admin saiu igual ao arquivo, byte a byte.
+
+Teste no navegador (`AGENTS.md`, seção 5): a lista inteira foi feita pelo agente, no Chrome do dono, por `http` local, e no Edge 158 do Playwright. O Playwright ficou com o arrasto em vários passos, o zoom, as telas de 360 e 375 px, a reordenação e os downloads. Tudo passou, menos a reordenação por toque, que não foi feita, sem tela de toque. O tema escuro sem piscar foi conferido no código: o script do tema é o primeiro elemento do `<body>`.
+
+Revisão: um subagente revisou o diff e achou 3 casos da seleção nova, corrigidos antes da versão. Eram o arrasto pelo meio de uma forma pequena, o ✕ sobre um texto girado a 270° e o ✕ fora da tela.
 
 ### Modificado
 
