@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Corrigido
 
 - **O menu do clique direito aberto pelo mouse não marca mais o primeiro item (F-0241, D-0224).** Em uma área vazia e no visualizador, o primeiro item abria com o anel laranja de foco. Agora nada fica marcado até a pessoa usar uma seta. Pelo teclado, o primeiro item continua marcado.
+- **A Limpeza automática diz "Eliminar sessões mais antigas que o período selecionado" (F-0243, D-0225).** Dizia "Remover", a palavra do que vai para os "Removidos" e pode voltar. A limpeza apaga a sessão para sempre, com as imagens, os documentos e os removidos dela.
 
 ## [29.13.0] - 2026-11-21
 

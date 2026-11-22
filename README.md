@@ -355,7 +355,7 @@ Veja também: [`AGENTS.md`](AGENTS.md), seção "Regras".
 | A página abre em branco | Navegador antigo, ou arquivo local bloqueado | Use uma versão recente do Chrome, do Edge, do Firefox ou do Safari, e abra o arquivo com um clique duplo. |
 | As sessões sumiram | Os dados do navegador foram limpos, ou a sessão passou de 48 horas sem uso | Não há volta. Exporte com frequência; quem administra muda o prazo em "Limpeza automática". |
 | As sessões não aparecem em outra cópia | Outro navegador, outro perfil, janela privada, ou site em vez de arquivo | Abra no mesmo navegador, perfil e endereço onde as sessões foram criadas. |
-| As capturas sumiram ao fechar o navegador | Sem espaço, ou aba privada: a barra dizia "Só nesta aba" | Exporte antes de fechar, e apague no Histórico as sessões que já não servem. |
+| As capturas sumiram ao fechar o navegador | Sem espaço, ou aba privada: a barra dizia "Só nesta aba" | Exporte antes de fechar, e elimine no Histórico as sessões que já não servem. |
 | O Ctrl+V não cola | O foco está em um campo de texto, ou o telefone não tem teclado | Clique fora dos campos; no telefone, use "Adicionar imagem". |
 | O .pdf está desativado | Há documentos na sessão | Use o .zip, ou arraste o PDF de Documentos para Imagens. |
 | O Esc não fecha o editor | As opções de uma ferramenta estão abertas, ou há anotações por salvar | Aperte o Esc de novo, ou escolha "Aplicar alterações" ou "Descartar alterações". |
