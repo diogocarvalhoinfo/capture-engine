@@ -9,6 +9,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 ### Modificado
 
 - **O arrasto pelo nome de um documento entra na edição do nome, agora com a decisão escrita (D-0229).** É como na miniatura de uma imagem: a edição fica a um clique. O arrasto que reordena começa pelo selo do tipo.
+- **O nome livre de uma captura segue uma regra só.** A regra (nota, nota-1, nota-2) estava copiada em 8 funções: capturar, restaurar, renomear e duplicar imagens e documentos. Uma função faz isso agora, e os nomes não mudam.
 
 ## [29.13.3] - 2026-11-22
 

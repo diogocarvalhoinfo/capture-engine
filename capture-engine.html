@@ -5022,7 +5022,11 @@
 
 
       /* ═══ IMAGE CAPTURE ═══ */
-      async function captureImg(blob) { await ensureSession(); let counter = 1; let label = `imagem-${counter}`; while (images.some(img => img.label.toLowerCase() === label.toLowerCase()) || removed.some(img => img.label.toLowerCase() === label.toLowerCase())) { counter++; label = `imagem-${counter}` } const o = { id: genId('img'), sessionId: sessId, blob: blob, label: label, defLabel: label, order: nextOrder(images), addedAt: Date.now() }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Imagem capturada: ' + label) }
+      /* The first free name, the one rule of the app for images (key 'label') and documents (key 'name'), counting the removed ones:
+         the name itself, or its number at the end goes up (nota-2 gives nota-3), or it gets -1. A document keeps its extension at the end
+         (contrato.pdf gives contrato-1.pdf). skip is the item being renamed, which does not take its own name */
+      function freeName(name, key, skip) { const lists = key === 'name' ? [docs, removedDocs] : [images, removed], dot = key === 'name' ? name.lastIndexOf('.') : -1, ext = dot > 0 ? name.slice(dot) : ''; let base = name.slice(0, name.length - ext.length), n = name; while (lists.some(l => l.some(x => x !== skip && x[key].toLowerCase() === n.toLowerCase()))) { const m = base.match(/-(\d+)$/); base = m ? base.slice(0, -m[0].length) + '-' + (+m[1] + 1) : base + '-1'; n = base + ext } return n }
+      async function captureImg(blob) { await ensureSession(); const label = freeName('imagem-1', 'label'); const o = { id: genId('img'), sessionId: sessId, blob: blob, label: label, defLabel: label, order: nextOrder(images), addedAt: Date.now() }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Imagem capturada: ' + label) }
       /* An image the browser cannot draw (HEIC, TIFF, RAW) never reaches the PDF: it goes to Documents, byte for byte */
       function canDrawImage(blob) { return new Promise(res => { const img = new Image(), url = URL.createObjectURL(blob); const done = ok => { URL.revokeObjectURL(url); res(ok) }; img.onload = () => { try { const c = document.createElement('canvas'); c.width = 1; c.height = 1; c.getContext('2d').drawImage(img, 0, 0, 1, 1); done(img.naturalWidth > 0) } catch (_) { done(false) } }; img.onerror = () => done(false); img.src = url }) }
       const IMG_EXT = /\.(heic|heif|avif|tiff?|bmp|webp|png|jpe?g|gif|svg|raw|cr2|nef|arw|dng)$/i;
@@ -5040,23 +5044,7 @@
       function showNotice(msg, kind) { let n = $('ce-notice'); if (!n) { n = document.createElement('div'); n.id = 'ce-notice'; n.className = 'ce-notice'; n.setAttribute('role', 'status'); n.onclick = () => n.classList.remove('show'); document.body.appendChild(n) } n.innerHTML = { ok: OK_SVG, erro: ERR_SVG, info: INFO_SVG }[kind] || ''; const t = document.createElement('span'); t.textContent = msg; n.append(t); /* the icon of the kind, in the colour of the text (D-0218) */ n.classList.add('show'); clearTimeout(n._t); n._t = setTimeout(() => n.classList.remove('show'), 8000) }
       async function captureDoc(blob, name, type) {
         await ensureSession();
-        let baseName = name || 'texto-1.txt', ext = '';
-        const lastDot = baseName.lastIndexOf('.');
-        if (lastDot > 0) {
-          ext = baseName.substring(lastDot);
-          baseName = baseName.substring(0, lastDot)
-        }
-        let finalName = baseName + ext;
-        while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) {
-          const match = baseName.match(/-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1)
-          } else {
-            baseName = baseName + '-1'
-          }
-          finalName = baseName + ext
-        }
+        const finalName = freeName(name || 'texto-1.txt', 'name');
         const o = { id: genId('doc'), sessionId: sessId, blob: blob, name: finalName, type: type || 'application/octet-stream', size: blob.size, order: nextOrder(docs), addedAt: Date.now() };
         try {
           await idbPut('documents', o)
@@ -5076,31 +5064,14 @@
       /* ═══ DELETE / RESTORE ═══ */
       window.delImg = async function (id) { const idx = images.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = images.splice(idx, 1)[0]; o.removedAt = Date.now(); removed.push(o); try { await idbMove('images', 'removed_images', id, o) } catch (e) { removed.splice(removed.indexOf(o), 1); delete o.removedAt; images.splice(idx, 0, o); moveFailed(e); return } const el = document.querySelector(`.t-item[data-id="${id}"]`); if (el) el.remove(); if (!images.length) $('img-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
       window.delDoc = async function (id) { const idx = docs.findIndex(x => x.id === id); if (idx < 0) return; marked.delete(id); document.body.classList.toggle('has-marked', marked.size > 0); const o = docs.splice(idx, 1)[0]; o.removedAt = Date.now(); removedDocs.push(o); try { await idbMove('documents', 'removed_documents', id, o) } catch (e) { removedDocs.splice(removedDocs.indexOf(o), 1); delete o.removedAt; docs.splice(idx, 0, o); moveFailed(e); return } const el = document.querySelector(`.d-item[data-id="${id}"]`); if (el) el.remove(); if (!docs.length) $('doc-empty').style.display = ''; scheduleUIUpdate(); isDirty = true; };
-      window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; const back = { removedAt: o.removedAt, order: o.order, label: o.label }; delete o.removedAt; o.order = nextOrder(images); let lbl = o.label; while (images.some(img => img.label.toLowerCase() === lbl.toLowerCase()) || removed.some(img => img.label.toLowerCase() === lbl.toLowerCase())) { const m = lbl.match(/-(\d+)$/); if (m) { lbl = lbl.substring(0, lbl.lastIndexOf('-')) + '-' + (parseInt(m[1], 10) + 1) } else { lbl = lbl + '-1' } } o.label = lbl; images.push(o); try { await idbMove('removed_images', 'images', id, o) } catch (e) { images.splice(images.indexOf(o), 1); Object.assign(o, back); removed.splice(idx, 0, o); moveFailed(e); return } renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
+      window.restoreImg = async function (id) { const idx = removed.findIndex(x => x.id === id); if (idx < 0) return; const o = removed.splice(idx, 1)[0]; const back = { removedAt: o.removedAt, order: o.order, label: o.label }; delete o.removedAt; o.order = nextOrder(images); o.label = freeName(o.label, 'label'); images.push(o); try { await idbMove('removed_images', 'images', id, o) } catch (e) { images.splice(images.indexOf(o), 1); Object.assign(o, back); removed.splice(idx, 0, o); moveFailed(e); return } renderThumb(o); $('img-empty').style.display = 'none'; renderTrash(); updateCounters(); updateBtns(); isDirty = true; triggerSave() };
       window.restoreDoc = async function (id) {
         const idx = removedDocs.findIndex(x => x.id === id);
         if (idx < 0) return;
         const o = removedDocs.splice(idx, 1)[0];
         const back = { removedAt: o.removedAt, order: o.order, name: o.name };
         delete o.removedAt;
-        let baseName = o.name || 'texto-1.txt', ext = '';
-        const lastDot = baseName.lastIndexOf('.');
-        if (lastDot > 0) {
-          ext = baseName.substring(lastDot);
-          baseName = baseName.substring(0, lastDot)
-        }
-        let finalName = baseName + ext;
-        while (docs.some(d => d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase() && d.id !== id)) {
-          const match = baseName.match(/-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            baseName = baseName.substring(0, baseName.lastIndexOf('-')) + '-' + (num + 1)
-          } else {
-            baseName = baseName + '-1'
-          }
-          finalName = baseName + ext
-        }
-        o.name = finalName;
+        o.name = freeName(o.name || 'texto-1.txt', 'name');
         o.order = nextOrder(docs);
         docs.push(o);
         try {
@@ -5125,27 +5096,8 @@
         if (!o) return;
         const oldVal = o.label;
         let newVal = val.trim();
-        if (!newVal) {
-          const free = n => !images.some(x => x !== o && x.label.toLowerCase() === n) && !removed.some(x => x.label.toLowerCase() === n);
-          let k = 1;
-          while (!free('imagem-' + k)) k++;
-          newVal = o.defLabel || 'imagem-' + k
-        } /* an empty name gives back the name of the capture, or the first free «imagem-N» for an image older than defLabel */ if (newVal.toLowerCase() !== oldVal.toLowerCase()) {
-          let base = newVal;
-          let finalLabel = newVal;
-          let counter = 1;
-          while (images.some(img => img.id !== id && img.label.toLowerCase() === finalLabel.toLowerCase()) || removed.some(img => img.label.toLowerCase() === finalLabel.toLowerCase())) {
-            const match = base.match(/-(\d+)$/);
-            if (match) {
-              const num = parseInt(match[1], 10);
-              base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1)
-            } else {
-              base = base + '-1'
-            }
-            finalLabel = base
-          }
-          newVal = finalLabel
-        }
+        if (!newVal) newVal = o.defLabel || freeName('imagem-1', 'label', o); /* an empty name gives back the name of the capture, or the first free «imagem-N» for an image older than defLabel */
+        if (newVal.toLowerCase() !== oldVal.toLowerCase()) newVal = freeName(newVal, 'label', o);
         o.label = newVal;
         await idbPut('images', o);
         isDirty = true;
@@ -5174,26 +5126,7 @@
           }
           
         }
-        if (newName.toLowerCase() !== oldName.toLowerCase()) {
-          let base = newName, baseExt = '';
-          const dotIdx = base.lastIndexOf('.');
-          if (dotIdx > 0) {
-            baseExt = base.substring(dotIdx);
-            base = base.substring(0, dotIdx)
-          }
-          let finalName = newName;
-          while (docs.some(d => d.id !== id && d.name.toLowerCase() === finalName.toLowerCase()) || removedDocs.some(d => d.name.toLowerCase() === finalName.toLowerCase())) {
-            const match = base.match(/-(\d+)$/);
-            if (match) {
-              const num = parseInt(match[1], 10);
-              base = base.substring(0, base.lastIndexOf('-')) + '-' + (num + 1)
-            } else {
-              base = base + '-1'
-            }
-            finalName = base + baseExt
-          }
-          newName = finalName
-        }
+        if (newName.toLowerCase() !== oldName.toLowerCase()) newName = freeName(newName, 'name', o);
         o.name = newName;
         await idbPut('documents', o);
         isDirty = true;
@@ -5763,9 +5696,9 @@
       async function removeMarked() { for (const o of markedImgs()) await window.delImg(o.id); for (const o of markedDocs()) await window.delDoc(o.id); markClear() }
       /* Duplicar: the copy right below the original, named by the rule of the app (contrato.pdf gives contrato-1.pdf) */
       async function placeAfter(arr, copy, orig, store, sel) { arr.splice(arr.indexOf(copy), 1); arr.splice(arr.indexOf(orig) + 1, 0, copy); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const a = document.querySelector(`${sel}[data-id="${orig.id}"]`), b = document.querySelector(`${sel}[data-id="${copy.id}"]`); if (a && b) a.after(b) }
-      async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; let n = o.label, k; do { const m = n.match(/-(\d+)$/); n = m ? n.slice(0, -m[0].length) + '-' + (+m[1] + 1) : n + '-1'; k = n.toLowerCase() } while (images.some(x => x !== c && x.label.toLowerCase() === k) || removed.some(x => x.label.toLowerCase() === k)); c.label = n; const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
+      async function dupImg(o) { await captureImg(o.blob); const c = images[images.length - 1]; c.label = freeName(o.label, 'label', c); const lb = document.querySelector(`.t-item[data-id="${c.id}"] .t-label`); if (lb) lb.value = imgName(c); await placeAfter(images, c, o, 'images', '.t-item') }
       /* A PDF in Imagens (B6.6): a record of the images store with kind: 'pdf', the name without «.pdf» as the caption, the bytes as they are */
-      async function addPdfImage(blob, label, at) { await ensureSession(); let lb = label || 'documento'; const taken = x => x.label.toLowerCase() === lb.toLowerCase(); while (images.some(taken) || removed.some(taken)) { const m = lb.match(/-(\d+)$/); lb = m ? lb.slice(0, -m[0].length) + '-' + (+m[1] + 1) : lb + '-1' } const o = { id: genId('img'), sessionId: sessId, blob: blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' }), label: lb, defLabel: lb, order: nextOrder(images), addedAt: Date.now(), kind: 'pdf' }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); if (at !== undefined) await placeAt(images, o, at, 'images', '.t-item'); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); return o }
+      async function addPdfImage(blob, label, at) { await ensureSession(); const lb = freeName(label || 'documento', 'label'); const o = { id: genId('img'), sessionId: sessId, blob: blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' }), label: lb, defLabel: lb, order: nextOrder(images), addedAt: Date.now(), kind: 'pdf' }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); if (at !== undefined) await placeAt(images, o, at, 'images', '.t-item'); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); return o }
       async function dupPdfImg(o) { const c = await addPdfImage(o.blob, o.label); await placeAfter(images, c, o, 'images', '.t-item') }
       /* Puts a record at a place of its list, on the screen and in IndexedDB */
       async function placeAt(arr, o, at, store, sel) { arr.splice(arr.indexOf(o), 1); arr.splice(Math.min(at, arr.length), 0, o); arr.forEach((x, i) => { x.order = i }); for (const x of arr) { try { await idbPut(store, x) } catch (e) { keepInTab(x, e) } } const el = document.querySelector(`${sel}[data-id="${o.id}"]`), nx = arr[arr.indexOf(o) + 1], ne = nx && document.querySelector(`${sel}[data-id="${nx.id}"]`); if (el && ne) ne.before(el) }
