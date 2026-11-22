@@ -370,7 +370,7 @@
     #ann-text-input,
     #ann-text-input:focus-visible {
       outline: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
-      outline-offset: calc(var(--spacing) * 1.5)
+      outline-offset: 0
     }
 
     /* ═══ SCROLLBAR ═══ */
@@ -1154,7 +1154,8 @@
       background: var(--color-red-500)
     }
 
-    /* The ✕ of the selected annotation (D-0137): solid red always, a small icon, and a hit area 10 px larger on each side than the icon */
+    /* The ✕ of the selected annotation (D-0137): solid red always, a small icon, and a hit area of 24 px, 3 px larger on each side,
+       so it never takes a press meant for the turning handle beside it (D-0226) */
     #ann-shape-del-btn {
       width: 18px;
       height: 18px;
@@ -1167,7 +1168,7 @@
     #ann-shape-del-btn::after {
       content: "";
       position: absolute;
-      inset: -10px
+      inset: -3px
     }
 
     /* The trash: the icon of the Removidos header, and of every Remover */
@@ -6396,6 +6397,19 @@
         const PAD = (e.lw || 2) + 4; const x1 = Math.min(e.x1, e.x2), y1 = Math.min(e.y1, e.y2), x2 = Math.max(e.x1, e.x2), y2 = Math.max(e.y1, e.y2);
         return { x: x1 - PAD, y: y1 - PAD, w: (x2 - x1) + PAD * 2, h: (y2 - y1) + PAD * 2 };
       }
+      /* The selection box sits on the outer edge of the stroke, or of the background of a text, with no gap (D-0226).
+         annBBox stays larger: it is the area that takes the click */
+      function annSelBox(e) {
+        if (e.type === 'text') { const c = annTextCenter(e), t = annTextHalf(e, c.g), ex = Math.abs(c.g.c) * t.w + Math.abs(c.g.s) * t.h, ey = Math.abs(c.g.s) * t.w + Math.abs(c.g.c) * t.h; return { x: c.x - ex, y: c.y - ey, w: ex * 2, h: ey * 2 } }
+        const m = e.type === 'image' ? 0 : (e.lw || 2) / 2;
+        const xs = e.type === 'free' ? e.pts.map(p => p.x) : [e.x1, e.x2], ys = e.type === 'free' ? e.pts.map(p => p.y) : [e.y1, e.y2];
+        const x1 = Math.min(...xs), y1 = Math.min(...ys);
+        return { x: x1 - m, y: y1 - m, w: Math.max(...xs) - x1 + m * 2, h: Math.max(...ys) - y1 + m * 2 };
+      }
+      // The box a resize scales from: a free stroke uses the one its handles sit on, so the first move does not jump (D-0226)
+      function annResizeBox(e) { return e.type === 'free' ? annSelBox(e) : annBBox(e) }
+      // The half sizes of the selection box of a text, in its own turned frame: to the edge of the background, or of the letters
+      function annTextHalf(e, g) { return { w: g.w / 2 + (e.bg ? (e.fontSize || 24) * ANN_TEXT_BG_PAD : 0), h: g.h / 2 } }
       // A text can turn (rot, in degrees, clockwise) around its anchor (x1, y1), the corner where its first line starts.
       // w and h are the text size before turning; ex and ey are the half sizes of the box that holds the turned text.
       function annTextGeom(e) { const ctx2 = annGetCtx(); const lines = String(e.txt || '').split('\n'); const fSize = e.fontSize || 24; let _fStr2 = ''; if (e.italic) _fStr2 += 'italic '; if (e.bold !== false) _fStr2 += 'bold '; _fStr2 += fSize + 'px sans-serif'; ctx2.save(); ctx2.font = _fStr2; const w = Math.max(1, ...lines.map(l => ctx2.measureText(l).width)); ctx2.restore(); const h = fSize * ANN_TEXT_LINE_RATIO * lines.length; const t = (e.rot || 0) * Math.PI / 180, c = Math.cos(t), sn = Math.sin(t); return { w, h, c, s: sn, ex: (Math.abs(c) * w + Math.abs(sn) * h) / 2, ey: (Math.abs(sn) * w + Math.abs(c) * h) / 2 } }
@@ -6403,6 +6417,7 @@
       function annTextPlaceCenter(e, cx, cy) { const g = annTextGeom(e); e.x1 = cx - (g.w / 2 * g.c - g.h / 2 * g.s); e.y1 = cy - (g.w / 2 * g.s + g.h / 2 * g.c) }
       // Turning handle of a selected text: free angle, drawn to 0°, 90°, 180° and 270° within 5°; Shift turns in steps of 15°
       const ANN_ROT_OFFSET = 22; // distance from the top of the selection box to the centre of the handle, in screen px
+      const ANN_DEL_STEP = 24; // from the centre of the turning handle to the centre of the ✕ beside it, along the text, in screen px: their 24 px circles do not overlap (D-0226)
       // The selection of a text turns with it: a canvas point to the frame of the text (lx right, ly down, from its centre), and back
       function annTextToCanvas(e, lx, ly) { const c = annTextCenter(e); return { x: c.x + lx * c.g.c - ly * c.g.s, y: c.y + lx * c.g.s + ly * c.g.c } }
       function annTextLocal(e, x, y) { const c = annTextCenter(e), dx = x - c.x, dy = y - c.y; return { x: dx * c.g.c + dy * c.g.s, y: -dx * c.g.s + dy * c.g.c, g: c.g } }
@@ -6423,19 +6438,22 @@
       // The Selecionar cursor at a canvas point: the one of the handle, move over a shape, or the arrow
       let annPtr = null; // the last pointer position on the canvas, in canvas px
       function annSelectCursorAt(p) { const _h = annHandleHitTest(p.x, p.y); return _h ? annHandleCursor(_h) : annHitTest(p.x, p.y) >= 0 ? 'move' : 'default' }
+      // The handle of a text under (cx, cy), in its own turned frame: 'rot', a corner, or ''
+      function annTextHandleAt(e, cx, cy, H, k) {
+        const l = annTextLocal(e, cx, cy), t = annTextHalf(e, l.g), hw = t.w, hh = t.h;
+        if (Math.abs(l.x) <= H && Math.abs(l.y + hh + ANN_ROT_OFFSET * k) <= H) return 'rot';
+        const Hc = Math.min(H, Math.min(hw, hh) * 2 / 3); // on a small text, a third of its box each, so the middle moves it (D-0226)
+        for (const [id, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) if (Math.abs(l.x - sx * hw) <= Hc && Math.abs(l.y - sy * hh) <= Hc) return id;
+        return '';
+      }
       // The handle of the selected shape under (cx,cy): 'tl','tr','bl','br', 'rot' on a text, 'p1','p2' on an arrow, or ''
       function annHandleHitTest(cx, cy) {
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length) return '';
-        const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
-        const _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
+        const k = annPx(); const b = annSelBox(annHistory[annSelectedIdx]);
+        const _bx = b.x, _by = b.y, _bw = b.w, _bh = b.h;
         const H = ANN_HIT_SIZE * k; // hit area of 44 x 44 screen px, larger than the visible handle
         const _e = annHistory[annSelectedIdx];
-        if (_e.type === 'text') {
-          const l = annTextLocal(_e, cx, cy), hw = l.g.w / 2 + 4 + M, hh = l.g.h / 2 + 4 + M;
-          if (Math.abs(l.x) <= H && Math.abs(l.y + hh + ANN_ROT_OFFSET * k) <= H) return 'rot';
-          for (const [id, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) if (Math.abs(l.x - sx * hw) <= H && Math.abs(l.y - sy * hh) <= H) return id;
-          return '';
-        }
+        if (_e.type === 'text') return annTextHandleAt(_e, cx, cy, H, k);
         // An arrow has one handle on each end, as in PowerPoint: 'p1' moves the start, 'p2' moves the tip
         if (_e.type === 'arrow') { const _r = Math.min(H, Math.hypot(_e.x2 - _e.x1, _e.y2 - _e.y1) / 3); if (Math.hypot(cx - _e.x2, cy - _e.y2) <= _r) return 'p2'; if (Math.hypot(cx - _e.x1, cy - _e.y1) <= _r) return 'p1'; return ''; } // on a short arrow, a third of it each, so the middle moves it (F-0089)
         const _corners = [
@@ -6444,8 +6462,9 @@
           { x: _bx,        y: _by + _bh,  id: 'bl' },
           { x: _bx + _bw,  y: _by + _bh,  id: 'br' },
         ];
+        const Hc = Math.min(H, Math.min(_bw, _bh) / 3); // the box touches the stroke (D-0226): on a small shape, a third of it each, so the middle moves it
         for (const c of _corners) {
-          if (cx >= c.x - H && cx <= c.x + H && cy >= c.y - H && cy <= c.y + H) return c.id;
+          if (cx >= c.x - Hc && cx <= c.x + Hc && cy >= c.y - Hc && cy <= c.y + Hc) return c.id;
         }
         return '';
       }
@@ -6468,9 +6487,10 @@
         return false;
       }
       function annDrawSelectionOverlay() {
+        // Ctrl+A keeps the gap: without handles, a box touching the stroke would hide under it (D-0226)
         if (annAllSel) { const k = annPx(), M = 6 * k, ctx = annGetCtx(); ctx.save(); ctx.strokeStyle = ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(); ctx.lineWidth = k; annHistory.forEach(e => { const b = annBBox(e); ctx.globalAlpha = 0.55; ctx.strokeRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2); ctx.globalAlpha = 0.04; ctx.fillRect(b.x - M, b.y - M, b.w + M * 2, b.h + M * 2) }); ctx.restore(); return }
         if (annSelectedIdx < 0 || annSelectedIdx >= annHistory.length || annSelectedIdx === annEditingTextIdx) return; // the text in the editor draws its own line
-        const k = annPx(); const b = annBBox(annHistory[annSelectedIdx]); const M = 6 * k;
+        const k = annPx(); const b = annSelBox(annHistory[annSelectedIdx]);
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#e86b2e';
         const ctx = annGetCtx(); ctx.save();
         const _e = annHistory[annSelectedIdx], _isTxt = _e.type === 'text';
@@ -6480,8 +6500,8 @@
           [[_e.x1, _e.y1], [_e.x2, _e.y2]].forEach(([hx, hy]) => { ctx.beginPath(); ctx.arc(hx, hy, ANN_HANDLE_SIZE * k, 0, Math.PI * 2); ctx.fill(); ctx.stroke() });
           ctx.restore(); return;
         }
-        let _bx = b.x - M, _by = b.y - M, _bw = b.w + M * 2, _bh = b.h + M * 2;
-        if (_isTxt) { const c = annTextCenter(_e); ctx.translate(c.x, c.y); ctx.rotate((_e.rot || 0) * Math.PI / 180); _bw = c.g.w + 8 + M * 2; _bh = c.g.h + 8 + M * 2; _bx = -_bw / 2; _by = -_bh / 2; }
+        let _bx = b.x, _by = b.y, _bw = b.w, _bh = b.h;
+        if (_isTxt) { const c = annTextCenter(_e), t = annTextHalf(_e, c.g); ctx.translate(c.x, c.y); ctx.rotate((_e.rot || 0) * Math.PI / 180); _bw = t.w * 2; _bh = t.h * 2; _bx = -t.w; _by = -t.h; }
         // ── Selection box: thin, discreet solid line ───────────────────────────────
         ctx.strokeStyle = accent; ctx.lineWidth = k; ctx.setLineDash([]); ctx.globalAlpha = 0.55;
         ctx.strokeRect(_bx, _by, _bw, _bh);
@@ -6524,6 +6544,15 @@
       // No hover logic: the button appears and disappears only with the selection.
       // The ✕ of an arrow: 28 screen px beside its middle, away from both end handles
       function annArrowDelPoint(e) { const k = annPx(), dx = e.x2 - e.x1, dy = e.y2 - e.y1, L = Math.hypot(dx, dy) || 1; let nx = -dy / L, ny = dx / L; if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny } return { x: (e.x1 + e.x2) / 2 + nx * 28 * k, y: (e.y1 + e.y2) / 2 + ny * 28 * k } }
+      /* Where the ✕ can go, in canvas px, the first one in view wins (D-0226). It leaves the corners to the handles:
+         on a text, beside the turning handle, in the frame of the text so it never lands on it, else on the other side of the text;
+         on a shape, above the middle of the box, where a turning handle would be, else below it; on an arrow, beside its middle */
+      function annDelPoints(e, k) {
+        if (e.type === 'arrow') return [annArrowDelPoint(e)];
+        if (e.type === 'text') { const s = ANN_DEL_STEP * k, o = annTextHalf(e, annTextGeom(e)).h + ANN_ROT_OFFSET * k; return [annTextToCanvas(e, s, -o), annTextToCanvas(e, s, o)] }
+        const b = annSelBox(e), x = b.x + b.w / 2;
+        return [{ x, y: b.y - ANN_ROT_OFFSET * k }, { x, y: b.y + b.h + ANN_ROT_OFFSET * k }];
+      }
       function annUpdateDelBtn() {
         const _annDbBtn = $('ann-shape-del-btn');
         if (!_annDbBtn) return;
@@ -6540,18 +6569,12 @@
         const _vpR = _annVp.getBoundingClientRect();
         const _scaleX = _cvR.width / _annCv.width;
         const _scaleY = _cvR.height / _annCv.height;
-        const _b = annBBox(annHistory[annSelectedIdx]);
-        const _M = 6 * annPx(); // same margin as annDrawSelectionOverlay
-        // Top-right handle in canvas coords: (b.x + b.w + M, b.y - M)
-        // Convert to ann-viewport coords and centre the button on the handle
-        const _BTN = _annDbBtn.offsetWidth || 18; // the real size of the button (18 px since D-0137), so it sits centred on the corner
-        const _sel = annHistory[annSelectedIdx], _tg = _sel.type === 'text' ? annTextGeom(_sel) : null;
-        const _cp = _tg ? annTextToCanvas(_sel, _tg.w / 2 + 4 + _M, -(_tg.h / 2 + 4 + _M)) : _sel.type === 'arrow' ? annArrowDelPoint(_sel) : { x: _b.x + _b.w + _M, y: _b.y - _M }; // top right corner of the box, turned with a text; beside the middle of an arrow
-        const _z = uiZoom();
-        const _hX = ((_cvR.left - _vpR.left) + _cp.x * _scaleX) / _z; // handle centre X
-        const _hY = ((_cvR.top  - _vpR.top)  + _cp.y * _scaleY) / _z; // handle centre Y
-        const _finalLeft = Math.min(_hX - _BTN / 2, _vpR.width / _z - _BTN - 2);
-        const _finalTop  = Math.max(_hY - _BTN / 2, 2);
+        const _BTN = _annDbBtn.offsetWidth || 18; // the real size of the button (18 px since D-0137), so it sits centred on its point
+        const _z = uiZoom(), _vw = _vpR.width / _z, _vh = _vpR.height / _z;
+        const _pts = annDelPoints(annHistory[annSelectedIdx], annPx()).map(p => ({ x: ((_cvR.left - _vpR.left) + p.x * _scaleX) / _z, y: ((_cvR.top - _vpR.top) + p.y * _scaleY) / _z }));
+        const _h = _pts.find(p => p.x - _BTN / 2 >= 2 && p.x + _BTN / 2 <= _vw - 2 && p.y - _BTN / 2 >= 2 && p.y + _BTN / 2 <= _vh - 2) || _pts[0]; // the first place in view
+        const _finalLeft = Math.min(_h.x - _BTN / 2, _vw - _BTN - 2);
+        const _finalTop  = Math.max(_h.y - _BTN / 2, 2);
         _annDbBtn.style.left = _finalLeft + 'px';
         _annDbBtn.style.top  = _finalTop  + 'px';
         _annDbBtn.style.display = 'flex';
@@ -7305,7 +7328,7 @@
           annResizeOriginFS = _sh.fontSize || 24;
           if (hh === 'rot') { const _c = annTextCenter(_sh); annRotCenter = { x: _c.x, y: _c.y }; annRotStart = _sh.rot || 0; annRotStartAng = Math.atan2(p.y - _c.y, p.x - _c.x) * 180 / Math.PI; $('ann-canvas').style.cursor = 'grabbing'; return; }
           if (hh === 'p1' || hh === 'p2') { annResizeAnchorX = hh === 'p1' ? _sh.x2 : _sh.x1; annResizeAnchorY = hh === 'p1' ? _sh.y2 : _sh.y1; SysLogger.info('Ann resize start: handle=' + hh + ' idx=' + annSelectedIdx); return; }
-          const b = annBBox(_sh);
+          const b = annResizeBox(_sh);
           annResizeOriginBBox = { x: b.x, y: b.y, w: b.w, h: b.h }; // inner bbox without M (right denominators)
           let _a;
           if (_sh.type === 'text' && _sh.rot) {

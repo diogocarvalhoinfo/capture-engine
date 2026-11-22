@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **A seleção de uma anotação fica colada a ela, e o ✕ sai do canto (D-0226).** As 4 alças ficam na borda do traço, ou do fundo do texto, sem a folga de antes. O ✕ fica ao lado da alça de girar de um texto, no sentido do texto, ou acima de uma forma. Quando não cabe na tela, vai para o outro lado. Ele cobria a alça de cima à direita, que agora também redimensiona. Em uma anotação pequena, cada alça pega no máximo um terço da caixa, e o arrasto pelo meio move.
+
 ### Corrigido
 
 - **O menu do clique direito aberto pelo mouse não marca mais o primeiro item (F-0241, D-0224).** Em uma área vazia e no visualizador, o primeiro item abria com o anel laranja de foco. Agora nada fica marcado até a pessoa usar uma seta. Pelo teclado, o primeiro item continua marcado.

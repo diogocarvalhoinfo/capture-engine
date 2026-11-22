@@ -200,7 +200,7 @@ O GIF mostra o "Editar" abrindo as ferramentas e a Seta desenhada por um arrasto
 <details>
 <summary>Selecionar, mover e atalhos</summary>
 
-- **Selecionar:** um clique seleciona uma anotação; o Delete ou o ✕ do canto a apagam, e o Ctrl+Z a devolve. O Ctrl+A seleciona todas.
+- **Selecionar:** um clique seleciona uma anotação; o Delete ou o ✕ ao lado da seleção a apagam, e o Ctrl+Z a devolve. O Ctrl+A seleciona todas.
 - **Mover:** arrastar uma anotação. O botão direito, o do meio ou o Ctrl seleciona e move em qualquer ferramenta. No telefone, um toque longo de meio segundo faz o mesmo.
 - **Redimensionar:** as alças dos cantos. A seta tem uma alça em cada ponta.
 - **Shift:** quadrado, círculo perfeito, e seta e desenho livre em passos de 45°.
