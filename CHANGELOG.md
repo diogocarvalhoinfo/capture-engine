@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Corrigido
+
+- **O campo de um texto em edição acompanha a foto quando a janela muda de tamanho (F-0249).** Ele ficava no lugar antigo, longe da foto, até ser fechado. Já era assim na 29.12.0. Agora o app reposiciona o campo e o ✕ como faz no zoom, também quando a foto só se desloca. Medido no Edge, no Chrome, no Firefox e no WebKit: de 50% para 80% da largura da foto antes; agora, 50% nos dois tamanhos.
+
 ## [29.13.2] - 2026-11-22
 
 O ✕ de uma anotação fica redondo, em coluna com a alça de girar. No topo da foto, a alça e o ✕ de um texto descem juntos, em vez de a alça ficar cortada.

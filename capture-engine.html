@@ -6199,7 +6199,7 @@
          so a drawing stretched sideways on the screen and came out flattened in the saved image */
       /* The canvas follows the box of the image; when its size on screen changes, the marks drawn in screen px (annPx) are drawn again,
          or after a rotation the crop frame keeps the scale of the old layout (F-0232) */
-      function annFitNow() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; const w0 = c.style.width, h0 = c.style.height; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }); if (annActive && (c.style.width !== w0 || c.style.height !== h0)) annRenderAll() }
+      function annFitNow() { const i = $('img-modal-img'), c = $('ann-canvas'); if (!i || !c) return; const w0 = c.style.width, h0 = c.style.height; Object.assign(c.style, { left: i.offsetLeft + 'px', top: i.offsetTop + 'px', width: i.offsetWidth + 'px', height: i.offsetHeight + 'px' }); if (annActive && (c.style.width !== w0 || c.style.height !== h0)) annFollowZoom() } // the open text field follows the photo too (F-0249)
       /* WebKit can shrink the box and widen it back inside one frame: a fit measured in between left the canvas at left 0,
          and the observer, which compares frame to frame, saw no change. So each fit is repeated in the next frame, once the layout has settled */
       let annFitFrame = 0;
@@ -6354,7 +6354,7 @@
         f.style.left = ''; const _r = f.getBoundingClientRect(), _vw = document.documentElement.clientWidth;
         const _dx = _r.left < 8 ? 8 - _r.left : Math.min(0, _vw - 8 - _r.right); if (_dx) f.style.left = (parseFloat(getComputedStyle(f).left) + _dx / uiZoom()) + 'px';
       }
-      window.addEventListener('resize', () => { if (annFlyoutOpen) annPlaceFlyout(annFlyoutOpen) });
+      window.addEventListener('resize', () => { if (annFlyoutOpen) annPlaceFlyout(annFlyoutOpen); if (annActive) annFollowZoom() }); // the photo may only move, at the same size: the ✕ and the open text field move with it (F-0249)
       function annCloseFlyout(focusTool) {
         const f = annFlyoutOpen; if (!f) return;
         f.classList.remove('open'); annFlyoutOpen = null; if (f.id === 'ann-fly-color') { annEye(false); f.style.width = ''; $('ann-picker').hidden = true; $('ann-hex-preview').setAttribute('aria-expanded', 'false') }
