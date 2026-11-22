@@ -18,6 +18,7 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 - **A barra de estado diz "Não gravado" quando o navegador não grava uma captura (F-0244).** Dizia "Só nesta aba", e "aba" é uma palavra do Brasil, contra o português neutro da interface (D-0187). O texto novo combina com "Gravado" e com a faixa "Capturas não gravadas".
 - **A lista de testes do `AGENTS.md` e o `design-tokens.md` dizem que a miniatura tem cantos arredondados (F-0245).** Os dois diziam "cantos retos", mas a moldura tem 6 px de raio desde a V19 e corta a imagem. Medido no Edge.
 - **O Espaço + arrastar sem zoom não desenha mais um traço (F-0246, D-0227).** Com zoom, o gesto já movia a imagem sem desenhar; sem zoom, o Espaço era ignorado, e o arrasto desenhava. No editor, o Enter aciona os botões, e o Espaço fica para esse gesto.
+- **O traço livre não cresce mais ao soltar o botão (F-0247).** Com o botão apertado, o fim do traço ficava atrás do ponteiro, por causa da suavização, e o trecho que faltava aparecia ao soltar. Agora a tela mostra o traço até o ponteiro, igual ao que fica gravado. Medido no Edge, em um zigue-zague: 4 362 px antes de soltar e 4 553 depois; agora, 4 553 nos dois.
 
 ## [29.13.0] - 2026-11-21
 

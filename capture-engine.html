@@ -7523,8 +7523,11 @@
           let p = annCanvasXYClamped(annLastEvt); if (annShift && !annIsStroke()) p = annShiftPoint(annShiftKind(annTool), annStart, p);
           const ctx = annGetCtx(); annRenderAll();
           if (annTool === 'circle' || annTool === 'rect' || annTool === 'arrow') annDrawShape(ctx, { type: annTool, x1: annStart.x, y1: annStart.y, x2: p.x, y2: p.y, color: annCurrentColor, lw: annLineW(), fill: annFill[annTool], blur: annFill[annTool] === 'blur' })
-          else if (annIsStroke()) { ctx.save(); annStrokeStyle(ctx, annCurrentColor, annLineW(), annTool === 'highlight' ? annHlMode() : null); annCR(ctx, annPath, false); ctx.restore(); }
+          else if (annIsStroke()) { ctx.save(); annStrokeStyle(ctx, annCurrentColor, annLineW(), annTool === 'highlight' ? annHlMode() : null); annCR(ctx, annStrokeEnd(p), false); ctx.restore(); }
         }
+        /* The free stroke up to the pointer: the smoothing trails it, so the last point is the pointer itself (F-0210).
+           The preview draws the same end that letting go keeps, so nothing more is drawn after the release (F-0247) */
+        function annStrokeEnd(p) { const lp = annPath[annPath.length - 1]; return annPath.length > 1 && !annShift && Math.hypot(p.x - lp.x, p.y - lp.y) > 1 ? annPath.concat([{ x: p.x, y: p.y }]) : annPath }
         function annScheduledPaint() { if (!annRafId) annRafId = requestAnimationFrame(annPaintPreview); }
         // Recortar: how each handle moves the box, as multipliers of dx and dy for [x, y, w, h]
         const ANN_CROP_DRAG = { tl: [1, 1, -1, -1], tr: [0, 1, 1, -1], bl: [1, 0, -1, 1], br: [0, 0, 1, 1], t: [0, 1, 0, -1], b: [0, 0, 0, 1], l: [1, 0, -1, 0], r: [0, 0, 1, 0], move: [1, 1, 0, 0] };
@@ -7714,8 +7717,7 @@
           let p = annCanvasXYClamped(e); if (annShift && !annIsStroke() && annTool !== 'text') p = annShiftPoint(annShiftKind(annTool), annStart, p);
           if (annIsStroke()) {
             annSmoothLast = null;
-            /* The smoothing trails the pointer: the stroke ends at the point where the pointer let go (F-0210) */
-            if (annPath.length > 1 && !annShift) { const lp = annPath[annPath.length - 1]; if (Math.hypot(p.x - lp.x, p.y - lp.y) > 1) annPath.push({ x: p.x, y: p.y }) }
+            annPath = annStrokeEnd(p); // the stroke ends where the pointer let go, as the preview showed it (F-0210, F-0247)
             if (annPath.length > 1) {
               annPushUndo(); // M1: snapshot BEFORE adding a free stroke
               const _st = { type: 'free', pts: annPath.slice(), color: annCurrentColor, lw: annLineW() }; if (annTool === 'highlight') _st.hl = annHlMode();
