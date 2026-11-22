@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.13.2] - 2026-11-22
+
+O ✕ de uma anotação fica redondo, em coluna com a alça de girar. No topo da foto, a alça e o ✕ de um texto descem juntos, em vez de a alça ficar cortada.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o painel de administração. A Admin teve só o aviso do CORS do Quine, e por `http` saiu igual ao arquivo, byte a byte.
+
+Teste no navegador (`AGENTS.md`, seção 5): a lista foi feita no Edge 158 do Playwright, que ficou com o arrasto, o zoom, as telas estreitas e os downloads. A seleção nova foi testada também no Chrome e no Firefox do Playwright e no Chrome do dono. A lista inteira no Chrome do dono foi feita na 29.13.1, horas antes, e só a seleção mudou desde então.
 
 ### Modificado
 
