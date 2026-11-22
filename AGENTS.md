@@ -724,6 +724,7 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
   - Substituída em parte pela D-0228, no lugar do ✕ de um texto.
 - **D-0227:** no editor, o Espaço segurado fora de um campo nunca desenha: com zoom, move a imagem; sem zoom, só impede o traço. Antes, sem zoom, o mesmo gesto desenhava. Custo: no editor, o Espaço não aciona o botão com o foco, e o Enter aciona, como já acontecia com zoom. Medido no Edge. Origem: o dono, em 22 de novembro de 2026 (F-0246).
 - **D-0228:** o ✕ da anotação é redondo e fica entre a caixa e a alça de girar, no meio da borda. São 22 px da caixa ao ✕ e mais 24 px até a alça. Em uma forma, o ✕ fica no mesmo lugar. Fora da foto, os dois vão para o outro lado (F-0248). Custo: a alça fica 24 px mais longe do texto. Escolhido no Chrome do dono. Origem: o dono, em 22 de novembro de 2026.
+- **D-0229:** arrastar um documento pelo nome entra na edição do nome, como na miniatura de uma imagem, e a edição fica a um clique. O arrasto que reordena começa pelo selo do tipo. A opção de o nome também arrastar foi testada em uma cópia e recusada: o clique no nome passaria a abrir o documento. Custo: um arrasto pelo nome não reordena. Origem: o dono, em 22 de novembro de 2026.
 
 ## 7. Pendentes
 

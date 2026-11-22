@@ -4,6 +4,12 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
+## [Unreleased]
+
+### Modificado
+
+- **O arrasto pelo nome de um documento entra na edição do nome, agora com a decisão escrita (D-0229).** É como na miniatura de uma imagem: a edição fica a um clique. O arrasto que reordena começa pelo selo do tipo.
+
 ## [29.13.3] - 2026-11-22
 
 O texto em edição acompanha a foto quando a janela muda de tamanho, e o "Remover" funciona quando o navegador não grava as capturas.
