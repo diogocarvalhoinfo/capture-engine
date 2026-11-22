@@ -523,7 +523,7 @@ A lista dos testes que pedem a aplicação aberta. O agente pode fazê-los com o
 - [ ] Segurar uma imagem perto da borda de baixo ou de cima rola a lista, ou a página no telefone. A imagem chega a um lugar que estava fora da tela (D-0171)
 
 **Visual e tema:**
-- [ ] As imagens com cantos retos; os botões e os cartões de texto com cantos arredondados
+- [ ] As miniaturas, os botões e os cartões de texto com cantos arredondados
 - [ ] O arquivo abre sem erro no console (F12)
 - [ ] O tema escuro abre sem piscar em branco
 

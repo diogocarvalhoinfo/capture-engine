@@ -199,7 +199,7 @@ Tamanhos e espaços em `rem` (D-0082): com a letra padrão do navegador (16 px),
 | `--top-bar-h` | `64px` | Altura da barra do topo |
 | `--thumb-size` | `140px` | Lado da caixa de miniatura |
 
-Os elementos `.t-item` e `.t-label` têm `border-radius: 0`: a miniatura fica com cantos retos, e só a moldura `.t-wrap` é arredondada.
+Os elementos `.t-item` e `.t-label` têm `border-radius: 0`. Só a moldura `.t-wrap` tem raio, o `--radius-md` (6 px), e ela corta a imagem: a miniatura aparece com os cantos arredondados.
 
 ### Superfícies
 
