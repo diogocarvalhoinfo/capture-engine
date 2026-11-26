@@ -4994,6 +4994,7 @@
           pg.textContent = n + (n === 1 ? ' pág.' : ' págs.');
           sizeSp.before(pg)
         });
+        if (!docIsText(o)) docSniffText(o); // a text with another extension gets Abrir, Editar and Copiar texto in its menu (F-0255)
         $('doc-list').appendChild(el)
       }
 
@@ -5763,9 +5764,24 @@
       /* The menu of the marked items is the same whatever item opens it (D-0136): Juntar when all are PDFs, the .pdf when none is in Documentos (D1), the .zip and Remover */
       function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip], ['check', 'Desmarcar todos', 'Esc', markClear]], [['del', 'Remover', 'Del', removeMarked, 1]]] } /* Desmarcar todos, as the Esc (D-0215) */
       // A document of text: it opens in the editor of text, and its text is copied (D-0216)
-      function docIsText(o) { return /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fileExt(o.name)) || (o.type || '').startsWith('text/') }
+      function docIsText(o) { return docTextSeen.has(o.id) || /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fileExt(o.name)) || (o.type || '').startsWith('text/') }
+      /* A document is text by its content too (F-0255): YAML, INI, SQL, Python, C, a file with no extension. The type the system gives depends
+         on the computer and on the browser. Text: no zero byte in the first 64 KB, and valid UTF-8, or Windows-1252 as below */
+      const docTextSeen = new Set();
+      async function looksText(blob) {
+        const u = new Uint8Array(await blob.slice(0, 65536).arrayBuffer()); if (u.includes(0)) return false;
+        try { new TextDecoder('utf-8', { fatal: true }).decode(u, { stream: true }); return true } catch (_) { /* Windows-1252: no control character, and accents in at most 1 byte in 10, or a picture such as a PPM would pass */
+          let hi = 0; for (const b of u) { if (b < 9 || (b > 13 && b < 32 && b !== 27)) return false; if (b > 127) hi++ } return hi * 10 <= u.length }
+      }
+      async function docSniffText(o) {
+        if (docIsText(o)) return true;
+        const e = fileExt(o.name); if (!o.blob || o.blob.size > 8388608 || docMediaExt(e) || e === 'pdf' || ARCH_EXT.test(e)) return false; // by the extension only: Windows gives .ts, TypeScript, a video type
+        try { if (await looksText(o.blob)) { docTextSeen.add(o.id); return true } } catch (_) { /* unreadable: it stays a binary document */ }
+        return false
+      }
       // Audio and video play in the player of the browser (D-0234): 'audio', 'video' or '', by the extension or the type
-      function docMedia(o) { const e = fileExt(o.name); return /^(mp3|wav|ogg|oga|opus|m4a|aac|flac|weba)$/.test(e) ? 'audio' : /^(mp4|m4v|webm|ogv|mov)$/.test(e) ? 'video' : ((o.type || '').match(/^(audio|video)\//) || ['', ''])[1] }
+      function docMediaExt(e) { return /^(mp3|wav|ogg|oga|opus|m4a|aac|flac|weba)$/.test(e) ? 'audio' : /^(mp4|m4v|webm|ogv|mov)$/.test(e) ? 'video' : '' }
+      function docMedia(o) { return docMediaExt(fileExt(o.name)) || ((o.type || '').match(/^(audio|video)\//) || ['', ''])[1] }
       async function copyText(o) { try { await navigator.clipboard.writeText(await o.blob.text()); showNotice('Texto copiado', 'ok') } catch (e) { SysLogger.error('Copy text: ' + e.message); showNotice('Não foi possível copiar o texto', 'erro') } }
       /* The menu of an item in Removidos: Abrir, Restaurar and Download, as the viewer of a removed item (D-0214) */
       function trashGroups(it) {
@@ -5842,7 +5858,7 @@
         textModalItemId = id;
         textModalIsTrash = trash;
         const fext = fileExt(o.name);
-        const isText = docIsText(o) || !o.type || /^application\/(json|xml|javascript)$/.test(o.type); // the viewer also opens a file with no type, or JSON, XML and JavaScript by type
+        const isText = docIsText(o) || !o.type || /^application\/(json|xml|javascript)$/.test(o.type) || await docSniffText(o); // the viewer also opens a file with no type, or JSON, XML and JavaScript by type
         const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
