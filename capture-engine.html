@@ -5779,10 +5779,12 @@
         try { if (await looksText(o.blob)) { docTextSeen.add(o.id); return true } } catch (_) { /* unreadable: it stays a binary document */ }
         return false
       }
+      // The text of a document: UTF-8, or Windows-1252 when it is not valid UTF-8, as a file saved by an older program (F-0257)
+      async function blobText(blob) { const u = new Uint8Array(await blob.arrayBuffer()); try { return new TextDecoder('utf-8', { fatal: true }).decode(u) } catch (_) { return new TextDecoder('windows-1252').decode(u) } }
       // Audio and video play in the player of the browser (D-0234): 'audio', 'video' or '', by the extension or the type
       function docMediaExt(e) { return /^(mp3|wav|ogg|oga|opus|m4a|aac|flac|weba)$/.test(e) ? 'audio' : /^(mp4|m4v|webm|ogv|mov)$/.test(e) ? 'video' : '' }
       function docMedia(o) { return docMediaExt(fileExt(o.name)) || ((o.type || '').match(/^(audio|video)\//) || ['', ''])[1] }
-      async function copyText(o) { try { await navigator.clipboard.writeText(await o.blob.text()); showNotice('Texto copiado', 'ok') } catch (e) { SysLogger.error('Copy text: ' + e.message); showNotice('Não foi possível copiar o texto', 'erro') } }
+      async function copyText(o) { try { await navigator.clipboard.writeText(await blobText(o.blob)); showNotice('Texto copiado', 'ok') } catch (e) { SysLogger.error('Copy text: ' + e.message); showNotice('Não foi possível copiar o texto', 'erro') } }
       /* The menu of an item in Removidos: Abrir, Restaurar and Download, as the viewer of a removed item (D-0214) */
       function trashGroups(it) {
         const id = it.dataset.id, doc = it.dataset.kind === 'doc', o = (doc ? removedDocs : removed).find(x => x.id === id); if (!o) return null;
@@ -5862,7 +5864,7 @@
         const view = $('text-modal-view'); view.replaceChildren(); view.className = ''; view.hidden = true; pdfViewDrop();
         if (isText) {
           let val = '';
-          try { val = await o.blob.text() } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
+          try { val = await blobText(o.blob) } catch (e) { val = 'Erro ao carregar conteúdo de texto.' }
           $('text-modal-content').value = val;
           const kind = /^(md|markdown)$/.test(fext) ? 'md' : fext === 'csv' ? 'csv' : /^html?$/.test(fext) ? 'html' : 'text';
           if (kind !== 'text') { view.hidden = false; view.className = 'view-' + kind; view.append({ md: mdView, csv: csvView, html: htmlView }[kind](val)) }
