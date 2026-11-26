@@ -12,6 +12,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **A bandeja aberta não troca no caminho até ela (D-0231).** Com a bandeja do Retângulo aberta, ir rápido até o Desfocado, que fica acima do Círculo, passava pelo Círculo e abria a bandeja dele. O clique escolhia o Círculo. Agora, subindo em direção à bandeja aberta, a ferramenta do caminho só troca a bandeja depois de 300 ms parado sobre ela. De lado, pela barra, a troca continua na hora. Medido em 4 caminhos até o Desfocado, no Edge, no Chrome, no Firefox e no WebKit: antes, 3 erros em 4; agora, nenhum.
+
 - **O rodapé do modo compacto fica legível (F-0252).** Nas telas baixas, como 1280 × 633 (Windows a 150%), o rodapé ficava com opacidade 0,3. O texto de 10 px tinha 1,67:1 no tema escuro e 1,48:1 no claro, abaixo dos 4,5:1. Reabre o F-0161, que tirou a opacidade do rodapé nas outras telas e deixou a do modo compacto. Agora ele tem a cor de sempre, como em 1536 × 777, com a mesma altura e a mesma margem do modo compacto. Medido no Edge, nos dois temas: 6,66:1 no escuro e 4,88:1 no claro.
 
 ## [29.13.4] - 2026-11-22

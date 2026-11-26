@@ -7098,6 +7098,21 @@
           el.addEventListener('keydown', e => { const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!d) return; e.preventDefault(); e.stopPropagation(); const st = e.shiftKey ? 0.1 : 0.01, cl = k => Math.max(0, Math.min(1, k)); if (id === 'ann-hue') annPk.h = (annPk.h + (d[0] - d[1]) * st * 360 + 360) % 360; else { annPk.s = cl(annPk.s + d[0] * st); annPk.v = cl(annPk.v - d[1] * st) } show() });
           el.addEventListener('keyup', e => { if (e.key.startsWith('Arrow')) apply() });
         });
+        /* With a tray open, the mouse over another tool opens its tray (D-0142), but not on the way to the open tray (D-0231): going towards it,
+           a tool on the way changes nothing until the pointer rests on it for 300 ms. Sideways, along the bar, the tray changes at once */
+        const annAimPath = []; // the mouse in the last 100 ms, the oldest point first; a press starts a new path
+        document.addEventListener('pointerdown', e => { annAimPath.length = 0; annAimPath.push([performance.now(), e.clientX, e.clientY]) }, true);
+        document.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const n = performance.now(); annAimPath.push([n, e.clientX, e.clientY]); while (annAimPath.length > 2 && annAimPath[1][0] < n - 100) annAimPath.shift() }, true);
+        function annTowardsTray(f, x, y) { // up when the tray is above the pointer, down when it is below, and under the tray, give or take 16 px
+          const a = annAimPath[0]; if (!a || !f) return false; const r = f.getBoundingClientRect(), dy = y - a[2];
+          if (x < r.left - 16 || x > r.right + 16) return false;
+          return a[2] > r.bottom ? dy <= -1 : a[2] < r.top ? dy >= 1 : false;
+        }
+        function annHoverSwap(wrap, fly, ok, swap) {
+          let t = 0; const later = () => { if (wrap.matches(':hover') && ok({ pointerType: 'mouse' })) swap() };
+          const on = e => { if (!ok(e)) return; clearTimeout(t); if (annTowardsTray(annFlyoutOpen, e.clientX, e.clientY)) t = setTimeout(later, 300); else swap() };
+          wrap.addEventListener('pointerenter', on); wrap.addEventListener('pointermove', on); wrap.addEventListener('pointerleave', () => clearTimeout(t));
+        }
         /* The circle of another colour opens its tray as a tool does (D-0142): pressing it and dragging up opens it, on mouse and touch,
            dragging down closes it, and the up arrow opens it with the focus on the eyedropper. A drag is not a click */
         { const cu = $('ann-color-custom'), fly = $('ann-fly-color'); let dragged = false;
@@ -7107,7 +7122,7 @@
             document.addEventListener('pointermove', mv); document.addEventListener('pointerup', () => document.removeEventListener('pointermove', mv), { once: true });
           });
           cu.addEventListener('click', e => { if (dragged) { dragged = false; e.stopImmediatePropagation() } }, true);
-          cu.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && annFlyoutOpen.closest('#ann-row-tools') && !annTyping()) annColorTray(cu, true) });
+          annHoverSwap(cu.parentElement, fly, e => e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && annFlyoutOpen.closest('#ann-row-tools') && !annTyping(), () => annColorTray(cu, true));
           cu.addEventListener('keydown', e => { if (e.key === 'ArrowUp') { e.preventDefault(); if (annFlyoutOpen !== fly) annColorTray(cu); $('ann-eyedrop').focus() } });
         }
         // The eyedropper: the colour of the pixel under the pointer, the photo and the annotations together, read from the canvas
@@ -7189,7 +7204,7 @@
           /* Pressing a tool and dragging up opens its tray, on mouse and touch, and letting go on an option picks it; dragging down closes the open tray.
              While the button is held, passing over another tool opens its tray instead; with a tray open, the mouse over another tool does the same, as a menu bar (D-0142) */
           const fly = b.parentElement.querySelector('.ann-flyout');
-          b.parentElement.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && (annFlyoutOpen.closest('#ann-row-tools') || annFlyoutOpen.id === 'ann-fly-color') && !annTyping()) { annCloseFlyout(); annOpenFlyout(b) } });
+          annHoverSwap(b.parentElement, fly, e => e.pointerType === 'mouse' && annActive && annFlyoutOpen && annFlyoutOpen !== fly && (annFlyoutOpen.closest('#ann-row-tools') || annFlyoutOpen.id === 'ann-fly-color') && !annTyping(), () => { annCloseFlyout(); annOpenFlyout(b) });
           b.addEventListener('pointerdown', e => {
             if (e.button !== 0) return;
             const y0 = e.clientY;
