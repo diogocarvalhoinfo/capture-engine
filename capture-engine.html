@@ -5848,7 +5848,7 @@
         $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
         $('text-modal-content').style.display = 'none';
         $('text-modal-copy').style.display = 'none';
-        if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
+        if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && !list.rows.length && !list.note) list.note = 'Lista não disponível: o pacote está vazio ou não foi lido'; /* an empty list said nothing (F-0258) */ if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
         if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
         /* Audio and video open in the player of the browser itself, as the PDF (D-0234); a file the browser cannot play keeps the message */
         const media = docMedia(o);

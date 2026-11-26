@@ -28,6 +28,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 - **Os acentos de um texto antigo aparecem certos (F-0257).** Um texto salvo em Windows-1252, comum em programas antigos do Windows, mostrava "�" no lugar dos acentos. Agora o app lê assim o arquivo que não é UTF-8. Ao editar e gravar, o texto passa a UTF-8.
 
+- **Um pacote sem lista mostra o aviso (F-0258).** Um RAR que o app não consegue ler mostrava uma lista vazia, sem explicação. Agora mostra "Lista não disponível", como o 7z. Testado com uma amostra que tem só a assinatura do RAR.
+
 - **Um SVG abre no visualizador e sai com o nome .svg (F-0253).** Um SVG entrava em Imagens com o nome .jpg, e o download também saía .jpg. Sem largura e altura próprias, só com o viewBox, ele aparecia com 0 × 0 no visualizador. O editor e o PDF o desenhavam com 150 px, ou 300 px no Firefox. Agora o nome é .svg, e esse SVG recebe o tamanho do viewBox no próprio arquivo. O resto do arquivo não muda, e um SVG com tamanho entra igual, byte a byte. Medido com o logo Quatro módulos no Edge, no Chrome, no Firefox e no WebKit: 384 × 384 no visualizador e no editor.
 
 - **A bandeja aberta não troca no caminho até ela (D-0231).** Com a bandeja do Retângulo aberta, ir rápido até o Desfocado, que fica acima do Círculo, passava pelo Círculo e abria a bandeja dele. O clique escolhia o Círculo. Agora, subindo em direção à bandeja aberta, a ferramenta do caminho só troca a bandeja depois de 300 ms parado sobre ela. De lado, pela barra, a troca continua na hora. Medido em 4 caminhos até o Desfocado, no Edge, no Chrome, no Firefox e no WebKit: antes, 3 erros em 4; agora, nenhum.
