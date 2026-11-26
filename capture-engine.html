@@ -3461,6 +3461,25 @@
       overflow: hidden;
     }
 
+    /* Audio and video in the player of the browser (D-0234): the video fills the area, the audio bar sits in the middle */
+    #text-modal-view.view-media {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    #text-modal-view.view-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: var(--color-black);
+      border-radius: var(--radius-sm);
+    }
+
+    #text-modal-view.view-media audio {
+      width: min(480px, 100%);
+    }
+
     #text-modal-view iframe {
       width: 100%;
       height: 100%;
@@ -5743,6 +5762,8 @@
       function markedGroups() { const imgs = markedImgs(), ds = markedDocs(), all = [...imgs, ...ds], pdfs = all.length > 1 && all.every(o => o.kind === 'pdf' || fileExt(o.name) === 'pdf'); return [[...(pdfs && window.joinPdfs ? [['dup', 'Juntar em um PDF', '', () => window.joinPdfs(all)]] : []), ...(ds.length ? [] : [['dl', 'Download .pdf', '', dlMarkedPdf]]), ['dl', 'Download .zip', '', dlMarkedZip], ['check', 'Desmarcar todos', 'Esc', markClear]], [['del', 'Remover', 'Del', removeMarked, 1]]] } /* Desmarcar todos, as the Esc (D-0215) */
       // A document of text: it opens in the editor of text, and its text is copied (D-0216)
       function docIsText(o) { return /^(txt|md|markdown|csv|html?|json|xml|log|js|css)$/.test(fileExt(o.name)) || (o.type || '').startsWith('text/') }
+      // Audio and video play in the player of the browser (D-0234): 'audio', 'video' or '', by the extension or the type
+      function docMedia(o) { const e = fileExt(o.name); return /^(mp3|wav|ogg|oga|opus|m4a|aac|flac|weba)$/.test(e) ? 'audio' : /^(mp4|m4v|webm|ogv|mov)$/.test(e) ? 'video' : ((o.type || '').match(/^(audio|video)\//) || ['', ''])[1] }
       async function copyText(o) { try { await navigator.clipboard.writeText(await o.blob.text()); showNotice('Texto copiado', 'ok') } catch (e) { SysLogger.error('Copy text: ' + e.message); showNotice('Não foi possível copiar o texto', 'erro') } }
       /* The menu of an item in Removidos: Abrir, Restaurar and Download, as the viewer of a removed item (D-0214) */
       function trashGroups(it) {
@@ -5762,7 +5783,7 @@
               await annActivate()
             }], ['copy', 'Copiar imagem', 'Ctrl+C', () => copyImg(o)], ['dup', 'Duplicar', '', () => dupImg(o)], ['ren', 'Renomear', 'F2', () => renameItem(ti)], mk], [['dl', 'Download', '', () => dlImg(o)], ['del', 'Remover', 'Del', () => window.delImg(id), 1]]]
           }
-          const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = docIsText(o), view = txt || ARCH_EXT.test(ext) || ext === 'pdf';
+          const o = docs.find(x => x.id === id), ext = fileExt(o.name), txt = docIsText(o), view = txt || ARCH_EXT.test(ext) || ext === 'pdf' || !!docMedia(o);
           return [[view ? ['open', 'Abrir', 'Enter', () => window.openTextModal(id, false)] : null, txt ? ['edit', 'Editar', '', async () => {
             await window.openTextModal(id, false);
             textEditStart()
@@ -5809,6 +5830,9 @@
         $('text-modal-copy').style.display = 'none';
         if (ARCH_EXT.test(fext)) { const list = await archiveList(o.blob, fext); if (list && textModalItemId === id) { view.hidden = false; view.className = 'view-arch'; view.append(archiveView(list)); $('text-modal-binary-msg').style.display = 'none' } }
         if (fext === 'pdf' || o.type === 'application/pdf') { pdfViewUrl = URL.createObjectURL(new Blob([o.blob], { type: 'application/pdf' })); const f = document.createElement('iframe'); f.title = 'PDF'; f.src = pdfViewUrl; view.hidden = false; view.className = 'view-pdf'; view.append(f); $('text-modal-binary-msg').style.display = 'none' }
+        /* Audio and video open in the player of the browser itself, as the PDF (D-0234); a file the browser cannot play keeps the message */
+        const media = docMedia(o);
+        if (media) { pdfViewUrl = URL.createObjectURL(o.blob); const m = document.createElement(media); m.controls = true; m.preload = 'metadata'; m.src = pdfViewUrl; m.onerror = () => { if (m.parentNode !== view) return; view.hidden = true; $('text-modal-binary-msg').style.display = 'flex' }; view.hidden = false; view.className = 'view-media'; view.append(m); $('text-modal-binary-msg').style.display = 'none' }
       }
       window.openTextModal = async function (id, trash) {
         const o = textRec(id, trash);

@@ -736,6 +736,8 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 
 - **D-0233:** na nota criada pelo menu, o ✓ grava o texto e fecha a nota. Antes, a nota voltava para a leitura, e era preciso fechá-la. Uma nota já feita, aberta pelo "Editar", continua voltando para a leitura depois do ✓. Origem: o dono, em 26 de novembro de 2026.
 
+- **D-0234:** áudio e vídeo abrem no player do próprio navegador, no visualizador de documentos, como o PDF (D-0130). Valem MP3, WAV, OGG, OPUS, M4A, AAC, FLAC, WEBA, MP4, M4V, WEBM, OGV e MOV, ou um tipo de áudio ou de vídeo. O vídeo ocupa a área do visualizador, e o menu do arquivo ganha "Abrir". Um arquivo que o navegador não toca mantém o aviso de download. Fechar o visualizador para o som. Origem: o dono, em 26 de novembro de 2026, depois de ver o protótipo.
+
 ## 7. Pendentes
 
 - **F-0230:** o script mostra e esconde de três jeitos: 65 vezes pelo `style.display`, 7 pelo `hidden` e o resto por classes. Os estilos escritos dentro das strings já passaram para o CSS. Origem: a auditoria de 20 de novembro de 2026.

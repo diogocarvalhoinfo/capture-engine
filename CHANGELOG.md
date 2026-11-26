@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Adicionado
+
+- **Áudio e vídeo tocam no visualizador (D-0234).** Antes, um MP3 ou um MP4 em Documentos só tinha o download. Agora eles abrem no player do próprio navegador, como o PDF, e o menu do arquivo ganha "Abrir". Medido no Edge, no Chrome e no Firefox: MP3, WAV, OGG, M4A, MP4, WEBM e MOV tocam, e fechar o visualizador para o som. O WebKit para Windows não toca mídia e mostra o aviso de download.
+
 ### Modificado
 
 - **Um menu só no espaço vazio (D-0232).** O clique direito no espaço vazio de Imagens abria só "Adicionar imagem", e o de Documentos, outro menu. Agora os dois abrem "Adicionar arquivo" e "Adicionar nota de texto". Cada imagem escolhida vai para Imagens, e o resto para Documentos.
