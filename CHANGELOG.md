@@ -4,7 +4,13 @@ As versões do projeto, da mais nova para a mais antiga.
 
 Cada entrada diz o que mudou, por que mudou e o impacto real.
 
-## [Unreleased]
+## [29.14.0] - 2026-11-26
+
+Áudio e vídeo tocam no visualizador, o espaço vazio tem um menu só para adicionar, e arquivos de muitos formatos aparecem com o nome e a visualização certos.
+
+Teste do Export User (`AGENTS.md`, seção 5): as cópias Admin e User foram exportadas pelo agente no Edge 158, por `http`, e abertas por `file://` em um perfil limpo. A User abriu sem erro no console, mostrou uma imagem colada e guardou a sessão, sem o painel de administração. A Admin teve só o aviso do CORS do Quine, e por `http` saiu igual ao arquivo, byte a byte.
+
+Teste no navegador (`AGENTS.md`, seção 5): os itens de arrasto, zoom, telas estreitas e downloads passaram no Edge 158 do Playwright, com o `secao5.py` da referência (28 PASS). Os formatos foram conferidos com 91 amostras no Edge, no Chrome, no Firefox e no WebKit do Playwright.
 
 ### Adicionado
 
