@@ -6572,16 +6572,24 @@
         }
       }
       /* Desfocado (D-0160): the region of a rectangle or a circle, the photo and the annotations below it, halved until its blocks are
-         about 1/80 of the photo (12 px at least) and smoothed back. No ctx.filter, so it works in Safari too; the text cannot be read back */
-      let annBlurCv = null;
+         about 1/80 of the photo (12 px at least) and smoothed back. No ctx.filter, so it works in Safari too; the text cannot be read back.
+         Soft edge (D-0230): the shape stays fully blurred, and a fade of half a block goes outwards. The mask is the shadow of the shape,
+         grown by the fade, because shadowBlur also works in Safari */
+      let annBlurCv = null, annBlurOut = null, annBlurMask = null;
       function annDrawBlur(ctx, h) {
-        const cv = ctx.canvas, x = Math.max(0, Math.round(Math.min(h.x1, h.x2))), y = Math.max(0, Math.round(Math.min(h.y1, h.y2))), w = Math.min(cv.width, Math.round(Math.max(h.x1, h.x2))) - x, hh = Math.min(cv.height, Math.round(Math.max(h.y1, h.y2))) - y; if (w < 2 || hh < 2) return;
-        const b = Math.max(12, Math.round(Math.max(cv.width, cv.height) / 80)), sw = Math.max(1, Math.round(w / b)), sh = Math.max(1, Math.round(hh / b)), t = annBlurCv || (annBlurCv = document.createElement('canvas')), tc = t.getContext('2d');
+        const cv = ctx.canvas, b = Math.max(12, Math.round(Math.max(cv.width, cv.height) / 80)), f = b / 2, m = 2.5 * f;
+        const ex = Math.min(h.x1, h.x2), ey = Math.min(h.y1, h.y2), ew = Math.abs(h.x2 - h.x1), eh = Math.abs(h.y2 - h.y1); if (ew < 2 || eh < 2) return;
+        const x = Math.max(0, Math.round(ex - m)), y = Math.max(0, Math.round(ey - m)), w = Math.min(cv.width, Math.round(ex + ew + m)) - x, hh = Math.min(cv.height, Math.round(ey + eh + m)) - y; if (w < 2 || hh < 2) return;
+        const sw = Math.max(1, Math.round(w / b)), sh = Math.max(1, Math.round(hh / b)), t = annBlurCv || (annBlurCv = document.createElement('canvas')), tc = t.getContext('2d');
         t.width = w; t.height = hh; tc.drawImage($('img-modal-img'), x, y, w, hh, 0, 0, w, hh); tc.drawImage(cv, x, y, w, hh, 0, 0, w, hh);
         let cw = w, ch = hh; while (cw > sw || ch > sh) { const nw = Math.max(sw, Math.ceil(cw / 2)), nh = Math.max(sh, Math.ceil(ch / 2)); tc.drawImage(t, 0, 0, cw, ch, 0, 0, nw, nh); cw = nw; ch = nh } // halving averages 2 x 2 pixels in every browser; Safari skips pixels in one big step
-        const ex = Math.min(h.x1, h.x2), ey = Math.min(h.y1, h.y2), ew = Math.abs(h.x2 - h.x1), eh = Math.abs(h.y2 - h.y1);
-        ctx.save(); ctx.beginPath(); if (h.type === 'circle') ctx.ellipse(ex + ew / 2, ey + eh / 2, ew / 2 || 1, eh / 2 || 1, 0, 0, Math.PI * 2); else ctx.rect(x, y, w, hh); ctx.clip();
-        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(t, 0, 0, cw, ch, x, y, w, hh); ctx.restore();
+        const u = annBlurOut || (annBlurOut = document.createElement('canvas')), uc = u.getContext('2d'); u.width = w; u.height = hh;
+        uc.imageSmoothingEnabled = true; uc.imageSmoothingQuality = 'high'; uc.drawImage(t, 0, 0, cw, ch, 0, 0, w, hh);
+        const k = annBlurMask || (annBlurMask = document.createElement('canvas')), kc = k.getContext('2d'), o = w + hh + 8 * f; k.width = w; k.height = hh; // the shape is drawn o px to the left, and only its shadow lands on the mask
+        kc.shadowColor = '#000'; kc.shadowBlur = f; kc.shadowOffsetX = o; kc.fillStyle = '#000'; kc.beginPath();
+        if (h.type === 'circle') kc.ellipse(ex + ew / 2 - x - o, ey + eh / 2 - y, ew / 2 + f, eh / 2 + f, 0, 0, Math.PI * 2); else kc.rect(ex - f - x - o, ey - f - y, ew + 2 * f, eh + 2 * f);
+        kc.fill(); uc.globalCompositeOperation = 'destination-in'; uc.drawImage(k, 0, 0); uc.globalCompositeOperation = 'source-over';
+        ctx.drawImage(u, x, y);
       }
       function annDrawShape(ctx, h) {
         if (h.type === 'image') {

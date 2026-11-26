@@ -6,6 +6,10 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ## [Unreleased]
 
+### Modificado
+
+- **O Desfocado termina com a borda suave (D-0230).** A borda era um corte nítido. Agora a forma desenhada fica toda desfocada, e o desfoque se esfuma para fora dela, em meio bloco: 10 px em uma foto de 1600 px. Na borda da forma, o desfoque ainda cobre 98%. A máscara é a sombra da forma, que o Safari também desenha.
+
 ### Corrigido
 
 - **O rodapé do modo compacto fica legível (F-0252).** Nas telas baixas, como 1280 × 633 (Windows a 150%), o rodapé ficava com opacidade 0,3. O texto de 10 px tinha 1,67:1 no tema escuro e 1,48:1 no claro, abaixo dos 4,5:1. Reabre o F-0161, que tirou a opacidade do rodapé nas outras telas e deixou a do modo compacto. Agora ele tem a cor de sempre, como em 1536 × 777, com a mesma altura e a mesma margem do modo compacto. Medido no Edge, nos dois temas: 6,66:1 no escuro e 4,88:1 no claro.
