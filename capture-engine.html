@@ -4650,7 +4650,7 @@
       /* Sizes with a decimal comma, as in Portuguese, and a space that does not break between the number and the unit (D-0120) */
       function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
-      const IMG_EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp' };
+      const IMG_EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp', 'image/svg+xml': 'svg' };
       const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
       const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
       /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
@@ -5025,7 +5025,19 @@
          the name itself, or its number at the end goes up (nota-2 gives nota-3), or it gets -1. A document keeps its extension at the end
          (contrato.pdf gives contrato-1.pdf). skip is the item being renamed, which does not take its own name */
       function freeName(name, key, skip) { const lists = key === 'name' ? [docs, removedDocs] : [images, removed], dot = key === 'name' ? name.lastIndexOf('.') : -1, ext = dot > 0 ? name.slice(dot) : ''; let base = name.slice(0, name.length - ext.length), n = name; while (lists.some(l => l.some(x => x !== skip && x[key].toLowerCase() === n.toLowerCase()))) { const m = base.match(/-(\d+)$/); base = m ? base.slice(0, -m[0].length) + '-' + (+m[1] + 1) : base + '-1'; n = base + ext } return n }
-      async function captureImg(blob) { await ensureSession(); const label = freeName('imagem-1', 'label'); const o = { id: genId('img'), sessionId: sessId, blob: blob, label: label, defLabel: label, order: nextOrder(images), addedAt: Date.now() }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Imagem capturada: ' + label) }
+      /* An SVG with no width and height of its own (only the viewBox) has no size in the page: the viewer showed it at 0 x 0, and the canvas and
+         the PDF drew it at 150 px. It gets the size of its viewBox, written on the root tag; the rest of the file does not change (F-0253) */
+      async function svgSized(blob) {
+        try {
+          const t = await blob.text(), s = new DOMParser().parseFromString(t, 'image/svg+xml').documentElement, px = v => /^\s*\d+(\.\d+)?(px)?\s*$/.test(v || '');
+          if (s.localName !== 'svg' || (px(s.getAttribute('width')) && px(s.getAttribute('height')))) return blob;
+          const vb = (s.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number), m = t.match(/<svg\b[^>]*>/);
+          if (vb.length !== 4 || !(vb[2] > 0 && vb[3] > 0) || !m) return blob;
+          const tag = m[0].replace(/\s(width|height)\s*=\s*("[^"]*"|'[^']*')/g, '').replace(/^<svg\b/, `<svg width="${vb[2]}" height="${vb[3]}"`);
+          return new Blob([t.slice(0, m.index) + tag + t.slice(m.index + m[0].length)], { type: 'image/svg+xml' });
+        } catch (_) { return blob }
+      }
+      async function captureImg(blob) { if (blob.type === 'image/svg+xml') blob = await svgSized(blob); await ensureSession(); const label = freeName('imagem-1', 'label'); const o = { id: genId('img'), sessionId: sessId, blob: blob, label: label, defLabel: label, order: nextOrder(images), addedAt: Date.now() }; try { await idbPut('images', o) } catch (e) { keepInTab(o, e) } images.push(o); renderThumb(o); updateCounters(); updateBtns(); updateBtnTitles(); isDirty = true; triggerSave(); SysLogger.info('Imagem capturada: ' + label) }
       /* An image the browser cannot draw (HEIC, TIFF, RAW) never reaches the PDF: it goes to Documents, byte for byte */
       function canDrawImage(blob) { return new Promise(res => { const img = new Image(), url = URL.createObjectURL(blob); const done = ok => { URL.revokeObjectURL(url); res(ok) }; img.onload = () => { try { const c = document.createElement('canvas'); c.width = 1; c.height = 1; c.getContext('2d').drawImage(img, 0, 0, 1, 1); done(img.naturalWidth > 0) } catch (_) { done(false) } }; img.onerror = () => done(false); img.src = url }) }
       const IMG_EXT = /\.(heic|heif|avif|tiff?|bmp|webp|png|jpe?g|gif|svg|raw|cr2|nef|arw|dng)$/i;
