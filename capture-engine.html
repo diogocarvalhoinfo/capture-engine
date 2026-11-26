@@ -5841,7 +5841,7 @@
       /* The record the document viewer shows: a document, or a PDF of Imagens seen as a document (B6.6) */
       function textRec(id, trash) { const d = (trash ? removedDocs : docs).find(x => x.id === id); if (d) return d; const p = (trash ? removed : images).find(x => x.id === id && x.kind === 'pdf'); return p ? { id: p.id, name: imgName(p), type: 'application/pdf', size: p.blob.size, blob: p.blob, inImages: true } : null }
       async function showBinaryDoc(o, fext, view, id) {
-        const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : '.' + o.type.split('/').pop();
+        const di = (o.name || '').lastIndexOf('.'); const ext = di >= 0 ? o.name.substring(di) : 'Sem extensão'; // not the end of the type, as .OCTET-STREAM (F-0256)
         $('text-modal-binary-msg').innerHTML = '<svg class="bin-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="bin-ext">' + escapeHTML(ext) + '</span><span class="bin-hint">Faça download para visualizar o documento,<br>pré-visualização não disponível para este formato</span>';
         $('text-modal-binary-msg').style.display = 'flex'; $('text-modal-binary-msg').style.flexDirection = 'column';
         $('text-modal-content').style.display = 'none';
