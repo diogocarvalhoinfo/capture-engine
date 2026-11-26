@@ -4670,7 +4670,9 @@
       function fmtSize(b) { const n = (v, u) => v.toFixed(1).replace('.', ',') + '\u00a0' + u; if (b < 1024) return b + '\u00a0B'; if (b < 1048576) return n(b / 1024, 'KB'); return n(b / 1048576, 'MB') }
       /* The file extension of an image, from its type: one table for the viewer Download and the ZIP, so both give the same name (F-0110) */
       const IMG_EXT_BY_TYPE = { 'application/pdf': 'pdf', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/bmp': 'bmp', 'image/svg+xml': 'svg' };
-      const imgExt = type => IMG_EXT_BY_TYPE[type] || 'jpg';
+      /* Another image type the browser draws (ICO, APNG, JPEG XL, TIFF and HEIC in Safari) takes its extension from the type; .jpg was the
+         extension of every one of them (F-0254). A record with no image type keeps .jpg */
+      const imgExt = type => IMG_EXT_BY_TYPE[type] || { 'image/jpeg': 'jpg', 'image/pjpeg': 'jpg', 'image/x-icon': 'ico', 'image/vnd.microsoft.icon': 'ico' }[type] || (/^image\/[a-z0-9.+-]+$/.test(type || '') ? type.slice(6).replace(/^(x-|vnd\.)/, '').replace(/\+xml$/, '') : 'jpg');
       const imgName = o => (o.label || 'imagem') + '.' + imgExt(o.blob.type); // the name of an image as the Download writes it
       /* The trash, the icon of every Remover: the same as the Removidos header (D-0117) */
       const TRASH_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';

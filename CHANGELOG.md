@@ -20,6 +20,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Corrigido
 
+- **Toda imagem sai com a extensão do seu formato (F-0254).** Um ICO, um APNG e um JPEG XL que o navegador desenha entravam em Imagens com o nome .jpg. Agora a extensão vem do tipo da imagem: .ico, .apng e .jxl. No Safari, o mesmo vale para o TIFF e o HEIC.
+
 - **Um SVG abre no visualizador e sai com o nome .svg (F-0253).** Um SVG entrava em Imagens com o nome .jpg, e o download também saía .jpg. Sem largura e altura próprias, só com o viewBox, ele aparecia com 0 × 0 no visualizador. O editor e o PDF o desenhavam com 150 px, ou 300 px no Firefox. Agora o nome é .svg, e esse SVG recebe o tamanho do viewBox no próprio arquivo. O resto do arquivo não muda, e um SVG com tamanho entra igual, byte a byte. Medido com o logo Quatro módulos no Edge, no Chrome, no Firefox e no WebKit: 384 × 384 no visualizador e no editor.
 
 - **A bandeja aberta não troca no caminho até ela (D-0231).** Com a bandeja do Retângulo aberta, ir rápido até o Desfocado, que fica acima do Círculo, passava pelo Círculo e abria a bandeja dele. O clique escolhia o Círculo. Agora, subindo em direção à bandeja aberta, a ferramenta do caminho só troca a bandeja depois de 300 ms parado sobre ela. De lado, pela barra, a troca continua na hora. Medido em 4 caminhos até o Desfocado, no Edge, no Chrome, no Firefox e no WebKit: antes, 3 erros em 4; agora, nenhum.
