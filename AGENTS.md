@@ -734,6 +734,8 @@ Estas decisões foram confirmadas pelo dono do projeto e não se revertem sem a 
 
 - **D-0232:** o clique direito no espaço vazio de Imagens e de Documentos abre o mesmo menu: "Adicionar arquivo" e "Adicionar nota de texto". O seletor aceita qualquer arquivo, e cada imagem vai para Imagens, como o "Adicionar documento" já fazia. A nota vai sempre para Documentos. Recusado: um menu de três itens, com "Adicionar imagem" e "Adicionar documento". Os botões da barra lateral ficam como estão. Origem: o dono, em 26 de novembro de 2026, depois de testar os dois menus.
 
+- **D-0233:** na nota criada pelo menu, o ✓ grava o texto e fecha a nota. Antes, a nota voltava para a leitura, e era preciso fechá-la. Uma nota já feita, aberta pelo "Editar", continua voltando para a leitura depois do ✓. Origem: o dono, em 26 de novembro de 2026.
+
 ## 7. Pendentes
 
 - **F-0230:** o script mostra e esconde de três jeitos: 65 vezes pelo `style.display`, 7 pelo `hidden` e o resto por classes. Os estilos escritos dentro das strings já passaram para o CSS. Origem: a auditoria de 20 de novembro de 2026.
