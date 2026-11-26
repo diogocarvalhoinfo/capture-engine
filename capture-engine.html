@@ -5756,8 +5756,8 @@
             textEditStart()
           }] : null, txt ? ['copy', 'Copiar texto', 'Ctrl+C', () => copyText(o)] : null, ['dup', 'Duplicar', '', () => dupDoc(o)], ['ren', 'Renomear', 'F2', () => renameItem(di)], mk].filter(Boolean), ext === 'pdf' ? [['shrink', 'Diminuir o tamanho', '', null, 0, () => shrinkRows(o)]] : [], [['dl', 'Download', '', () => dlDoc(o)], ['del', 'Remover', 'Del', () => window.delDoc(id), 1]]]
         }
-        if (target.closest('#img-zone')) return [[['add', 'Adicionar imagem', '', () => $('file-img-input').click()]]];
-        if (target.closest('#doc-zone')) return [[['add', 'Adicionar documento', '', () => $('file-doc-input').click()], ['note', 'Nova nota de texto', '', newNote]]];
+        /* One menu in the empty space of both zones (D-0232): the picker of documents takes any file, and captureFile sends each image to Imagens */
+        if (target.closest('#img-zone, #doc-zone')) return [[['add', 'Adicionar arquivo', '', () => $('file-doc-input').click()], ['note', 'Adicionar nota de texto', '', newNote]]];
         return null
       }
       function initMenus() {

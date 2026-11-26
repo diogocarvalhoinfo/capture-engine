@@ -8,6 +8,8 @@ Cada entrada diz o que mudou, por que mudou e o impacto real.
 
 ### Modificado
 
+- **Um menu só no espaço vazio (D-0232).** O clique direito no espaço vazio de Imagens abria só "Adicionar imagem", e o de Documentos, outro menu. Agora os dois abrem "Adicionar arquivo" e "Adicionar nota de texto". Cada imagem escolhida vai para Imagens, e o resto para Documentos.
+
 - **O Desfocado termina com a borda suave (D-0230).** A borda era um corte nítido. Agora a forma desenhada fica toda desfocada, e o desfoque se esfuma para fora dela, em meio bloco: 10 px em uma foto de 1600 px. Na borda da forma, o desfoque ainda cobre 98%. A máscara é a sombra da forma, que o Safari também desenha.
 
 ### Corrigido
